@@ -1,16 +1,14 @@
-import {
-  and,
-  asc,
-  count,
-  countDistinct,
-  desc,
-  eq,
-  exists,
-  getTableColumns,
-  notExists,
-  sql,
-} from "drizzle-orm";
+import { and, asc, eq, getTableColumns } from "drizzle-orm";
 import { db } from "@/db/client";
+import {
+  direction,
+  hasNoReferences,
+  hasNoRows,
+  hasRows,
+  likeTokens,
+  rowCount,
+  type Reference,
+} from "@/db/helpers";
 import { author, bookCollaborator, series } from "@/db/schema";
 import type {
   Author,
@@ -21,81 +19,51 @@ import type {
   NewAuthor,
 } from "./types";
 
-// SQL fragments
-const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
+// References
+const collab: Reference = {
+  table: bookCollaborator,
+  column: bookCollaborator.collaboratorId,
+};
+const collabAs = (role: CollaboratorRole): Reference => ({
+  ...collab,
+  where: eq(bookCollaborator.role, role),
+});
+const authoredSeries: Reference = { table: series, column: series.authorId };
 
-const fullName = sql`(${author.firstName} || ' ' || coalesce(${author.lastName}, ''))`;
+const bookCount = rowCount(collab, author.id, bookCollaborator.bookId);
+const seriesCount = rowCount(authoredSeries, author.id);
 
-const collaborations = (role?: CollaboratorRole) =>
-  db
-    .select({ one: sql`1` })
-    .from(bookCollaborator)
-    .where(
-      and(
-        eq(bookCollaborator.collaboratorId, author.id),
-        role ? eq(bookCollaborator.role, role) : undefined,
-      ),
-    );
-
-const authoredSeries = () =>
-  db
-    .select({ one: sql`1` })
-    .from(series)
-    .where(eq(series.authorId, author.id));
-
-const bookCount = sql<number>`(${db
-  .select({ n: countDistinct(bookCollaborator.bookId) })
-  .from(bookCollaborator)
-  .where(eq(bookCollaborator.collaboratorId, author.id))})`.mapWith(Number);
-
-const seriesCount = sql<number>`(${db
-  .select({ n: count() })
-  .from(series)
-  .where(eq(series.authorId, author.id))})`.mapWith(Number);
-
-const hasNoReferences = () =>
-  and(notExists(collaborations()), notExists(authoredSeries()));
-
+// Queries
 export async function findAuthorById(id: number): Promise<Author | null> {
   const [row] = await db.select().from(author).where(eq(author.id, id));
   return row ?? null;
 }
 
-// Queries
 export async function listAuthors(
   filters: AuthorListFilters,
 ): Promise<AuthorWithBookCount[]> {
   const { tokens, role, withBooks, sortBy, sortDir, limit, offset } = filters;
 
-  const withRole = role ? exists(collaborations(role)) : undefined;
+  const withRole = role ? hasRows(collabAs(role), author.id) : undefined;
 
   const bookPresence =
     withBooks === undefined
       ? undefined
       : withBooks
-        ? exists(collaborations())
-        : notExists(collaborations());
+        ? hasRows(collab, author.id)
+        : hasNoRows(collab, author.id);
 
   const sortKey = {
-    name: sql`lower(coalesce(${author.lastName}, ${author.firstName}))`,
+    name: author.nameKey,
     createdAt: author.createdAt,
     bookCount,
   }[sortBy];
-  const direction = sortDir === "desc" ? desc : asc;
 
   return db
     .select({ ...getTableColumns(author), bookCount })
     .from(author)
-    .where(
-      and(
-        ...tokens.map(
-          (t) => sql`${fullName} like ${`%${escapeLike(t)}%`} escape '\\'`,
-        ),
-        withRole,
-        bookPresence,
-      ),
-    )
-    .orderBy(direction(sortKey), asc(author.firstName), asc(author.id))
+    .where(and(...likeTokens(author.nameKey, tokens), withRole, bookPresence))
+    .orderBy(direction(sortDir)(sortKey), asc(author.nameKey), asc(author.id))
     .limit(limit)
     .offset(offset);
 }
@@ -131,7 +99,12 @@ export async function updateAuthor(
 export async function deleteAuthorIfUnused(id: number): Promise<boolean> {
   const deleted = await db
     .delete(author)
-    .where(and(eq(author.id, id), hasNoReferences()))
+    .where(
+      and(
+        eq(author.id, id),
+        hasNoReferences(author.id, collab, authoredSeries),
+      ),
+    )
     .returning({ id: author.id });
   return deleted.length > 0;
 }

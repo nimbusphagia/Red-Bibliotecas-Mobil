@@ -15,9 +15,38 @@ export class NotFoundError extends AppError {
 
 export class DuplicateError extends AppError {
   readonly code = "DUPLICATE";
-  constructor(public readonly entity: string) {
-    super(`A ${entity} with these details already exists`);
+  constructor(
+    public readonly entity: string,
+    public readonly field?: string,
+  ) {
+    super(
+      field
+        ? `A ${entity} with this ${field} already exists`
+        : `A ${entity} with these details already exists`,
+    );
     this.name = "DuplicateError";
+  }
+}
+
+export class ProtectedError extends AppError {
+  readonly code = "PROTECTED";
+  constructor(
+    public readonly entity: string,
+    public readonly id: number | string,
+  ) {
+    super(`${entity} ${id} is a system record and cannot be changed`);
+    this.name = "ProtectedError";
+  }
+}
+
+export class InvalidReferenceError extends AppError {
+  readonly code = "INVALID_REFERENCE";
+  constructor(
+    public readonly entity: string,
+    public readonly field: string,
+  ) {
+    super(`${entity}: ${field} does not exist`);
+    this.name = "InvalidReferenceError";
   }
 }
 

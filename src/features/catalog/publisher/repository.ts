@@ -1,59 +1,39 @@
-import {
-  and,
-  asc,
-  count,
-  countDistinct,
-  desc,
-  eq,
-  exists,
-  getTableColumns,
-  notExists,
-  sql,
-} from "drizzle-orm";
+import { and, asc, eq, getTableColumns } from "drizzle-orm";
 import { db } from "@/db/client";
-import { publisher, collection, book } from "@/db/schema";
+import {
+  direction,
+  hasNoReferences,
+  hasNoRows,
+  hasRows,
+  likeTokens,
+  rowCount,
+  type Reference,
+} from "@/db/helpers";
+import { book, collection, publisher } from "@/db/schema";
 import type {
+  NewPublisher,
   Publisher,
   PublisherListFilters,
   PublisherUsage,
   PublisherWithBookCount,
-  NewPublisher,
 } from "./types";
 
-// SQL fragments
-const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
+// References
+const books: Reference = { table: book, column: book.publisherId };
+const collections: Reference = {
+  table: collection,
+  column: collection.publisherId,
+};
 
-const publishedBooks = () =>
-  db
-    .select({ one: sql`1` })
-    .from(book)
-    .where(eq(book.publisherId, publisher.id));
+const bookCount = rowCount(books, publisher.id);
+const collectionCount = rowCount(collections, publisher.id);
 
-const publishedCollections = () =>
-  db
-    .select({ one: sql`1` })
-    .from(collection)
-    .where(eq(collection.publisherId, publisher.id));
-
-const bookCount = sql<number>`(${db
-  .select({ n: countDistinct(book.id) })
-  .from(book)
-  .where(eq(book.publisherId, publisher.id))})`.mapWith(Number);
-
-const collectionsCount = sql<number>`(${db
-  .select({ n: count() })
-  .from(collection)
-  .where(eq(collection.publisherId, publisher.id))})`.mapWith(Number);
-
-const hasNoReferences = () =>
-  and(notExists(publishedBooks()), notExists(publishedCollections()));
-
+// Queries
 export async function findPublisherById(id: number): Promise<Publisher | null> {
   const [row] = await db.select().from(publisher).where(eq(publisher.id, id));
   return row ?? null;
 }
 
-// Queries
 export async function listPublishers(
   filters: PublisherListFilters,
 ): Promise<PublisherWithBookCount[]> {
@@ -63,29 +43,24 @@ export async function listPublishers(
     withBooks === undefined
       ? undefined
       : withBooks
-        ? exists(publishedBooks())
-        : notExists(publishedBooks());
+        ? hasRows(books, publisher.id)
+        : hasNoRows(books, publisher.id);
 
   const sortKey = {
-    name: sql`lower(${publisher.name})`,
+    name: publisher.nameKey,
     createdAt: publisher.createdAt,
     bookCount,
   }[sortBy];
-  const direction = sortDir === "desc" ? desc : asc;
 
   return db
     .select({ ...getTableColumns(publisher), bookCount })
     .from(publisher)
-    .where(
-      and(
-        ...tokens.map(
-          (t) =>
-            sql`${publisher.name} like ${`%${escapeLike(t)}%`} escape '\\'`,
-        ),
-        bookPresence,
-      ),
+    .where(and(...likeTokens(publisher.nameKey, tokens), bookPresence))
+    .orderBy(
+      direction(sortDir)(sortKey),
+      asc(publisher.nameKey),
+      asc(publisher.id),
     )
-    .orderBy(direction(sortKey), asc(publisher.name), asc(publisher.id))
     .limit(limit)
     .offset(offset);
 }
@@ -94,7 +69,7 @@ export async function countPublisherUsage(
   id: number,
 ): Promise<PublisherUsage | null> {
   const [row] = await db
-    .select({ books: bookCount, collections: collectionsCount })
+    .select({ books: bookCount, collections: collectionCount })
     .from(publisher)
     .where(eq(publisher.id, id));
   return row ?? null;
@@ -123,7 +98,12 @@ export async function updatePublisher(
 export async function deletePublisherIfUnused(id: number): Promise<boolean> {
   const deleted = await db
     .delete(publisher)
-    .where(and(eq(publisher.id, id), hasNoReferences()))
+    .where(
+      and(
+        eq(publisher.id, id),
+        hasNoReferences(publisher.id, books, collections),
+      ),
+    )
     .returning({ id: publisher.id });
   return deleted.length > 0;
 }

@@ -1,20 +1,21 @@
-INSERT INTO `category` (`name`, `code`) VALUES
-  ('Literatura', '800'),
-  ('Texto Escolar', '300'),
-  ('Consulta', '100');
+-- Custom SQL migration file, put your code below! --
+INSERT INTO `category` (`name`, `name_key`, `code`) VALUES
+  ('Literatura', 'literatura', '800'),
+  ('Texto Escolar', 'texto escolar', '300'),
+  ('Consulta', 'consulta', '100');
 --> statement-breakpoint
-INSERT INTO `subcategory` (`name`, `code`) VALUES
-  ('Cuento', 'CUE'),
-  ('Poesía', 'POE'),
-  ('Historia', 'HIS'),
-  ('Ciencias Sociales', 'CSO'),
-  ('Lengua y Literatura', 'LEN'),
-  ('Ciencias de la Naturaleza', 'CNA'),
-  ('Personajes', 'PER'),
-  ('Geografía', 'GEO');
-  --> statement-breakpoint
-INSERT INTO `author` (`first_name`, `last_name`) VALUES
-  ('Anónimo', NULL);
+INSERT INTO `subcategory` (`name`, `name_key`, `code`) VALUES
+  ('Cuento', 'cuento', 'CUE'),
+  ('Poesía', 'poesia', 'POE'),
+  ('Historia', 'historia', 'HIS'),
+  ('Ciencias Sociales', 'ciencias sociales', 'CSO'),
+  ('Lengua y Literatura', 'lengua y literatura', 'LEN'),
+  ('Ciencias de la Naturaleza', 'ciencias de la naturaleza', 'CNA'),
+  ('Personajes', 'personajes', 'PER'),
+  ('Geografía', 'geografia', 'GEO');
+--> statement-breakpoint
+INSERT INTO `author` (`first_name`, `last_name`, `name_key`, `is_protected`) VALUES
+  ('Anónimo', NULL, 'anonimo', 1);
 --> statement-breakpoint
 INSERT INTO `shelf` (`name`, `description`, `is_default`) VALUES
   ('Default', NULL, 1);

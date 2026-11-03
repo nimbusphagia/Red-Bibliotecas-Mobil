@@ -16,10 +16,12 @@ CREATE TABLE `author` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`first_name` text NOT NULL,
-	`last_name` text
+	`last_name` text,
+	`name_key` text NOT NULL,
+	`is_protected` integer DEFAULT false NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uq_author_full_name` ON `author` (lower("first_name"),(case when "last_name" is null then '' else lower("last_name") end));--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_author_name_key` ON `author` (`name_key`);--> statement-breakpoint
 CREATE TABLE `book` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -29,12 +31,14 @@ CREATE TABLE `book` (
 	`collection_id` integer,
 	`series_id` integer,
 	`category_id` integer,
+	`subcategory_id` integer,
 	`publication_year` integer,
 	`page_count` integer,
 	`active` integer DEFAULT true NOT NULL,
 	FOREIGN KEY (`publisher_id`) REFERENCES `publisher`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`series_id`) REFERENCES `series`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`category_id`) REFERENCES `category`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`subcategory_id`) REFERENCES `subcategory`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`publisher_id`,`collection_id`) REFERENCES `collection`(`publisher_id`,`id`) ON UPDATE no action ON DELETE no action,
 	CONSTRAINT "ck_book_page_count" CHECK("book"."page_count" > 0),
 	CONSTRAINT "ck_book_collection_requires_publisher" CHECK("book"."collection_id" IS NULL OR "book"."publisher_id" IS NOT NULL)
@@ -44,6 +48,7 @@ CREATE INDEX `idx_book_publisher` ON `book` (`publisher_id`);--> statement-break
 CREATE INDEX `idx_book_collection` ON `book` (`collection_id`);--> statement-breakpoint
 CREATE INDEX `idx_book_series` ON `book` (`series_id`);--> statement-breakpoint
 CREATE INDEX `idx_book_category` ON `book` (`category_id`);--> statement-breakpoint
+CREATE INDEX `idx_book_subcategory` ON `book` (`subcategory_id`);--> statement-breakpoint
 CREATE TABLE `book_collaborator` (
 	`book_id` integer NOT NULL,
 	`collaborator_id` integer NOT NULL,
@@ -60,11 +65,14 @@ CREATE TABLE `category` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`name` text NOT NULL,
-	`code` text NOT NULL
+	`code` text NOT NULL,
+	`name_key` text NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `uq_category_name_lower` ON `category` (lower("name"));--> statement-breakpoint
 CREATE UNIQUE INDEX `uq_category_code_lower` ON `category` (lower("code"));--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_category_name_key` ON `category` (`name_key`);--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_category_code` ON `category` (`code`);--> statement-breakpoint
 CREATE TABLE `collection` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -172,10 +180,12 @@ CREATE TABLE `publisher` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`name` text NOT NULL
+	`name` text NOT NULL,
+	`name_key` text NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `uq_publisher_name_lower` ON `publisher` (lower("name"));--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_publisher_name_key` ON `publisher` (`name_key`);--> statement-breakpoint
 CREATE TABLE `school_grade` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`grade` integer NOT NULL,
@@ -234,11 +244,14 @@ CREATE TABLE `subcategory` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`name` text NOT NULL,
-	`code` text NOT NULL
+	`code` text NOT NULL,
+	`name_key` text NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `uq_subcategory_name_lower` ON `subcategory` (lower("name"));--> statement-breakpoint
 CREATE UNIQUE INDEX `uq_subcategory_code_lower` ON `subcategory` (lower("code"));--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_category_name_key` ON `subcategory` (`name_key`);--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_category_code` ON `subcategory` (`code`);--> statement-breakpoint
 CREATE TABLE `visitor` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,

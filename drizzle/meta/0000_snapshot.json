@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "735e7a4a-04b6-434f-a299-7e012920d192",
+  "id": "dd674452-8827-4b2c-9dfb-14a22fd49ba1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -127,14 +127,28 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_protected": {
+          "name": "is_protected",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
         }
       },
       "indexes": {
-        "uq_author_full_name": {
-          "name": "uq_author_full_name",
+        "uq_author_name_key": {
+          "name": "uq_author_name_key",
           "columns": [
-            "lower(\"first_name\")",
-            "(case when \"last_name\" is null then '' else lower(\"last_name\") end)"
+            "name_key"
           ],
           "isUnique": true
         }
@@ -205,6 +219,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "subcategory_id": {
+          "name": "subcategory_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "publication_year": {
           "name": "publication_year",
           "type": "integer",
@@ -256,6 +277,13 @@
             "category_id"
           ],
           "isUnique": false
+        },
+        "idx_book_subcategory": {
+          "name": "idx_book_subcategory",
+          "columns": [
+            "subcategory_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -291,6 +319,19 @@
           "tableTo": "category",
           "columnsFrom": [
             "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "book_subcategory_id_subcategory_id_fk": {
+          "name": "book_subcategory_id_subcategory_id_fk",
+          "tableFrom": "book",
+          "tableTo": "subcategory",
+          "columnsFrom": [
+            "subcategory_id"
           ],
           "columnsTo": [
             "id"
@@ -446,6 +487,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -460,6 +508,20 @@
           "name": "uq_category_code_lower",
           "columns": [
             "lower(\"code\")"
+          ],
+          "isUnique": true
+        },
+        "uq_category_name_key": {
+          "name": "uq_category_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        },
+        "uq_category_code": {
+          "name": "uq_category_code",
+          "columns": [
+            "code"
           ],
           "isUnique": true
         }
@@ -1204,6 +1266,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -1211,6 +1280,13 @@
           "name": "uq_publisher_name_lower",
           "columns": [
             "lower(\"name\")"
+          ],
+          "isUnique": true
+        },
+        "uq_publisher_name_key": {
+          "name": "uq_publisher_name_key",
+          "columns": [
+            "name_key"
           ],
           "isUnique": true
         }
@@ -1607,6 +1683,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -1621,6 +1704,20 @@
           "name": "uq_subcategory_code_lower",
           "columns": [
             "lower(\"code\")"
+          ],
+          "isUnique": true
+        },
+        "uq_category_name_key": {
+          "name": "uq_category_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        },
+        "uq_category_code": {
+          "name": "uq_category_code",
+          "columns": [
+            "code"
           ],
           "isUnique": true
         }
@@ -1749,16 +1846,6 @@
       "uq_account_username_lower": {
         "columns": {
           "lower(\"username\")": {
-            "isExpression": true
-          }
-        }
-      },
-      "uq_author_full_name": {
-        "columns": {
-          "lower(\"first_name\")": {
-            "isExpression": true
-          },
-          "(case when \"last_name\" is null then '' else lower(\"last_name\") end)": {
             "isExpression": true
           }
         }

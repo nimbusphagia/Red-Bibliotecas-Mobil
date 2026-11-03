@@ -65,13 +65,12 @@ export const author = sqliteTable(
     ...timestamps,
     firstName: text("first_name").notNull(),
     lastName: text("last_name"),
+    nameKey: text("name_key").notNull(),
+    isProtected: integer("is_protected", { mode: "boolean" })
+      .notNull()
+      .default(false),
   },
-  (t) => [
-    uniqueIndex("uq_author_full_name").on(
-      lower(t.firstName),
-      sql`(case when ${t.lastName} is null then '' else lower(${t.lastName}) end)`,
-    ),
-  ],
+  (t) => [uniqueIndex("uq_author_name_key").on(t.nameKey)],
 );
 
 export const publisher = sqliteTable(
@@ -80,8 +79,12 @@ export const publisher = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
     name: text("name").notNull(),
+    nameKey: text("name_key").notNull(),
   },
-  (t) => [uniqueIndex("uq_publisher_name_lower").on(lower(t.name))],
+  (t) => [
+    uniqueIndex("uq_publisher_name_lower").on(lower(t.name)),
+    uniqueIndex("uq_publisher_name_key").on(t.nameKey),
+  ],
 );
 
 export const collection = sqliteTable(
@@ -125,10 +128,13 @@ export const category = sqliteTable(
     ...timestamps,
     name: text("name").notNull(),
     code: text("code").notNull(),
+    nameKey: text("name_key").notNull(),
   },
   (t) => [
     uniqueIndex("uq_category_name_lower").on(lower(t.name)),
     uniqueIndex("uq_category_code_lower").on(lower(t.code)),
+    uniqueIndex("uq_category_name_key").on(t.nameKey),
+    uniqueIndex("uq_category_code").on(t.code),
   ],
 );
 
@@ -139,10 +145,13 @@ export const subcategory = sqliteTable(
     ...timestamps,
     name: text("name").notNull(),
     code: text("code").notNull(),
+    nameKey: text("name_key").notNull(),
   },
   (t) => [
     uniqueIndex("uq_subcategory_name_lower").on(lower(t.name)),
     uniqueIndex("uq_subcategory_code_lower").on(lower(t.code)),
+    uniqueIndex("uq_category_name_key").on(t.nameKey),
+    uniqueIndex("uq_category_code").on(t.code),
   ],
 );
 
@@ -156,6 +165,7 @@ export const book = sqliteTable(
     collectionId: integer("collection_id"),
     seriesId: integer("series_id").references(() => series.id),
     categoryId: integer("category_id").references(() => category.id),
+    subcategoryId: integer("subcategory_id").references(() => subcategory.id),
     publicationYear: integer("publication_year"),
     pageCount: integer("page_count"),
     active: integer("active", { mode: "boolean" }).notNull().default(true),
@@ -175,6 +185,7 @@ export const book = sqliteTable(
     index("idx_book_collection").on(t.collectionId),
     index("idx_book_series").on(t.seriesId),
     index("idx_book_category").on(t.categoryId),
+    index("idx_book_subcategory").on(t.subcategoryId),
   ],
 );
 

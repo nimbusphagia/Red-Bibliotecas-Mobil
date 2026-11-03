@@ -5,14 +5,14 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1793719619610,
-      "tag": "0000_perfect_the_leader",
+      "when": 1793737586862,
+      "tag": "0000_create_tables",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "6",
-      "when": 1793719682512,
+      "when": 1793737609285,
       "tag": "0001_seed_reference_data",
       "breakpoints": true
     }
