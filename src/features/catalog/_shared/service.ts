@@ -98,6 +98,8 @@ export function makeUpdate<
     }
 
     const patch = await o.build(existing, parsed);
+    if (Object.keys(patch as object).length === 0) return existing;
+
     const updated = await mapWriteErrors(o.entity, () =>
       o.update(validId, patch),
     );

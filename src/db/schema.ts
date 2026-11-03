@@ -81,10 +81,7 @@ export const publisher = sqliteTable(
     name: text("name").notNull(),
     nameKey: text("name_key").notNull(),
   },
-  (t) => [
-    uniqueIndex("uq_publisher_name_lower").on(lower(t.name)),
-    uniqueIndex("uq_publisher_name_key").on(t.nameKey),
-  ],
+  (t) => [uniqueIndex("uq_publisher_name_key").on(t.nameKey)],
 );
 
 export const collection = sqliteTable(
@@ -93,15 +90,16 @@ export const collection = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
     name: text("name").notNull(),
+    nameKey: text("name_key").notNull(),
     publisherId: integer("publisher_id")
       .notNull()
       .references(() => publisher.id),
   },
   (t) => [
     unique("uq_collection_publisher_id").on(t.publisherId, t.id),
-    uniqueIndex("uq_collection_publisher_name_lower").on(
+    uniqueIndex("uq_collection_publisher_name_key").on(
       t.publisherId,
-      lower(t.name),
+      t.nameKey,
     ),
   ],
 );
@@ -112,13 +110,12 @@ export const series = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
     name: text("name").notNull(),
+    nameKey: text("name_key").notNull(),
     authorId: integer("author_id")
       .notNull()
       .references(() => author.id),
   },
-  (t) => [
-    uniqueIndex("uq_series_author_name_lower").on(t.authorId, lower(t.name)),
-  ],
+  (t) => [uniqueIndex("uq_series_author_name_key").on(t.authorId, t.nameKey)],
 );
 
 export const category = sqliteTable(
@@ -131,8 +128,6 @@ export const category = sqliteTable(
     nameKey: text("name_key").notNull(),
   },
   (t) => [
-    uniqueIndex("uq_category_name_lower").on(lower(t.name)),
-    uniqueIndex("uq_category_code_lower").on(lower(t.code)),
     uniqueIndex("uq_category_name_key").on(t.nameKey),
     uniqueIndex("uq_category_code").on(t.code),
   ],
@@ -148,10 +143,8 @@ export const subcategory = sqliteTable(
     nameKey: text("name_key").notNull(),
   },
   (t) => [
-    uniqueIndex("uq_subcategory_name_lower").on(lower(t.name)),
-    uniqueIndex("uq_subcategory_code_lower").on(lower(t.code)),
-    uniqueIndex("uq_category_name_key").on(t.nameKey),
-    uniqueIndex("uq_category_code").on(t.code),
+    uniqueIndex("uq_subcategory_name_key").on(t.nameKey),
+    uniqueIndex("uq_subcategory_code").on(t.code),
   ],
 );
 

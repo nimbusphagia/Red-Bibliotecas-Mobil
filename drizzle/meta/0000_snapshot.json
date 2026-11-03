@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "dd674452-8827-4b2c-9dfb-14a22fd49ba1",
+  "id": "2b685dfc-3bca-4cd2-84a1-043a775f549b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -497,20 +497,6 @@
         }
       },
       "indexes": {
-        "uq_category_name_lower": {
-          "name": "uq_category_name_lower",
-          "columns": [
-            "lower(\"name\")"
-          ],
-          "isUnique": true
-        },
-        "uq_category_code_lower": {
-          "name": "uq_category_code_lower",
-          "columns": [
-            "lower(\"code\")"
-          ],
-          "isUnique": true
-        },
         "uq_category_name_key": {
           "name": "uq_category_name_key",
           "columns": [
@@ -564,6 +550,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "publisher_id": {
           "name": "publisher_id",
           "type": "integer",
@@ -573,11 +566,11 @@
         }
       },
       "indexes": {
-        "uq_collection_publisher_name_lower": {
-          "name": "uq_collection_publisher_name_lower",
+        "uq_collection_publisher_name_key": {
+          "name": "uq_collection_publisher_name_key",
           "columns": [
             "publisher_id",
-            "lower(\"name\")"
+            "name_key"
           ],
           "isUnique": true
         },
@@ -1276,13 +1269,6 @@
         }
       },
       "indexes": {
-        "uq_publisher_name_lower": {
-          "name": "uq_publisher_name_lower",
-          "columns": [
-            "lower(\"name\")"
-          ],
-          "isUnique": true
-        },
         "uq_publisher_name_key": {
           "name": "uq_publisher_name_key",
           "columns": [
@@ -1378,6 +1364,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "author_id": {
           "name": "author_id",
           "type": "integer",
@@ -1387,11 +1380,11 @@
         }
       },
       "indexes": {
-        "uq_series_author_name_lower": {
-          "name": "uq_series_author_name_lower",
+        "uq_series_author_name_key": {
+          "name": "uq_series_author_name_key",
           "columns": [
             "author_id",
-            "lower(\"name\")"
+            "name_key"
           ],
           "isUnique": true
         }
@@ -1693,29 +1686,15 @@
         }
       },
       "indexes": {
-        "uq_subcategory_name_lower": {
-          "name": "uq_subcategory_name_lower",
-          "columns": [
-            "lower(\"name\")"
-          ],
-          "isUnique": true
-        },
-        "uq_subcategory_code_lower": {
-          "name": "uq_subcategory_code_lower",
-          "columns": [
-            "lower(\"code\")"
-          ],
-          "isUnique": true
-        },
-        "uq_category_name_key": {
-          "name": "uq_category_name_key",
+        "uq_subcategory_name_key": {
+          "name": "uq_subcategory_name_key",
           "columns": [
             "name_key"
           ],
           "isUnique": true
         },
-        "uq_category_code": {
-          "name": "uq_category_code",
+        "uq_subcategory_code": {
+          "name": "uq_subcategory_code",
           "columns": [
             "code"
           ],
@@ -1850,27 +1829,6 @@
           }
         }
       },
-      "uq_category_name_lower": {
-        "columns": {
-          "lower(\"name\")": {
-            "isExpression": true
-          }
-        }
-      },
-      "uq_category_code_lower": {
-        "columns": {
-          "lower(\"code\")": {
-            "isExpression": true
-          }
-        }
-      },
-      "uq_collection_publisher_name_lower": {
-        "columns": {
-          "lower(\"name\")": {
-            "isExpression": true
-          }
-        }
-      },
       "uq_copy_code_lower": {
         "columns": {
           "lower(\"code\")": {
@@ -1885,37 +1843,9 @@
           }
         }
       },
-      "uq_publisher_name_lower": {
-        "columns": {
-          "lower(\"name\")": {
-            "isExpression": true
-          }
-        }
-      },
-      "uq_series_author_name_lower": {
-        "columns": {
-          "lower(\"name\")": {
-            "isExpression": true
-          }
-        }
-      },
       "uq_shelf_name_lower": {
         "columns": {
           "lower(\"name\")": {
-            "isExpression": true
-          }
-        }
-      },
-      "uq_subcategory_name_lower": {
-        "columns": {
-          "lower(\"name\")": {
-            "isExpression": true
-          }
-        }
-      },
-      "uq_subcategory_code_lower": {
-        "columns": {
-          "lower(\"code\")": {
             "isExpression": true
           }
         }
