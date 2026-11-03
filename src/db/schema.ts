@@ -352,45 +352,56 @@ export const stockMovementLine = sqliteTable(
 
 // Loans
 
-export const loanLimits = sqliteTable(
-  "loan_rules",
+export const loanRule = sqliteTable(
+  "loan_rule",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
+    role: text("role", { enum: VISITOR_ROLES }).notNull(),
     maxDays: integer("max_days").notNull(),
   },
-  (t) => [check("ck_loan_rules_max_days_positive", sql`${t.maxDays} > 0`)],
+  (t) => [
+    unique("uq_loan_rule_role").on(t.role),
+    check("ck_loan_rule_role", oneOf(t.role, VISITOR_ROLES)),
+    check("ck_loan_rule_max_days_positive", sql`${t.maxDays} > 0`),
+  ],
 );
 
-export const visitorCredentials = sqliteTable(
+export const schoolGrade = sqliteTable(
   "school_grade",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     grade: integer("grade").notNull(),
     level: text("level", { enum: GRADE_LEVELS }).notNull(),
-    role: text("role", { enum: VISITOR_ROLES }).notNull(),
-    limits: integer("limits")
-      .notNull()
-      .references(() => loanLimits.id),
   },
   (t) => [
-    unique("uq_school_grade").on(t.grade, t.level, t.role),
+    unique("uq_school_grade").on(t.level, t.grade),
     check("ck_school_grade_level", oneOf(t.level, GRADE_LEVELS)),
-    check("ck_school_grade_role", oneOf(t.role, VISITOR_ROLES)),
+    check(
+      "ck_school_grade_range",
+      sql`(${t.level} = 'primary' AND ${t.grade} BETWEEN 1 AND 6) OR (${t.level} = 'secondary' AND ${t.grade} BETWEEN 1 AND 5)`,
+    ),
   ],
 );
-
 export const visitor = sqliteTable(
   "visitor",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
     name: text("name").notNull(),
-    credentialsId: integer("credentials_id")
+    role: text("role", { enum: VISITOR_ROLES })
       .notNull()
-      .references(() => visitorCredentials.id),
+      .references(() => loanRule.role),
+    gradeId: integer("grade_id").references(() => schoolGrade.id),
     active: integer("active", { mode: "boolean" }).notNull().default(true),
   },
-  (t) => [index("idx_visitor_credentials").on(t.credentialsId)],
+  (t) => [
+    check("ck_visitor_role", oneOf(t.role, VISITOR_ROLES)),
+    check(
+      "ck_visitor_grade_by_role",
+      sql`(${t.role} = 'student' AND ${t.gradeId} IS NOT NULL) OR (${t.role} = 'teacher' AND ${t.gradeId} IS NULL)`,
+    ),
+    index("idx_visitor_grade").on(t.gradeId),
+  ],
 );
 
 export const loanMovement = sqliteTable(

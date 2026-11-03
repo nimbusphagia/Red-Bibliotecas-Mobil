@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "239ad529-1c13-47c6-b001-8dfbc069dbd0",
+  "id": "735e7a4a-04b6-434f-a299-7e012920d192",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -923,35 +923,6 @@
         }
       }
     },
-    "loan_rules": {
-      "name": "loan_rules",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "max_days": {
-          "name": "max_days",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {
-        "ck_loan_rules_max_days_positive": {
-          "name": "ck_loan_rules_max_days_positive",
-          "value": "\"loan_rules\".\"max_days\" > 0"
-        }
-      }
-    },
     "loan_movement": {
       "name": "loan_movement",
       "columns": {
@@ -1153,6 +1124,54 @@
         }
       }
     },
+    "loan_rule": {
+      "name": "loan_rule",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "max_days": {
+          "name": "max_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_loan_rule_role": {
+          "name": "uq_loan_rule_role",
+          "columns": [
+            "role"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_loan_rule_role": {
+          "name": "ck_loan_rule_role",
+          "value": "\"loan_rule\".\"role\" IN ('student', 'teacher')"
+        },
+        "ck_loan_rule_max_days_positive": {
+          "name": "ck_loan_rule_max_days_positive",
+          "value": "\"loan_rule\".\"max_days\" > 0"
+        }
+      }
+    },
     "publisher": {
       "name": "publisher",
       "columns": {
@@ -1200,6 +1219,55 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
+    },
+    "school_grade": {
+      "name": "school_grade",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "grade": {
+          "name": "grade",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "level": {
+          "name": "level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_school_grade": {
+          "name": "uq_school_grade",
+          "columns": [
+            "level",
+            "grade"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_school_grade_level": {
+          "name": "ck_school_grade_level",
+          "value": "\"school_grade\".\"level\" IN ('primary', 'secondary')"
+        },
+        "ck_school_grade_range": {
+          "name": "ck_school_grade_range",
+          "value": "(\"school_grade\".\"level\" = 'primary' AND \"school_grade\".\"grade\" BETWEEN 1 AND 6) OR (\"school_grade\".\"level\" = 'secondary' AND \"school_grade\".\"grade\" BETWEEN 1 AND 5)"
+        }
+      }
     },
     "series": {
       "name": "series",
@@ -1595,11 +1663,18 @@
           "notNull": true,
           "autoincrement": false
         },
-        "credentials_id": {
-          "name": "credentials_id",
-          "type": "integer",
+        "role": {
+          "name": "role",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "grade_id": {
+          "name": "grade_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "active": {
@@ -1612,90 +1687,34 @@
         }
       },
       "indexes": {
-        "idx_visitor_credentials": {
-          "name": "idx_visitor_credentials",
+        "idx_visitor_grade": {
+          "name": "idx_visitor_grade",
           "columns": [
-            "credentials_id"
+            "grade_id"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "visitor_credentials_id_school_grade_id_fk": {
-          "name": "visitor_credentials_id_school_grade_id_fk",
+        "visitor_role_loan_rule_role_fk": {
+          "name": "visitor_role_loan_rule_role_fk",
           "tableFrom": "visitor",
-          "tableTo": "school_grade",
+          "tableTo": "loan_rule",
           "columnsFrom": [
-            "credentials_id"
+            "role"
           ],
           "columnsTo": [
-            "id"
+            "role"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "school_grade": {
-      "name": "school_grade",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
         },
-        "grade": {
-          "name": "grade",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "level": {
-          "name": "level",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "limits": {
-          "name": "limits",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "uq_school_grade": {
-          "name": "uq_school_grade",
-          "columns": [
-            "grade",
-            "level",
-            "role"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "school_grade_limits_loan_rules_id_fk": {
-          "name": "school_grade_limits_loan_rules_id_fk",
-          "tableFrom": "school_grade",
-          "tableTo": "loan_rules",
+        "visitor_grade_id_school_grade_id_fk": {
+          "name": "visitor_grade_id_school_grade_id_fk",
+          "tableFrom": "visitor",
+          "tableTo": "school_grade",
           "columnsFrom": [
-            "limits"
+            "grade_id"
           ],
           "columnsTo": [
             "id"
@@ -1707,13 +1726,13 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {
-        "ck_school_grade_level": {
-          "name": "ck_school_grade_level",
-          "value": "\"school_grade\".\"level\" IN ('primary', 'secondary')"
+        "ck_visitor_role": {
+          "name": "ck_visitor_role",
+          "value": "\"visitor\".\"role\" IN ('student', 'teacher')"
         },
-        "ck_school_grade_role": {
-          "name": "ck_school_grade_role",
-          "value": "\"school_grade\".\"role\" IN ('student', 'teacher')"
+        "ck_visitor_grade_by_role": {
+          "name": "ck_visitor_grade_by_role",
+          "value": "(\"visitor\".\"role\" = 'student' AND \"visitor\".\"grade_id\" IS NOT NULL) OR (\"visitor\".\"role\" = 'teacher' AND \"visitor\".\"grade_id\" IS NULL)"
         }
       }
     }

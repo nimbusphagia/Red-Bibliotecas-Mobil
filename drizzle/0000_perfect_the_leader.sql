@@ -131,12 +131,6 @@ CREATE TABLE `label_revision` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `uq_label_revision_number` ON `label_revision` (`label_id`,`revision_number`);--> statement-breakpoint
-CREATE TABLE `loan_rules` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`max_days` integer NOT NULL,
-	CONSTRAINT "ck_loan_rules_max_days_positive" CHECK("loan_rules"."max_days" > 0)
-);
---> statement-breakpoint
 CREATE TABLE `loan_movement` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -165,6 +159,15 @@ CREATE TABLE `loan_movement_line` (
 CREATE UNIQUE INDEX `uq_loan_line_open_copy` ON `loan_movement_line` (`copy_id`) WHERE resolved_at IS NULL;--> statement-breakpoint
 CREATE INDEX `idx_loan_line_copy` ON `loan_movement_line` (`copy_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uq_loan_movement_line` ON `loan_movement_line` (`movement_id`,`copy_id`);--> statement-breakpoint
+CREATE TABLE `loan_rule` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`role` text NOT NULL,
+	`max_days` integer NOT NULL,
+	CONSTRAINT "ck_loan_rule_role" CHECK("loan_rule"."role" IN ('student', 'teacher')),
+	CONSTRAINT "ck_loan_rule_max_days_positive" CHECK("loan_rule"."max_days" > 0)
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_loan_rule_role` ON `loan_rule` (`role`);--> statement-breakpoint
 CREATE TABLE `publisher` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -173,6 +176,15 @@ CREATE TABLE `publisher` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `uq_publisher_name_lower` ON `publisher` (lower("name"));--> statement-breakpoint
+CREATE TABLE `school_grade` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`grade` integer NOT NULL,
+	`level` text NOT NULL,
+	CONSTRAINT "ck_school_grade_level" CHECK("school_grade"."level" IN ('primary', 'secondary')),
+	CONSTRAINT "ck_school_grade_range" CHECK(("school_grade"."level" = 'primary' AND "school_grade"."grade" BETWEEN 1 AND 6) OR ("school_grade"."level" = 'secondary' AND "school_grade"."grade" BETWEEN 1 AND 5))
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_school_grade` ON `school_grade` (`level`,`grade`);--> statement-breakpoint
 CREATE TABLE `series` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -232,21 +244,13 @@ CREATE TABLE `visitor` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`name` text NOT NULL,
-	`credentials_id` integer NOT NULL,
-	`active` integer DEFAULT true NOT NULL,
-	FOREIGN KEY (`credentials_id`) REFERENCES `school_grade`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE INDEX `idx_visitor_credentials` ON `visitor` (`credentials_id`);--> statement-breakpoint
-CREATE TABLE `school_grade` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`grade` integer NOT NULL,
-	`level` text NOT NULL,
 	`role` text NOT NULL,
-	`limits` integer NOT NULL,
-	FOREIGN KEY (`limits`) REFERENCES `loan_rules`(`id`) ON UPDATE no action ON DELETE no action,
-	CONSTRAINT "ck_school_grade_level" CHECK("school_grade"."level" IN ('primary', 'secondary')),
-	CONSTRAINT "ck_school_grade_role" CHECK("school_grade"."role" IN ('student', 'teacher'))
+	`grade_id` integer,
+	`active` integer DEFAULT true NOT NULL,
+	FOREIGN KEY (`role`) REFERENCES `loan_rule`(`role`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`grade_id`) REFERENCES `school_grade`(`id`) ON UPDATE no action ON DELETE no action,
+	CONSTRAINT "ck_visitor_role" CHECK("visitor"."role" IN ('student', 'teacher')),
+	CONSTRAINT "ck_visitor_grade_by_role" CHECK(("visitor"."role" = 'student' AND "visitor"."grade_id" IS NOT NULL) OR ("visitor"."role" = 'teacher' AND "visitor"."grade_id" IS NULL))
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uq_school_grade` ON `school_grade` (`grade`,`level`,`role`);
+CREATE INDEX `idx_visitor_grade` ON `visitor` (`grade_id`);
