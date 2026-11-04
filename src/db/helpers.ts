@@ -44,7 +44,7 @@ export const rowCount = (
   sql<number>`(${db
     .select({ n: distinct ? countDistinct(distinct) : count() })
     .from(ref.table)
-    .where(and(eq(ref.column, owner)))}})`.mapWith(Number);
+    .where(and(eq(ref.column, owner), ref.where))})`.mapWith(Number);
 
 export const hasNoReferences = (owner: AnyColumn, ...refs: Reference[]) =>
   and(...refs.map((r) => notExists(rowsOf(r, owner))));

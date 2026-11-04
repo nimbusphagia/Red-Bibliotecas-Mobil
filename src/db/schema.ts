@@ -154,6 +154,7 @@ export const book = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
     title: text("title").notNull(),
+    titleKey: text("title_key").notNull(),
     publisherId: integer("publisher_id").references(() => publisher.id),
     collectionId: integer("collection_id"),
     seriesId: integer("series_id").references(() => series.id),

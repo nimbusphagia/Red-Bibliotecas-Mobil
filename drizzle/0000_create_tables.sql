@@ -27,6 +27,7 @@ CREATE TABLE `book` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`title` text NOT NULL,
+	`title_key` text NOT NULL,
 	`publisher_id` integer,
 	`collection_id` integer,
 	`series_id` integer,

@@ -1,6 +1,6 @@
 {
-  "id": "54ceb4f7-f31a-4a74-b817-5e301fb85d39",
-  "prevId": "2b685dfc-3bca-4cd2-84a1-043a775f549b",
+  "id": "640f0d45-2857-4c30-8a4a-f2bdb74b93d7",
+  "prevId": "49cd095e-5c05-4a79-abf5-8a2921128747",
   "version": "6",
   "dialect": "sqlite",
   "tables": {
@@ -186,6 +186,13 @@
         },
         "title": {
           "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title_key": {
+          "name": "title_key",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
