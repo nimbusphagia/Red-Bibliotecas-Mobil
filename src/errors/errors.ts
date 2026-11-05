@@ -76,3 +76,27 @@ export class ValidationError extends AppError {
     this.name = "ValidationError";
   }
 }
+
+export class ForbiddenError extends AppError {
+  readonly code = "FORBIDDEN";
+  constructor(public readonly action: string) {
+    super(`Not allowed to ${action}`);
+    this.name = "ForbiddenError";
+  }
+}
+
+export class SetupClosedError extends AppError {
+  readonly code = "SETUP_CLOSED";
+  constructor() {
+    super("Initial setup is already complete");
+    this.name = "SetupClosedError";
+  }
+}
+
+export class InvalidCredentialsError extends AppError {
+  readonly code = "INVALID_CREDENTIALS";
+  constructor() {
+    super("Incorrect username or password");
+    this.name = "InvalidCredentialsError";
+  }
+}

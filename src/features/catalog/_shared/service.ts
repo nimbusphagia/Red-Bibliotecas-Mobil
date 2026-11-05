@@ -11,32 +11,10 @@ import {
   ProtectedError,
 } from "@/errors/errors";
 import { idSchema } from "@/shared/types/schemas";
-import { parseOrThrow } from "@/shared/validation/validation";
+import { mapWriteErrors, parseOrThrow } from "@/shared/validation/validation";
 import type { z } from "zod";
 
-const FIELD_LABELS: Record<string, string> = { name_key: "name", code: "code" };
-
 export const parseId = (id: unknown) => parseOrThrow(idSchema, id);
-
-export async function mapWriteErrors<T>(
-  entity: string,
-  op: () => Promise<T>,
-): Promise<T> {
-  try {
-    return await op();
-  } catch (error) {
-    if (isUniqueViolation(error)) {
-      const field = uniqueViolationColumns(error)
-        .map((c) => FIELD_LABELS[c])
-        .find(Boolean);
-      throw new DuplicateError(entity, field);
-    }
-    if (isForeignKeyViolation(error)) {
-      throw new InvalidReferenceError(entity, "reference");
-    }
-    throw error;
-  }
-}
 
 export function makeReads<Row, Usage>(
   entity: string,
