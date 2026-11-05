@@ -1,7 +1,7 @@
-import { z } from "zod";
 import { COLLABORATOR_ROLES } from "@/db/schema";
-import { idSchema, listShape, withTokens } from "@/shared/schemas";
-import type { Assert } from "@/shared/types";
+import { idSchema, listShape, withTokens } from "@/shared/types/schemas";
+import type { Assert } from "@/shared/types/types";
+import { z } from "zod";
 import { nameField } from "../_shared/fields";
 import type { BookListFilters } from "./types";
 

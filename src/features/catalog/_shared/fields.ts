@@ -1,5 +1,5 @@
+import { collapse } from "@/shared/format/text";
 import { z } from "zod";
-import { collapse } from "@/shared/text";
 
 export const NAME_MAX = 100;
 

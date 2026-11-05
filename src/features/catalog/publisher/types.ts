@@ -1,5 +1,5 @@
 import type { publisher } from "@/db/schema";
-import type { ListFilters } from "@/shared/types";
+import type { ListFilters } from "@/shared/types/types";
 import type { PublisherSort } from "./schemas";
 
 export type Publisher = typeof publisher.$inferSelect;

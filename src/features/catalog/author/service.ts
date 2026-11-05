@@ -1,5 +1,5 @@
-import { searchKey } from "@/shared/text";
-import { parseOrThrow } from "@/shared/validation";
+import { searchKey } from "@/shared/format/text";
+import { parseOrThrow } from "@/shared/validation/validation";
 import {
   makeCreate,
   makeReads,

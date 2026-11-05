@@ -1,3 +1,4 @@
+import type { SortDirection } from "@/shared/types/types";
 import {
   and,
   asc,
@@ -13,7 +14,6 @@ import {
 } from "drizzle-orm";
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { db } from "./client";
-import type { SortDirection } from "@/shared/types";
 
 export const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
 

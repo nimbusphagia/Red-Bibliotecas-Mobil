@@ -1,18 +1,18 @@
-import type { z } from "zod";
 import {
   isForeignKeyViolation,
   isUniqueViolation,
   uniqueViolationColumns,
-} from "@/shared/db-errors";
+} from "@/errors/db-errors";
 import {
   DuplicateError,
   InUseError,
   InvalidReferenceError,
   NotFoundError,
   ProtectedError,
-} from "@/shared/errors";
-import { idSchema } from "@/shared/schemas";
-import { parseOrThrow } from "@/shared/validation";
+} from "@/errors/errors";
+import { idSchema } from "@/shared/types/schemas";
+import { parseOrThrow } from "@/shared/validation/validation";
+import type { z } from "zod";
 
 const FIELD_LABELS: Record<string, string> = { name_key: "name", code: "code" };
 

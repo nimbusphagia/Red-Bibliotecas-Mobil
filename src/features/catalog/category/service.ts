@@ -1,10 +1,10 @@
-import { parseOrThrow } from "@/shared/validation";
-import { makeReads } from "../_shared/service";
+import { parseOrThrow } from "@/shared/validation/validation";
 import {
   listReferenceSchema,
   type ReferenceListParams,
   type ReferenceUsage,
 } from "../_shared/reference";
+import { makeReads } from "../_shared/service";
 import * as repo from "./repository";
 import type { Category, CategoryWithBookCount } from "./types";
 

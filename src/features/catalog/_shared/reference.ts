@@ -1,6 +1,6 @@
+import { listShape, withTokens } from "@/shared/types/schemas";
+import type { ListFilters } from "@/shared/types/types";
 import { z } from "zod";
-import { listShape, withTokens } from "@/shared/schemas";
-import type { ListFilters } from "@/shared/types";
 
 export const REFERENCE_SORT_KEYS = ["name", "code", "bookCount"] as const;
 export type ReferenceSort = (typeof REFERENCE_SORT_KEYS)[number];

@@ -1,7 +1,7 @@
+import { listShape, withTokens } from "@/shared/types/schemas";
+import type { Assert } from "@/shared/types/types";
 import { z } from "zod";
 import { nameField } from "../_shared/fields";
-import { listShape, withTokens } from "@/shared/schemas";
-import type { Assert } from "@/shared/types";
 import type { PublisherListFilters } from "./types";
 
 export const PUBLISHER_SORT_KEYS = ["name", "createdAt", "bookCount"] as const;

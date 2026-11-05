@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { ValidationError, type ValidationIssue } from "./errors";
+import { ValidationError, type ValidationIssue } from "@/errors/errors";
 
 function toIssues(error: z.ZodError): ValidationIssue[] {
   return error.issues.map((issue) => ({

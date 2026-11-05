@@ -1,5 +1,5 @@
 import type { author, COLLABORATOR_ROLES } from "@/db/schema";
-import type { ListFilters } from "@/shared/types";
+import type { ListFilters } from "@/shared/types/types";
 import type { AuthorSort } from "./schemas";
 
 export type Author = typeof author.$inferSelect;

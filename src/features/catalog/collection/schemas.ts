@@ -1,6 +1,6 @@
+import { idSchema, listShape, withTokens } from "@/shared/types/schemas";
+import type { Assert } from "@/shared/types/types";
 import { z } from "zod";
-import { idSchema, listShape, withTokens } from "@/shared/schemas";
-import type { Assert } from "@/shared/types";
 import { nameField } from "../_shared/fields";
 import type { CollectionListFilters } from "./types";
 

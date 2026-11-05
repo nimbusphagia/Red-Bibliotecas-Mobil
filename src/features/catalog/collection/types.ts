@@ -1,5 +1,5 @@
 import type { collection } from "@/db/schema";
-import type { ListFilters } from "@/shared/types";
+import type { ListFilters } from "@/shared/types/types";
 import type { CollectionSort } from "./schemas";
 
 export type Collection = typeof collection.$inferSelect;

@@ -1,5 +1,5 @@
 import type { book } from "@/db/schema";
-import type { ListFilters } from "@/shared/types";
+import type { ListFilters } from "@/shared/types/types";
 import type { CollaboratorRole } from "../author/types";
 import type { BookSort } from "./schemas";
 

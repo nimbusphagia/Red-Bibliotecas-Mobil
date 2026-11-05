@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { clamp, searchKey } from "./text";
+import { clamp, searchKey } from "../format/text";
 
 export const LIST_LIMIT_DEFAULT = 50;
 export const LIST_LIMIT_MAX = 100;
