@@ -98,7 +98,12 @@ async function assertConsistent(final: {
 }
 
 // Actions
-export async function createBook(input: BookInput): Promise<Book> {
+export type PreparedBook = {
+  values: NewBook;
+  collaborators: BookCollaborator[];
+};
+
+export async function prepareBook(input: BookInput): Promise<PreparedBook> {
   const { collaborators, title, ...rest } = parseOrThrow(
     createBookSchema,
     input,
@@ -107,7 +112,14 @@ export async function createBook(input: BookInput): Promise<Book> {
   await assertReferences({ ...rest, collaborators });
   await assertConsistent({ ...rest, collaborators });
 
-  const values: NewBook = { ...rest, title, titleKey: searchKey(title) };
+  return {
+    values: { ...rest, title, titleKey: searchKey(title) },
+    collaborators,
+  };
+}
+
+export async function createBook(input: BookInput): Promise<Book> {
+  const { values, collaborators } = await prepareBook(input);
   return mapWriteErrors(ENTITY, () => repo.insertBook(values, collaborators));
 }
 

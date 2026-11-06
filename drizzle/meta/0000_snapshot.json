@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "49cd095e-5c05-4a79-abf5-8a2921128747",
+  "id": "18a0b44e-d082-40aa-8f05-cdb6d9476509",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -649,9 +649,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "code": {
-          "name": "code",
-          "type": "text",
+        "copy_number": {
+          "name": "copy_number",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -673,12 +673,14 @@
         }
       },
       "indexes": {
-        "uq_copy_code_lower": {
-          "name": "uq_copy_code_lower",
+        "uq_copy_book_number": {
+          "name": "uq_copy_book_number",
           "columns": [
-            "lower(\"code\")"
+            "book_id",
+            "copy_number"
           ],
-          "isUnique": true
+          "isUnique": true,
+          "where": "status NOT IN ('lost', 'discarded')"
         },
         "idx_copy_book": {
           "name": "idx_copy_book",
@@ -729,6 +731,10 @@
         "ck_copy_status": {
           "name": "ck_copy_status",
           "value": "\"copy\".\"status\" IN ('available', 'on_loan', 'lost', 'discarded', 'damaged')"
+        },
+        "ck_copy_number_positive": {
+          "name": "ck_copy_number_positive",
+          "value": "\"copy\".\"copy_number\" > 0"
         }
       }
     },
@@ -786,6 +792,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "title_code": {
+          "name": "title_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "copy_number": {
           "name": "copy_number",
           "type": "integer",
@@ -822,15 +835,23 @@
           "notNull": true,
           "autoincrement": false,
           "default": 1
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
-        "uq_label_text_lower": {
-          "name": "uq_label_text_lower",
+        "uq_label_text_active": {
+          "name": "uq_label_text_active",
           "columns": [
             "lower(\"text\")"
           ],
-          "isUnique": true
+          "isUnique": true,
+          "where": "revoked_at IS NULL"
         },
         "uq_label_copy": {
           "name": "uq_label_copy",
@@ -920,6 +941,13 @@
         },
         "subcategory_code": {
           "name": "subcategory_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title_code": {
+          "name": "title_code",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -1836,14 +1864,7 @@
           }
         }
       },
-      "uq_copy_code_lower": {
-        "columns": {
-          "lower(\"code\")": {
-            "isExpression": true
-          }
-        }
-      },
-      "uq_label_text_lower": {
+      "uq_label_text_active": {
         "columns": {
           "lower(\"text\")": {
             "isExpression": true

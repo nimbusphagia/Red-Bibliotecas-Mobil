@@ -11,6 +11,7 @@ import {
   type SQL,
 } from "drizzle-orm";
 import { db } from "@/db/client";
+import type { Executor } from "@/db/transaction";
 import {
   direction,
   hasRows,
@@ -214,17 +215,23 @@ const collaboratorRows = (bookId: number, list: BookCollaborator[]) =>
     role: c.role,
   }));
 
+export function insertBookSync(
+  ex: Executor,
+  values: NewBook,
+  collaborators: BookCollaborator[],
+): Book {
+  const row = ex.insert(book).values(values).returning().get();
+  ex.insert(bookCollaborator)
+    .values(collaboratorRows(row.id, collaborators))
+    .run();
+  return row;
+}
+
 export async function insertBook(
   values: NewBook,
   collaborators: BookCollaborator[],
 ): Promise<Book> {
-  return db.transaction((tx) => {
-    const row = tx.insert(book).values(values).returning().get();
-    tx.insert(bookCollaborator)
-      .values(collaboratorRows(row.id, collaborators))
-      .run();
-    return row;
-  });
+  return db.transaction((tx) => insertBookSync(tx, values, collaborators));
 }
 
 export async function updateBook(

@@ -254,7 +254,7 @@ export const copy = sqliteTable(
     shelfId: integer("shelf_id")
       .notNull()
       .references(() => shelf.id),
-    code: text("code").notNull(),
+    copyNumber: integer("copy_number").notNull(),
     status: text("status", { enum: COPY_STATUSES })
       .notNull()
       .default("available"),
@@ -262,7 +262,10 @@ export const copy = sqliteTable(
   },
   (t) => [
     check("ck_copy_status", oneOf(t.status, COPY_STATUSES)),
-    uniqueIndex("uq_copy_code_lower").on(lower(t.code)),
+    check("ck_copy_number_positive", sql`${t.copyNumber} > 0`),
+    uniqueIndex("uq_copy_book_number")
+      .on(t.bookId, t.copyNumber)
+      .where(sql`status NOT IN ('lost', 'discarded')`),
     index("idx_copy_book").on(t.bookId),
     index("idx_copy_shelf").on(t.shelfId),
   ],
@@ -279,6 +282,7 @@ export const label = sqliteTable(
     categoryCode: text("category_code").notNull(),
     authorCode: text("author_code").notNull(),
     subcategoryCode: text("subcategory_code").notNull(),
+    titleCode: text("title_code").notNull(),
     copyNumber: integer("copy_number").notNull(),
     text: text("text").notNull(),
     printStatus: text("print_status", { enum: PRINT_STATUSES })
@@ -286,10 +290,13 @@ export const label = sqliteTable(
       .default("pending_print"),
     printedAt: integer("printed_at", { mode: "timestamp" }),
     revision: integer("revision").notNull().default(1),
+    revokedAt: integer("revoked_at", { mode: "timestamp" }),
   },
   (t) => [
     unique("uq_label_copy").on(t.copyId),
-    uniqueIndex("uq_label_text_lower").on(lower(t.text)),
+    uniqueIndex("uq_label_text_active")
+      .on(lower(t.text))
+      .where(sql`revoked_at IS NULL`),
     check("ck_label_print_status", oneOf(t.printStatus, PRINT_STATUSES)),
     check("ck_label_copy_number_positive", sql`${t.copyNumber} > 0`),
     check("ck_label_revision_positive", sql`${t.revision} > 0`),
@@ -308,6 +315,7 @@ export const labelRevision = sqliteTable(
     categoryCode: text("category_code").notNull(),
     authorCode: text("author_code").notNull(),
     subcategoryCode: text("subcategory_code").notNull(),
+    titleCode: text("title_code").notNull(),
     copyNumber: integer("copy_number").notNull(),
     text: text("text").notNull(),
     changeReason: text("change_reason"),

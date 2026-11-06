@@ -100,3 +100,48 @@ export class InvalidCredentialsError extends AppError {
     this.name = "InvalidCredentialsError";
   }
 }
+
+export class IncompleteBookError extends AppError {
+  readonly code = "INCOMPLETE_BOOK";
+  constructor(
+    public readonly lineIndex: number,
+    public readonly missing: string[],
+  ) {
+    super(
+      `Line ${lineIndex + 1}: book needs ${missing.join(", ")} before it can be labeled`,
+    );
+    this.name = "IncompleteBookError";
+  }
+}
+
+export type LabelConflictDetails = {
+  lineIndex: number;
+  labelText: string;
+  conflictingBook: { id: number | null; title: string };
+  sameSeries: boolean;
+  suggestedOmitWords?: string[];
+};
+
+export class LabelConflictError extends AppError {
+  readonly code = "LABEL_CONFLICT";
+  readonly lineIndex: number;
+  readonly labelText: string;
+  readonly conflictingBook: { id: number | null; title: string };
+  readonly sameSeries: boolean;
+  readonly suggestedOmitWords?: string[];
+
+  constructor(d: LabelConflictDetails) {
+    const hint = d.sameSeries
+      ? "Both books are in the same series: omit the series name words from the title code."
+      : "If the books are related, omit their common words from the title code.";
+    super(
+      `Line ${d.lineIndex + 1}: label ${d.labelText} is already used by "${d.conflictingBook.title}". ${hint}`,
+    );
+    this.name = "LabelConflictError";
+    this.lineIndex = d.lineIndex;
+    this.labelText = d.labelText;
+    this.conflictingBook = d.conflictingBook;
+    this.sameSeries = d.sameSeries;
+    this.suggestedOmitWords = d.suggestedOmitWords;
+  }
+}

@@ -90,15 +90,16 @@ CREATE TABLE `copy` (
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`book_id` integer NOT NULL,
 	`shelf_id` integer NOT NULL,
-	`code` text NOT NULL,
+	`copy_number` integer NOT NULL,
 	`status` text DEFAULT 'available' NOT NULL,
 	`notes` text,
 	FOREIGN KEY (`book_id`) REFERENCES `book`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`shelf_id`) REFERENCES `shelf`(`id`) ON UPDATE no action ON DELETE no action,
-	CONSTRAINT "ck_copy_status" CHECK("copy"."status" IN ('available', 'on_loan', 'lost', 'discarded', 'damaged'))
+	CONSTRAINT "ck_copy_status" CHECK("copy"."status" IN ('available', 'on_loan', 'lost', 'discarded', 'damaged')),
+	CONSTRAINT "ck_copy_number_positive" CHECK("copy"."copy_number" > 0)
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uq_copy_code_lower` ON `copy` (lower("code"));--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_copy_book_number` ON `copy` (`book_id`,`copy_number`) WHERE status NOT IN ('lost', 'discarded');--> statement-breakpoint
 CREATE INDEX `idx_copy_book` ON `copy` (`book_id`);--> statement-breakpoint
 CREATE INDEX `idx_copy_shelf` ON `copy` (`shelf_id`);--> statement-breakpoint
 CREATE TABLE `label` (
@@ -109,18 +110,20 @@ CREATE TABLE `label` (
 	`category_code` text NOT NULL,
 	`author_code` text NOT NULL,
 	`subcategory_code` text NOT NULL,
+	`title_code` text NOT NULL,
 	`copy_number` integer NOT NULL,
 	`text` text NOT NULL,
 	`print_status` text DEFAULT 'pending_print' NOT NULL,
 	`printed_at` integer,
 	`revision` integer DEFAULT 1 NOT NULL,
+	`revoked_at` integer,
 	FOREIGN KEY (`copy_id`) REFERENCES `copy`(`id`) ON UPDATE no action ON DELETE no action,
 	CONSTRAINT "ck_label_print_status" CHECK("label"."print_status" IN ('pending_print', 'printed')),
 	CONSTRAINT "ck_label_copy_number_positive" CHECK("label"."copy_number" > 0),
 	CONSTRAINT "ck_label_revision_positive" CHECK("label"."revision" > 0)
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uq_label_text_lower` ON `label` (lower("text"));--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_label_text_active` ON `label` (lower("text")) WHERE revoked_at IS NULL;--> statement-breakpoint
 CREATE UNIQUE INDEX `uq_label_copy` ON `label` (`copy_id`);--> statement-breakpoint
 CREATE TABLE `label_revision` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -130,6 +133,7 @@ CREATE TABLE `label_revision` (
 	`category_code` text NOT NULL,
 	`author_code` text NOT NULL,
 	`subcategory_code` text NOT NULL,
+	`title_code` text NOT NULL,
 	`copy_number` integer NOT NULL,
 	`text` text NOT NULL,
 	`change_reason` text,
