@@ -1,34 +1,22 @@
 import { db } from "@/db/client";
-import type { ACCOUNT_ROLES } from "@/db/schema";
 import { inTransaction } from "@/db/transaction";
-import { ForbiddenError } from "@/errors/errors";
-import { requireActive } from "@/features/account/service";
 import { parseOrThrow } from "@/shared/validation/validation";
 import { mapWriteErrors } from "@/shared/validation/validation";
 import { previewLines } from "./utils/plan";
 import { prepareLines } from "./utils/prepare";
 import {
   entryMovementSchema,
+  exitMovementSchema,
   registerCopiesSchema,
   type EntryMovementInput,
   type EntryMovementParsed,
+  type ExitMovementInput,
   type RegisterCopiesInput,
 } from "./schemas";
-import type { EntryResult, LabelPreview } from "./types";
+import type { EntryResult, ExitResult, LabelPreview } from "./types";
+import { requireStockRole } from "./utils/auth";
 import { writeEntry } from "./utils/write";
-
-const STOCK_ROLES: readonly (typeof ACCOUNT_ROLES)[number][] = [
-  "owner",
-  "admin",
-];
-
-async function requireStockRole(actorId: number) {
-  const actor = await requireActive(actorId);
-  if (!STOCK_ROLES.includes(actor.role)) {
-    throw new ForbiddenError("register stock");
-  }
-  return actor;
-}
+import { writeExit } from "./utils/exit";
 
 async function run(
   actorId: number,
@@ -49,7 +37,7 @@ export async function registerCopies(
   actorId: number,
   input: RegisterCopiesInput,
 ): Promise<EntryResult> {
-  await requireStockRole(actorId);
+  await requireStockRole(actorId, "register stock");
   return run(actorId, parseOrThrow(registerCopiesSchema, input));
 }
 
@@ -57,7 +45,7 @@ export async function createEntryMovement(
   actorId: number,
   input: EntryMovementInput,
 ): Promise<EntryResult> {
-  await requireStockRole(actorId);
+  await requireStockRole(actorId, "register stock");
   return run(actorId, parseOrThrow(entryMovementSchema, input));
 }
 
@@ -65,8 +53,24 @@ export async function previewEntryLabels(
   actorId: number,
   input: RegisterCopiesInput,
 ): Promise<LabelPreview[]> {
-  await requireStockRole(actorId);
+  await requireStockRole(actorId, "register stock");
   const parsed = parseOrThrow(registerCopiesSchema, input);
   const lines = await prepareLines(parsed.lines, parsed.shelfId);
   return previewLines(db, lines);
+}
+
+export async function exitCopies(
+  actorId: number,
+  input: ExitMovementInput,
+): Promise<ExitResult> {
+  await requireStockRole(actorId, "remove stock");
+  const parsed = parseOrThrow(exitMovementSchema, input);
+  const header = {
+    reason: parsed.reason,
+    signedById: actorId,
+    notes: parsed.notes,
+  };
+  return mapWriteErrors("stock movement", async () =>
+    inTransaction((tx) => writeExit(tx, header, parsed.copyIds)),
+  );
 }

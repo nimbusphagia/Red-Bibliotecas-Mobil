@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { book, copy, label } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Label, LabelOwner, NewLabel } from "./types";
@@ -39,4 +39,12 @@ export function findActiveLabelOwnerSync(
 
 export function insertLabelsSync(ex: Executor, values: NewLabel[]): Label[] {
   return ex.insert(label).values(values).returning().all();
+}
+
+export function revokeLabelsSync(ex: Executor, copyIds: number[]): void {
+  if (copyIds.length === 0) return;
+  ex.update(label)
+    .set({ revokedAt: new Date() })
+    .where(and(inArray(label.copyId, copyIds), isNull(label.revokedAt)))
+    .run();
 }

@@ -8,6 +8,7 @@ import { z } from "zod";
 export const MAX_COPIES_PER_BOOK = 100;
 export const MAX_LINES = 50;
 export const MAX_OMIT_WORDS = 10;
+export const MAX_EXIT_COPIES = 100;
 
 export const ENTRY_REASONS = ["purchase", "donation", "other"] as const;
 export type _EntryReasonsAreMovementReasons = Assert<
@@ -16,6 +17,12 @@ export type _EntryReasonsAreMovementReasons = Assert<
     : false
 >;
 
+export const EXIT_REASONS = ["loss", "damage", "discard"] as const;
+export type _ExitReasonsAreMovementReasons = Assert<
+  (typeof EXIT_REASONS)[number] extends (typeof MOVEMENT_REASONS)[number]
+    ? true
+    : false
+>;
 const notes = z
   .string()
   .nullable()
@@ -79,3 +86,18 @@ export type EntryMovementInput = z.input<typeof entryMovementSchema>;
 export type RegisterCopiesInput = z.input<typeof registerCopiesSchema>;
 export type EntryMovementParsed = z.output<typeof entryMovementSchema>;
 export type EntryLineParsed = EntryMovementParsed["lines"][number];
+
+export const exitMovementSchema = z.object({
+  reason: z.enum(EXIT_REASONS),
+  copyIds: z
+    .array(idSchema)
+    .min(1)
+    .max(MAX_EXIT_COPIES)
+    .refine((ids) => new Set(ids).size === ids.length, {
+      message: "The same copy appears more than once",
+    }),
+  notes: notes.default(null),
+});
+
+export type ExitMovementInput = z.input<typeof exitMovementSchema>;
+export type ExitMovementParsed = z.output<typeof exitMovementSchema>;

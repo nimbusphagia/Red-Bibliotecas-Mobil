@@ -1,13 +1,29 @@
 import type { stockMovement } from "@/db/schema";
-import type { ENTRY_REASONS } from "./schemas";
+import type { CopyStatus, ReleasedStatus } from "../copy/types";
+import type { ENTRY_REASONS, EXIT_REASONS } from "./schemas";
 
 export type StockMovement = typeof stockMovement.$inferSelect;
 export type EntryReason = (typeof ENTRY_REASONS)[number];
+export type ExitReason = (typeof EXIT_REASONS)[number];
 
 export type NewEntryMovement = {
   reason: EntryReason;
   signedById: number;
   notes: string | null;
+};
+
+export type NewExitMovement = {
+  reason: ExitReason;
+  signedById: number;
+  notes: string | null;
+};
+
+export type ExitStatus = ReleasedStatus | "damaged";
+
+export const EXIT_STATUS: Record<ExitReason, ExitStatus> = {
+  loss: "lost",
+  damage: "damaged",
+  discard: "discarded",
 };
 
 export type TitleCodeSource = "existing" | "generated";
@@ -32,6 +48,21 @@ export type RegisteredLine = {
 export type EntryResult = {
   movement: StockMovement;
   lines: RegisteredLine[];
+};
+
+export type ExitedCopy = {
+  copyId: number;
+  bookId: number;
+  title: string;
+  copyNumber: number;
+  labelText: string | null;
+  previousStatus: CopyStatus;
+  newStatus: ExitStatus;
+};
+
+export type ExitResult = {
+  movement: StockMovement;
+  copies: ExitedCopy[];
 };
 
 export type LabelPreview = {

@@ -1,6 +1,6 @@
 import { stockMovement, stockMovementLine } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
-import type { NewEntryMovement, StockMovement } from "./types";
+import type { NewEntryMovement, NewExitMovement, StockMovement } from "./types";
 
 export function insertEntryMovementSync(
   ex: Executor,
@@ -22,4 +22,14 @@ export function insertMovementLinesSync(
   ex.insert(stockMovementLine)
     .values(copyIds.map((copyId) => ({ movementId, copyId })))
     .run();
+}
+export function insertExitMovementSync(
+  ex: Executor,
+  values: NewExitMovement,
+): StockMovement {
+  return ex
+    .insert(stockMovement)
+    .values({ ...values, type: "exit" })
+    .returning()
+    .get();
 }

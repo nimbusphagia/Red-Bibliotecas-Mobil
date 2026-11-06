@@ -145,3 +145,33 @@ export class LabelConflictError extends AppError {
     this.suggestedOmitWords = d.suggestedOmitWords;
   }
 }
+export type CopyProblemKind =
+  "not_found" | "on_loan" | "lost" | "discarded" | "already_damaged";
+
+export type CopyProblem = {
+  copyId: number;
+  labelText: string | null;
+  problem: CopyProblemKind;
+};
+
+const PROBLEM_TEXT: Record<CopyProblemKind, string> = {
+  not_found: "does not exist",
+  on_loan: "is on loan",
+  lost: "is already lost",
+  discarded: "is already discarded",
+  already_damaged: "is already damaged",
+};
+
+export class CopiesNotExitableError extends AppError {
+  readonly code = "COPIES_NOT_EXITABLE";
+  constructor(public readonly problems: CopyProblem[]) {
+    super(
+      problems
+        .map(
+          (p) => `Copy ${p.labelText ?? p.copyId} ${PROBLEM_TEXT[p.problem]}`,
+        )
+        .join("; "),
+    );
+    this.name = "CopiesNotExitableError";
+  }
+}
