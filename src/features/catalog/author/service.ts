@@ -19,6 +19,7 @@ import type {
   AuthorWithBookCount,
   NewAuthor,
 } from "./types";
+import { Page } from "@/shared/types/types";
 
 const ENTITY = "author";
 
@@ -39,7 +40,7 @@ export const { get: getAuthor, getUsage: getAuthorUsage } = makeReads<
 
 export async function listAuthors(
   params: AuthorListParams = {},
-): Promise<AuthorWithBookCount[]> {
+): Promise<Page<AuthorWithBookCount>> {
   return repo.listAuthors(parseOrThrow(listAuthorsSchema, params));
 }
 

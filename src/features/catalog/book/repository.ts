@@ -8,6 +8,7 @@ import {
   notInArray,
   or,
   sql,
+  count,
   type AnyColumn,
   type SQL,
 } from "drizzle-orm";
@@ -18,6 +19,7 @@ import {
   hasRows,
   likeTokens,
   rowCount,
+  toPage,
   type Reference,
 } from "@/db/helpers";
 import {
@@ -43,6 +45,7 @@ import type {
   NewBook,
 } from "./types";
 import { RELEASED_STATUSES } from "@/features/inventory/copy/types";
+import type { Page } from "@/shared/types/types";
 
 // References
 const copies: Reference = { table: copy, column: copy.bookId };
@@ -124,7 +127,7 @@ export async function findBookWithCollaborators(
 
 export async function listBooks(
   filters: BookListFilters,
-): Promise<BookListItem[]> {
+): Promise<Page<BookListItem>> {
   const {
     tokens,
     authorId,
@@ -166,6 +169,17 @@ export async function listBooks(
           book.id,
         );
 
+  const where = and(
+    ...search,
+    byCollaborator,
+    filterBy(book.publisherId, publisherId),
+    filterBy(book.collectionId, collectionId),
+    filterBy(book.seriesId, seriesId),
+    filterBy(book.categoryId, categoryId),
+    filterBy(book.subcategoryId, subcategoryId),
+    filterBy(book.active, active),
+  );
+
   const sortKey = {
     title: book.titleKey,
     createdAt: book.createdAt,
@@ -173,42 +187,42 @@ export async function listBooks(
     copyCount,
   }[sortBy];
 
-  const rows = await db
-    .select({
-      ...getTableColumns(book),
-      publisherName: publisher.name,
-      collectionName: collection.name,
-      seriesName: series.name,
-      categoryName: category.name,
-      subcategoryName: subcategory.name,
-      copyCount,
-      activeCount,
-      availableCount,
-    })
-    .from(book)
-    .leftJoin(publisher, eq(book.publisherId, publisher.id))
-    .leftJoin(collection, eq(book.collectionId, collection.id))
-    .leftJoin(series, eq(book.seriesId, series.id))
-    .leftJoin(category, eq(book.categoryId, category.id))
-    .leftJoin(subcategory, eq(book.subcategoryId, subcategory.id))
-    .where(
-      and(
-        ...search,
-        byCollaborator,
-        filterBy(book.publisherId, publisherId),
-        filterBy(book.collectionId, collectionId),
-        filterBy(book.seriesId, seriesId),
-        filterBy(book.categoryId, categoryId),
-        filterBy(book.subcategoryId, subcategoryId),
-        filterBy(book.active, active),
-      ),
-    )
-    .orderBy(direction(sortDir)(sortKey), asc(book.titleKey), asc(book.id))
-    .limit(limit)
-    .offset(offset);
+  const [rows, [{ n }]] = await Promise.all([
+    db
+      .select({
+        ...getTableColumns(book),
+        publisherName: publisher.name,
+        collectionName: collection.name,
+        seriesName: series.name,
+        categoryName: category.name,
+        subcategoryName: subcategory.name,
+        copyCount,
+        activeCount,
+        availableCount,
+      })
+      .from(book)
+      .leftJoin(publisher, eq(book.publisherId, publisher.id))
+      .leftJoin(collection, eq(book.collectionId, collection.id))
+      .leftJoin(series, eq(book.seriesId, series.id))
+      .leftJoin(category, eq(book.categoryId, category.id))
+      .leftJoin(subcategory, eq(book.subcategoryId, subcategory.id))
+      .where(where)
+      .orderBy(direction(sortDir)(sortKey), asc(book.titleKey), asc(book.id))
+      .limit(limit)
+      .offset(offset),
+    db
+      .select({ n: count() })
+      .from(book)
+      .leftJoin(publisher, eq(book.publisherId, publisher.id))
+      .where(where),
+  ]);
 
   const byBook = await collaboratorsOf(rows.map((r) => r.id));
-  return rows.map((r) => ({ ...r, collaborators: byBook.get(r.id) ?? [] }));
+  const items = rows.map((r) => ({
+    ...r,
+    collaborators: byBook.get(r.id) ?? [],
+  }));
+  return toPage(items, n, filters);
 }
 
 export async function countBookUsage(id: number): Promise<BookUsage | null> {

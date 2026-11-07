@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns } from "drizzle-orm";
+import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   direction,
@@ -7,6 +7,7 @@ import {
   hasRows,
   likeTokens,
   rowCount,
+  toPage,
   type Reference,
 } from "@/db/helpers";
 import { book, collection, publisher } from "@/db/schema";
@@ -17,6 +18,7 @@ import type {
   PublisherUsage,
   PublisherWithBookCount,
 } from "./types";
+import { Page } from "@/shared/types/types";
 
 // References
 const books: Reference = { table: book, column: book.publisherId };
@@ -36,7 +38,7 @@ export async function findPublisherById(id: number): Promise<Publisher | null> {
 
 export async function listPublishers(
   filters: PublisherListFilters,
-): Promise<PublisherWithBookCount[]> {
+): Promise<Page<PublisherWithBookCount>> {
   const { tokens, withBooks, sortBy, sortDir, limit, offset } = filters;
 
   const bookPresence =
@@ -46,23 +48,29 @@ export async function listPublishers(
         ? hasRows(books, publisher.id)
         : hasNoRows(books, publisher.id);
 
+  const where = and(...likeTokens(publisher.nameKey, tokens), bookPresence);
+
   const sortKey = {
     name: publisher.nameKey,
     createdAt: publisher.createdAt,
     bookCount,
   }[sortBy];
 
-  return db
-    .select({ ...getTableColumns(publisher), bookCount })
-    .from(publisher)
-    .where(and(...likeTokens(publisher.nameKey, tokens), bookPresence))
-    .orderBy(
-      direction(sortDir)(sortKey),
-      asc(publisher.nameKey),
-      asc(publisher.id),
-    )
-    .limit(limit)
-    .offset(offset);
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({ ...getTableColumns(publisher), bookCount })
+      .from(publisher)
+      .where(where)
+      .orderBy(
+        direction(sortDir)(sortKey),
+        asc(publisher.nameKey),
+        asc(publisher.id),
+      )
+      .limit(limit)
+      .offset(offset),
+    db.select({ n: count() }).from(publisher).where(where),
+  ]);
+  return toPage(items, n, filters);
 }
 
 export async function countPublisherUsage(

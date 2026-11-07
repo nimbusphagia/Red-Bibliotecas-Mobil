@@ -17,6 +17,7 @@ import {
   type SeriesListParams,
 } from "./schemas";
 import type { NewSeries, Series, SeriesListItem, SeriesPatch } from "./types";
+import { Page } from "@/shared/types/types";
 
 const ENTITY = "series";
 
@@ -30,7 +31,7 @@ export const { get: getSeries, getUsage: getSeriesUsage } = makeReads<
 
 export async function listSeries(
   params: SeriesListParams = {},
-): Promise<SeriesListItem[]> {
+): Promise<Page<SeriesListItem>> {
   return repo.listSeries(parseOrThrow(listSeriesSchema, params));
 }
 

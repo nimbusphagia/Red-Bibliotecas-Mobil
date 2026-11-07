@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns } from "drizzle-orm";
+import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   direction,
@@ -7,6 +7,7 @@ import {
   hasRows,
   likeTokens,
   rowCount,
+  toPage,
   type Reference,
 } from "@/db/helpers";
 import { author, bookCollaborator, series } from "@/db/schema";
@@ -18,6 +19,7 @@ import type {
   CollaboratorRole,
   NewAuthor,
 } from "./types";
+import { Page } from "@/shared/types/types";
 
 // References
 const collab: Reference = {
@@ -41,7 +43,7 @@ export async function findAuthorById(id: number): Promise<Author | null> {
 
 export async function listAuthors(
   filters: AuthorListFilters,
-): Promise<AuthorWithBookCount[]> {
+): Promise<Page<AuthorWithBookCount>> {
   const { tokens, role, withBooks, sortBy, sortDir, limit, offset } = filters;
 
   const withRole = role ? hasRows(collabAs(role), author.id) : undefined;
@@ -53,19 +55,29 @@ export async function listAuthors(
         ? hasRows(collab, author.id)
         : hasNoRows(collab, author.id);
 
+  const where = and(
+    ...likeTokens(author.nameKey, tokens),
+    withRole,
+    bookPresence,
+  );
+
   const sortKey = {
     name: author.nameKey,
     createdAt: author.createdAt,
     bookCount,
   }[sortBy];
 
-  return db
-    .select({ ...getTableColumns(author), bookCount })
-    .from(author)
-    .where(and(...likeTokens(author.nameKey, tokens), withRole, bookPresence))
-    .orderBy(direction(sortDir)(sortKey), asc(author.nameKey), asc(author.id))
-    .limit(limit)
-    .offset(offset);
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({ ...getTableColumns(author), bookCount })
+      .from(author)
+      .where(where)
+      .orderBy(direction(sortDir)(sortKey), asc(author.nameKey), asc(author.id))
+      .limit(limit)
+      .offset(offset),
+    db.select({ n: count() }).from(author).where(where),
+  ]);
+  return toPage(items, n, filters);
 }
 
 export async function countAuthorUsage(

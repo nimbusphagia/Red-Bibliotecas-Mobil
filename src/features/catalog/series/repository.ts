@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns } from "drizzle-orm";
+import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   direction,
@@ -7,6 +7,7 @@ import {
   hasRows,
   likeTokens,
   rowCount,
+  toPage,
   type Reference,
 } from "@/db/helpers";
 import { author, book, series } from "@/db/schema";
@@ -18,6 +19,7 @@ import type {
   SeriesListItem,
   SeriesPatch,
 } from "./types";
+import { Page } from "@/shared/types/types";
 
 const books: Reference = { table: book, column: book.seriesId };
 const bookCount = rowCount(books, series.id);
@@ -30,7 +32,7 @@ export async function findSeriesById(id: number): Promise<Series | null> {
 
 export async function listSeries(
   filters: SeriesListFilters,
-): Promise<SeriesListItem[]> {
+): Promise<Page<SeriesListItem>> {
   const { tokens, authorId, withBooks, sortBy, sortDir, limit, offset } =
     filters;
 
@@ -44,25 +46,35 @@ export async function listSeries(
         ? hasRows(books, series.id)
         : hasNoRows(books, series.id);
 
+  const where = and(
+    ...likeTokens(series.nameKey, tokens),
+    byAuthor,
+    bookPresence,
+  );
+
   const sortKey = {
     name: series.nameKey,
     createdAt: series.createdAt,
     bookCount,
   }[sortBy];
 
-  return db
-    .select({
-      ...getTableColumns(series),
-      authorFirstName: author.firstName,
-      authorLastName: author.lastName,
-      bookCount,
-    })
-    .from(series)
-    .innerJoin(author, eq(series.authorId, author.id))
-    .where(and(...likeTokens(series.nameKey, tokens), byAuthor, bookPresence))
-    .orderBy(direction(sortDir)(sortKey), asc(series.nameKey), asc(series.id))
-    .limit(limit)
-    .offset(offset);
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({
+        ...getTableColumns(series),
+        authorFirstName: author.firstName,
+        authorLastName: author.lastName,
+        bookCount,
+      })
+      .from(series)
+      .innerJoin(author, eq(series.authorId, author.id))
+      .where(where)
+      .orderBy(direction(sortDir)(sortKey), asc(series.nameKey), asc(series.id))
+      .limit(limit)
+      .offset(offset),
+    db.select({ n: count() }).from(series).where(where),
+  ]);
+  return toPage(items, n, filters);
 }
 
 export async function countSeriesUsage(

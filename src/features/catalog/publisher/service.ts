@@ -19,6 +19,7 @@ import type {
   PublisherUsage,
   PublisherWithBookCount,
 } from "./types";
+import { Page } from "@/shared/types/types";
 
 const ENTITY = "publisher";
 
@@ -32,7 +33,7 @@ export const { get: getPublisher, getUsage: getPublisherUsage } = makeReads<
 
 export async function listPublishers(
   params: PublisherListParams = {},
-): Promise<PublisherWithBookCount[]> {
+): Promise<Page<PublisherWithBookCount>> {
   return repo.listPublishers(parseOrThrow(listPublishersSchema, params));
 }
 

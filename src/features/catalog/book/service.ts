@@ -26,6 +26,7 @@ import type {
   BookWithCollaborators,
   NewBook,
 } from "./types";
+import type { Page } from "@/shared/types/types";
 
 const ENTITY = "book";
 
@@ -39,7 +40,7 @@ export const { get: getBook, getUsage: getBookUsage } = makeReads<
 
 export async function listBooks(
   params: BookListParams = {},
-): Promise<BookListItem[]> {
+): Promise<Page<BookListItem>> {
   return repo.listBooks(parseOrThrow(listBooksSchema, params));
 }
 

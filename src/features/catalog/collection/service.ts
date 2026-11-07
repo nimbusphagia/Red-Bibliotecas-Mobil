@@ -21,6 +21,7 @@ import type {
   CollectionPatch,
   NewCollection,
 } from "./types";
+import { Page } from "@/shared/types/types";
 
 const ENTITY = "collection";
 
@@ -34,7 +35,7 @@ export const { get: getCollection, getUsage: getCollectionUsage } = makeReads<
 
 export async function listCollections(
   params: CollectionListParams = {},
-): Promise<CollectionListItem[]> {
+): Promise<Page<CollectionListItem>> {
   return repo.listCollections(parseOrThrow(listCollectionsSchema, params));
 }
 

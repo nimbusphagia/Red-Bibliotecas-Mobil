@@ -1,4 +1,4 @@
-import { and, asc, eq, getTableColumns } from "drizzle-orm";
+import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   direction,
@@ -7,6 +7,7 @@ import {
   hasRows,
   likeTokens,
   rowCount,
+  toPage,
   type Reference,
 } from "@/db/helpers";
 import { book, collection, publisher } from "@/db/schema";
@@ -18,6 +19,7 @@ import type {
   CollectionPatch,
   NewCollection,
 } from "./types";
+import { Page } from "@/shared/types/types";
 
 const books: Reference = { table: book, column: book.collectionId };
 const bookCount = rowCount(books, collection.id);
@@ -32,7 +34,7 @@ export async function findCollectionById(
 
 export async function listCollections(
   filters: CollectionListFilters,
-): Promise<CollectionListItem[]> {
+): Promise<Page<CollectionListItem>> {
   const { tokens, publisherId, withBooks, sortBy, sortDir, limit, offset } =
     filters;
 
@@ -48,30 +50,38 @@ export async function listCollections(
         ? hasRows(books, collection.id)
         : hasNoRows(books, collection.id);
 
+  const where = and(
+    ...likeTokens(collection.nameKey, tokens),
+    byPublisher,
+    bookPresence,
+  );
+
   const sortKey = {
     name: collection.nameKey,
     createdAt: collection.createdAt,
     bookCount,
   }[sortBy];
 
-  return db
-    .select({
-      ...getTableColumns(collection),
-      publisherName: publisher.name,
-      bookCount,
-    })
-    .from(collection)
-    .innerJoin(publisher, eq(collection.publisherId, publisher.id))
-    .where(
-      and(...likeTokens(collection.nameKey, tokens), byPublisher, bookPresence),
-    )
-    .orderBy(
-      direction(sortDir)(sortKey),
-      asc(collection.nameKey),
-      asc(collection.id),
-    )
-    .limit(limit)
-    .offset(offset);
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({
+        ...getTableColumns(collection),
+        publisherName: publisher.name,
+        bookCount,
+      })
+      .from(collection)
+      .innerJoin(publisher, eq(collection.publisherId, publisher.id))
+      .where(where)
+      .orderBy(
+        direction(sortDir)(sortKey),
+        asc(collection.nameKey),
+        asc(collection.id),
+      )
+      .limit(limit)
+      .offset(offset),
+    db.select({ n: count() }).from(collection).where(where),
+  ]);
+  return toPage(items, n, filters);
 }
 
 export async function countCollectionUsage(
