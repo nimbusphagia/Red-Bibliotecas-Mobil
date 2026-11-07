@@ -1,4 +1,4 @@
-import type { SortDirection } from "@/shared/types/types";
+import type { Page, SortDirection } from "@/shared/types/types";
 import {
   and,
   asc,
@@ -48,3 +48,9 @@ export const rowCount = (
 
 export const hasNoReferences = (owner: AnyColumn, ...refs: Reference[]) =>
   and(...refs.map((r) => notExists(rowsOf(r, owner))));
+
+export const toPage = <T>(
+  items: T[],
+  total: number,
+  { limit, offset }: { limit: number; offset: number },
+): Page<T> => ({ items, total, limit, offset });

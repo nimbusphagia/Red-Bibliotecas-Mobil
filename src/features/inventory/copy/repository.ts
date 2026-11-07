@@ -1,5 +1,9 @@
-import { and, eq, inArray, isNull, notInArray, sql } from "drizzle-orm";
-import { book, copy, label } from "@/db/schema";
+import { and, count, eq, inArray, isNull, notInArray, sql } from "drizzle-orm";
+import { direction } from "@/db/helpers";
+import { book, copy, label, shelf } from "@/db/schema";
+import { toPage } from "@/db/helpers";
+import { db } from "@/db/client";
+import type { Page } from "@/shared/types/types";
 import type { Executor } from "@/db/transaction";
 import {
   RELEASED_STATUSES,
@@ -7,6 +11,8 @@ import {
   type CopyLookup,
   type CopyStatus,
   type NewCopy,
+  type CopyItem,
+  type CopyListFilters,
 } from "./types";
 
 export function activeCopyNumbersSync(ex: Executor, bookId: number): number[] {
@@ -70,4 +76,67 @@ export function setCopiesStatusSync(
 ): void {
   if (ids.length === 0) return;
   ex.update(copy).set({ status }).where(inArray(copy.id, ids)).run();
+}
+
+const itemColumns = {
+  id: copy.id,
+  bookId: copy.bookId,
+  bookTitle: book.title,
+  copyNumber: copy.copyNumber,
+  status: copy.status,
+  notes: copy.notes,
+  shelfId: copy.shelfId,
+  shelfName: shelf.name,
+  labelText: label.text,
+  labelRevoked: sql<boolean>`${label.revokedAt} is not null`.mapWith(Boolean),
+};
+
+const selectItems = () =>
+  db
+    .select(itemColumns)
+    .from(copy)
+    .innerJoin(book, eq(book.id, copy.bookId))
+    .innerJoin(shelf, eq(shelf.id, copy.shelfId))
+    .leftJoin(label, eq(label.copyId, copy.id));
+
+export async function findCopyById(id: number): Promise<CopyItem | null> {
+  const [row] = await selectItems().where(eq(copy.id, id));
+  return row ?? null;
+}
+
+export async function listCopies(
+  filters: CopyListFilters,
+): Promise<Page<CopyItem>> {
+  const { bookId, status, shelfId, sortBy, sortDir, limit, offset } = filters;
+
+  const where = and(
+    eq(copy.bookId, bookId),
+    status === undefined ? undefined : eq(copy.status, status),
+    shelfId === undefined ? undefined : eq(copy.shelfId, shelfId),
+  );
+
+  const sortKey = {
+    copyNumber: copy.copyNumber,
+    status: copy.status,
+    createdAt: copy.createdAt,
+  }[sortBy];
+
+  const [items, [{ n }]] = await Promise.all([
+    selectItems()
+      .where(where)
+      .orderBy(direction(sortDir)(sortKey), copy.id)
+      .limit(limit)
+      .offset(offset),
+    db.select({ n: count() }).from(copy).where(where),
+  ]);
+  return toPage(items, n, filters);
+}
+
+export function setCopiesShelfSync(
+  ex: Executor,
+  ids: number[],
+  shelfId: number,
+): void {
+  if (ids.length === 0) return;
+  ex.update(copy).set({ shelfId }).where(inArray(copy.id, ids)).run();
 }

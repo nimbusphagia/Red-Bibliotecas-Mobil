@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { clamp, searchKey } from "../format/text";
+import { SortDirection } from "./types";
 
 export const LIST_LIMIT_DEFAULT = 50;
 export const LIST_LIMIT_MAX = 100;
@@ -10,10 +11,11 @@ export const routeIdSchema = z.coerce.number().int().positive();
 export const listShape = <const K extends readonly [string, ...string[]]>(
   sortKeys: K,
   defaultSort: K[number],
+  defaultDir: SortDirection = "asc",
 ) => ({
   search: z.string().default(""),
   sortBy: z.enum(sortKeys).default(defaultSort),
-  sortDir: z.enum(["asc", "desc"]).default("asc"),
+  sortDir: z.enum(["asc", "desc"]).default(defaultDir),
   limit: z
     .number()
     .int()

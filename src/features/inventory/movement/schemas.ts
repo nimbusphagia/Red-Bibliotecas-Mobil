@@ -1,7 +1,8 @@
-import { MOVEMENT_REASONS } from "@/db/schema";
+import { MOVEMENT_REASONS, MOVEMENT_TYPES } from "@/db/schema";
+import { addDays, parseISODate } from "@/shared/format/dates";
+import { idSchema, listShape } from "@/shared/types/schemas";
 import { createBookSchema } from "@/features/catalog/book/schemas";
 import { collapse } from "@/shared/format/text";
-import { idSchema } from "@/shared/types/schemas";
 import type { Assert } from "@/shared/types/types";
 import { z } from "zod";
 
@@ -101,3 +102,37 @@ export const exitMovementSchema = z.object({
 
 export type ExitMovementInput = z.input<typeof exitMovementSchema>;
 export type ExitMovementParsed = z.output<typeof exitMovementSchema>;
+
+export const MOVEMENT_SORT_KEYS = ["createdAt", "copyCount"] as const;
+export type MovementSort = (typeof MOVEMENT_SORT_KEYS)[number];
+
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
+const { search: _search, ...listFields } = listShape(
+  MOVEMENT_SORT_KEYS,
+  "createdAt",
+  "desc",
+);
+
+export const listMovementsSchema = z
+  .object({
+    type: z.enum(MOVEMENT_TYPES).optional(),
+    reason: z.enum(MOVEMENT_REASONS).optional(),
+    signedById: idSchema.optional(),
+    from: isoDate.optional(),
+    to: isoDate.optional(),
+    ...listFields,
+  })
+  .transform(({ from, to, ...rest }) => ({
+    ...rest,
+    from: from ? parseISODate(from) : undefined,
+    until: to ? parseISODate(addDays(to, 1)) : undefined,
+  }));
+
+export const listLinesSchema = z.object({
+  movementId: idSchema,
+  limit: listFields.limit,
+  offset: listFields.offset,
+});
+
+export type MovementListParams = z.input<typeof listMovementsSchema>;
+export type MovementLinesParams = z.input<typeof listLinesSchema>;

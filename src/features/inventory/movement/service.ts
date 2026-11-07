@@ -17,6 +17,17 @@ import type { EntryResult, ExitResult, LabelPreview } from "./types";
 import { requireStockRole } from "./utils/auth";
 import { writeEntry } from "./utils/write";
 import { writeExit } from "./utils/exit";
+import { NotFoundError } from "@/errors/errors";
+import { idSchema } from "@/shared/types/schemas";
+import type { Page } from "@/shared/types/types";
+import * as repo from "./repository";
+import {
+  listLinesSchema,
+  listMovementsSchema,
+  type MovementLinesParams,
+  type MovementListParams,
+} from "./schemas";
+import type { MovementLine, MovementListItem } from "./types";
 
 async function run(
   actorId: number,
@@ -73,4 +84,25 @@ export async function exitCopies(
   return mapWriteErrors("stock movement", async () =>
     inTransaction((tx) => writeExit(tx, header, parsed.copyIds)),
   );
+}
+
+export async function listMovements(
+  params: MovementListParams = {},
+): Promise<Page<MovementListItem>> {
+  return repo.listMovements(parseOrThrow(listMovementsSchema, params));
+}
+
+export async function getMovement(id: number): Promise<MovementListItem> {
+  const validId = parseOrThrow(idSchema, id);
+  const found = await repo.findMovementById(validId);
+  if (!found) throw new NotFoundError("stock movement", validId);
+  return found;
+}
+
+export async function listMovementLines(
+  params: MovementLinesParams,
+): Promise<Page<MovementLine>> {
+  const { movementId, ...page } = parseOrThrow(listLinesSchema, params);
+  await getMovement(movementId);
+  return repo.listMovementLines(movementId, page);
 }

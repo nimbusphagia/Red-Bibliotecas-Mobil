@@ -5,6 +5,7 @@ import {
   exists,
   getTableColumns,
   inArray,
+  notInArray,
   or,
   sql,
   type AnyColumn,
@@ -41,10 +42,19 @@ import type {
   BookWithCollaborators,
   NewBook,
 } from "./types";
+import { RELEASED_STATUSES } from "@/features/inventory/copy/types";
 
 // References
 const copies: Reference = { table: copy, column: copy.bookId };
 const copyCount = rowCount(copies, book.id);
+const activeCount = rowCount(
+  { ...copies, where: notInArray(copy.status, [...RELEASED_STATUSES]) },
+  book.id,
+);
+const availableCount = rowCount(
+  { ...copies, where: eq(copy.status, "available") },
+  book.id,
+);
 
 // Helpers
 const matches = (column: AnyColumn | SQL, token: string) =>
@@ -172,6 +182,8 @@ export async function listBooks(
       categoryName: category.name,
       subcategoryName: subcategory.name,
       copyCount,
+      activeCount,
+      availableCount,
     })
     .from(book)
     .leftJoin(publisher, eq(book.publisherId, publisher.id))

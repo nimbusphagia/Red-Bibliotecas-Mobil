@@ -1,6 +1,7 @@
 import type { stockMovement } from "@/db/schema";
 import type { CopyStatus, ReleasedStatus } from "../copy/types";
-import type { ENTRY_REASONS, EXIT_REASONS } from "./schemas";
+import type { ENTRY_REASONS, EXIT_REASONS, MovementSort } from "./schemas";
+import type { SortDirection } from "@/shared/types/types";
 
 export type StockMovement = typeof stockMovement.$inferSelect;
 export type EntryReason = (typeof ENTRY_REASONS)[number];
@@ -72,4 +73,32 @@ export type LabelPreview = {
   titleCodeSource: TitleCodeSource;
   labelTexts: string[];
   conflict: { labelText: string; bookId: number | null; title: string } | null;
+};
+
+export type MovementListFilters = {
+  type?: StockMovement["type"];
+  reason?: StockMovement["reason"];
+  signedById?: number;
+  from?: Date;
+  until?: Date;
+  sortBy: MovementSort;
+  sortDir: SortDirection;
+  limit: number;
+  offset: number;
+};
+
+export type MovementListItem = StockMovement & {
+  signedByUsername: string;
+  copyCount: number;
+};
+
+export type MovementLine = {
+  copyId: number;
+  bookId: number;
+  bookTitle: string;
+  copyNumber: number;
+  status: CopyStatus;
+  shelfId: number;
+  shelfName: string;
+  labelText: string | null;
 };

@@ -23,6 +23,8 @@ export type BookListItem = BookWithCollaborators & {
   categoryName: string | null;
   subcategoryName: string | null;
   copyCount: number;
+  activeCount: number;
+  availableCount: number;
 };
 
 export type NewBook = {

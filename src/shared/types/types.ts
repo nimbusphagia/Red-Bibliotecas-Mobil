@@ -8,3 +8,10 @@ export type ListFilters<Sort extends string> = {
   offset: number;
 };
 export type Assert<T extends true> = T;
+
+export type Page<T> = {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+};
