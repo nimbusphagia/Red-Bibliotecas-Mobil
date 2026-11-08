@@ -401,6 +401,7 @@ export const visitor = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
     name: text("name").notNull(),
+    nameKey: text("name_key").notNull(),
     role: text("role", { enum: VISITOR_ROLES })
       .notNull()
       .references(() => loanRule.role),
@@ -408,6 +409,7 @@ export const visitor = sqliteTable(
     active: integer("active", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [
+    uniqueIndex("uq_visitor_name_key").on(t.nameKey),
     check("ck_visitor_role", oneOf(t.role, VISITOR_ROLES)),
     check(
       "ck_visitor_grade_by_role",
@@ -446,6 +448,7 @@ export const loanMovementLine = sqliteTable(
       .notNull()
       .references(() => copy.id),
     resolvedAt: integer("resolved_at", { mode: "timestamp" }),
+    resolvedById: integer("resolved_by_id").references(() => account.id),
     outcome: text("outcome", { enum: LINE_OUTCOMES }),
   },
   (t) => [

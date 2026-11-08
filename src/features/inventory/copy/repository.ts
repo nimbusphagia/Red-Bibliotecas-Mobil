@@ -1,10 +1,20 @@
 import { and, count, eq, inArray, isNull, notInArray, sql } from "drizzle-orm";
 import { direction } from "@/db/helpers";
-import { book, copy, label, shelf } from "@/db/schema";
+import {
+  book,
+  copy,
+  label,
+  shelf,
+  loanMovement,
+  loanMovementLine,
+  visitor,
+} from "@/db/schema";
 import { toPage } from "@/db/helpers";
 import { db } from "@/db/client";
 import type { Page } from "@/shared/types/types";
 import type { Executor } from "@/db/transaction";
+import { toISODate } from "@/shared/format/dates";
+import type { CopyItemRow } from "./types";
 import {
   RELEASED_STATUSES,
   type Copy,
@@ -89,6 +99,10 @@ const itemColumns = {
   shelfName: shelf.name,
   labelText: label.text,
   labelRevoked: sql<boolean>`${label.revokedAt} is not null`.mapWith(Boolean),
+  loanId: loanMovement.id,
+  visitorId: visitor.id,
+  visitorName: visitor.name,
+  expiresBy: loanMovement.expiresBy,
 };
 
 const selectItems = () =>
@@ -97,11 +111,37 @@ const selectItems = () =>
     .from(copy)
     .innerJoin(book, eq(book.id, copy.bookId))
     .innerJoin(shelf, eq(shelf.id, copy.shelfId))
-    .leftJoin(label, eq(label.copyId, copy.id));
+    .leftJoin(label, eq(label.copyId, copy.id))
+    .leftJoin(
+      loanMovementLine,
+      and(
+        eq(loanMovementLine.copyId, copy.id),
+        isNull(loanMovementLine.resolvedAt),
+      ),
+    )
+    .leftJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+    .leftJoin(visitor, eq(visitor.id, loanMovement.loanedToId));
+
+function toItem(row: CopyItemRow): CopyItem {
+  const { loanId, visitorId, visitorName, expiresBy, ...rest } = row;
+  return {
+    ...rest,
+    loan:
+      loanId === null
+        ? null
+        : {
+            loanId,
+            visitorId: visitorId!,
+            visitorName: visitorName!,
+            expiresBy: expiresBy!,
+            overdue: expiresBy! < toISODate(),
+          },
+  };
+}
 
 export async function findCopyById(id: number): Promise<CopyItem | null> {
   const [row] = await selectItems().where(eq(copy.id, id));
-  return row ?? null;
+  return row ? toItem(row) : null;
 }
 
 export async function listCopies(
@@ -129,7 +169,7 @@ export async function listCopies(
       .offset(offset),
     db.select({ n: count() }).from(copy).where(where),
   ]);
-  return toPage(items, n, filters);
+  return toPage(items.map(toItem), n, filters);
 }
 
 export function setCopiesShelfSync(

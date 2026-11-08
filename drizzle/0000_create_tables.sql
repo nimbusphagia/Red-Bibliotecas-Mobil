@@ -161,9 +161,11 @@ CREATE TABLE `loan_movement_line` (
 	`movement_id` integer NOT NULL,
 	`copy_id` integer NOT NULL,
 	`resolved_at` integer,
+	`resolved_by_id` integer,
 	`outcome` text,
 	FOREIGN KEY (`movement_id`) REFERENCES `loan_movement`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`copy_id`) REFERENCES `copy`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`resolved_by_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE no action,
 	CONSTRAINT "ck_loan_line_outcome" CHECK("loan_movement_line"."outcome" IN ('returned', 'returned_damaged', 'lost')),
 	CONSTRAINT "ck_loan_line_resolved_pair" CHECK(("loan_movement_line"."resolved_at" IS NULL AND "loan_movement_line"."outcome" IS NULL) OR ("loan_movement_line"."resolved_at" IS NOT NULL AND "loan_movement_line"."outcome" IS NOT NULL))
 );
@@ -259,6 +261,7 @@ CREATE TABLE `visitor` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`name` text NOT NULL,
+	`name_key` text NOT NULL,
 	`role` text NOT NULL,
 	`grade_id` integer,
 	`active` integer DEFAULT true NOT NULL,
@@ -268,4 +271,5 @@ CREATE TABLE `visitor` (
 	CONSTRAINT "ck_visitor_grade_by_role" CHECK(("visitor"."role" = 'student' AND "visitor"."grade_id" IS NOT NULL) OR ("visitor"."role" = 'teacher' AND "visitor"."grade_id" IS NULL))
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `uq_visitor_name_key` ON `visitor` (`name_key`);--> statement-breakpoint
 CREATE INDEX `idx_visitor_grade` ON `visitor` (`grade_id`);

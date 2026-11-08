@@ -1,0 +1,104 @@
+import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
+import { db } from "@/db/client";
+import {
+  direction,
+  hasNoReferences,
+  likeTokens,
+  rowCount,
+  toPage,
+  type Reference,
+} from "@/db/helpers";
+import { loanMovement, schoolGrade, visitor } from "@/db/schema";
+import type { Page } from "@/shared/types/types";
+import type {
+  NewVisitor,
+  Visitor,
+  VisitorListFilters,
+  VisitorListItem,
+  VisitorPatch,
+  VisitorUsage,
+} from "./types";
+
+const loans: Reference = {
+  table: loanMovement,
+  column: loanMovement.loanedToId,
+};
+
+export async function findVisitorById(id: number): Promise<Visitor | null> {
+  const [row] = await db.select().from(visitor).where(eq(visitor.id, id));
+  return row ?? null;
+}
+
+export async function listVisitors(
+  filters: VisitorListFilters,
+): Promise<Page<VisitorListItem>> {
+  const { tokens, role, gradeId, active, sortBy, sortDir, limit, offset } =
+    filters;
+
+  const where = and(
+    ...likeTokens(visitor.nameKey, tokens),
+    role === undefined ? undefined : eq(visitor.role, role),
+    gradeId === undefined ? undefined : eq(visitor.gradeId, gradeId),
+    active === undefined ? undefined : eq(visitor.active, active),
+  );
+
+  const sortKey = { name: visitor.nameKey, createdAt: visitor.createdAt }[
+    sortBy
+  ];
+
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({
+        ...getTableColumns(visitor),
+        grade: schoolGrade.grade,
+        level: schoolGrade.level,
+      })
+      .from(visitor)
+      .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id))
+      .where(where)
+      .orderBy(
+        direction(sortDir)(sortKey),
+        asc(visitor.nameKey),
+        asc(visitor.id),
+      )
+      .limit(limit)
+      .offset(offset),
+    db.select({ n: count() }).from(visitor).where(where),
+  ]);
+  return toPage(items, n, filters);
+}
+
+export async function countVisitorUsage(
+  id: number,
+): Promise<VisitorUsage | null> {
+  const [row] = await db
+    .select({ loans: rowCount(loans, visitor.id) })
+    .from(visitor)
+    .where(eq(visitor.id, id));
+  return row ?? null;
+}
+
+export async function insertVisitor(values: NewVisitor): Promise<Visitor> {
+  const [row] = await db.insert(visitor).values(values).returning();
+  return row;
+}
+
+export async function updateVisitor(
+  id: number,
+  patch: VisitorPatch,
+): Promise<Visitor | null> {
+  const [row] = await db
+    .update(visitor)
+    .set(patch)
+    .where(eq(visitor.id, id))
+    .returning();
+  return row ?? null;
+}
+
+export async function deleteVisitorIfUnused(id: number): Promise<boolean> {
+  const deleted = await db
+    .delete(visitor)
+    .where(and(eq(visitor.id, id), hasNoReferences(visitor.id, loans)))
+    .returning({ id: visitor.id });
+  return deleted.length > 0;
+}

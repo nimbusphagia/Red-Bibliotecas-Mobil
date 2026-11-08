@@ -18,14 +18,22 @@ import {
   type NewExitMovement,
 } from "../types";
 
-function problemFor(c: CopyLookup, target: ExitStatus): CopyProblemKind | null {
+type ExitOptions = {
+  allowOnLoan?: boolean;
+};
+
+function problemFor(
+  c: CopyLookup,
+  target: ExitStatus,
+  allowOnLoan: boolean,
+): CopyProblemKind | null {
   switch (c.status) {
     case "available":
       return null;
     case "damaged":
       return target === "damaged" ? "already_damaged" : null;
     case "on_loan":
-      return "on_loan";
+      return allowOnLoan && target !== "discarded" ? null : "on_loan";
     case "lost":
       return "lost";
     case "discarded":
@@ -37,6 +45,7 @@ export function writeExit(
   tx: Tx,
   header: NewExitMovement,
   copyIds: number[],
+  { allowOnLoan = false }: ExitOptions = {},
 ): ExitResult {
   const target = EXIT_STATUS[header.reason];
   const found = new Map(
@@ -46,7 +55,7 @@ export function writeExit(
   const problems: CopyProblem[] = [];
   for (const copyId of copyIds) {
     const c = found.get(copyId);
-    const problem = c ? problemFor(c, target) : "not_found";
+    const problem = c ? problemFor(c, target, allowOnLoan) : "not_found";
     if (problem) {
       problems.push({ copyId, labelText: c?.labelText ?? null, problem });
     }

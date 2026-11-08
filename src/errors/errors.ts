@@ -175,3 +175,60 @@ export class CopiesNotExitableError extends AppError {
     this.name = "CopiesNotExitableError";
   }
 }
+
+export type LendProblemKind =
+  "not_found" | "on_loan" | "damaged" | "lost" | "discarded";
+
+export type LendProblem = {
+  copyId: number;
+  labelText: string | null;
+  problem: LendProblemKind;
+};
+
+const LEND_PROBLEM_TEXT: Record<LendProblemKind, string> = {
+  not_found: "does not exist",
+  on_loan: "is already on loan",
+  damaged: "is damaged",
+  lost: "is lost",
+  discarded: "is discarded",
+};
+
+export class CopiesNotLendableError extends AppError {
+  readonly code = "COPIES_NOT_LENDABLE";
+  constructor(public readonly problems: LendProblem[]) {
+    super(
+      problems
+        .map(
+          (p) =>
+            `Copy ${p.labelText ?? p.copyId} ${LEND_PROBLEM_TEXT[p.problem]}`,
+        )
+        .join("; "),
+    );
+    this.name = "CopiesNotLendableError";
+  }
+}
+
+export class LoanLimitError extends AppError {
+  readonly code = "LOAN_LIMIT_EXCEEDED";
+  constructor(
+    public readonly open: number,
+    public readonly requested: number,
+    public readonly max: number,
+  ) {
+    super(
+      `The visitor has ${open} open copies; ${requested} more would exceed the limit of ${max}`,
+    );
+    this.name = "LoanLimitError";
+  }
+}
+
+export class VisitorBlockedError extends AppError {
+  readonly code = "VISITOR_BLOCKED";
+  constructor(
+    public readonly overdue: number,
+    public readonly max: number,
+  ) {
+    super(`The visitor has ${overdue} overdue copies (limit ${max})`);
+    this.name = "VisitorBlockedError";
+  }
+}

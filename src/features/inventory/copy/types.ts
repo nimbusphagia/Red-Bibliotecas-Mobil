@@ -40,4 +40,20 @@ export type CopyItem = {
   shelfName: string;
   labelText: string | null;
   labelRevoked: boolean;
+  loan: CopyLoan | null;
+};
+
+export type CopyLoan = {
+  loanId: number;
+  visitorId: number;
+  visitorName: string;
+  expiresBy: string;
+  overdue: boolean;
+};
+
+export type CopyItemRow = Omit<CopyItem, "loan"> & {
+  loanId: number | null;
+  visitorId: number | null;
+  visitorName: string | null;
+  expiresBy: string | null;
 };

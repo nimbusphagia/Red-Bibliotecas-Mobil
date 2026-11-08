@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "18a0b44e-d082-40aa-8f05-cdb6d9476509",
+  "id": "21f0c25d-d8f9-43af-a362-c9e930bfe0a3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -1140,6 +1140,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "resolved_by_id": {
+          "name": "resolved_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "outcome": {
           "name": "outcome",
           "type": "text",
@@ -1193,6 +1200,19 @@
           "tableTo": "copy",
           "columnsFrom": [
             "copy_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "loan_movement_line_resolved_by_id_account_id_fk": {
+          "name": "loan_movement_line_resolved_by_id_account_id_fk",
+          "tableFrom": "loan_movement_line",
+          "tableTo": "account",
+          "columnsFrom": [
+            "resolved_by_id"
           ],
           "columnsTo": [
             "id"
@@ -1774,6 +1794,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "role": {
           "name": "role",
           "type": "text",
@@ -1798,6 +1825,13 @@
         }
       },
       "indexes": {
+        "uq_visitor_name_key": {
+          "name": "uq_visitor_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        },
         "idx_visitor_grade": {
           "name": "idx_visitor_grade",
           "columns": [
