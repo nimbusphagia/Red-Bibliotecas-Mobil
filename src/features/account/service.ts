@@ -14,27 +14,18 @@ import {
   changeRoleSchema,
   createAccountSchema,
   loginSchema,
-  registerOwnerSchema,
   resetPasswordSchema,
   setActiveSchema,
+  completeSetupSchema,
 } from "./schemas";
 import type { Account, AccountPatch, PublicAccount } from "./types";
+import { INITIAL_PASSWORD, SEED_ACCOUNTS } from "./setup";
+import { inTransaction } from "@/db/transaction";
 
 const toPublic = ({ passwordHash, ...rest }: Account): PublicAccount => rest;
 
 export async function isSetupOpen(): Promise<boolean> {
   return (await repo.countAccounts()) === 0 && (await repo.countLoans()) === 0;
-}
-
-export async function registerOwner(input: unknown): Promise<PublicAccount> {
-  const { username, password } = parseOrThrow(registerOwnerSchema, input);
-  if (!(await isSetupOpen())) throw new SetupClosedError();
-
-  const passwordHash = await hashPassword(password);
-  const row = await mapWriteErrors("account", () =>
-    repo.insertAccount({ username, passwordHash, role: "owner" }),
-  );
-  return toPublic(row);
 }
 
 export async function requireActive(actorId: number): Promise<Account> {
@@ -138,4 +129,35 @@ export async function changeOwnPassword(
     throw new InvalidCredentialsError();
   }
   await save(actor.id, { passwordHash: await hashPassword(newPassword) });
+}
+
+export async function getSessionAccount(
+  id: number,
+): Promise<PublicAccount | null> {
+  const row = await repo.findAccountById(id);
+  return row?.active ? toPublic(row) : null;
+}
+
+export async function completeSetup(input: unknown): Promise<PublicAccount> {
+  const { username, password } = parseOrThrow(completeSetupSchema, input);
+  if (!(await isSetupOpen())) throw new SetupClosedError();
+
+  const [ownerHash, ...seedHashes] = await Promise.all([
+    hashPassword(password),
+    ...SEED_ACCOUNTS.map(() => hashPassword(INITIAL_PASSWORD)),
+  ]);
+
+  const rows = await mapWriteErrors("account", async () =>
+    inTransaction((tx) =>
+      repo.insertAccountsSync(tx, [
+        { username, passwordHash: ownerHash, role: "owner" },
+        ...SEED_ACCOUNTS.map((a, i) => ({
+          username: a.username,
+          passwordHash: seedHashes[i],
+          role: a.role,
+        })),
+      ]),
+    ),
+  );
+  return toPublic(rows[0]);
 }

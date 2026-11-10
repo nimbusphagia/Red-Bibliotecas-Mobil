@@ -2,6 +2,7 @@ import { asc, sql, eq, count } from "drizzle-orm";
 import { db } from "@/db/client";
 import { account, loanMovement } from "@/db/schema";
 import type { Account, AccountPatch, NewAccount } from "./types";
+import type { Executor } from "@/db/transaction";
 
 export async function countAccounts(): Promise<number> {
   const [r] = await db.select({ n: count() }).from(account);
@@ -50,4 +51,11 @@ export async function listAccounts(): Promise<Account[]> {
     .select()
     .from(account)
     .orderBy(asc(sql`lower(${account.username})`), asc(account.id));
+}
+
+export function insertAccountsSync(
+  ex: Executor,
+  values: NewAccount[],
+): Account[] {
+  return ex.insert(account).values(values).returning().all();
 }

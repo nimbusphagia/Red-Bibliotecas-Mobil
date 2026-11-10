@@ -1,10 +1,9 @@
 import { collapse } from "@/shared/format/text";
 import { z } from "zod";
+import { RESERVED_USERNAMES } from "./setup";
 
 const username = z.string().transform(collapse).pipe(z.string().min(3).max(32));
 const password = z.string().min(6).max(128);
-
-export const registerOwnerSchema = z.object({ username, password });
 
 export const CREATABLE_ROLES = ["admin", "staff"] as const;
 
@@ -27,3 +26,10 @@ export const changeOwnPasswordSchema = z.object({
   currentPassword: z.string().min(1),
   newPassword: password,
 });
+
+export const registerOwnerSchema = z.object({ username, password });
+
+export const completeSetupSchema = registerOwnerSchema.refine(
+  (d) => !RESERVED_USERNAMES.has(d.username.toLowerCase()),
+  { path: ["username"], message: "Ese nombre de usuario está reservado" },
+);
