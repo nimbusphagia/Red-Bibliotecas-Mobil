@@ -2,8 +2,16 @@ import { collapse } from "@/shared/format/text";
 import { z } from "zod";
 import { RESERVED_USERNAMES } from "./setup";
 
-const username = z.string().transform(collapse).pipe(z.string().min(3).max(32));
-const password = z.string().min(6).max(128);
+const username = z
+  .string()
+  .transform(collapse)
+  .pipe(
+    z.string().min(3, "Mínimo 3 caracteres").max(32, "Máximo 32 caracteres"),
+  );
+const password = z
+  .string()
+  .min(6, "Mínimo 6 caracteres")
+  .max(128, "Máximo 128 caracteres");
 
 export const CREATABLE_ROLES = ["admin", "staff"] as const;
 
