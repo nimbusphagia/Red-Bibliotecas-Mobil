@@ -8,17 +8,16 @@ type Props = {
 };
 
 const WIDTH_EXPANDED = 220;
-const WIDTH_RAIL = 72;
+const WIDTH_RAIL = 80;
 
 export function Sidebar({ expanded }: Props) {
   const pathname = usePathname();
 
   return (
     <View
+      className="flex flex-col items-center mt-[8%] p-[8] gap-[10%]"
       style={{
         width: expanded ? WIDTH_EXPANDED : WIDTH_RAIL,
-        padding: 8,
-        gap: 4,
       }}
     >
       {NAV_ITEMS.map((item) => {

@@ -1,13 +1,13 @@
 import { Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { ScreenPlaceholder } from "@/ui/layout/ScreenPlaceholder";
+import { MainLayout } from "@/ui/layout/MainLayout";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <ScreenPlaceholder title="Book detail">
+    <MainLayout title="Book detail">
       <Text>id: {id}</Text>
-    </ScreenPlaceholder>
+    </MainLayout>
   );
 }

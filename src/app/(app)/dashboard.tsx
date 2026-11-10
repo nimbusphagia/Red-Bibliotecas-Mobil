@@ -1,5 +1,5 @@
-import { ScreenPlaceholder } from "@/ui/layout/ScreenPlaceholder";
+import { MainLayout } from "@/ui/layout/MainLayout";
 
 export default function DashboardScreen() {
-  return <ScreenPlaceholder title="Dashboard" />;
+  return <MainLayout title="Dashboard" />;
 }

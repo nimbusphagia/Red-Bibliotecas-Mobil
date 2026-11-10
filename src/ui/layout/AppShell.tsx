@@ -13,16 +13,15 @@ export function AppShell({ children }: Props) {
 
   return (
     <View
+      className="h-full flex flex-row flex-1 "
       style={{
-        flex: 1,
-        flexDirection: "row",
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
       }}
     >
-      <Sidebar expanded={isExpanded} />
+      <Sidebar expanded={false} />
       <View style={{ flex: 1 }}>{children}</View>
     </View>
   );

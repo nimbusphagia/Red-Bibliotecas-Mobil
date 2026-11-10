@@ -1,5 +1,5 @@
-import { ScreenPlaceholder } from "@/ui/layout/ScreenPlaceholder";
+import { MainLayout } from "@/ui/layout/MainLayout";
 
 export default function StockScreen() {
-  return <ScreenPlaceholder title="Stock" />;
+  return <MainLayout title="Stock" />;
 }
