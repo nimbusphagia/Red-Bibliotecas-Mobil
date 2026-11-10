@@ -1,5 +1,5 @@
 import { Slot } from "expo-router";
-import { AppShell } from "@/components/layout/AppShell";
+import { AppShell } from "@/ui/layout/AppShell";
 
 export default function AppLayout() {
   return (

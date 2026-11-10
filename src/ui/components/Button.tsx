@@ -1,7 +1,7 @@
-import { ActivityIndicator, Pressable, Text } from "react-native";
+import { ActivityIndicator, Pressable } from "react-native";
 import type { PressableProps } from "react-native";
-import { cn } from "@/shared/style/cn";
-import { colors } from "@/shared/style/colors";
+import { Text } from "./Text";
+import { cn, colors } from "../utils";
 
 type Variant = "primary" | "secondary" | "ghost";
 
@@ -13,7 +13,7 @@ type ButtonProps = Omit<PressableProps, "children"> & {
 };
 
 const containerStyles: Record<Variant, string> = {
-  primary: "bg-blue-600 active:bg-blue-700",
+  primary: `bg-primary active:bg-highlight`,
   secondary: "border border-slate-300 bg-white active:bg-slate-100",
   ghost: "bg-transparent active:bg-slate-100",
 };
@@ -42,7 +42,7 @@ export function Button({
       className={cn(
         "min-h-12 flex-row items-center justify-center gap-2 rounded-lg px-4",
         containerStyles[variant],
-        isDisabled && "opacity-50",
+        isDisabled && "opacity-80",
         className,
       )}
       {...rest}

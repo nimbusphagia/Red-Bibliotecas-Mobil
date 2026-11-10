@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { ScreenPlaceholder } from "@/components/layout/ScreenPlaceholder";
+import { ScreenPlaceholder } from "@/ui/layout/ScreenPlaceholder";
 
 export default function CatalogScreen() {
   return (

@@ -202,7 +202,6 @@ export const bookCollaborator = sqliteTable(
 );
 
 // Accounts
-
 export const account = sqliteTable(
   "account",
   {
