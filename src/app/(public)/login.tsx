@@ -1,11 +1,11 @@
-import { useRef, useState } from "react";
-import { View } from "react-native";
-import type { TextInputInstance } from "react-native";
-import { Image } from "expo-image";
-import { FormScreen, TextField } from "@/ui/components/form";
-import { Button, Text } from "@/ui/components";
-import { useSession } from "@/features/account/session";
 import { toFormErrors, type FormErrors } from "@/errors/messages";
+import { useSession } from "@/features/account/internal/session";
+import { Button, Text } from "@/shared/ui/components";
+import { FormScreen, TextField } from "@/shared/ui/components/form";
+import { Image } from "expo-image";
+import { useRef, useState } from "react";
+import type { TextInputInstance } from "react-native";
+import { View } from "react-native";
 import splash from "../../../assets/images/splash1.avif";
 
 export default function LoginScreen() {

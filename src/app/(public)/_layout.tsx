@@ -1,5 +1,5 @@
+import { useSession } from "@/features/account/internal/session";
 import { Stack } from "expo-router";
-import { useSession } from "@/features/account/session";
 
 export default function PublicLayout() {
   const { status } = useSession();

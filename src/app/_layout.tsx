@@ -1,17 +1,23 @@
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
 import {
-  useFonts,
+  SessionProvider,
+  useSession,
+} from "@/features/account/internal/session";
+import {
+  BootErrorScreen,
+  LoadingScreen,
+} from "@/shared/ui/layout/LoadingScreen";
+import { colors } from "@/shared/ui/utils";
+import {
   Outfit_400Regular,
   Outfit_500Medium,
   Outfit_600SemiBold,
   Outfit_700Bold,
+  useFonts,
 } from "@expo-google-fonts/outfit";
-import { SessionProvider, useSession } from "@/features/account/session";
-import { BootErrorScreen, LoadingScreen } from "@/ui/layout/LoadingScreen";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
 import "../../global.css";
-import { colors } from "@/ui/utils";
 
 SplashScreen.preventAutoHideAsync();
 

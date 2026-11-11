@@ -1,7 +1,7 @@
+import { useSession } from "@/features/account/internal/session";
+import { Button, Text } from "@/shared/ui/components";
+import { MainLayout } from "@/shared/ui/layout/MainLayout";
 import { View } from "react-native";
-import { Button, Text } from "@/ui/components";
-import { MainLayout } from "@/ui/layout/MainLayout";
-import { useSession } from "@/features/account/session";
 
 const ROLE_LABELS = {
   owner: "Propietario",

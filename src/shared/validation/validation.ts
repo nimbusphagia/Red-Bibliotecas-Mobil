@@ -1,15 +1,15 @@
-import type { z } from "zod";
+import {
+  isForeignKeyViolation,
+  isUniqueViolation,
+  uniqueViolationColumns,
+} from "@/errors/db-errors";
 import {
   DuplicateError,
   InvalidReferenceError,
   ValidationError,
   type ValidationIssue,
 } from "@/errors/errors";
-import {
-  isForeignKeyViolation,
-  isUniqueViolation,
-  uniqueViolationColumns,
-} from "@/errors/db-errors";
+import type { z } from "zod";
 
 function toIssues(error: z.ZodError): ValidationIssue[] {
   return error.issues.map((issue) => ({

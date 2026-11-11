@@ -1,12 +1,10 @@
-import { Link } from "expo-router";
-import { MainLayout } from "@/ui/layout/MainLayout";
+import Catalog from "@/features/catalog/ui/Catalog";
+import { MainLayout } from "@/shared/ui/layout/MainLayout";
 
 export default function CatalogScreen() {
   return (
-    <MainLayout title="Catalog">
-      <Link href={{ pathname: "/catalog/[id]", params: { id: "1" } }}>
-        Open book 1
-      </Link>
+    <MainLayout title="">
+      <Catalog />
     </MainLayout>
   );
 }

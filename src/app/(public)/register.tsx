@@ -1,13 +1,13 @@
-import { useRef, useState } from "react";
-import { View } from "react-native";
-import type { TextInputInstance } from "react-native";
-import { Image } from "expo-image";
-import { FormScreen, TextField } from "@/ui/components/form";
-import { Button, Text } from "@/ui/components";
-import { LoadingScreen } from "@/ui/layout/LoadingScreen";
-import { useSession } from "@/features/account/session";
-import { completeSetup } from "@/features/account/service";
 import { toFormErrors, type FormErrors } from "@/errors/messages";
+import { completeSetup } from "@/features/account/internal/service";
+import { useSession } from "@/features/account/internal/session";
+import { Button, Text } from "@/shared/ui/components";
+import { FormScreen, TextField } from "@/shared/ui/components/form";
+import { LoadingScreen } from "@/shared/ui/layout/LoadingScreen";
+import { Image } from "expo-image";
+import { useRef, useState } from "react";
+import type { TextInputInstance } from "react-native";
+import { View } from "react-native";
 import splash from "../../../assets/images/splash1.avif";
 
 export default function RegisterScreen() {

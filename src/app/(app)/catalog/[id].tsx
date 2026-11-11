@@ -1,6 +1,6 @@
-import { Text } from "react-native";
+import { MainLayout } from "@/shared/ui/layout/MainLayout";
 import { useLocalSearchParams } from "expo-router";
-import { MainLayout } from "@/ui/layout/MainLayout";
+import { Text } from "react-native";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

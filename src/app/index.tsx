@@ -1,5 +1,5 @@
+import { useSession } from "@/features/account/internal/session";
 import { Redirect } from "expo-router";
-import { useSession } from "@/features/account/session";
 
 export default function Index() {
   const { status } = useSession();
