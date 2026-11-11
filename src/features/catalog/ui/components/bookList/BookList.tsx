@@ -1,18 +1,32 @@
-import { ScrollView, View } from "react-native";
-import { BookRow } from "../../mock";
+import type { BookListItem } from "@/features/catalog/internal/book/types";
+import { Text } from "@/shared/ui/components";
+import { ActivityIndicator, FlatList } from "react-native";
 import BookRowComponent from "./BookRow";
 
 type Props = {
-  books: BookRow[];
+  books: BookListItem[];
+  loading: boolean;
+  onEndReached: () => void;
 };
-export default function BookList({ books }: Props) {
+export default function BookList({ books, loading, onEndReached }: Props) {
   return (
-    <ScrollView>
-      <View className="gap-5 pt-5 pb-20">
-        {books.map((b, i) => (
-          <BookRowComponent key={b.id} book={b} index={i} />
-        ))}
-      </View>
-    </ScrollView>
+    <FlatList
+      data={books}
+      keyExtractor={(b) => String(b.id)}
+      renderItem={({ item }) => <BookRowComponent book={item} />}
+      contentContainerStyle={{
+        gap: 20,
+        paddingTop: 0,
+        paddingBottom: 80,
+        minHeight: 400,
+        justifyContent: "center",
+      }}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={loading ? <ActivityIndicator /> : undefined}
+      ListEmptyComponent={
+        loading ? undefined : <Text variable="subtitle">Sin resultados</Text>
+      }
+    />
   );
 }

@@ -27,7 +27,7 @@ type StatComponentProps = {
 function StatComponent({ stat }: StatComponentProps) {
   return (
     <View className="flex items-center">
-      <Text className="text-[32px] text-primary font-bold">
+      <Text className="text-[28px] text-highlight font-bold">
         {stat.numberData}
       </Text>
       <Text className="text-primary">{stat.name}</Text>

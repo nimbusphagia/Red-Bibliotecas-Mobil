@@ -16,7 +16,7 @@ export function SidebarItem({ item, active, expanded }: Props) {
         "bg-highlight",
         "shadow-md shadow-highlight/80 opacity-100",
       ]
-    : [colors.primary, "bg-foreground", "shadow-none opacity-100"];
+    : [colors.highlight, "bg-foreground", "shadow-none opacity-100"];
   return (
     <Link href={item.href} asChild>
       <Pressable

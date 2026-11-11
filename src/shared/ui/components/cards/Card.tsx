@@ -11,10 +11,12 @@ export default function Card({
 }: PropsWithChildren<Props>) {
   return (
     <View
-      className={`rounded-[28] bg-foreground shadow-sm shadow-black/50 p-6 flex items-center gap-1 ${className}`}
+      className={`rounded-[30px] bg-foreground shadow-sm shadow-black/50 py-4 px-5 flex items-center gap-1 ${className}`}
     >
       {title && (
-        <Text className="text-[21px] text-primary font-semibold">{title}</Text>
+        <Text className="text-[20px] text-highlight font-semibold">
+          {title}
+        </Text>
       )}
       {children}
     </View>

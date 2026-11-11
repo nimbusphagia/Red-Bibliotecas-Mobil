@@ -12,12 +12,13 @@ export default function DashboardMain({}: Props) {
         <DashboardStats />
       </View>
       <View className={`${sectionClass} flex-row gap-5`}>
-        <ActiveLoans loans={[]} />
         <View className="w-[25%] border-l border-foreground rounded-lg bg-foreground py-4 px-8 h-[400]">
           <Text className="text-primary text-[18px] font-bold">
             Placeholder
           </Text>
         </View>
+
+        <ActiveLoans loans={[]} />
       </View>
     </View>
   );

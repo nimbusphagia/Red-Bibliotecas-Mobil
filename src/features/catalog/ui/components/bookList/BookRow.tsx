@@ -1,61 +1,65 @@
-import { View } from "react-native";
-import { BookRow, Contributor } from "../../mock";
+import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { Button, Text } from "@/shared/ui/components";
 import { cn, colors } from "@/shared/ui/utils";
 import { BookUp, Dot, Eye } from "lucide-react-native";
+import { View } from "react-native";
 
 type Props = {
-  book: BookRow;
-  index: number;
+  book: BookListItem;
 };
-export default function BookRowComponent({ book, index }: Props) {
-  const colClass = "flex-1 justify-center gap-1";
+export default function BookRowComponent({ book }: Props) {
+  const colClass = "flex-1 justify-center gap-[1px]";
   const containerBg = "bg-foreground/20";
-  const containerClass = `border border-foreground flex-row justify-between gap-5 py-4 px-7 rounded-full ${containerBg}`;
+  const containerClass = `border border-foreground flex-row justify-between gap-5 py-3 px-7 rounded-full ${containerBg}`;
   return (
     <View className={containerClass}>
       <View className={colClass}>
         <Text variable="h3">{book.title}</Text>
-        <View className="flex-row gap-1 items-center">
-          {book.collection && (
+        <View className="flex-row  items-center">
+          <Text variable="subtitle">{book.publisherName}</Text>
+          {book.collectionName && (
             <>
-              <Text variable="subtitle">"{book.collection}"</Text>
               <Dot color={colors.primary} />
+              <Text variable="subtitle">"{book.collectionName}"</Text>
             </>
           )}
-          <Text variable="subtitle">{book.publisher}</Text>
         </View>
       </View>
       <View className={cn(colClass)}>
-        <Text variable="h3" className="font-semibold text-[14px]">
-          {formatContributors(book.contributors)}
+        <Text variable="h3" className="font-semibold text-[15px]">
+          {formatContributors(book.collaborators)}
         </Text>
-        <Text variable="subtitle">{book.series ? `"${book.series}"` : ""}</Text>
+        <Text variable="subtitle">
+          {book.seriesName ? `"${book.seriesName}"` : ""}
+        </Text>
       </View>
 
       <View className={cn(colClass, "items-center")}>
         <Text variable="h3" className="font-semibold text-[14px]">
-          {book.shelf}
+          {book.availableCount} de {book.activeCount}
         </Text>
-        <Text variable="subtitle" className="font-semibold ">
-          {book.availableCount} de {book.copyCount}
+        <Text variable="subtitle" className="font-semibold">
+          {book.onLoanCount} prestados
         </Text>
       </View>
-      <View className="flex-row gap-10">
+      <View className="flex-row items-center gap-10">
         <Button
           variant="pill-secondary"
-          lucideIcon=<Eye color={colors.highlight} />
+          className="h-10 aspect-square"
+          lucideIcon={<Eye size={16} color={colors.highlight} />}
         />
         <Button
           title="Prestar"
+          className="h-10"
           variant="pill"
-          lucideIcon=<BookUp color={colors.background} />
+          lucideIcon={<BookUp size={16} color={colors.background} />}
         />
       </View>
     </View>
   );
 }
-const formatContributors = (list: Contributor[]) => {
+
+const formatContributors = (list: BookListItem["collaborators"]) => {
   const names = list.map((c) =>
     [c.firstName, c.lastName].filter(Boolean).join(" "),
   );

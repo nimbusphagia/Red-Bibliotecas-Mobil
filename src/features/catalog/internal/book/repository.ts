@@ -58,6 +58,10 @@ const availableCount = rowCount(
   { ...copies, where: eq(copy.status, "available") },
   book.id,
 );
+const onLoanCount = rowCount(
+  { ...copies, where: eq(copy.status, "on_loan") },
+  book.id,
+);
 
 // Helpers
 const matches = (column: AnyColumn | SQL, token: string) =>
@@ -183,8 +187,7 @@ export async function listBooks(
   const sortKey = {
     title: book.titleKey,
     createdAt: book.createdAt,
-    publicationYear: book.publicationYear,
-    copyCount,
+    availableCount,
   }[sortBy];
 
   const [rows, [{ n }]] = await Promise.all([
@@ -199,6 +202,7 @@ export async function listBooks(
         copyCount,
         activeCount,
         availableCount,
+        onLoanCount,
       })
       .from(book)
       .leftJoin(publisher, eq(book.publisherId, publisher.id))
