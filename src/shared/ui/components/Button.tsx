@@ -4,10 +4,10 @@ import { Text } from "./Text";
 import { cn, colors } from "../utils";
 import { ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "pill";
+type Variant = "primary" | "secondary" | "pill" | "pill-secondary";
 
 type ButtonProps = Omit<PressableProps, "children"> & {
-  title: string;
+  title?: string;
   lucideIcon?: ReactNode;
   variant?: Variant;
   loading?: boolean;
@@ -16,14 +16,16 @@ type ButtonProps = Omit<PressableProps, "children"> & {
 
 const containerStyles: Record<Variant, string> = {
   primary: `bg-highlight active:bg-primary`,
-  pill: "bg-highlight active:bg-primary rounded-full",
   secondary: "border border-slate-300 bg-white active:bg-slate-100",
+  pill: "bg-highlight active:bg-primary rounded-full",
+  "pill-secondary": "bg-foreground/80  active:bg-foreground rounded-full",
 };
 
 const labelStyles: Record<Variant, string> = {
-  primary: "text-white",
-  pill: "text-white",
+  primary: "text-background",
   secondary: "text-slate-900",
+  pill: "text-background",
+  "pill-secondary": "text-highlight",
 };
 
 export function Button({
@@ -43,7 +45,7 @@ export function Button({
       accessibilityState={{ disabled: !!isDisabled, busy: loading }}
       disabled={isDisabled}
       className={cn(
-        "min-h-12 flex-row items-center justify-center gap-2 rounded-lg px-4",
+        "min-h-10 flex-row items-center justify-center gap-2 px-4",
         containerStyles[variant],
         isDisabled && "opacity-80",
         className,
@@ -58,9 +60,11 @@ export function Button({
         />
       )}
       {lucideIcon}
-      <Text className={cn("text-base font-semibold", labelStyles[variant])}>
-        {title}
-      </Text>
+      {title && (
+        <Text className={cn("text-[16] font-semibold", labelStyles[variant])}>
+          {title}
+        </Text>
+      )}
     </Pressable>
   );
 }

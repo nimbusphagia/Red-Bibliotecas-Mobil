@@ -1,7 +1,5 @@
-import { Button, Text } from "@/shared/ui/components";
-import { colors } from "@/shared/ui/utils";
-import { BookDown, BookUp, NotebookPen } from "lucide-react-native";
-import { PropsWithChildren, ReactNode } from "react";
+import { Text } from "@/shared/ui/components";
+import { PropsWithChildren } from "react";
 import { View } from "react-native";
 
 type Props = {
@@ -19,7 +17,7 @@ export default function Header({
       >
         {title}
       </Text>
-      <View className="flex flex-row gap-5">{children} </View>
+      <View className="flex flex-row items-center gap-5">{children}</View>
     </View>
   );
 }
