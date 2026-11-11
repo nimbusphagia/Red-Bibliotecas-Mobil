@@ -1,7 +1,8 @@
 export const colors = {
-  background: "#FFFFFF",
-  primary: "#B2D485",
-  highlight: "#99CC70",
+  background: "#F2EEDF",
+  foreground: "#E6E0D3",
+  primary: "#B69FBF",
+  highlight: "#A47BBA",
   placeholder: "#94a3b8",
   spinnerOnDark: "#ffffff",
   spinnerOnLight: "#475569",

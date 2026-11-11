@@ -2,30 +2,33 @@ import { ActivityIndicator, Pressable } from "react-native";
 import type { PressableProps } from "react-native";
 import { Text } from "./Text";
 import { cn, colors } from "../utils";
+import { ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "pill";
 
 type ButtonProps = Omit<PressableProps, "children"> & {
   title: string;
+  lucideIcon?: ReactNode;
   variant?: Variant;
   loading?: boolean;
   className?: string;
 };
 
 const containerStyles: Record<Variant, string> = {
-  primary: `bg-primary active:bg-highlight`,
+  primary: `bg-highlight active:bg-primary`,
+  pill: "bg-highlight active:bg-primary rounded-full",
   secondary: "border border-slate-300 bg-white active:bg-slate-100",
-  ghost: "bg-transparent active:bg-slate-100",
 };
 
 const labelStyles: Record<Variant, string> = {
   primary: "text-white",
+  pill: "text-white",
   secondary: "text-slate-900",
-  ghost: "text-blue-600",
 };
 
 export function Button({
   title,
+  lucideIcon,
   variant = "primary",
   loading = false,
   disabled,
@@ -54,6 +57,7 @@ export function Button({
           }
         />
       )}
+      {lucideIcon}
       <Text className={cn("text-base font-semibold", labelStyles[variant])}>
         {title}
       </Text>

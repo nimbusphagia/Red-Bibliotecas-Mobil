@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
 import { Link } from "expo-router";
 import type { NavItem } from "@/config/navigation";
 import { colors } from "../utils";
@@ -11,8 +11,12 @@ type Props = {
 
 export function SidebarItem({ item, active, expanded }: Props) {
   const [iconColor, bgColor, activeClass] = active
-    ? [colors.background, "bg-primary", "shadow-md shadow-black/50 opacity-1"]
-    : [colors.highlight, "bg-background", "opacity-[0.9]"];
+    ? [
+        colors.foreground,
+        "bg-highlight",
+        "shadow-md shadow-highlight/80 opacity-100",
+      ]
+    : [colors.primary, "bg-foreground", "shadow-none opacity-100"];
   return (
     <Link href={item.href} asChild>
       <Pressable
@@ -20,7 +24,7 @@ export function SidebarItem({ item, active, expanded }: Props) {
         accessibilityLabel={item.label}
         accessibilityState={{ selected: active }}
         className={`flex items-center justify-center 
-                    rounded-full size-[46] 
+                    rounded-full size-[44] 
                     ${bgColor} ${activeClass}`}
       >
         <item.icon color={iconColor} />

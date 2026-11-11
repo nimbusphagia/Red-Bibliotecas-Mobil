@@ -12,9 +12,10 @@ module.exports = {
         "sans-bold": ["Outfit_700Bold"],
       },
       colors: {
-        background: "#FFFFFF",
-        primary: "#99CC70",
-        highlight: "#B2D485",
+        background: "#F2EEDF",
+        foreground: "#E6E0D3",
+        primary: "#B69FBF",
+        highlight: "#A47BBA",
       },
     },
   },

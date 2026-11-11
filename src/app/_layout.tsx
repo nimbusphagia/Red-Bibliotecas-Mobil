@@ -11,6 +11,7 @@ import {
 import { SessionProvider, useSession } from "@/features/account/session";
 import { BootErrorScreen, LoadingScreen } from "@/ui/layout/LoadingScreen";
 import "../../global.css";
+import { colors } from "@/ui/utils";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,7 +45,12 @@ function RootNavigator() {
   const { status } = session;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    >
       <Stack.Screen name="index" />
       <Stack.Protected guard={status === "setup" || status === "signed-out"}>
         <Stack.Screen name="(public)" />

@@ -1,38 +1,49 @@
 import { View } from "react-native";
-import { usePathname } from "expo-router";
-import { NAV_ITEMS } from "@/config/navigation";
+import { Href, usePathname } from "expo-router";
+import { NAVBAR } from "@/config/navigation";
 import { SidebarItem } from "./SidebarItem";
 
 type Props = {
   expanded: boolean;
 };
 
-const WIDTH_EXPANDED = 220;
-const WIDTH_RAIL = 80;
-
 export function Sidebar({ expanded }: Props) {
   const pathname = usePathname();
 
+  const isActive = (href: Href): boolean => {
+    const base = String(href);
+    return pathname === base || pathname.startsWith(base + "/");
+  };
   return (
     <View
-      className="flex flex-col items-center mt-[8%] p-[8] gap-[10%]"
-      style={{
-        width: expanded ? WIDTH_EXPANDED : WIDTH_RAIL,
-      }}
+      className="w-[80] flex flex-col items-center justify-between p-[8] pt-[25]
+      pb-[10] border-r border-foreground"
     >
-      {NAV_ITEMS.map((item) => {
-        const base = String(item.href);
-        const active = pathname === base || pathname.startsWith(base + "/");
-
-        return (
-          <SidebarItem
-            key={item.key}
-            item={item}
-            active={active}
-            expanded={expanded}
-          />
-        );
-      })}
+      <View className=" gap-[10%]">
+        {NAVBAR.main.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <SidebarItem
+              key={item.key}
+              item={item}
+              active={active}
+              expanded={expanded}
+            />
+          );
+        })}
+      </View>
+      <View className="gap-[10%]">
+        {NAVBAR.footer.map((item) => {
+          return (
+            <SidebarItem
+              key={item.key}
+              item={item}
+              active={isActive(item.href)}
+              expanded={expanded}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 }

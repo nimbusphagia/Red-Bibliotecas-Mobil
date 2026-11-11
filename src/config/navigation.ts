@@ -14,11 +14,43 @@ export type NavItem = {
   href: Href;
   icon: LucideIcon;
 };
-
-export const NAV_ITEMS: NavItem[] = [
-  { key: "dashboard", label: "Inicio", href: "/dashboard", icon: House },
-  { key: "catalog", label: "Libros", href: "/catalog", icon: LibraryBig },
-  { key: "loans", label: "Prestamos", href: "/loans", icon: Tickets },
-  { key: "stock", label: "Inventario", href: "/stock", icon: PackageSearch },
-  { key: "account", label: "Usuario", href: "/account", icon: User },
-];
+export type Navbar = {
+  main: NavItem[];
+  footer: NavItem[];
+};
+export const NAVBAR: Navbar = {
+  main: [
+    {
+      key: "dashboard",
+      label: "Inicio",
+      href: "/dashboard",
+      icon: House,
+    },
+    {
+      key: "catalog",
+      label: "Libros",
+      href: "/catalog",
+      icon: LibraryBig,
+    },
+    {
+      key: "loans",
+      label: "Prestamos",
+      href: "/loans",
+      icon: Tickets,
+    },
+    {
+      key: "stock",
+      label: "Inventario",
+      href: "/stock",
+      icon: PackageSearch,
+    },
+  ],
+  footer: [
+    {
+      key: "account",
+      label: "Usuario",
+      href: "/account",
+      icon: User,
+    },
+  ],
+};

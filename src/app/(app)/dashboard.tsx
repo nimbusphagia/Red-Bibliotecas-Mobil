@@ -1,5 +1,10 @@
+import Dashboard from "@/features/dashboard/ui/Dashboard";
 import { MainLayout } from "@/ui/layout/MainLayout";
 
 export default function DashboardScreen() {
-  return <MainLayout title="Dashboard" />;
+  return (
+    <MainLayout>
+      <Dashboard />
+    </MainLayout>
+  );
 }
