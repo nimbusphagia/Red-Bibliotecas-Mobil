@@ -17,9 +17,7 @@ export default function BookList({ books, loading, onEndReached }: Props) {
       contentContainerStyle={{
         gap: 20,
         paddingTop: 0,
-        paddingBottom: 80,
-        minHeight: 400,
-        justifyContent: "center",
+        paddingBottom: 40,
       }}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
