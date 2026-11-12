@@ -1,3 +1,8 @@
+import { db } from "@/db/client";
+import { direction, likeTokens, toPage } from "@/db/helpers";
+import { book, copy, label } from "@/db/schema";
+import type { Executor } from "@/db/transaction";
+import type { Page } from "@/features/shared/types/types";
 import {
   and,
   asc,
@@ -9,18 +14,13 @@ import {
   or,
   sql,
 } from "drizzle-orm";
-import { db } from "@/db/client";
-import { direction, likeTokens, toPage } from "@/db/helpers";
-import { book, copy, label } from "@/db/schema";
-import type { Page } from "@/shared/types/types";
-import type { Executor } from "@/db/transaction";
 import type {
   Label,
-  LabelOwner,
-  NewLabel,
   LabelItem,
   LabelListFilters,
+  LabelOwner,
   LabelState,
+  NewLabel,
 } from "./types";
 
 export function findBookTitleCodeSync(

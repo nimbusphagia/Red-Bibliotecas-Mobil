@@ -1,6 +1,6 @@
 import type { ACCOUNT_ROLES } from "@/db/schema";
-import { ForbiddenError } from "@/errors/errors";
 import { requireActive } from "@/features/account/internal/service";
+import { ForbiddenError } from "@/features/shared/errors/errors";
 
 const STOCK_ROLES: readonly (typeof ACCOUNT_ROLES)[number][] = [
   "owner",

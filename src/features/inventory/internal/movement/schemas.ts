@@ -1,9 +1,9 @@
 import { MOVEMENT_REASONS, MOVEMENT_TYPES } from "@/db/schema";
 import { createBookSchema } from "@/features/catalog/internal/book/schemas";
-import { addDays, parseISODate } from "@/shared/format/dates";
-import { collapse } from "@/shared/format/text";
-import { idSchema, listShape } from "@/shared/types/schemas";
-import type { Assert } from "@/shared/types/types";
+import { addDays, parseISODate } from "@/features/shared/format/dates";
+import { collapse } from "@/features/shared/format/text";
+import { idSchema, listShape } from "@/features/shared/types/schemas";
+import type { Assert } from "@/features/shared/types/types";
 import { z } from "zod";
 
 export const MAX_COPIES_PER_BOOK = 100;

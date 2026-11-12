@@ -1,6 +1,6 @@
 import { VISITOR_ROLES } from "@/db/schema";
-import { NotFoundError } from "@/errors/errors";
-import { parseOrThrow } from "@/shared/validation/validation";
+import { NotFoundError } from "@/features/shared/errors/errors";
+import { parseOrThrow } from "@/features/shared/validation/validation";
 import { z } from "zod";
 import * as repo from "./repository";
 import type { LoanRule, SchoolGrade } from "./types";

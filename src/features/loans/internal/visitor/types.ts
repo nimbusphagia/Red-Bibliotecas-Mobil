@@ -1,5 +1,5 @@
 import type { GRADE_LEVELS, visitor } from "@/db/schema";
-import type { ListFilters } from "@/shared/types/types";
+import type { ListFilters } from "@/features/shared/types/types";
 import type { VisitorSort } from "./schemas";
 
 export type Visitor = typeof visitor.$inferSelect;

@@ -1,4 +1,4 @@
-import type { NavItem } from "@/config/navigation";
+import type { NavItem } from "@/navigation/navigation";
 import { Link } from "expo-router";
 import { Pressable, Text } from "react-native";
 import { colors } from "../../utils";

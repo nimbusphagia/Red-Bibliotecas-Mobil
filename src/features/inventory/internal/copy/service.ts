@@ -1,10 +1,10 @@
 import { db } from "@/db/client";
-import { NotFoundError } from "@/errors/errors";
 import { getBook } from "@/features/catalog/internal/book/service";
-import { collapse } from "@/shared/format/text";
-import { idSchema } from "@/shared/types/schemas";
-import type { Page } from "@/shared/types/types";
-import { parseOrThrow } from "@/shared/validation/validation";
+import { NotFoundError } from "@/features/shared/errors/errors";
+import { collapse } from "@/features/shared/format/text";
+import { idSchema } from "@/features/shared/types/schemas";
+import type { Page } from "@/features/shared/types/types";
+import { parseOrThrow } from "@/features/shared/validation/validation";
 import {
   findCopyByActiveLabelSync,
   findCopyById,

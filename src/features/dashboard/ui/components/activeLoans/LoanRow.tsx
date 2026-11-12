@@ -1,6 +1,6 @@
 import { LoanListItem } from "@/features/loans/internal/loan/types";
-import { Text } from "@/shared/ui/components";
-import { colors } from "@/shared/ui/utils";
+import { Text } from "@/features/shared/ui/components";
+import { colors } from "@/features/shared/ui/utils";
 import { ClockExclamationPoint } from "lucide-react-native";
 import { View } from "react-native";
 

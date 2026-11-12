@@ -1,4 +1,4 @@
-import { collapse } from "@/shared/format/text";
+import { collapse } from "@/features/shared/format/text";
 import { z } from "zod";
 import { RESERVED_USERNAMES } from "./setup";
 

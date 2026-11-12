@@ -1,6 +1,10 @@
 import { nameField } from "@/features/catalog/internal/_shared/fields";
-import { collapse } from "@/shared/format/text";
-import { idSchema, listShape, withTokens } from "@/shared/types/schemas";
+import { collapse } from "@/features/shared/format/text";
+import {
+  idSchema,
+  listShape,
+  withTokens,
+} from "@/features/shared/types/schemas";
 import { z } from "zod";
 
 export const SHELF_SORT_KEYS = ["name", "copyCount", "createdAt"] as const;

@@ -1,6 +1,6 @@
-import { useDebounce } from "@/hooks/useDebounce";
-import { Text } from "@/shared/ui/components";
-import { cn, colors } from "@/shared/ui/utils";
+import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { Text } from "@/features/shared/ui/components";
+import { cn, colors } from "@/features/shared/ui/utils";
 import { X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, TextInput, View } from "react-native";

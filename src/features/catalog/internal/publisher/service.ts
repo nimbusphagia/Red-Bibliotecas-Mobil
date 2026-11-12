@@ -1,5 +1,6 @@
-import { searchKey } from "@/shared/format/text";
-import { parseOrThrow } from "@/shared/validation/validation";
+import { searchKey } from "@/features/shared/format/text";
+import { Page } from "@/features/shared/types/types";
+import { parseOrThrow } from "@/features/shared/validation/validation";
 import {
   makeCreate,
   makeReads,
@@ -19,7 +20,6 @@ import type {
   PublisherUsage,
   PublisherWithBookCount,
 } from "./types";
-import { Page } from "@/shared/types/types";
 
 const ENTITY = "publisher";
 

@@ -1,17 +1,3 @@
-import {
-  and,
-  asc,
-  count,
-  eq,
-  getTableColumns,
-  gte,
-  inArray,
-  isNull,
-  lt,
-  or,
-  sql,
-} from "drizzle-orm";
-import { alias } from "drizzle-orm/sqlite-core";
 import { db } from "@/db/client";
 import {
   direction,
@@ -32,7 +18,21 @@ import {
   visitor,
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
-import type { Page } from "@/shared/types/types";
+import type { Page } from "@/features/shared/types/types";
+import {
+  and,
+  asc,
+  count,
+  eq,
+  getTableColumns,
+  gte,
+  inArray,
+  isNull,
+  lt,
+  or,
+  sql,
+} from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 import type {
   LineOutcome,
   LoanLine,

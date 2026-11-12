@@ -1,5 +1,5 @@
 import Dashboard from "@/features/dashboard/ui/Dashboard";
-import { MainLayout } from "@/shared/ui/layout/MainLayout";
+import { MainLayout } from "@/features/shared/ui/layout/MainLayout";
 
 export default function DashboardScreen() {
   return (

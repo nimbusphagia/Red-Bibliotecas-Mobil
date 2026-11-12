@@ -1,7 +1,7 @@
 import { COLLABORATOR_ROLES } from "@/db/schema";
-import { collapse } from "@/shared/format/text";
-import { listShape, withTokens } from "@/shared/types/schemas";
-import type { Assert } from "@/shared/types/types";
+import { collapse } from "@/features/shared/format/text";
+import { listShape, withTokens } from "@/features/shared/types/schemas";
+import type { Assert } from "@/features/shared/types/types";
 import { z } from "zod";
 import { NAME_MAX, nameField } from "../_shared/fields";
 import type { AuthorListFilters } from "./types";

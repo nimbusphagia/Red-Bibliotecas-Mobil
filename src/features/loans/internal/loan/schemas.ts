@@ -1,7 +1,11 @@
 import { LINE_OUTCOMES } from "@/db/schema";
-import { collapse } from "@/shared/format/text";
-import { addDays, parseISODate } from "@/shared/format/dates";
-import { idSchema, listShape, withTokens } from "@/shared/types/schemas";
+import { addDays, parseISODate } from "@/features/shared/format/dates";
+import { collapse } from "@/features/shared/format/text";
+import {
+  idSchema,
+  listShape,
+  withTokens,
+} from "@/features/shared/types/schemas";
 import { z } from "zod";
 import { MAX_OPEN_COPIES } from "./rules";
 

@@ -1,7 +1,7 @@
 import type { BookSort } from "@/features/catalog/internal/book/schemas";
-import type { SortDirection } from "@/shared/types/types";
-import { Button, Text } from "@/shared/ui/components";
-import { cn, colors } from "@/shared/ui/utils";
+import type { SortDirection } from "@/features/shared/types/types";
+import { Button, Text } from "@/features/shared/ui/components";
+import { cn, colors } from "@/features/shared/ui/utils";
 import { ArrowDown, ArrowDownUp, ArrowUp } from "lucide-react-native";
 import { useState } from "react";
 import { Modal, Pressable, View } from "react-native";

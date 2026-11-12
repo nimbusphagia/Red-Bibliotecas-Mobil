@@ -1,5 +1,5 @@
 import { COPY_STATUSES } from "@/db/schema";
-import { idSchema, listShape } from "@/shared/types/schemas";
+import { idSchema, listShape } from "@/features/shared/types/schemas";
 import { z } from "zod";
 
 export const COPY_SORT_KEYS = ["copyNumber", "status", "createdAt"] as const;

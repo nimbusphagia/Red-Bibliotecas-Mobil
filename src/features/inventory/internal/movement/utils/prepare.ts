@@ -1,9 +1,4 @@
 import { db } from "@/db/client";
-import {
-  IncompleteBookError,
-  NotFoundError,
-  ValidationError,
-} from "@/errors/errors";
 import { getAuthor } from "@/features/catalog/internal/author/service";
 import { getBook, prepareBook } from "@/features/catalog/internal/book/service";
 import type {
@@ -13,6 +8,11 @@ import type {
 import { getCategory } from "@/features/catalog/internal/category/service";
 import { getSeries } from "@/features/catalog/internal/series/service";
 import { getSubcategory } from "@/features/catalog/internal/subcategory/service";
+import {
+  IncompleteBookError,
+  NotFoundError,
+  ValidationError,
+} from "@/features/shared/errors/errors";
 import { authorCode } from "../../label/utils/labelText";
 import {
   findDefaultShelfSync,

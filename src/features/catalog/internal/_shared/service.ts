@@ -1,17 +1,13 @@
 import {
-  isForeignKeyViolation,
-  isUniqueViolation,
-  uniqueViolationColumns,
-} from "@/errors/db-errors";
-import {
-  DuplicateError,
   InUseError,
-  InvalidReferenceError,
   NotFoundError,
   ProtectedError,
-} from "@/errors/errors";
-import { idSchema } from "@/shared/types/schemas";
-import { mapWriteErrors, parseOrThrow } from "@/shared/validation/validation";
+} from "@/features/shared/errors/errors";
+import { idSchema } from "@/features/shared/types/schemas";
+import {
+  mapWriteErrors,
+  parseOrThrow,
+} from "@/features/shared/validation/validation";
 import type { z } from "zod";
 
 export const parseId = (id: unknown) => parseOrThrow(idSchema, id);

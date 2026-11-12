@@ -1,5 +1,5 @@
 import type { label, PRINT_STATUSES } from "@/db/schema";
-import type { ListFilters } from "@/shared/types/types";
+import type { ListFilters } from "@/features/shared/types/types";
 import type { LabelSort } from "./schemas";
 
 export type Label = typeof label.$inferSelect;

@@ -3,7 +3,7 @@ import {
   CopiesNotExitableError,
   type CopyProblem,
   type CopyProblemKind,
-} from "@/errors/errors";
+} from "@/features/shared/errors/errors";
 import {
   findCopiesByIdsSync,
   setCopiesStatusSync,

@@ -1,7 +1,7 @@
 import type { stockMovement } from "@/db/schema";
+import type { SortDirection } from "@/features/shared/types/types";
 import type { CopyStatus, ReleasedStatus } from "../copy/types";
 import type { ENTRY_REASONS, EXIT_REASONS, MovementSort } from "./schemas";
-import type { SortDirection } from "@/shared/types/types";
 
 export type StockMovement = typeof stockMovement.$inferSelect;
 export type EntryReason = (typeof ENTRY_REASONS)[number];

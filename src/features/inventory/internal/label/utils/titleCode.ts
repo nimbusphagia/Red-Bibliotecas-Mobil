@@ -1,4 +1,4 @@
-import { searchKey } from "@/shared/format/text";
+import { searchKey } from "@/features/shared/format/text";
 
 export const CODE_LENGTH = 3;
 

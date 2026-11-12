@@ -1,26 +1,29 @@
+import { inTransaction } from "@/db/transaction";
 import {
   ForbiddenError,
   InvalidCredentialsError,
   NotFoundError,
   ProtectedError,
   SetupClosedError,
-} from "@/errors/errors";
-import { idSchema } from "@/shared/types/schemas";
-import { mapWriteErrors, parseOrThrow } from "@/shared/validation/validation";
+} from "@/features/shared/errors/errors";
+import { idSchema } from "@/features/shared/types/schemas";
+import {
+  mapWriteErrors,
+  parseOrThrow,
+} from "@/features/shared/validation/validation";
 import { hashPassword, verifyPassword } from "./password";
 import * as repo from "./repository";
 import {
   changeOwnPasswordSchema,
   changeRoleSchema,
+  completeSetupSchema,
   createAccountSchema,
   loginSchema,
   resetPasswordSchema,
   setActiveSchema,
-  completeSetupSchema,
 } from "./schemas";
-import type { Account, AccountPatch, PublicAccount } from "./types";
 import { INITIAL_PASSWORD, SEED_ACCOUNTS } from "./setup";
-import { inTransaction } from "@/db/transaction";
+import type { Account, AccountPatch, PublicAccount } from "./types";
 
 const toPublic = ({ passwordHash, ...rest }: Account): PublicAccount => rest;
 

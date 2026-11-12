@@ -1,4 +1,4 @@
-import type { Page } from "@/shared/types/types";
+import type { Page } from "@/features/shared/types/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useInfiniteList<T>(

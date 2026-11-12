@@ -1,6 +1,13 @@
-import { NotFoundError, ValidationError } from "@/errors/errors";
-import { searchKey } from "@/shared/format/text";
-import { mapWriteErrors, parseOrThrow } from "@/shared/validation/validation";
+import {
+  NotFoundError,
+  ValidationError,
+} from "@/features/shared/errors/errors";
+import { searchKey } from "@/features/shared/format/text";
+import type { Page } from "@/features/shared/types/types";
+import {
+  mapWriteErrors,
+  parseOrThrow,
+} from "@/features/shared/validation/validation";
 import { makeReads, parseId } from "../_shared/service";
 import { getAuthor } from "../author/service";
 import { getCategory } from "../category/service";
@@ -26,7 +33,6 @@ import type {
   BookWithCollaborators,
   NewBook,
 } from "./types";
-import type { Page } from "@/shared/types/types";
 
 const ENTITY = "book";
 

@@ -7,7 +7,7 @@ type Props = {
 };
 export default function CatalogMain({ list }: Props) {
   return (
-    <View className="flex-1 py-8">
+    <View className="flex-1 pt-7">
       <BookList
         books={list.items}
         loading={list.loading}

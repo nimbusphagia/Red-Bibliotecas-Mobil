@@ -1,4 +1,3 @@
-import { and, asc, count, eq, getTableColumns, sql } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   direction,
@@ -10,7 +9,8 @@ import {
 } from "@/db/helpers";
 import { copy, shelf } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
-import type { Page } from "@/shared/types/types";
+import type { Page } from "@/features/shared/types/types";
+import { and, asc, count, eq, getTableColumns, sql } from "drizzle-orm";
 import type {
   NewShelf,
   Shelf,

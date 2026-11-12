@@ -1,13 +1,13 @@
-import { Button } from "@/shared/ui/components";
-import Header from "@/shared/ui/components/header/Header";
-import Searchbar from "@/shared/ui/components/search/Searchbar";
-import { colors } from "@/shared/ui/utils";
-import { NotebookPen } from "lucide-react-native";
-import FilterPanel, { type CatalogFilters } from "./FilterPanel";
 import type { BookSort } from "@/features/catalog/internal/book/schemas";
-import type { SortDirection } from "@/shared/types/types";
-import SortMenu from "./SortMenu";
+import type { SortDirection } from "@/features/shared/types/types";
+import { Button } from "@/features/shared/ui/components";
+import Header from "@/features/shared/ui/components/header/Header";
+import Searchbar from "@/features/shared/ui/components/search/Searchbar";
+import { colors } from "@/features/shared/ui/utils";
+import { NotebookPen } from "lucide-react-native";
 import { View } from "react-native";
+import FilterPanel, { type CatalogFilters } from "./FilterPanel";
+import SortMenu from "./SortMenu";
 
 type Props = {
   search: string;

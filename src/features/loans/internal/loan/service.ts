@@ -1,13 +1,5 @@
 import { db } from "@/db/client";
 import { inTransaction } from "@/db/transaction";
-import {
-  CopiesNotLendableError,
-  NotFoundError,
-  ValidationError,
-  type LendProblem,
-  type LendProblemKind,
-  type ValidationIssue,
-} from "@/errors/errors";
 import { requireActive } from "@/features/account/internal/service";
 import {
   findCopiesByIdsSync,
@@ -18,10 +10,21 @@ import type { ExitReason } from "@/features/inventory/internal/movement/types";
 import { writeExit } from "@/features/inventory/internal/movement/utils/exit";
 import { getLoanRule } from "@/features/loans/internal/reference/service";
 import { getVisitor } from "@/features/loans/internal/visitor/service";
-import { addDays, toISODate } from "@/shared/format/dates";
-import { idSchema } from "@/shared/types/schemas";
-import type { Page } from "@/shared/types/types";
-import { mapWriteErrors, parseOrThrow } from "@/shared/validation/validation";
+import {
+  CopiesNotLendableError,
+  NotFoundError,
+  ValidationError,
+  type LendProblem,
+  type LendProblemKind,
+  type ValidationIssue,
+} from "@/features/shared/errors/errors";
+import { addDays, toISODate } from "@/features/shared/format/dates";
+import { idSchema } from "@/features/shared/types/schemas";
+import type { Page } from "@/features/shared/types/types";
+import {
+  mapWriteErrors,
+  parseOrThrow,
+} from "@/features/shared/validation/validation";
 import * as repo from "./repository";
 import { assertCanBorrow, statusOf } from "./rules";
 import {

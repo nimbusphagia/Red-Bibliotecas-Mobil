@@ -1,4 +1,4 @@
-import { colors } from "@/shared/ui/utils";
+import { colors } from "@/features/shared/ui/utils";
 import { Stack } from "expo-router";
 
 export default function CatalogLayout() {

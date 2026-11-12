@@ -1,13 +1,13 @@
-import { ValidationError } from "@/errors/errors";
 import {
   makeCreate,
   makeReads,
   makeRemove,
   makeUpdate,
 } from "@/features/catalog/internal/_shared/service";
-import { searchKey } from "@/shared/format/text";
-import type { Page } from "@/shared/types/types";
-import { parseOrThrow } from "@/shared/validation/validation";
+import { ValidationError } from "@/features/shared/errors/errors";
+import { searchKey } from "@/features/shared/format/text";
+import type { Page } from "@/features/shared/types/types";
+import { parseOrThrow } from "@/features/shared/validation/validation";
 import * as repo from "./repository";
 import {
   createVisitorSchema,

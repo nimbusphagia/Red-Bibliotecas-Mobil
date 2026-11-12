@@ -1,7 +1,11 @@
 import { VISITOR_ROLES } from "@/db/schema";
 import { nameField } from "@/features/catalog/internal/_shared/fields";
-import { idSchema, listShape, withTokens } from "@/shared/types/schemas";
-import type { Assert } from "@/shared/types/types";
+import {
+  idSchema,
+  listShape,
+  withTokens,
+} from "@/features/shared/types/schemas";
+import type { Assert } from "@/features/shared/types/types";
 import { z } from "zod";
 import type { VisitorListFilters } from "./types";
 

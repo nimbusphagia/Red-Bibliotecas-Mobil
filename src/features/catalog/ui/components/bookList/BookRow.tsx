@@ -1,6 +1,6 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { Button, Text } from "@/shared/ui/components";
-import { cn, colors } from "@/shared/ui/utils";
+import { Button, Text } from "@/features/shared/ui/components";
+import { cn, colors } from "@/features/shared/ui/utils";
 import { BookUp, Dot, Eye } from "lucide-react-native";
 import { View } from "react-native";
 

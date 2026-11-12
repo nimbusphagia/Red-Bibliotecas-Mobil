@@ -1,4 +1,4 @@
-import type { Page, SortDirection } from "@/shared/types/types";
+import type { Page, SortDirection } from "@/features/shared/types/types";
 import {
   and,
   asc,

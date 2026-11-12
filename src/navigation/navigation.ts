@@ -4,6 +4,7 @@ import {
   LibraryBig,
   LucideIcon,
   PackageSearch,
+  ShelvingUnit,
   Tickets,
   User,
 } from "lucide-react-native";
@@ -31,6 +32,12 @@ export const NAVBAR: Navbar = {
       label: "Libros",
       href: "/catalog",
       icon: LibraryBig,
+    },
+    {
+      key: "shelves",
+      label: "Organizacion",
+      href: "/shelves",
+      icon: ShelvingUnit,
     },
     {
       key: "loans",

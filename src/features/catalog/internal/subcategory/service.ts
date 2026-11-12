@@ -1,4 +1,4 @@
-import { parseOrThrow } from "@/shared/validation/validation";
+import { parseOrThrow } from "@/features/shared/validation/validation";
 import {
   listReferenceSchema,
   type ReferenceListParams,

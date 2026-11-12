@@ -1,4 +1,4 @@
-import { useLayoutMode } from "@/hooks/useLayoutMode";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sidebar } from "./Sidebar/Sidebar";

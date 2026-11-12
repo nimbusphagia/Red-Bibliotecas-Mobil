@@ -1,4 +1,3 @@
-import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   direction,
@@ -9,7 +8,8 @@ import {
   type Reference,
 } from "@/db/helpers";
 import { loanMovement, schoolGrade, visitor } from "@/db/schema";
-import type { Page } from "@/shared/types/types";
+import type { Page } from "@/features/shared/types/types";
+import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import type {
   NewVisitor,
   Visitor,

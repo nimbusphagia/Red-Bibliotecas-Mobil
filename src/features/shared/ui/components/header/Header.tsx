@@ -1,4 +1,4 @@
-import { Text } from "@/shared/ui/components";
+import { Text } from "@/features/shared/ui/components";
 import { PropsWithChildren } from "react";
 import { View } from "react-native";
 

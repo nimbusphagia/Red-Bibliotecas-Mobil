@@ -1,5 +1,9 @@
 import { PRINT_STATUSES } from "@/db/schema";
-import { idSchema, listShape, withTokens } from "@/shared/types/schemas";
+import {
+  idSchema,
+  listShape,
+  withTokens,
+} from "@/features/shared/types/schemas";
 import { z } from "zod";
 
 export const LABEL_SORT_KEYS = ["createdAt", "text"] as const;

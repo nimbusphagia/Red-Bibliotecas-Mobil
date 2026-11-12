@@ -1,6 +1,9 @@
 import type { Executor } from "@/db/transaction";
-import { ValidationError } from "@/errors/errors";
-import { IncompleteBookError, LabelConflictError } from "@/errors/errors";
+import {
+  IncompleteBookError,
+  LabelConflictError,
+  ValidationError,
+} from "@/features/shared/errors/errors";
 import { activeCopyNumbersSync } from "../../copy/repository";
 import { nextFreeNumbers } from "../../copy/utils/numbering";
 import {
@@ -9,8 +12,8 @@ import {
 } from "../../label/repository";
 import { buildLabelText } from "../../label/utils/labelText";
 import { titleCode } from "../../label/utils/titleCode";
-import type { PreparedLine } from "./prepare";
 import type { LabelPreview, TitleCodeSource } from "../types";
+import type { PreparedLine } from "./prepare";
 
 export type Claim = {
   bookId: number | null;

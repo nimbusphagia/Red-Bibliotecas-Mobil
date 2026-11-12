@@ -4,13 +4,13 @@ import { listCollections } from "@/features/catalog/internal/collection/service"
 import { listPublishers } from "@/features/catalog/internal/publisher/service";
 import { listSeries } from "@/features/catalog/internal/series/service";
 import { listSubcategories } from "@/features/catalog/internal/subcategory/service";
-import { Button, Text } from "@/shared/ui/components";
+import { Button, Text } from "@/features/shared/ui/components";
 import {
   SearchSelect,
   SimpleSelect,
   type Option,
-} from "@/shared/ui/components/select/Select";
-import { colors } from "@/shared/ui/utils";
+} from "@/features/shared/ui/components/select/Select";
+import { colors } from "@/features/shared/ui/utils";
 import { Circle, SlidersHorizontal } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";

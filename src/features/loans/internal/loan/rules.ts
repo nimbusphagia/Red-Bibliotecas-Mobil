@@ -1,4 +1,7 @@
-import { LoanLimitError, VisitorBlockedError } from "@/errors/errors";
+import {
+  LoanLimitError,
+  VisitorBlockedError,
+} from "@/features/shared/errors/errors";
 import type { OpenCounts, VisitorLoanStatus } from "./types";
 
 export const MAX_OPEN_COPIES = 5;

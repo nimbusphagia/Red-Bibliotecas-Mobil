@@ -1,5 +1,5 @@
-import { Button, Text } from "@/shared/ui/components";
-import { colors } from "@/shared/ui/utils";
+import { Button, Text } from "@/features/shared/ui/components";
+import { colors } from "@/features/shared/ui/utils";
 import { ActivityIndicator, View } from "react-native";
 
 export function LoadingScreen({ message }: { message?: string }) {

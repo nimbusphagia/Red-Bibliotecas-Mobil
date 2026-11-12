@@ -1,28 +1,27 @@
-import { and, count, eq, inArray, isNull, notInArray, sql } from "drizzle-orm";
-import { direction } from "@/db/helpers";
+import { db } from "@/db/client";
+import { direction, toPage } from "@/db/helpers";
 import {
   book,
   copy,
   label,
-  shelf,
   loanMovement,
   loanMovementLine,
+  shelf,
   visitor,
 } from "@/db/schema";
-import { toPage } from "@/db/helpers";
-import { db } from "@/db/client";
-import type { Page } from "@/shared/types/types";
 import type { Executor } from "@/db/transaction";
-import { toISODate } from "@/shared/format/dates";
+import { toISODate } from "@/features/shared/format/dates";
+import type { Page } from "@/features/shared/types/types";
+import { and, count, eq, inArray, isNull, notInArray, sql } from "drizzle-orm";
 import type { CopyItemRow } from "./types";
 import {
   RELEASED_STATUSES,
   type Copy,
+  type CopyItem,
+  type CopyListFilters,
   type CopyLookup,
   type CopyStatus,
   type NewCopy,
-  type CopyItem,
-  type CopyListFilters,
 } from "./types";
 
 export function activeCopyNumbersSync(ex: Executor, bookId: number): number[] {

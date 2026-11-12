@@ -20,7 +20,7 @@ import {
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import { RELEASED_STATUSES } from "@/features/inventory/internal/copy/types";
-import type { Page } from "@/shared/types/types";
+import type { Page } from "@/features/shared/types/types";
 import {
   and,
   asc,

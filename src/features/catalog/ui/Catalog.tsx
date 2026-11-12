@@ -1,13 +1,13 @@
-import { listBooks } from "@/features/catalog/internal/book/service";
 import type { BookSort } from "@/features/catalog/internal/book/schemas";
-import type { CatalogFilters } from "./components/FilterPanel";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useInfiniteList } from "@/hooks/useInfiniteList";
-import type { SortDirection } from "@/shared/types/types";
+import { listBooks } from "@/features/catalog/internal/book/service";
+import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import CatalogHeader from "./components/CatalogHeader";
 import CatalogMain from "./components/CatalogMain";
+import type { CatalogFilters } from "./components/FilterPanel";
 
 const PAGE_SIZE = 20;
 

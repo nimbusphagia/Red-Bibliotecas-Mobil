@@ -1,5 +1,5 @@
 import type { COPY_STATUSES, copy } from "@/db/schema";
-import type { SortDirection } from "@/shared/types/types";
+import type { SortDirection } from "@/features/shared/types/types";
 import type { CopySort } from "./schemas";
 
 export type Copy = typeof copy.$inferSelect;

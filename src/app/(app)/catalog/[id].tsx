@@ -1,4 +1,4 @@
-import { MainLayout } from "@/shared/ui/layout/MainLayout";
+import { MainLayout } from "@/features/shared/ui/layout/MainLayout";
 import { useLocalSearchParams } from "expo-router";
 import { Text } from "react-native";
 

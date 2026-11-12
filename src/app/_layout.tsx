@@ -5,8 +5,8 @@ import {
 import {
   BootErrorScreen,
   LoadingScreen,
-} from "@/shared/ui/layout/LoadingScreen";
-import { colors } from "@/shared/ui/utils";
+} from "@/features/shared/ui/layout/LoadingScreen";
+import { colors } from "@/features/shared/ui/utils";
 import {
   Outfit_400Regular,
   Outfit_500Medium,

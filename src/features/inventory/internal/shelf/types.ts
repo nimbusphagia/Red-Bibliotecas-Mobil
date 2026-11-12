@@ -1,5 +1,5 @@
 import type { shelf } from "@/db/schema";
-import type { ListFilters } from "@/shared/types/types";
+import type { ListFilters } from "@/features/shared/types/types";
 import type { ShelfSort } from "./schemas";
 
 export type Shelf = typeof shelf.$inferSelect;

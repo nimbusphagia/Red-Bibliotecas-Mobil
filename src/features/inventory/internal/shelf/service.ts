@@ -1,13 +1,16 @@
 import { inTransaction } from "@/db/transaction";
-import { ValidationError, type ValidationIssue } from "@/errors/errors";
 import {
   makeCreate,
   makeReads,
   makeRemove,
   makeUpdate,
 } from "@/features/catalog/internal/_shared/service";
-import type { Page } from "@/shared/types/types";
-import { parseOrThrow } from "@/shared/validation/validation";
+import {
+  ValidationError,
+  type ValidationIssue,
+} from "@/features/shared/errors/errors";
+import type { Page } from "@/features/shared/types/types";
+import { parseOrThrow } from "@/features/shared/validation/validation";
 import { findCopiesByIdsSync, setCopiesShelfSync } from "../copy/repository";
 import type { CopyStatus } from "../copy/types";
 import { requireStockRole } from "../movement/utils/auth";

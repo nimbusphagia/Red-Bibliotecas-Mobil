@@ -1,6 +1,6 @@
 import type { LINE_OUTCOMES, loanMovement } from "@/db/schema";
 import type { ExitResult } from "@/features/inventory/internal/movement/types";
-import type { ListFilters } from "@/shared/types/types";
+import type { ListFilters } from "@/features/shared/types/types";
 import type { LoanSort, OpenLineSort } from "./schemas";
 
 export type LoanMovement = typeof loanMovement.$inferSelect;

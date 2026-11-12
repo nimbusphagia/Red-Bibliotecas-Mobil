@@ -1,33 +1,38 @@
 import { db } from "@/db/client";
 import { inTransaction } from "@/db/transaction";
-import { parseOrThrow } from "@/shared/validation/validation";
-import { mapWriteErrors } from "@/shared/validation/validation";
-import { previewLines } from "./utils/plan";
-import { prepareLines } from "./utils/prepare";
+import { NotFoundError } from "@/features/shared/errors/errors";
+import { idSchema } from "@/features/shared/types/schemas";
+import type { Page } from "@/features/shared/types/types";
+import {
+  mapWriteErrors,
+  parseOrThrow,
+} from "@/features/shared/validation/validation";
+import * as repo from "./repository";
 import {
   entryMovementSchema,
   exitMovementSchema,
+  listLinesSchema,
+  listMovementsSchema,
   registerCopiesSchema,
   type EntryMovementInput,
   type EntryMovementParsed,
   type ExitMovementInput,
-  type RegisterCopiesInput,
-} from "./schemas";
-import type { EntryResult, ExitResult, LabelPreview } from "./types";
-import { requireStockRole } from "./utils/auth";
-import { writeEntry } from "./utils/write";
-import { writeExit } from "./utils/exit";
-import { NotFoundError } from "@/errors/errors";
-import { idSchema } from "@/shared/types/schemas";
-import type { Page } from "@/shared/types/types";
-import * as repo from "./repository";
-import {
-  listLinesSchema,
-  listMovementsSchema,
   type MovementLinesParams,
   type MovementListParams,
+  type RegisterCopiesInput,
 } from "./schemas";
-import type { MovementLine, MovementListItem } from "./types";
+import type {
+  EntryResult,
+  ExitResult,
+  LabelPreview,
+  MovementLine,
+  MovementListItem,
+} from "./types";
+import { requireStockRole } from "./utils/auth";
+import { writeExit } from "./utils/exit";
+import { previewLines } from "./utils/plan";
+import { prepareLines } from "./utils/prepare";
+import { writeEntry } from "./utils/write";
 
 async function run(
   actorId: number,
