@@ -7,6 +7,7 @@ import type { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
 import { requireStockRole } from "../movement/utils/auth";
 import {
+  findBookLabelCodes,
   findLabelStatesSync,
   listLabels as listLabelsRepo,
   markLabelsPrintedSync,
@@ -18,6 +19,7 @@ import {
   type MarkPrintedInput,
 } from "./schemas";
 import type { LabelItem } from "./types";
+import { idSchema } from "@/features/shared/types/schemas";
 
 export async function listLabels(
   params: LabelListParams = {},
@@ -52,4 +54,7 @@ export async function markLabelsPrinted(
     const printed = markLabelsPrintedSync(tx, labelIds);
     return { printed, alreadyPrinted: labelIds.length - printed };
   });
+}
+export async function getBookLabelCodes(bookId: number) {
+  return findBookLabelCodes(parseOrThrow(idSchema, bookId));
 }

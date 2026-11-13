@@ -50,6 +50,13 @@ export async function listBooks(
   return repo.listBooks(parseOrThrow(listBooksSchema, params));
 }
 
+export async function getBookItem(id: number): Promise<BookListItem> {
+  const validId = parseId(id);
+  const found = await repo.findBookItemById(validId);
+  if (!found) throw new NotFoundError(ENTITY, validId);
+  return found;
+}
+
 // Validation
 type RefIds = {
   publisherId?: number | null;

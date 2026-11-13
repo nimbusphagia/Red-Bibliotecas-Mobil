@@ -23,6 +23,7 @@ export type CopyListFilters = {
   bookId: number;
   status?: CopyStatus;
   shelfId?: number;
+  excludeReleased?: boolean;
   sortBy: CopySort;
   sortDir: SortDirection;
   limit: number;

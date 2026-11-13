@@ -1,13 +1,13 @@
-import { MainLayout } from "@/features/shared/ui/layout/MainLayout";
+import BookDetail from "@/features/catalog/ui/BookDetail";
+import { MainLayout } from "@/features/shared/layout/MainLayout";
 import { useLocalSearchParams } from "expo-router";
-import { Text } from "react-native";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <MainLayout title="Book detail">
-      <Text>id: {id}</Text>
+    <MainLayout title="">
+      <BookDetail id={id} />
     </MainLayout>
   );
 }

@@ -1,5 +1,5 @@
 import { LoanListItem } from "@/features/loans/internal/loan/types";
-import { Text } from "@/features/shared/ui/components";
+import { Text } from "@/features/shared/components";
 import { View } from "react-native";
 import LoanRow from "./LoanRow";
 

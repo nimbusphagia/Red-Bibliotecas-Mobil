@@ -1,12 +1,12 @@
 import { completeSetup } from "@/features/account/internal/service";
 import { useSession } from "@/features/account/internal/session";
+import { Button, Text } from "@/features/shared/components";
+import { FormScreen, TextField } from "@/features/shared/components/form";
 import {
   toFormErrors,
   type FormErrors,
 } from "@/features/shared/errors/messages";
-import { Button, Text } from "@/features/shared/ui/components";
-import { FormScreen, TextField } from "@/features/shared/ui/components/form";
-import { LoadingScreen } from "@/features/shared/ui/layout/LoadingScreen";
+import { LoadingScreen } from "@/features/shared/layout/LoadingScreen";
 import { Image } from "expo-image";
 import { useRef, useState } from "react";
 import type { TextInputInstance } from "react-native";

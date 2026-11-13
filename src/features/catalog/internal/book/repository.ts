@@ -114,6 +114,27 @@ async function collaboratorsOf(
   return byBook;
 }
 
+const selectItems = () =>
+  db
+    .select({
+      ...getTableColumns(book),
+      publisherName: publisher.name,
+      collectionName: collection.name,
+      seriesName: series.name,
+      categoryName: category.name,
+      subcategoryName: subcategory.name,
+      copyCount,
+      activeCount,
+      availableCount,
+      onLoanCount,
+    })
+    .from(book)
+    .leftJoin(publisher, eq(book.publisherId, publisher.id))
+    .leftJoin(collection, eq(book.collectionId, collection.id))
+    .leftJoin(series, eq(book.seriesId, series.id))
+    .leftJoin(category, eq(book.categoryId, category.id))
+    .leftJoin(subcategory, eq(book.subcategoryId, subcategory.id));
+
 // Queries
 export async function findBookById(id: number): Promise<Book | null> {
   const [row] = await db.select().from(book).where(eq(book.id, id));
@@ -191,25 +212,7 @@ export async function listBooks(
   }[sortBy];
 
   const [rows, [{ n }]] = await Promise.all([
-    db
-      .select({
-        ...getTableColumns(book),
-        publisherName: publisher.name,
-        collectionName: collection.name,
-        seriesName: series.name,
-        categoryName: category.name,
-        subcategoryName: subcategory.name,
-        copyCount,
-        activeCount,
-        availableCount,
-        onLoanCount,
-      })
-      .from(book)
-      .leftJoin(publisher, eq(book.publisherId, publisher.id))
-      .leftJoin(collection, eq(book.collectionId, collection.id))
-      .leftJoin(series, eq(book.seriesId, series.id))
-      .leftJoin(category, eq(book.categoryId, category.id))
-      .leftJoin(subcategory, eq(book.subcategoryId, subcategory.id))
+    selectItems()
       .where(where)
       .orderBy(direction(sortDir)(sortKey), asc(book.titleKey), asc(book.id))
       .limit(limit)
@@ -220,13 +223,21 @@ export async function listBooks(
       .leftJoin(publisher, eq(book.publisherId, publisher.id))
       .where(where),
   ]);
-
   const byBook = await collaboratorsOf(rows.map((r) => r.id));
   const items = rows.map((r) => ({
     ...r,
     collaborators: byBook.get(r.id) ?? [],
   }));
   return toPage(items, n, filters);
+}
+
+export async function findBookItemById(
+  id: number,
+): Promise<BookListItem | null> {
+  const [row] = await selectItems().where(eq(book.id, id));
+  if (!row) return null;
+  const byBook = await collaboratorsOf([id]);
+  return { ...row, collaborators: byBook.get(id) ?? [] };
 }
 
 export async function countBookUsage(id: number): Promise<BookUsage | null> {

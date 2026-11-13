@@ -1,10 +1,10 @@
 import { useSession } from "@/features/account/internal/session";
+import { Button, Text } from "@/features/shared/components";
+import { FormScreen, TextField } from "@/features/shared/components/form";
 import {
   toFormErrors,
   type FormErrors,
 } from "@/features/shared/errors/messages";
-import { Button, Text } from "@/features/shared/ui/components";
-import { FormScreen, TextField } from "@/features/shared/ui/components/form";
 import { Image } from "expo-image";
 import { useRef, useState } from "react";
 import type { TextInputInstance } from "react-native";

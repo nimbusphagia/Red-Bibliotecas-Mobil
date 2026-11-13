@@ -1,4 +1,4 @@
-import { MainLayout } from "@/features/shared/ui/layout/MainLayout";
+import { MainLayout } from "@/features/shared/layout/MainLayout";
 
 export default function ShelvesScreen() {
   return <MainLayout title="Shelves" />;

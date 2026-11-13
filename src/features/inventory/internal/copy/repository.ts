@@ -146,12 +146,24 @@ export async function findCopyById(id: number): Promise<CopyItem | null> {
 export async function listCopies(
   filters: CopyListFilters,
 ): Promise<Page<CopyItem>> {
-  const { bookId, status, shelfId, sortBy, sortDir, limit, offset } = filters;
+  const {
+    bookId,
+    status,
+    shelfId,
+    excludeReleased,
+    sortBy,
+    sortDir,
+    limit,
+    offset,
+  } = filters;
 
   const where = and(
     eq(copy.bookId, bookId),
     status === undefined ? undefined : eq(copy.status, status),
     shelfId === undefined ? undefined : eq(copy.shelfId, shelfId),
+    excludeReleased
+      ? notInArray(copy.status, [...RELEASED_STATUSES])
+      : undefined,
   );
 
   const sortKey = {

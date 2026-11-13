@@ -1,6 +1,6 @@
-import { Button } from "@/features/shared/ui/components";
-import Header from "@/features/shared/ui/components/header/Header";
-import { colors } from "@/features/shared/ui/utils";
+import { Button } from "@/features/shared/components";
+import Header from "@/features/shared/components/header/Header";
+import { colors } from "@/features/shared/theme";
 import { BookDown, BookUp, NotebookPen } from "lucide-react-native";
 import { View } from "react-native";
 

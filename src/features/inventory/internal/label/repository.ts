@@ -16,6 +16,7 @@ import {
 } from "drizzle-orm";
 import type {
   Label,
+  LabelCodes,
   LabelItem,
   LabelListFilters,
   LabelOwner,
@@ -145,4 +146,22 @@ export function markLabelsPrintedSync(ex: Executor, ids: number[]): number {
     )
     .returning({ id: label.id })
     .all().length;
+}
+
+export async function findBookLabelCodes(
+  bookId: number,
+): Promise<LabelCodes | null> {
+  const [row] = await db
+    .select({
+      categoryCode: label.categoryCode,
+      authorCode: label.authorCode,
+      subcategoryCode: label.subcategoryCode,
+      titleCode: label.titleCode,
+    })
+    .from(label)
+    .innerJoin(copy, eq(copy.id, label.copyId))
+    .where(eq(copy.bookId, bookId))
+    .orderBy(sql`${label.revokedAt} is not null`, desc(label.id))
+    .limit(1);
+  return row ?? null;
 }

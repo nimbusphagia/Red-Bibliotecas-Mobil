@@ -14,6 +14,7 @@ export const listCopiesSchema = z.object({
   bookId: idSchema,
   status: z.enum(COPY_STATUSES).optional(),
   shelfId: idSchema.optional(),
+  excludeReleased: z.boolean().optional(),
   ...listFields,
 });
 

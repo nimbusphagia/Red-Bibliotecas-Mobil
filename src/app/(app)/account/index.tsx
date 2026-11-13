@@ -1,6 +1,6 @@
 import { useSession } from "@/features/account/internal/session";
-import { Button, Text } from "@/features/shared/ui/components";
-import { MainLayout } from "@/features/shared/ui/layout/MainLayout";
+import { Button, Text } from "@/features/shared/components";
+import { MainLayout } from "@/features/shared/layout/MainLayout";
 import { View } from "react-native";
 
 const ROLE_LABELS = {

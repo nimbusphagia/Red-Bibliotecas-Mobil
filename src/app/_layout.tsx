@@ -5,13 +5,14 @@ import {
 import {
   BootErrorScreen,
   LoadingScreen,
-} from "@/features/shared/ui/layout/LoadingScreen";
-import { colors } from "@/features/shared/ui/utils";
+} from "@/features/shared/layout/LoadingScreen";
+import { colors } from "@/features/shared/theme";
 import {
   Outfit_400Regular,
   Outfit_500Medium,
   Outfit_600SemiBold,
   Outfit_700Bold,
+  Outfit_800ExtraBold,
   useFonts,
 } from "@expo-google-fonts/outfit";
 import { Stack } from "expo-router";
@@ -36,6 +37,7 @@ function RootNavigator() {
     Outfit_500Medium,
     Outfit_600SemiBold,
     Outfit_700Bold,
+    Outfit_800ExtraBold,
   });
 
   useEffect(() => {

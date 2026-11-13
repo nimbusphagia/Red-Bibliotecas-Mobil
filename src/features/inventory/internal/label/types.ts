@@ -44,3 +44,8 @@ export type LabelState = {
   id: number;
   revoked: boolean;
 };
+
+export type LabelCodes = Pick<
+  Label,
+  "categoryCode" | "authorCode" | "subcategoryCode" | "titleCode"
+>;

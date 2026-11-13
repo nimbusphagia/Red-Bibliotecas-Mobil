@@ -4,10 +4,9 @@ import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
-import { View } from "react-native";
-import CatalogHeader from "./components/CatalogHeader";
-import CatalogMain from "./components/CatalogMain";
-import type { CatalogFilters } from "./components/FilterPanel";
+import CatalogHeader from "./listComponents/CatalogHeader";
+import CatalogMain from "./listComponents/CatalogMain";
+import type { CatalogFilters } from "./listComponents/searchFilters/FilterPanel";
 
 const PAGE_SIZE = 20;
 
@@ -41,7 +40,7 @@ export default function Catalog() {
   const list = useInfiniteList(fetchPage);
 
   return (
-    <View className="flex-1">
+    <>
       <CatalogHeader
         search={search}
         onSearchChange={setSearch}
@@ -55,6 +54,6 @@ export default function Catalog() {
         onFiltersChange={setFilters}
       />
       <CatalogMain list={list} />
-    </View>
+    </>
   );
 }

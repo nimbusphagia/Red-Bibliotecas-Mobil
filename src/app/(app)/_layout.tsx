@@ -1,4 +1,4 @@
-import { AppShell } from "@/features/shared/ui/layout/AppShell";
+import { AppShell } from "@/features/shared/layout/AppShell";
 import { Slot } from "expo-router";
 
 export default function AppLayout() {
