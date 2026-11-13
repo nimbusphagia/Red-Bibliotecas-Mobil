@@ -1,9 +1,9 @@
 import { Text as RNText, type TextProps } from "react-native";
 import { cn } from "../theme";
 
-type Variant = "h1" | "h2" | "h3" | "subtitle";
+export type TextVariant = "h1" | "h2" | "h3" | "subtitle";
 type Props = {
-  variant?: Variant;
+  variant?: TextVariant;
   className?: string;
 };
 export function Text({ variant, className, ...props }: TextProps & Props) {

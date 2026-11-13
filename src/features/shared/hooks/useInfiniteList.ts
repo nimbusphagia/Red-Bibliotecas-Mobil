@@ -1,4 +1,5 @@
 import type { Page } from "@/features/shared/types/types";
+import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useInfiniteList<T>(
@@ -43,6 +44,22 @@ export function useInfiniteList<T>(
     setError(null);
     load(0);
   }, [load]);
+  const loadRef = useRef(load);
+  useEffect(() => {
+    loadRef.current = load;
+  }, [load]);
+
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) {
+        firstFocus.current = false;
+        return;
+      }
+      generation.current++;
+      loadRef.current(0);
+    }, []),
+  );
 
   const loadMore = useCallback(() => {
     if (busy.current || error || items.length >= total) return;

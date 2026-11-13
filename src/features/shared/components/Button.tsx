@@ -18,7 +18,7 @@ const containerStyles: Record<Variant, string> = {
   primary: `bg-highlight active:bg-primary`,
   secondary: "border border-slate-300 bg-white active:bg-slate-100",
   pill: "bg-primary active:bg-secondary rounded-full",
-  "pill-secondary": "bg-fg2  active:bg-fg1 rounded-full border border-fg1",
+  "pill-secondary": "bg-fg1  active:bg-fg2 rounded-full border border-fg1",
 };
 
 const labelStyles: Record<Variant, string> = {

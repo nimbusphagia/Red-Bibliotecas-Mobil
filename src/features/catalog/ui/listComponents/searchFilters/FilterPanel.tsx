@@ -1,9 +1,4 @@
-import { listAuthors } from "@/features/catalog/internal/author/service";
-import { listCategories } from "@/features/catalog/internal/category/service";
-import { listCollections } from "@/features/catalog/internal/collection/service";
-import { listPublishers } from "@/features/catalog/internal/publisher/service";
 import { listSeries } from "@/features/catalog/internal/series/service";
-import { listSubcategories } from "@/features/catalog/internal/subcategory/service";
 import { Button, Text } from "@/features/shared/components";
 import {
   SearchSelect,
@@ -12,8 +7,16 @@ import {
 } from "@/features/shared/components/select/Select";
 import { colors } from "@/features/shared/theme";
 import { Circle, SlidersHorizontal } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  fetchCollections,
+  loadCategories,
+  loadSubcategories,
+  searchAuthors,
+  searchPublishers,
+  useOptions,
+} from "../../options";
 
 export type CatalogFilters = {
   author?: Option;
@@ -26,48 +29,8 @@ export type CatalogFilters = {
 
 const LIMIT = 20;
 
-const fetchAuthors = async (search: string): Promise<Option[]> =>
-  (await listAuthors({ search, withBooks: true, limit: LIMIT })).items.map(
-    (a) => ({
-      id: a.id,
-      label: [a.firstName, a.lastName].filter(Boolean).join(" "),
-    }),
-  );
-
-const fetchPublishers = async (search: string): Promise<Option[]> =>
-  (await listPublishers({ search, withBooks: true, limit: LIMIT })).items.map(
-    (p) => ({ id: p.id, label: p.name }),
-  );
-
-const loadCategories = async (): Promise<Option[]> =>
-  (await listCategories({ limit: 100 })).map((c) => ({
-    id: c.id,
-    label: c.name,
-  }));
-
-const loadSubcategories = async (): Promise<Option[]> =>
-  (await listSubcategories({ limit: 100 })).map((s) => ({
-    id: s.id,
-    label: s.name,
-  }));
-
-function useOptions(load: (() => Promise<Option[]>) | null) {
-  const [options, setOptions] = useState<Option[]>([]);
-  useEffect(() => {
-    if (!load) {
-      setOptions([]);
-      return;
-    }
-    let stale = false;
-    load().then((o) => {
-      if (!stale) setOptions(o);
-    });
-    return () => {
-      stale = true;
-    };
-  }, [load]);
-  return options;
-}
+const fetchAuthors = (s: string) => searchAuthors(s, true);
+const fetchPublishers = (s: string) => searchPublishers(s, true);
 
 type Props = {
   filters: CatalogFilters;
@@ -91,10 +54,7 @@ export default function FilterPanel({ filters, onChange }: Props) {
   );
 
   const loadCollections = useCallback(
-    async (): Promise<Option[]> =>
-      (
-        await listCollections({ publisherId, withBooks: true, limit: 100 })
-      ).items.map((c) => ({ id: c.id, label: c.name })),
+    () => fetchCollections(publisherId, true),
     [publisherId],
   );
 

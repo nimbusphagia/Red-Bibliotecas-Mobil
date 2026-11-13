@@ -7,6 +7,7 @@ import type { SortDirection } from "@/features/shared/types/types";
 import { NotebookPen } from "lucide-react-native";
 import { View } from "react-native";
 import FilterPanel, { type CatalogFilters } from "./searchFilters/FilterPanel";
+import { Link } from "expo-router";
 
 type Props = {
   search: string;
@@ -26,19 +27,20 @@ export default function CatalogHeader({
   return (
     <Header title="Libros">
       <View className="flex-1 flex-row justify-between pl-5">
-        <Button
-          title="Registrar"
-          variant="pill"
-          className="bg-highlight"
-          lucideIcon={<NotebookPen size={18} color={colors.bg} />}
-        />
+        <Link href="/catalog/form" asChild>
+          <Button
+            title="Registrar"
+            variant="pill"
+            className="bg-highlight"
+            lucideIcon={<NotebookPen size={18} color={colors.bg} />}
+          />
+        </Link>
         <View className="flex-1 flex-row items-center justify-end gap-5">
           <Searchbar
             value={search}
             onChangeText={onSearchChange}
             placeholder="Buscar por título, autor o editorial..."
           />
-          {/*<SortMenu sortBy={sortBy} sortDir={sortDir} onChange={onSortChange} />*/}
           <FilterPanel filters={filters} onChange={onFiltersChange} />
         </View>
       </View>

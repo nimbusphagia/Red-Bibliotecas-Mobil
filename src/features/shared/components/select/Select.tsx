@@ -12,11 +12,18 @@ type SimpleProps = {
   options: Option[];
   value?: number;
   onChange: (id?: number) => void;
+  disabled?: boolean;
 };
 
-export function SimpleSelect({ label, options, value, onChange }: SimpleProps) {
+export function SimpleSelect({
+  label,
+  options,
+  value,
+  onChange,
+  disabled,
+}: SimpleProps) {
   return (
-    <View className="gap-2">
+    <View className={cn("gap-2", disabled && "opacity-50")}>
       <Text variant="h3">{label}</Text>
       <View className="flex-row flex-wrap gap-x-2 gap-y-4">
         {options.map((o) => {
@@ -24,6 +31,7 @@ export function SimpleSelect({ label, options, value, onChange }: SimpleProps) {
           return (
             <Pressable
               key={o.id}
+              disabled={disabled}
               onPress={() => onChange(selected ? undefined : o.id)}
               className={cn(
                 "rounded-full px-4 py-1.5",
@@ -47,10 +55,14 @@ export function SimpleSelect({ label, options, value, onChange }: SimpleProps) {
 }
 
 type SearchProps = {
-  label: string;
+  label?: string;
   value?: Option;
   onChange: (option?: Option) => void;
   fetchOptions: (search: string) => Promise<Option[]>;
+  placeholder?: string;
+  clearLabel?: string;
+  disabled?: boolean;
+  onCreate?: (name: string) => void;
 };
 
 export function SearchSelect({
@@ -58,6 +70,10 @@ export function SearchSelect({
   value,
   onChange,
   fetchOptions,
+  placeholder = "Todos",
+  clearLabel = "Quitar filtro",
+  disabled,
+  onCreate,
 }: SearchProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -77,8 +93,14 @@ export function SearchSelect({
     };
   }, [debounced, fetchOptions]);
 
-  const empty = none && !value;
+  const empty = none && !value && !onCreate;
   const isOpen = open && !empty;
+
+  const typed = debounced.trim().toLowerCase();
+  const canCreate =
+    !!onCreate &&
+    typed !== "" &&
+    !options.some((o) => o.label.toLowerCase() === typed);
 
   const close = () => {
     setOpen(false);
@@ -88,10 +110,14 @@ export function SearchSelect({
     onChange(option);
     close();
   };
+  const create = () => {
+    onCreate?.(search.trim());
+    close();
+  };
 
   return (
     <View className="gap-2">
-      <Text variant="h3">{label}</Text>
+      {label && <Text variant="h3">{label}</Text>}
 
       {empty ? (
         <View className="h-12 justify-center rounded-full bg-fg1 px-4">
@@ -113,10 +139,14 @@ export function SearchSelect({
         </View>
       ) : (
         <Pressable
+          disabled={disabled}
           onPress={() => setOpen(true)}
-          className="h-12 justify-center rounded-full bg-fg1 px-4"
+          className={cn(
+            "h-12 justify-center rounded-full bg-fg1 px-4",
+            disabled && "opacity-50",
+          )}
         >
-          <Text variant="subtitle">{value?.label ?? "Todos"}</Text>
+          <Text variant="subtitle">{value?.label ?? placeholder}</Text>
         </Pressable>
       )}
 
@@ -128,7 +158,20 @@ export function SearchSelect({
                 onPress={() => pick(undefined)}
                 className="border-b border-fg1 px-4 py-2"
               >
-                <Text variant="subtitle">Quitar filtro</Text>
+                <Text variant="subtitle">{clearLabel}</Text>
+              </Pressable>
+            )}
+            {canCreate && (
+              <Pressable
+                onPress={create}
+                className="border-b border-fg1 px-4 py-2"
+              >
+                <Text
+                  variant="subtitle"
+                  className="font-semibold text-highlight"
+                >
+                  Crear «{search.trim()}»
+                </Text>
               </Pressable>
             )}
             {options.length === 0 && (
@@ -154,6 +197,47 @@ export function SearchSelect({
           </ScrollView>
         </View>
       )}
+    </View>
+  );
+}
+
+type MultiProps = Omit<SearchProps, "value" | "onChange" | "clearLabel"> & {
+  values: Option[];
+  onChange: (options: Option[]) => void;
+};
+
+export function MultiSearchSelect({
+  label,
+  values,
+  onChange,
+  disabled,
+  ...search
+}: MultiProps) {
+  const add = (option?: Option) => {
+    if (option && !values.some((v) => v.id === option.id)) {
+      onChange([...values, option]);
+    }
+  };
+
+  return (
+    <View className="gap-2">
+      {label && <Text variant="h3">{label}</Text>}
+      {values.length > 0 && (
+        <View className="flex-row flex-wrap gap-2">
+          {values.map((o) => (
+            <Pressable
+              key={o.id}
+              disabled={disabled}
+              onPress={() => onChange(values.filter((v) => v.id !== o.id))}
+              className="flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-1.5"
+            >
+              <Text className="font-semibold text-bg">{o.label}</Text>
+              {!disabled && <X size={14} color={colors.bg} />}
+            </Pressable>
+          ))}
+        </View>
+      )}
+      {!disabled && <SearchSelect {...search} onChange={add} />}
     </View>
   );
 }

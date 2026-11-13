@@ -15,12 +15,14 @@ export default function BookRowComponent({ book }: Props) {
   return (
     <View className={containerClass}>
       <View className={colClass}>
-        <Text variant="h3">{book.title}</Text>
+        <Text variant="h3" className="text-highlight">
+          {book.title}
+        </Text>
         <View className="flex-row  items-center">
           <Text variant="subtitle">{book.publisherName}</Text>
           {book.collectionName && (
             <>
-              <Dot color={colors.primary} />
+              <Dot color={colors.secondary} />
               <Text variant="subtitle">"{book.collectionName}"</Text>
             </>
           )}
