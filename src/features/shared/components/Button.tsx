@@ -17,15 +17,15 @@ type ButtonProps = Omit<PressableProps, "children"> & {
 const containerStyles: Record<Variant, string> = {
   primary: `bg-highlight active:bg-primary`,
   secondary: "border border-slate-300 bg-white active:bg-slate-100",
-  pill: "bg-highlight active:bg-primary rounded-full",
-  "pill-secondary": "bg-foreground/80  active:bg-foreground rounded-full",
+  pill: "bg-primary active:bg-secondary rounded-full",
+  "pill-secondary": "bg-fg2  active:bg-fg1 rounded-full border border-fg1",
 };
 
 const labelStyles: Record<Variant, string> = {
-  primary: "text-background",
+  primary: "text-bg",
   secondary: "text-slate-900",
-  pill: "text-background",
-  "pill-secondary": "text-highlight",
+  pill: "text-bg",
+  "pill-secondary": "text-primary",
 };
 
 export function Button({

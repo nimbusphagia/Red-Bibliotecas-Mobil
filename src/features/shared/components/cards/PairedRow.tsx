@@ -22,8 +22,8 @@ export default function PairedRow({
   labelClass = "",
   contentClass = "",
 }: Props) {
-  const textClass = "p-2 max-w-full";
-  const highlighted = "bg-primary text-background";
+  const textClass = "py-[5] max-w-full";
+  const highlighted = "bg-primary text-bg";
 
   if (content === null || label === null) return;
   return (

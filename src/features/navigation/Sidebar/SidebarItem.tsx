@@ -11,12 +11,8 @@ type Props = {
 
 export function SidebarItem({ item, active, expanded }: Props) {
   const [iconColor, bgColor, activeClass] = active
-    ? [
-        colors.foreground,
-        "bg-highlight",
-        "shadow-md shadow-highlight/80 opacity-100",
-      ]
-    : [colors.highlight, "bg-foreground", "shadow-none opacity-100"];
+    ? [colors.fg1, "bg-highlight", "shadow-md shadow-highlight/80 opacity-100"]
+    : [colors.highlight, "bg-fg1", "shadow-none opacity-100"];
   return (
     <Link href={item.href} asChild>
       <Pressable

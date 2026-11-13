@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { View } from "react-native";
-import { Text } from "../Text";
 import { cn } from "../../theme";
+import { Text } from "../Text";
 
 type Props = { className?: string; title?: string };
 
@@ -13,7 +13,7 @@ export default function Card({
   return (
     <View
       className={cn(
-        "rounded-[30px] bg-foreground/70 py-4 px-5 items-center gap-1",
+        "rounded-[30px] bg-fg2 py-4 px-5 items-center gap-1",
         className,
       )}
     >

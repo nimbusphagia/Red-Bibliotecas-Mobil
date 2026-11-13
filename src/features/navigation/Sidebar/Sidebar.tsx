@@ -17,7 +17,7 @@ export function Sidebar({ expanded }: Props) {
   return (
     <View
       className="w-[80] flex flex-col items-center justify-between p-[8] pt-[12]
-      pb-[10] border-r border-foreground"
+      pb-[10] border-r border-fg1"
     >
       <View className=" gap-[10%]">
         {NAVBAR.main.map((item) => {

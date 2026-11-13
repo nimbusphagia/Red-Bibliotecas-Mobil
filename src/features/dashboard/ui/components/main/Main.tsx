@@ -12,7 +12,7 @@ export default function DashboardMain({}: Props) {
         <DashboardStats />
       </View>
       <View className={`${sectionClass} flex-row gap-5`}>
-        <View className="w-[25%] border-l border-foreground rounded-lg bg-foreground py-4 px-8 h-[400]">
+        <View className="w-[25%] border-l border-fg1 rounded-lg bg-fg1 py-4 px-8 h-[400]">
           <Text className="text-primary text-[18px] font-bold">
             Placeholder
           </Text>

@@ -1,4 +1,5 @@
 import { BookListItem } from "@/features/catalog/internal/book/types";
+import { Text } from "@/features/shared/components";
 import Card from "@/features/shared/components/cards/Card";
 import PairedRow from "@/features/shared/components/cards/PairedRow";
 import { cn } from "@/features/shared/theme";
@@ -30,22 +31,22 @@ export default function BookInfo({ book }: Props) {
   ];
 
   return (
-    <Card className="flex-1 rounded-[10] flex-row gap-5 items-start p-0 bg-background">
+    <Card className="flex-1 rounded-[10] flex-row gap-5 items-start p-0 bg-bg">
       {columns.map((rows, i) => (
-        <View key={i} className="flex-1 justify-start p-0 gap-2 bg-background">
+        <View key={i} className="flex-1 justify-start p-0 gap-2 bg-bg">
           {rows.map(({ label, content }) => (
             <PairedRow
               key={label}
               label={label}
               content={content ?? "---"}
-              containerClass="rounded-lg bg-background"
+              containerClass="rounded-lg border border-fg1 bg-bg"
               labelClass={cn(
-                "font-sans-medium text-[16px] w-[30%] text-highlight pl-4 rounded-l-lg bg-foreground/40",
-                content ? "bg-primary text-background" : "",
+                "font-sans-medium text-[16px] w-[30%] text-highlight pl-4 rounded-l-lg bg-fg2",
+                content ? "bg-primary text-bg" : "",
               )}
               contentClass={cn(
-                "flex-1 text-right font-sans-medium text-[16px] text-highlight pr-4 rounded-r-lg bg-foreground/40",
-                content ? "bg-foreground/80 font-sans-semibold" : "",
+                "flex-1 text-right font-sans-medium text-[16px] text-primary pr-4 rounded-r-lg bg-fg2",
+                content ? "bg-fg1 " : "",
               )}
             />
           ))}

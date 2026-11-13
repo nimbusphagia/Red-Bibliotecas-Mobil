@@ -10,8 +10,8 @@ type Props = {
 };
 export default function BookRowComponent({ book }: Props) {
   const colClass = "flex-1 justify-center gap-[1px]";
-  const containerBg = "bg-foreground/20";
-  const containerClass = `border border-foreground flex-row justify-between gap-5 py-3 px-7 rounded-full ${containerBg}`;
+  const containerBg = "bg-fg2";
+  const containerClass = `border border-fg1 flex-row justify-between gap-5 py-3 px-7 rounded-full ${containerBg}`;
   return (
     <View className={containerClass}>
       <View className={colClass}>
@@ -43,19 +43,18 @@ export default function BookRowComponent({ book }: Props) {
           {book.onLoanCount} prestados
         </Text>
       </View>
-      <View className="flex-row items-center gap-10">
+      <View className="flex-row items-center gap-6">
         <Link href={`/catalog/${book.id}`} asChild>
           <Button
             variant="pill-secondary"
-            className="h-10 aspect-square"
-            lucideIcon={<Eye size={16} color={colors.highlight} />}
+            className="p-[12px] bg-fg1"
+            lucideIcon={<Eye size={18} color={colors.highlight} />}
           />
         </Link>
         <Button
-          title="Prestar"
-          className="h-10"
+          className="p-[12px] bg-highlight"
           variant="pill"
-          lucideIcon={<BookUp size={16} color={colors.background} />}
+          lucideIcon={<BookUp size={18} color={colors.bg} />}
         />
       </View>
     </View>

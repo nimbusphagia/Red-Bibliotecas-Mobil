@@ -10,7 +10,7 @@ export default function PillRow({ cols, className }: Props) {
   return (
     <View
       className={cn(
-        "border border-foreground flex-row justify-between gap-5 py-3 px-7 rounded-full bg-foreground/20",
+        "border border-fg1 flex-row justify-between gap-5 py-3 px-7 rounded-full bg-fg2",
         className,
       )}
     >

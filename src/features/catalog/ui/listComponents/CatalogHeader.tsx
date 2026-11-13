@@ -29,7 +29,8 @@ export default function CatalogHeader({
         <Button
           title="Registrar"
           variant="pill"
-          lucideIcon={<NotebookPen size={18} color={colors.background} />}
+          className="bg-highlight"
+          lucideIcon={<NotebookPen size={18} color={colors.bg} />}
         />
         <View className="flex-1 flex-row items-center justify-end gap-5">
           <Searchbar

@@ -25,9 +25,7 @@ export default function LoanRow({ loan, index }: Props) {
 
   return (
     <View
-      className={`flex flex-row items-center px-2 py-2 ${
-        alt ? "bg-foreground" : ""
-      }`}
+      className={`flex flex-row items-center px-2 py-2 ${alt ? "bg-fg1" : ""}`}
     >
       <Text className={`flex-1 ${textColor}`}>{loan.visitorName}</Text>
       <View className="flex-1 flex flex-row items-center gap-10">

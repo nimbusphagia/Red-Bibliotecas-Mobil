@@ -22,17 +22,17 @@ export default function LabelInfo({ book, codes }: Props) {
   ];
 
   return (
-    <View className="w-[240px] gap-2">
-      <Card className="p-0 rounded-[10] justify-between flex-1 bg-background">
+    <View className="w-[230px] gap-2">
+      <Card className="p-0 rounded-[10] justify-between flex-1 bg-bg">
         {rows.map(({ label, content }) => (
           <PairedRow
             key={content}
             label={label}
             content={content}
             highlight="label"
-            containerClass="w-full  border border-foreground rounded-lg"
-            labelClass="w-[80] text-center py-2 font-sans-bold rounded-l-lg"
-            contentClass="flex-1 px-4 py-2  truncate text-[16px] text-right font-sans-medium rounded-r-lg bg-foreground/50"
+            containerClass="w-full rounded-lg gap-2 rounded-lg"
+            labelClass="w-[60] text-center font-sans-bold rounded-lg"
+            contentClass="flex-1 px-4 truncate text-[16px] font-sans-medium bg-fg2 text-primary rounded-lg border border-fg1"
           />
         ))}
       </Card>

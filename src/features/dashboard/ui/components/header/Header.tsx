@@ -12,17 +12,17 @@ export default function DashboardHeader({}: Props) {
         <Button
           title="Nuevo ejemplar"
           variant="pill"
-          lucideIcon={<NotebookPen size={18} color={colors.background} />}
+          lucideIcon={<NotebookPen size={18} color={colors.bg} />}
         />
         <Button
           title="Prestar"
           variant="pill"
-          lucideIcon={<BookUp size={18} color={colors.background} />}
+          lucideIcon={<BookUp size={18} color={colors.bg} />}
         />
         <Button
           title="Devolver"
           variant="pill"
-          lucideIcon={<BookDown size={18} color={colors.background} />}
+          lucideIcon={<BookDown size={18} color={colors.bg} />}
         />
       </View>
     </Header>

@@ -10,11 +10,13 @@ type Props = {
 export default function DetailHeader({ title }: Props) {
   return (
     <Header title={title}>
-      <View className="flex-1 flex-row items-center pl-5 gap-4">
+      <View className="flex-1 flex-row items-center pl-5">
         <Button
-          variant="pill"
-          className="p-3"
-          lucideIcon={<PencilLine size={16} color={colors.background} />}
+          variant="pill-secondary"
+          className="p-3 border-fg1 border"
+          lucideIcon={
+            <PencilLine size={16} strokeWidth={2.5} color={colors.highlight} />
+          }
         />
       </View>
     </Header>

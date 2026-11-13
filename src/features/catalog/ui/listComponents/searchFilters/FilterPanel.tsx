@@ -107,7 +107,7 @@ export default function FilterPanel({ filters, onChange }: Props) {
       <View>
         <Button
           variant="pill-secondary"
-          lucideIcon={<SlidersHorizontal size={18} color={colors.highlight} />}
+          lucideIcon={<SlidersHorizontal size={18} color={colors.primary} />}
           onPress={() => setOpen(true)}
         />
         {active && (
@@ -129,16 +129,16 @@ export default function FilterPanel({ filters, onChange }: Props) {
         animationType="slide"
         onRequestClose={() => setOpen(false)}
       >
-        <View className="flex-1 items-center justify-center">
+        <View className="flex-1 items-center justify-center ">
           <Pressable
             style={StyleSheet.absoluteFill}
             className="bg-black/5"
             onPress={() => setOpen(false)}
           />
-          <View className="max-h-[80%] w-[480px] max-w-full gap-4 rounded-2xl bg-background p-5">
+          <View className="max-h-[80%] w-[480px] max-w-full gap-4 rounded-2xl bg-bg p-7 pt-6 border border-fg1">
             <View className="flex-row items-center justify-between">
               <Text variant="h3">Filtros</Text>
-              <View className="flex-row gap-3">
+              <View className="flex-row gap-5">
                 <Button
                   title="Limpiar"
                   variant="pill-secondary"

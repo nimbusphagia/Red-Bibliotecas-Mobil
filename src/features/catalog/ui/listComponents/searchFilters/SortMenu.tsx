@@ -46,18 +46,18 @@ export default function SortMenu({ sortBy, sortDir, onChange }: Props) {
           className="flex-1 items-center justify-center bg-black/5"
           onPress={() => setOpen(false)}
         >
-          <View className="w-64 rounded-[30] border border-foreground bg-background py-7 px-5 gap-5">
+          <View className="w-64 rounded-[30] border border-fg1 bg-bg py-7 px-5 gap-5">
             <Text variant="h3" className="px-2">
               Ordenar por:
             </Text>
             {OPTIONS.map(({ key, label, defaultDir }) => {
-              const selectedClass = key === sortBy ? "bg-foreground" : "";
+              const selectedClass = key === sortBy ? "bg-fg1" : "";
               return (
                 <Pressable
                   key={key}
                   onPress={() => pick(key, defaultDir)}
                   className={cn(
-                    "flex-row items-center justify-between rounded-full px-5 py-3 bg-foreground/50",
+                    "flex-row items-center justify-between rounded-full px-5 py-3 bg-fg2",
                     selectedClass,
                   )}
                 >

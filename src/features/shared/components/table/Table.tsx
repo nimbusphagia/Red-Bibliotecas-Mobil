@@ -49,7 +49,7 @@ export default function Table<T>({
         <Pressable
           key={keyExtractor(item)}
           onPress={() => onRowPress?.(item)}
-          className="flex flex-row items-center px-2 py-2 border-b border-primary active:bg-foreground"
+          className="flex flex-row items-center px-2 py-2 border-b border-primary active:bg-fg1"
         >
           {columns.map((col) => {
             const content = col.render

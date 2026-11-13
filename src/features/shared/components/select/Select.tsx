@@ -17,8 +17,8 @@ type SimpleProps = {
 export function SimpleSelect({ label, options, value, onChange }: SimpleProps) {
   return (
     <View className="gap-2">
-      <Text variant="subtitle">{label}</Text>
-      <View className="flex-row flex-wrap gap-2">
+      <Text variant="h3">{label}</Text>
+      <View className="flex-row flex-wrap gap-x-2 gap-y-4">
         {options.map((o) => {
           const selected = o.id === value;
           return (
@@ -26,14 +26,14 @@ export function SimpleSelect({ label, options, value, onChange }: SimpleProps) {
               key={o.id}
               onPress={() => onChange(selected ? undefined : o.id)}
               className={cn(
-                "rounded-full px-4 py-2",
-                selected ? "bg-highlight" : "bg-foreground",
+                "rounded-full px-4 py-1.5",
+                selected ? "bg-primary" : "bg-fg1",
               )}
             >
               <Text
                 className={cn(
                   "font-semibold",
-                  selected ? "text-background" : "text-highlight",
+                  selected ? "text-bg" : "text-secondary",
                 )}
               >
                 {o.label}
@@ -91,14 +91,14 @@ export function SearchSelect({
 
   return (
     <View className="gap-2">
-      <Text variant="subtitle">{label}</Text>
+      <Text variant="h3">{label}</Text>
 
       {empty ? (
-        <View className="h-12 justify-center rounded-full bg-foreground px-4">
+        <View className="h-12 justify-center rounded-full bg-fg1 px-4">
           <Text variant="subtitle">Sin resultados</Text>
         </View>
       ) : isOpen ? (
-        <View className="h-12 flex-row items-center gap-2 rounded-full bg-foreground px-4">
+        <View className="h-12 flex-row items-center gap-2 rounded-full bg-fg1 px-4">
           <TextInput
             autoFocus
             value={search}
@@ -114,19 +114,19 @@ export function SearchSelect({
       ) : (
         <Pressable
           onPress={() => setOpen(true)}
-          className="h-12 justify-center rounded-full bg-foreground px-4"
+          className="h-12 justify-center rounded-full bg-fg1 px-4"
         >
-          <Text variant="h3">{value?.label ?? "Todos"}</Text>
+          <Text variant="subtitle">{value?.label ?? "Todos"}</Text>
         </Pressable>
       )}
 
       {isOpen && (
-        <View className="max-h-[240] overflow-hidden rounded-[30] bg-foreground/60">
+        <View className="max-h-[240] overflow-hidden rounded-[30] bg-fg2">
           <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled">
             {value && (
               <Pressable
                 onPress={() => pick(undefined)}
-                className="border-b border-foreground px-4 py-2"
+                className="border-b border-fg1 px-4 py-2"
               >
                 <Text variant="subtitle">Quitar filtro</Text>
               </Pressable>
@@ -138,7 +138,7 @@ export function SearchSelect({
             )}
             {options.map((o, i) => {
               const separatorClass =
-                i !== options.length - 1 ? "border-b border-foreground" : "";
+                i !== options.length - 1 ? "border-b border-fg1" : "";
               return (
                 <Pressable
                   key={o.id}

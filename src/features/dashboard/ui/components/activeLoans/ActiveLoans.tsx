@@ -90,7 +90,7 @@ const MOCK_LOANS: LoanListItem[] = [
 
 export default function ActiveLoans({ loans = [] }: Props) {
   const data = loans.length > 0 ? loans : MOCK_LOANS;
-  const headerClass = "flex-1 font-semibold text-background text-[16px]";
+  const headerClass = "flex-1 font-semibold text-bg text-[16px]";
 
   return (
     <View className="flex flex-col flex-1 gap-5 p-4 ">
@@ -99,7 +99,7 @@ export default function ActiveLoans({ loans = [] }: Props) {
           Prestamos Pendientes
         </Text>
       </View>
-      <View className="border border-foreground rounded-lg overflow-hidden">
+      <View className="border border-fg1 rounded-lg overflow-hidden">
         <View className="flex flex-row items-center px-2 py-2 bg-highlight">
           <Text className={`${headerClass}`}>Préstamo</Text>
           <Text className={`${headerClass}`}>Vencimiento</Text>
