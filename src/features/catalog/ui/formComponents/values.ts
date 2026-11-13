@@ -1,5 +1,7 @@
 import type { BookInput } from "@/features/catalog/internal/book/schemas";
 import type { Option } from "@/features/shared/components/select/Select";
+import { BookListItem } from "../../internal/book/types";
+import { fullName } from "../options";
 
 export const ROLES = [
   { key: "writers", role: "writer", label: "Escritores" },
@@ -49,3 +51,28 @@ export const toBookInput = (v: BookFormValues): BookInput => ({
   publicationYear: toInt(v.year),
   pageCount: toInt(v.pages),
 });
+
+const ref = (id: number | null, label: string | null): Option | undefined =>
+  id === null || label === null ? undefined : { id, label };
+
+export const fromBook = (b: BookListItem): BookFormValues => {
+  const people = (role: string): Option[] =>
+    b.collaborators
+      .filter((c) => c.role === role)
+      .map((c) => ({ id: c.authorId, label: fullName(c) }));
+
+  return {
+    ...EMPTY_VALUES,
+    title: b.title,
+    writers: people("writer"),
+    illustrators: people("illustrator"),
+    translators: people("translator"),
+    publisher: ref(b.publisherId, b.publisherName),
+    collection: ref(b.collectionId, b.collectionName),
+    series: ref(b.seriesId, b.seriesName),
+    categoryId: b.categoryId ?? undefined,
+    subcategoryId: b.subcategoryId ?? undefined,
+    year: b.publicationYear?.toString() ?? "",
+    pages: b.pageCount?.toString() ?? "",
+  };
+};

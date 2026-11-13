@@ -44,7 +44,7 @@ export default function BookDetail({ id }: Props) {
 
   return (
     <>
-      <DetailHeader title={data.book.title} />
+      <DetailHeader id={data.book.id} title={data.book.title} />
       <DetailMain book={data.book} copies={data.copies} codes={data.codes} />
     </>
   );

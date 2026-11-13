@@ -19,12 +19,18 @@ import {
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { cn } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
-import { useCallback, useState, type PropsWithChildren } from "react";
-import { ScrollView, View } from "react-native";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type PropsWithChildren,
+} from "react";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import CopiesFields from "./formComponents/CopiesFields";
 import NewAuthorDialog from "./formComponents/NewAuthorDialog";
 import {
   EMPTY_VALUES,
+  fromBook,
   ROLES,
   toBookInput,
   type BookFormValues,
@@ -39,6 +45,9 @@ import {
   searchSeries,
   useOptions,
 } from "./options";
+import { BookListItem } from "../internal/book/types";
+import { routeIdSchema } from "@/features/shared/types/schemas";
+import { getBookItem, updateBook } from "../internal/book/service";
 
 const digits = (t: string) => t.replace(/\D/g, "");
 const SHOWN_FIELDS = new Set([
@@ -55,12 +64,33 @@ const SHOWN_FIELDS = new Set([
   "omitWords",
 ]);
 
-export default function BookForm() {
+export default function BookForm({ id }: { id?: string }) {
+  const [book, setBook] = useState<BookListItem>();
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    getBookItem(routeIdSchema.parse(id)).then((b) => {
+      if (!cancelled) setBook(b);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (id && !book) return <ActivityIndicator />;
+  return <Form key={book?.id} book={book} />;
+}
+
+function Form({ book }: { book?: BookListItem }) {
   const router = useRouter();
   const session = useSession();
   const { isExpanded } = useLayoutMode();
 
-  const [v, setValues] = useState(EMPTY_VALUES);
+  const [v, setValues] = useState(() => (book ? fromBook(book) : EMPTY_VALUES));
+  const isEdit = !!book;
+  const locked = (book?.copyCount ?? 0) > 0;
+  const req = isEdit ? "" : " *";
   const [errors, setErrors] = useState<FormErrors>({ fields: {} });
   const [submitting, setSubmitting] = useState(false);
   const [newAuthor, setNewAuthor] = useState<{
@@ -93,14 +123,18 @@ export default function BookForm() {
   const canSubmit =
     v.title.trim() !== "" &&
     v.writers.length > 0 &&
-    v.categoryId !== undefined &&
-    v.subcategoryId !== undefined;
+    (isEdit || (v.categoryId !== undefined && v.subcategoryId !== undefined));
 
   async function submit() {
     if (submitting || session.status !== "signed-in") return;
     setErrors({ fields: {} });
     setSubmitting(true);
     try {
+      if (book) {
+        await updateBook(book.id, toBookInput(v));
+        router.back();
+        return;
+      }
       const { lines } = await registerCopies(session.account.id, {
         shelfId: v.shelfId,
         lines: [
@@ -134,7 +168,7 @@ export default function BookForm() {
 
   return (
     <>
-      <Header title="Registrar libro">
+      <Header title={isEdit ? "Editar libro" : "Registrar libro"}>
         <View className="flex-1 flex-row items-center justify-between pl-5">
           <Button
             title="Cancelar"
@@ -163,25 +197,35 @@ export default function BookForm() {
           </Text>
         ) : null}
 
+        {locked && (
+          <Text variant="subtitle">
+            Título, escritores, categoría y subcategoría están bloqueados porque
+            el libro ya tiene tejuelos.
+          </Text>
+        )}
+
         <View className={cn("gap-8", isExpanded && "flex-row")}>
           <View className={column}>
             <Section title="Detalles">
               <TextField
-                label="Título *"
+                label={`Título${req}`}
                 value={v.title}
                 onChangeText={(title) => set({ title })}
                 error={errors.fields.title}
                 autoCapitalize="words"
+                editable={!locked}
+                className={locked ? "opacity-50" : undefined}
               />
               {ROLES.map(({ key, label }) => (
                 <MultiSearchSelect
                   key={key}
-                  label={key === "writers" ? `${label} *` : label}
+                  label={key === "writers" ? `${label}${req}` : label}
                   values={v[key]}
                   onChange={(list) => setRole(key, list)}
                   fetchOptions={searchAuthors}
                   placeholder="Agregar..."
                   onCreate={(name) => setNewAuthor({ key, name })}
+                  disabled={key === "writers" && locked}
                 />
               ))}
               <FieldError message={errors.fields.collaborators} />
@@ -207,17 +251,19 @@ export default function BookForm() {
 
             <Section title="Clasificación">
               <SimpleSelect
-                label="Categoría *"
+                label={`Categoría${req}`}
                 options={categories}
                 value={v.categoryId}
                 onChange={(categoryId) => set({ categoryId })}
+                disabled={locked}
               />
               <FieldError message={errors.fields.categoryId} />
               <SimpleSelect
-                label="Subcategoría *"
+                label={`Subcategoría${req}`}
                 options={subcategories}
                 value={v.subcategoryId}
                 onChange={(subcategoryId) => set({ subcategoryId })}
+                disabled={locked}
               />
               <FieldError message={errors.fields.subcategoryId} />
             </Section>
@@ -298,9 +344,11 @@ export default function BookForm() {
               <FieldError message={errors.fields.seriesId} />
             </Section>
 
-            <Section title="Ejemplares">
-              <CopiesFields values={v} errors={errors} onChange={set} />
-            </Section>
+            {!isEdit && (
+              <Section title="Ejemplares">
+                <CopiesFields values={v} errors={errors} onChange={set} />
+              </Section>
+            )}
           </View>
         </View>
       </ScrollView>
