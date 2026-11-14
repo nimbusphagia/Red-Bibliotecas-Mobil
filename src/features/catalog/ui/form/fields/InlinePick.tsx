@@ -4,7 +4,7 @@ import {
   type Option,
 } from "@/features/shared/components";
 import { View } from "react-native";
-import { useOptions } from "../options";
+import { useOptions } from "../../options";
 import type { Field } from "./fields";
 
 type Props = {

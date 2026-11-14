@@ -9,7 +9,7 @@ import {
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useState } from "react";
 import { View } from "react-native";
-import { fullName } from "../options";
+import { fullName } from "../../options";
 
 type Props = {
   initialName: string;

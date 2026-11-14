@@ -2,13 +2,13 @@ import { listBooks } from "@/features/catalog/internal/book/service";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { useCallback, useState } from "react";
-import CatalogHeader from "./listComponents/CatalogHeader";
-import CatalogMain from "./listComponents/CatalogMain";
-import type { CatalogFilters } from "./listComponents/searchFilters/FilterPanel";
+import CatalogHeader from "./list/ListHeader";
+import CatalogMain from "./list/ListMain";
+import type { CatalogFilters } from "./list/searchFilters/FilterPanel";
 
 const PAGE_SIZE = 20;
 
-export default function Catalog() {
+export default function BookList() {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<CatalogFilters>({});
 

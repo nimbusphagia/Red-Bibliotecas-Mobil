@@ -14,7 +14,7 @@ import {
 import { toFormErrors } from "@/features/shared/errors/messages";
 import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { searchAuthors, searchCollections, useOptions } from "../options";
+import { searchAuthors, searchCollections, useOptions } from "../../options";
 import { display, type Field } from "./fields";
 import NewAuthorForm from "./NewAuthorForm";
 import type { BookFormValues } from "./values";

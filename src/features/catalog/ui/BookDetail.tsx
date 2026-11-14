@@ -6,8 +6,8 @@ import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import DetailHeader from "./detailComponents/DetailHeader";
-import DetailMain from "./detailComponents/DetailMain";
+import DetailHeader from "./detail/DetailHeader";
+import DetailMain from "./detail/DetailMain";
 import { getBookLabelCodes } from "@/features/inventory/internal/label/service";
 import { LabelCodes } from "@/features/inventory/internal/label/types";
 

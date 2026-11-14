@@ -8,7 +8,7 @@ import { View } from "react-native";
 type Props = {
   book: BookListItem;
 };
-export default function BookRowComponent({ book }: Props) {
+export default function BookRow({ book }: Props) {
   const colClass = "flex-1 justify-center gap-[1px]";
   return (
     <PillRow>

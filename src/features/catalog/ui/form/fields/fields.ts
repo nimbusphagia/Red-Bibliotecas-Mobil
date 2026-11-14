@@ -5,7 +5,7 @@ import {
   loadSubcategories,
   searchPublishers,
   searchSeries,
-} from "../options";
+} from "../../options";
 import type { BookFormValues } from "./values";
 
 export type Field = {
@@ -23,7 +23,12 @@ export type Field = {
   fetch?: (search: string) => Promise<Option[]>;
 };
 
-export type Group = { title: string; createOnly?: boolean; fields: Field[] };
+export type Group = {
+  title: string;
+  createOnly?: boolean;
+  fields: Field[];
+  compact?: boolean;
+};
 
 export const COLUMNS: Group[][] = [
   [
@@ -101,6 +106,7 @@ export const COLUMNS: Group[][] = [
     {
       title: "Ejemplares",
       createOnly: true,
+      compact: true,
       fields: [
         {
           key: "quantity",

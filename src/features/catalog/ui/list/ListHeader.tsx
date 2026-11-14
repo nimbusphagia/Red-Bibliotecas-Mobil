@@ -10,7 +10,7 @@ type Props = {
   filters: CatalogFilters;
   onFiltersChange: (filters: CatalogFilters) => void;
 };
-export default function CatalogHeader({
+export default function ListHeader({
   search,
   onSearchChange,
   filters,
