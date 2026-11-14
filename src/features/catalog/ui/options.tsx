@@ -3,10 +3,10 @@ import { listCategories } from "@/features/catalog/internal/category/service";
 import { listCollections } from "@/features/catalog/internal/collection/service";
 import { listPublishers } from "@/features/catalog/internal/publisher/service";
 import { listSubcategories } from "@/features/catalog/internal/subcategory/service";
-import type { Option } from "@/features/shared/components/select/Select";
+import { listShelves } from "@/features/inventory/internal/shelf/service";
+import type { Option } from "@/features/shared/components";
 import { useEffect, useState } from "react";
 import { listSeries } from "../internal/series/service";
-import { listShelves } from "@/features/inventory/internal/shelf/service";
 
 type WithBooks = true | undefined;
 

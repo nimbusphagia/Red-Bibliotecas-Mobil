@@ -1,6 +1,6 @@
 import type { BookInput } from "@/features/catalog/internal/book/schemas";
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import type { Option } from "@/features/shared/components/select/Select";
+import type { Option } from "@/features/shared/components";
 import { fullName } from "../options";
 
 export const ROLES = [

@@ -1,8 +1,4 @@
-import { Text } from "@/features/shared/components";
-import {
-  SimpleSelect,
-  type Option,
-} from "@/features/shared/components/select/Select";
+import { SimpleSelect, Text, type Option } from "@/features/shared/components";
 import { View } from "react-native";
 import { useOptions } from "../options";
 import type { Field } from "./fields";

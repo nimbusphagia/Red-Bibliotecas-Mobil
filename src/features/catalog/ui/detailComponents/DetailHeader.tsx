@@ -1,9 +1,8 @@
-import { Button } from "@/features/shared/components";
-import Header from "@/features/shared/components/header/Header";
+import { Button, PageHeader } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
+import { Link } from "expo-router";
 import { PencilLine } from "lucide-react-native";
 import { View } from "react-native";
-import { Link } from "expo-router";
 
 type Props = {
   id: number;
@@ -11,7 +10,7 @@ type Props = {
 };
 export default function DetailHeader({ id, title }: Props) {
   return (
-    <Header title={title}>
+    <PageHeader title={title}>
       <View className="flex-1 flex-row items-center pl-5">
         <Link
           href={{ pathname: "/catalog/form", params: { id: String(id) } }}
@@ -30,6 +29,6 @@ export default function DetailHeader({ id, title }: Props) {
           />
         </Link>
       </View>
-    </Header>
+    </PageHeader>
   );
 }

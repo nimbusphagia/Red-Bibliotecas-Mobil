@@ -1,11 +1,11 @@
 import { PropsWithChildren } from "react";
 import { View } from "react-native";
 import { cn } from "../../theme";
-import { Text } from "../Text";
+import { Text } from "../base/Text";
 
 type Props = { className?: string; title?: string };
 
-export default function Card({
+export function Card({
   title,
   className = "",
   children,

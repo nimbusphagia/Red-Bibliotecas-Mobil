@@ -1,10 +1,11 @@
 import { listSeries } from "@/features/catalog/internal/series/service";
-import { Button, Text } from "@/features/shared/components";
 import {
+  Button,
   SearchSelect,
   SimpleSelect,
+  Text,
   type Option,
-} from "@/features/shared/components/select/Select";
+} from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
 import { Circle, SlidersHorizontal } from "lucide-react-native";
 import { useCallback, useState } from "react";

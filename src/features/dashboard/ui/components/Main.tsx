@@ -1,7 +1,7 @@
 import { Text } from "@/features/shared/components";
 import { View } from "react-native";
-import ActiveLoans from "../activeLoans/ActiveLoans";
-import DashboardStats from "../stats/Stats";
+import ActiveLoans from "./activeLoans/ActiveLoans";
+import DashboardStats from "./stats/Stats";
 
 type Props = {};
 export default function DashboardMain({}: Props) {

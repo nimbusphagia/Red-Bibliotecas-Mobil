@@ -1,6 +1,5 @@
 import { LabelCodes } from "@/features/inventory/internal/label/types";
-import Card from "@/features/shared/components/cards/Card";
-import PairedRow from "@/features/shared/components/cards/PairedRow";
+import { Card, PairedRow } from "@/features/shared/components";
 import { View } from "react-native";
 import { BookListItem } from "../../../internal/book/types";
 

@@ -1,11 +1,7 @@
 import { CopyItem } from "@/features/inventory/internal/copy/types";
-import { Button, Text } from "@/features/shared/components";
-import {
-  PillRow,
-  PillRowColumn,
-} from "@/features/shared/components/list/PillRow";
+import { Button, PillRow, PillRowColumn } from "@/features/shared/components";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
-import { cn, colors } from "@/features/shared/theme";
+import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookDown, BookUp, ShelvingUnit } from "lucide-react-native";
 import { View } from "react-native";

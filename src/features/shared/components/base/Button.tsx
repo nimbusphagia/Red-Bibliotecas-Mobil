@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import type { PressableProps } from "react-native";
 import { ActivityIndicator, Pressable } from "react-native";
-import { cn, colors } from "../theme";
+import { cn, colors } from "../../theme";
 import { Text } from "./Text";
 
 type Variant = "primary" | "secondary" | "pill" | "pill-secondary";

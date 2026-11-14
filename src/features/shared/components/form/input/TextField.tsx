@@ -2,8 +2,8 @@ import type { Ref } from "react";
 import { useState } from "react";
 import type { TextInputInstance, TextInputProps } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
-import { cn, colors } from "../../theme/index";
-import { Text } from "../Text";
+import { cn, colors } from "../../../theme/index";
+import { Text } from "../../base/Text";
 
 type TextFieldProps = TextInputProps & {
   label: string;

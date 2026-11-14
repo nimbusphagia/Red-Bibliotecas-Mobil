@@ -1,15 +1,16 @@
 import { createCollection } from "@/features/catalog/internal/collection/service";
 import { createPublisher } from "@/features/catalog/internal/publisher/service";
 import { createSeries } from "@/features/catalog/internal/series/service";
-import { Button, Text } from "@/features/shared/components";
-import { Dialog } from "@/features/shared/components/Dialog";
-import { PillInput } from "@/features/shared/components/form";
 import {
+  Button,
+  Dialog,
   MultiSearchSelect,
+  PillInput,
   SearchSelect,
   SimpleSelect,
+  Text,
   type Option,
-} from "@/features/shared/components/select/Select";
+} from "@/features/shared/components";
 import { toFormErrors } from "@/features/shared/errors/messages";
 import { useCallback, useState } from "react";
 import { View } from "react-native";

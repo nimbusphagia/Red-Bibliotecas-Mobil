@@ -1,7 +1,10 @@
 import { createAuthor } from "@/features/catalog/internal/author/service";
-import { Button, Text } from "@/features/shared/components";
-import { PillInput } from "@/features/shared/components/form";
-import type { Option } from "@/features/shared/components/select/Select";
+import {
+  Button,
+  PillInput,
+  Text,
+  type Option,
+} from "@/features/shared/components";
 import {
   toFormErrors,
   type FormErrors,

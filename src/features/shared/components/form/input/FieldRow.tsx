@@ -1,7 +1,7 @@
 import { Pressable, View } from "react-native";
-import { cn } from "../../theme/index";
-import PairedRow from "../cards/PairedRow";
-import { Text } from "../Text";
+import { cn } from "../../../theme/index";
+import { Text } from "../../base/Text";
+import { PairedRow } from "../../list/PairedRow";
 
 type Props = {
   label: string;
@@ -14,7 +14,7 @@ type Props = {
   contentClass?: string;
 };
 
-export default function FieldRow({
+export function FieldRow({
   label,
   value,
   onPress,

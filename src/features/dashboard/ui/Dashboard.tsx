@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import DashboardHeader from "./components/header/Header";
-import DashboardMain from "./components/main/Main";
+import DashboardHeader from "./components/Header";
+import DashboardMain from "./components/Main";
 
 export default function Dashboard() {
   return (

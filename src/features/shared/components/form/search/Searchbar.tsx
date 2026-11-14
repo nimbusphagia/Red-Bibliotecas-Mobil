@@ -1,6 +1,6 @@
 import { Search } from "lucide-react-native";
 import { TextInput, View } from "react-native";
-import { colors } from "../../theme";
+import { colors } from "../../../theme";
 
 type Props = {
   value: string;
@@ -8,7 +8,7 @@ type Props = {
   placeholder?: string;
 };
 
-export default function Searchbar({
+export function Searchbar({
   value,
   onChangeText,
   placeholder = "Buscar...",

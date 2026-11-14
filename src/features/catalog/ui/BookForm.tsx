@@ -5,9 +5,13 @@ import {
 } from "@/features/catalog/internal/book/service";
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { registerCopies } from "@/features/inventory/internal/movement/service";
-import { Button, Text } from "@/features/shared/components";
-import { FieldRow } from "@/features/shared/components/form";
-import Header from "@/features/shared/components/header/Header";
+import {
+  Button,
+  FieldRow,
+  PageHeader,
+  Text,
+  type Option,
+} from "@/features/shared/components";
 import {
   toFormErrors,
   type FormErrors,
@@ -16,18 +20,17 @@ import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { cn } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, ScrollView, View } from "react-native";
 import { Fragment, useEffect, useState } from "react";
-import { COLUMNS, display, type Field } from "./formComponents/fields";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import FieldModal from "./formComponents/FieldModal";
+import { COLUMNS, display, type Field } from "./formComponents/fields";
+import InlinePick from "./formComponents/InlinePick";
 import {
   EMPTY_VALUES,
   fromBook,
   toBookInput,
   type BookFormValues,
 } from "./formComponents/values";
-import InlinePick from "./formComponents/InlinePick";
-import { Option } from "@/features/shared/components/select/Select";
 
 export default function BookForm({ id }: { id?: string }) {
   const [book, setBook] = useState<BookListItem>();
@@ -131,7 +134,7 @@ function Form({ book }: { book?: BookListItem }) {
 
   return (
     <>
-      <Header title={isEdit ? "Editar libro" : "Registrar libro"}>
+      <PageHeader title={isEdit ? "Editar libro" : "Registrar libro"}>
         <View className="flex-1 flex-row items-center justify-end gap-5">
           <Button
             title="Cancelar"
@@ -147,7 +150,7 @@ function Form({ book }: { book?: BookListItem }) {
             onPress={submit}
           />
         </View>
-      </Header>
+      </PageHeader>
 
       <ScrollView
         className="flex-1"

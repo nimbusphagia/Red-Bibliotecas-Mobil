@@ -1,5 +1,4 @@
-import { Button } from "@/features/shared/components";
-import Header from "@/features/shared/components/header/Header";
+import { PageHeader, Button } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
 import { BookDown, BookUp, NotebookPen } from "lucide-react-native";
 import { View } from "react-native";
@@ -7,7 +6,7 @@ import { View } from "react-native";
 type Props = {};
 export default function DashboardHeader({}: Props) {
   return (
-    <Header title="Inicio">
+    <PageHeader title="Inicio">
       <View className="flex-1 flex-row justify-end items-center gap-5">
         <Button
           title="Nuevo ejemplar"
@@ -25,6 +24,6 @@ export default function DashboardHeader({}: Props) {
           lucideIcon={<BookDown size={18} color={colors.bg} />}
         />
       </View>
-    </Header>
+    </PageHeader>
   );
 }

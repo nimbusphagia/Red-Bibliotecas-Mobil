@@ -1,4 +1,4 @@
-import type { Option } from "@/features/shared/components/select/Select";
+import type { Option } from "@/features/shared/components";
 import {
   loadCategories,
   loadShelves,

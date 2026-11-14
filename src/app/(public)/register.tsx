@@ -1,7 +1,11 @@
 import { completeSetup } from "@/features/account/internal/service";
 import { useSession } from "@/features/account/internal/session";
-import { Button, Text } from "@/features/shared/components";
-import { FormScreen, TextField } from "@/features/shared/components/form";
+import {
+  FormScreen,
+  TextField,
+  Button,
+  Text,
+} from "@/features/shared/components";
 import {
   toFormErrors,
   type FormErrors,

@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import { Text } from "../Text";
-import Card from "./Card";
+import { Text } from "../base/Text";
+import { Card } from "./Card";
 type Stat = {
   name: string;
   numberData: number;
@@ -10,7 +10,7 @@ type Props = {
   positiveStat: Stat;
   negativeStat: Stat;
 };
-export default function DualCard({ title, positiveStat, negativeStat }: Props) {
+export function DualCard({ title, positiveStat, negativeStat }: Props) {
   return (
     <Card title={title}>
       <View className="flex flex-row gap-5">

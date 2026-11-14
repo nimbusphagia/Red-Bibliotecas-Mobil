@@ -1,5 +1,5 @@
 import { Text as RNText, type TextProps } from "react-native";
-import { cn } from "../theme";
+import { cn } from "../../theme";
 
 export type TextVariant = "h1" | "h2" | "h3" | "subtitle";
 type Props = {

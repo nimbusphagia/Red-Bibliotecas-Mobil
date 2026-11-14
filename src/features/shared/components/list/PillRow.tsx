@@ -1,7 +1,7 @@
 import { PropsWithChildren, ReactNode } from "react";
 import { View } from "react-native";
 import { cn } from "../../theme";
-import { Text, TextVariant } from "../Text";
+import { Text, TextVariant } from "../base/Text";
 
 type Props = {
   children: ReactNode;

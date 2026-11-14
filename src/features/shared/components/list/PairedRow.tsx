@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { cn } from "../../theme";
-import { Text } from "../Text";
+import { Text } from "../base/Text";
 
 type Props = {
   label: string | null;
@@ -13,7 +13,7 @@ type Props = {
   contentClass?: string;
 };
 
-export default function PairedRow({
+export function PairedRow({
   label,
   content,
   highlight,

@@ -1,14 +1,11 @@
-import { Text } from "@/features/shared/components";
+import { Text } from "./Text";
 import { PropsWithChildren } from "react";
 import { View } from "react-native";
 
 type Props = {
   title?: string;
 };
-export default function Header({
-  children,
-  title = "",
-}: PropsWithChildren<Props>) {
+export function PageHeader({ children, title = "" }: PropsWithChildren<Props>) {
   return (
     <View className="flex-row justify-between items-center px-4">
       <Text

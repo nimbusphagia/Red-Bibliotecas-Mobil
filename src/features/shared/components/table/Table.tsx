@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Pressable, View } from "react-native";
-import { Text } from "../Text";
+import { Text } from "../base/Text";
 
 export type TableColumn<T> = {
   key: string;
@@ -23,7 +23,7 @@ const alignClass = {
   right: "items-end",
 } as const;
 
-export default function Table<T>({
+export function Table<T>({
   columns,
   data,
   keyExtractor,

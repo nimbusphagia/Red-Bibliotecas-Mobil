@@ -1,5 +1,4 @@
-import Card from "@/features/shared/components/cards/Card";
-import DualCard from "@/features/shared/components/cards/DualCard";
+import { Card, DualCard } from "@/features/shared/components";
 import { View } from "react-native";
 
 export default function DashboardStats() {

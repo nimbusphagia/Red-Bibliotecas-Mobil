@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { KeyboardAvoidingView, ScrollView, View } from "react-native";
-import { Text } from "../Text";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Text } from "../base/Text";
 
 type FormScreenProps = {
   title: string;
