@@ -1,7 +1,6 @@
 import { createAuthor } from "@/features/catalog/internal/author/service";
 import { Button, Text } from "@/features/shared/components";
-import { Dialog } from "@/features/shared/components/Dialog";
-import { TextField } from "@/features/shared/components/form";
+import { PillInput } from "@/features/shared/components/form";
 import type { Option } from "@/features/shared/components/select/Select";
 import {
   toFormErrors,
@@ -13,13 +12,13 @@ import { fullName } from "../options";
 
 type Props = {
   initialName: string;
-  onClose: () => void;
+  onCancel: () => void;
   onCreated: (author: Option) => void;
 };
 
-export default function NewAuthorDialog({
+export default function NewAuthorForm({
   initialName,
-  onClose,
+  onCancel,
   onCreated,
 }: Props) {
   const [firstName, setFirstName] = useState(initialName);
@@ -39,16 +38,16 @@ export default function NewAuthorDialog({
   }
 
   return (
-    <Dialog onClose={onClose}>
+    <>
       <Text variant="h3">Nuevo autor</Text>
-      <TextField
+      <PillInput
         label="Nombre"
         value={firstName}
         onChangeText={setFirstName}
         error={errors.fields.firstName}
         autoCapitalize="words"
       />
-      <TextField
+      <PillInput
         label="Apellido (opcional)"
         value={lastName}
         onChangeText={setLastName}
@@ -60,9 +59,9 @@ export default function NewAuthorDialog({
         <Text className="text-sm text-red-600">{errors.form}</Text>
       ) : null}
       <View className="flex-row justify-end gap-5">
-        <Button title="Cancelar" variant="pill-secondary" onPress={onClose} />
+        <Button title="Cancelar" variant="pill-secondary" onPress={onCancel} />
         <Button title="Crear" variant="pill" loading={saving} onPress={save} />
       </View>
-    </Dialog>
+    </>
   );
 }

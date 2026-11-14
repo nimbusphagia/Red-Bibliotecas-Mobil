@@ -1,5 +1,4 @@
 import { BookListItem } from "@/features/catalog/internal/book/types";
-import { Text } from "@/features/shared/components";
 import Card from "@/features/shared/components/cards/Card";
 import PairedRow from "@/features/shared/components/cards/PairedRow";
 import { cn } from "@/features/shared/theme";

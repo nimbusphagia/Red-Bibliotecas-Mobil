@@ -23,9 +23,9 @@ export function SimpleSelect({
   disabled,
 }: SimpleProps) {
   return (
-    <View className={cn("gap-2", disabled && "opacity-50")}>
+    <View className={cn("gap-3", disabled && "opacity-50")}>
       <Text variant="h3">{label}</Text>
-      <View className="flex-row flex-wrap gap-x-2 gap-y-4">
+      <View className="flex-row flex-wrap gap-x-3 gap-y-4">
         {options.map((o) => {
           const selected = o.id === value;
           return (
@@ -63,6 +63,7 @@ type SearchProps = {
   clearLabel?: string;
   disabled?: boolean;
   onCreate?: (name: string) => void;
+  initiallyOpen?: boolean;
 };
 
 export function SearchSelect({
@@ -74,8 +75,9 @@ export function SearchSelect({
   clearLabel = "Quitar filtro",
   disabled,
   onCreate,
+  initiallyOpen,
 }: SearchProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!!initiallyOpen);
   const [search, setSearch] = useState("");
   const [options, setOptions] = useState<Option[]>([]);
   const [none, setNone] = useState(false);
@@ -222,8 +224,9 @@ export function MultiSearchSelect({
   return (
     <View className="gap-2">
       {label && <Text variant="h3">{label}</Text>}
+      {!disabled && <SearchSelect {...search} onChange={add} />}
       {values.length > 0 && (
-        <View className="flex-row flex-wrap gap-2">
+        <View className="flex-row flex-wrap justify-center gap-3 pt-3">
           {values.map((o) => (
             <Pressable
               key={o.id}
@@ -232,12 +235,10 @@ export function MultiSearchSelect({
               className="flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-1.5"
             >
               <Text className="font-semibold text-bg">{o.label}</Text>
-              {!disabled && <X size={14} color={colors.bg} />}
             </Pressable>
           ))}
         </View>
       )}
-      {!disabled && <SearchSelect {...search} onChange={add} />}
     </View>
   );
 }

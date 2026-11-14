@@ -6,6 +6,7 @@ import { listSubcategories } from "@/features/catalog/internal/subcategory/servi
 import type { Option } from "@/features/shared/components/select/Select";
 import { useEffect, useState } from "react";
 import { listSeries } from "../internal/series/service";
+import { listShelves } from "@/features/inventory/internal/shelf/service";
 
 type WithBooks = true | undefined;
 
@@ -63,6 +64,12 @@ export const searchSeries = async (search: string): Promise<Option[]> =>
   (await listSeries({ search, limit: LIMIT })).items.map((s) => ({
     id: s.id,
     label: `${s.name} · ${fullName({ firstName: s.authorFirstName, lastName: s.authorLastName })}`,
+  }));
+
+export const loadShelves = async (): Promise<Option[]> =>
+  (await listShelves({ limit: 100 })).items.map((s) => ({
+    id: s.id,
+    label: s.isDefault ? "General" : s.name,
   }));
 
 export function useOptions(load: (() => Promise<Option[]>) | null) {

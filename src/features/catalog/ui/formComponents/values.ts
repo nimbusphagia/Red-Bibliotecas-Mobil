@@ -1,12 +1,12 @@
 import type { BookInput } from "@/features/catalog/internal/book/schemas";
+import type { BookListItem } from "@/features/catalog/internal/book/types";
 import type { Option } from "@/features/shared/components/select/Select";
-import { BookListItem } from "../../internal/book/types";
 import { fullName } from "../options";
 
 export const ROLES = [
-  { key: "writers", role: "writer", label: "Escritores" },
-  { key: "illustrators", role: "illustrator", label: "Ilustradores" },
-  { key: "translators", role: "translator", label: "Traductores" },
+  { key: "writers", role: "writer" },
+  { key: "illustrators", role: "illustrator" },
+  { key: "translators", role: "translator" },
 ] as const;
 
 export type RoleKey = (typeof ROLES)[number]["key"];
@@ -16,12 +16,12 @@ export type BookFormValues = Record<RoleKey, Option[]> & {
   publisher?: Option;
   collection?: Option;
   series?: Option;
-  categoryId?: number;
-  subcategoryId?: number;
+  category?: Option;
+  subcategory?: Option;
   year: string;
   pages: string;
   quantity: string;
-  shelfId?: number;
+  shelf?: Option;
   omitWords: string;
 };
 
@@ -46,8 +46,8 @@ export const toBookInput = (v: BookFormValues): BookInput => ({
   publisherId: v.publisher?.id ?? null,
   collectionId: v.collection?.id ?? null,
   seriesId: v.series?.id ?? null,
-  categoryId: v.categoryId ?? null,
-  subcategoryId: v.subcategoryId ?? null,
+  categoryId: v.category?.id ?? null,
+  subcategoryId: v.subcategory?.id ?? null,
   publicationYear: toInt(v.year),
   pageCount: toInt(v.pages),
 });
@@ -70,8 +70,8 @@ export const fromBook = (b: BookListItem): BookFormValues => {
     publisher: ref(b.publisherId, b.publisherName),
     collection: ref(b.collectionId, b.collectionName),
     series: ref(b.seriesId, b.seriesName),
-    categoryId: b.categoryId ?? undefined,
-    subcategoryId: b.subcategoryId ?? undefined,
+    category: ref(b.categoryId, b.categoryName),
+    subcategory: ref(b.subcategoryId, b.subcategoryName),
     year: b.publicationYear?.toString() ?? "",
     pages: b.pageCount?.toString() ?? "",
   };
