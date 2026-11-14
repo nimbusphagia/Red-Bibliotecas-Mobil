@@ -173,6 +173,8 @@ export async function listBooks(
     or(
       matches(book.titleKey, t),
       matches(publisher.nameKey, t),
+      matches(collection.nameKey, t),
+      matches(series.nameKey, t),
       authorMatches(t),
     ),
   );
@@ -221,6 +223,8 @@ export async function listBooks(
       .select({ n: count() })
       .from(book)
       .leftJoin(publisher, eq(book.publisherId, publisher.id))
+      .leftJoin(collection, eq(book.collectionId, collection.id))
+      .leftJoin(series, eq(book.seriesId, series.id))
       .where(where),
   ]);
   const byBook = await collaboratorsOf(rows.map((r) => r.id));

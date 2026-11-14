@@ -22,6 +22,7 @@ export default function ListHeader({
       lead={
         <Link href="/catalog/form" asChild>
           <Button
+            className="highlight"
             title="Registrar"
             icon={<NotebookPen size={18} color={colors.bg} />}
           />

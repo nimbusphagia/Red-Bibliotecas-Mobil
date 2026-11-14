@@ -21,7 +21,7 @@ export default function LabelInfo({ book, codes }: Props) {
   ];
 
   return (
-    <View className="w-[230px] gap-1">
+    <View className="w-[230px] gap-2">
       {rows.map(({ label, content }, i) => (
         <PairedRow key={i} variant="code" label={label} content={content} />
       ))}

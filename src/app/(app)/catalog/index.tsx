@@ -1,10 +1,10 @@
-import Catalog from "@/features/catalog/ui/Catalog";
+import BookList from "@/features/catalog/ui/BookList";
 import { MainLayout } from "@/features/shared/layout/MainLayout";
 
 export default function CatalogScreen() {
   return (
     <MainLayout>
-      <Catalog />
+      <BookList />
     </MainLayout>
   );
 }

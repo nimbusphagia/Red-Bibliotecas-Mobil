@@ -21,7 +21,7 @@ export function PillRow({ children, className }: Props) {
 const columnStyles = {
   text: "text-primary",
   badge:
-    "bg-fg1 rounded-full px-4 py-[5px] border border-fg1 self-center text-center",
+    "bg-fg1 rounded-full px-4 py-[5px] border border-fg1 self-center text-center text-highlight",
   highlight:
     "border-fg1 border px-4 py-[5px] bg-primary text-bg text-center rounded-full",
 };
