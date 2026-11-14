@@ -1,4 +1,8 @@
-import { SimpleSelect, Text, type Option } from "@/features/shared/components";
+import {
+  FieldError,
+  SimpleSelect,
+  type Option,
+} from "@/features/shared/components";
 import { View } from "react-native";
 import { useOptions } from "../options";
 import type { Field } from "./fields";
@@ -31,7 +35,7 @@ export default function InlinePick({
         disabled={disabled}
         onChange={(id) => onChange(options.find((o) => o.id === id))}
       />
-      {error ? <Text className="text-sm text-red-600">{error}</Text> : null}
+      <FieldError>{error}</FieldError>
     </View>
   );
 }

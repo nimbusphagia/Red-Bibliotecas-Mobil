@@ -1,6 +1,5 @@
 import { BookListItem } from "@/features/catalog/internal/book/types";
-import { Card, PairedRow } from "@/features/shared/components";
-import { cn } from "@/features/shared/theme";
+import { PairedRow } from "@/features/shared/components";
 import { View } from "react-native";
 
 type Props = {
@@ -29,27 +28,19 @@ export default function BookInfo({ book }: Props) {
   ];
 
   return (
-    <Card className="flex-1 rounded-[10] flex-row gap-5 items-start p-0 bg-bg">
+    <View className="flex-1 flex-row items-start gap-5">
       {columns.map((rows, i) => (
-        <View key={i} className="flex-1 justify-start p-0 gap-2 bg-bg">
+        <View key={i} className="flex-1 gap-2">
           {rows.map(({ label, content }) => (
             <PairedRow
               key={label}
               label={label}
-              content={content ?? "---"}
-              containerClass="rounded-lg border border-fg1 bg-bg"
-              labelClass={cn(
-                "font-sans-medium text-[16px] w-[30%] text-highlight pl-4 rounded-l-lg bg-fg2",
-                content ? "bg-primary text-bg" : "",
-              )}
-              contentClass={cn(
-                "flex-1 text-right font-sans-medium text-[16px] text-primary pr-4 rounded-r-lg bg-fg2",
-                content ? "bg-fg1 " : "",
-              )}
+              content={content}
+              labelClass="w-[30%]"
             />
           ))}
         </View>
       ))}
-    </Card>
+    </View>
   );
 }

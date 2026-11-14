@@ -10,16 +10,16 @@ type Props = {
 };
 export default function DetailHeader({ id, title }: Props) {
   return (
-    <PageHeader title={title}>
-      <View className="flex-1 flex-row items-center pl-5">
+    <PageHeader
+      title={title}
+      lead={
         <Link
           href={{ pathname: "/catalog/form", params: { id: String(id) } }}
           asChild
         >
           <Button
-            variant="pill-secondary"
-            className="p-3 border-fg1 border"
-            lucideIcon={
+            variant="secondary"
+            icon={
               <PencilLine
                 size={16}
                 strokeWidth={2.5}
@@ -28,7 +28,7 @@ export default function DetailHeader({ id, title }: Props) {
             }
           />
         </Link>
-      </View>
-    </PageHeader>
+      }
+    />
   );
 }

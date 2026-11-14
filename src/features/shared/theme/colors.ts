@@ -5,7 +5,6 @@ export const colors = {
   primary: "#6996CF",
   secondary: "#8AAAD4",
   highlight: "#5789C9",
-  placeholder: "#94a3b8",
   spinnerOnDark: "#ffffff",
   spinnerOnLight: "#475569",
 } as const;

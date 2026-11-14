@@ -27,7 +27,7 @@ export function parseOrThrow<T extends z.ZodType>(
   return result.data;
 }
 
-export const FIELD_LABELS: Record<string, string> = {
+const FIELD_LABELS: Record<string, string> = {
   name_key: "name",
   code: "code",
 };

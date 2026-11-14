@@ -1,36 +1,37 @@
-import { ReactNode } from "react";
-import type { PressableProps } from "react-native";
-import { ActivityIndicator, Pressable } from "react-native";
+import type { ReactNode } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  type PressableProps,
+} from "react-native";
 import { cn, colors } from "../../theme";
 import { Text } from "./Text";
 
-type Variant = "primary" | "secondary" | "pill" | "pill-secondary";
+type Variant = "highlight" | "primary" | "secondary";
 
 type ButtonProps = Omit<PressableProps, "children"> & {
   title?: string;
-  lucideIcon?: ReactNode;
+  icon?: ReactNode;
   variant?: Variant;
   loading?: boolean;
   className?: string;
 };
 
 const containerStyles: Record<Variant, string> = {
-  primary: `bg-highlight active:bg-primary`,
-  secondary: "border border-slate-300 bg-white active:bg-slate-100",
-  pill: "bg-primary active:bg-secondary rounded-full",
-  "pill-secondary": "bg-fg1  active:bg-fg2 rounded-full border border-fg1",
+  highlight: "bg-highlight active:bg-primary",
+  primary: "bg-primary active:bg-secondary",
+  secondary: "bg-fg1 active:bg-fg2 border border-fg1",
 };
 
 const labelStyles: Record<Variant, string> = {
+  highlight: "text-bg",
   primary: "text-bg",
-  secondary: "text-slate-900",
-  pill: "text-bg",
-  "pill-secondary": "text-primary",
+  secondary: "text-primary",
 };
 
 export function Button({
   title,
-  lucideIcon,
+  icon,
   variant = "primary",
   loading = false,
   disabled,
@@ -45,7 +46,8 @@ export function Button({
       accessibilityState={{ disabled: !!isDisabled, busy: loading }}
       disabled={isDisabled}
       className={cn(
-        "min-h-10 flex-row items-center justify-center gap-2 px-4",
+        "min-h-10 flex-row items-center justify-center gap-2 rounded-full",
+        title ? "px-4" : "size-10",
         containerStyles[variant],
         isDisabled && "opacity-80",
         className,
@@ -59,7 +61,7 @@ export function Button({
           }
         />
       )}
-      {lucideIcon}
+      {icon}
       {title && (
         <Text className={cn("text-[16] font-semibold", labelStyles[variant])}>
           {title}

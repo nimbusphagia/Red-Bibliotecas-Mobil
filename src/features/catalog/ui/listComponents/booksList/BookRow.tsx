@@ -1,5 +1,5 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { Button, Text } from "@/features/shared/components";
+import { Button, PillRow, Text } from "@/features/shared/components";
 import { cn, colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookUp, Dot, Eye } from "lucide-react-native";
@@ -10,10 +10,8 @@ type Props = {
 };
 export default function BookRowComponent({ book }: Props) {
   const colClass = "flex-1 justify-center gap-[1px]";
-  const containerBg = "bg-fg2";
-  const containerClass = `border border-fg1 flex-row justify-between gap-5 py-3 px-7 rounded-full ${containerBg}`;
   return (
-    <View className={containerClass}>
+    <PillRow>
       <View className={colClass}>
         <Text variant="h3" className="text-highlight">
           {book.title}
@@ -28,7 +26,7 @@ export default function BookRowComponent({ book }: Props) {
           )}
         </View>
       </View>
-      <View className={cn(colClass)}>
+      <View className={colClass}>
         <Text variant="h3" className="font-semibold text-[15px]">
           {formatContributors(book.collaborators)}
         </Text>
@@ -48,18 +46,16 @@ export default function BookRowComponent({ book }: Props) {
       <View className="flex-row items-center gap-6">
         <Link href={`/catalog/${book.id}`} asChild>
           <Button
-            variant="pill-secondary"
-            className="p-[12px] bg-fg1"
-            lucideIcon={<Eye size={18} color={colors.highlight} />}
+            variant="secondary"
+            icon={<Eye size={18} color={colors.highlight} />}
           />
         </Link>
         <Button
-          className="p-[12px] bg-highlight"
-          variant="pill"
-          lucideIcon={<BookUp size={18} color={colors.bg} />}
+          variant="highlight"
+          icon={<BookUp size={18} color={colors.bg} />}
         />
       </View>
-    </View>
+    </PillRow>
   );
 }
 

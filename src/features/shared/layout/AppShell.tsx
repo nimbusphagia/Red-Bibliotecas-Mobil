@@ -1,5 +1,4 @@
 import { Sidebar } from "@/features/navigation/Sidebar/Sidebar";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,11 +8,10 @@ type Props = {
 
 export function AppShell({ children }: Props) {
   const insets = useSafeAreaInsets();
-  const { isExpanded } = useLayoutMode();
 
   return (
     <View
-      className="h-full flex flex-row flex-1 "
+      className="flex-row flex-1 "
       style={{
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
@@ -21,8 +19,8 @@ export function AppShell({ children }: Props) {
         paddingRight: insets.right,
       }}
     >
-      <Sidebar expanded={false} />
-      <View style={{ flex: 1 }}>{children}</View>
+      <Sidebar />
+      <View className="flex-1">{children}</View>
     </View>
   );
 }

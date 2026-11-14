@@ -2,14 +2,14 @@ import type { Ref } from "react";
 import { useState } from "react";
 import type { TextInputInstance, TextInputProps } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
-import { cn, colors } from "../../../theme/index";
+import { cn, colors } from "../../../theme";
 import { Text } from "../../base/Text";
+import { FieldError } from "../FieldError";
 
-type TextFieldProps = TextInputProps & {
+type Props = TextInputProps & {
   label: string;
   error?: string;
   helperText?: string;
-  containerClassName?: string;
   ref?: Ref<TextInputInstance>;
 };
 
@@ -17,75 +17,51 @@ export function TextField({
   label,
   error,
   helperText,
-  containerClassName,
   className,
   secureTextEntry,
-  onFocus,
-  onBlur,
+  editable,
   ref,
   ...rest
-}: TextFieldProps) {
-  const [focused, setFocused] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false);
-
-  const isPassword = !!secureTextEntry;
-
-  const handleFocus: TextInputProps["onFocus"] = (e) => {
-    setFocused(true);
-    onFocus?.(e);
-  };
-
-  const handleBlur: TextInputProps["onBlur"] = (e) => {
-    setFocused(false);
-    onBlur?.(e);
-  };
+}: Props) {
+  const [visible, setVisible] = useState(false);
 
   return (
-    <View className={cn("w-full", containerClassName)}>
-      <Text className="mb-1.5 text-sm font-medium text-slate-700">{label}</Text>
-
+    <View className={cn("w-full gap-2", editable === false && "opacity-50")}>
+      <Text variant="h3">{label}</Text>
       <View className="justify-center">
         <TextInput
           ref={ref}
           accessibilityLabel={label}
-          placeholderTextColor={colors.placeholder}
-          secureTextEntry={isPassword && !passwordVisible}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
+          editable={editable}
+          placeholderTextColor={colors.primary}
+          secureTextEntry={secureTextEntry && !visible}
           className={cn(
-            "min-h-12 rounded-lg border bg-white px-4 text-base text-slate-900",
-            error
-              ? "border-red-500"
-              : focused
-                ? "border-blue-600"
-                : "border-slate-300",
-            isPassword && "pr-16",
+            "h-12 rounded-full border bg-fg1 px-4 font-sans text-highlight",
+            error ? "border-red-500" : "border-transparent focus:border-fg1",
+            secureTextEntry && "pr-24",
             className,
           )}
           {...rest}
         />
-
-        {isPassword && (
+        {secureTextEntry && (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={
-              passwordVisible ? "Hide password" : "Show password"
+              visible ? "Ocultar contraseña" : "Mostrar contraseña"
             }
-            onPress={() => setPasswordVisible((v) => !v)}
+            onPress={() => setVisible((v) => !v)}
             hitSlop={8}
-            className="absolute right-3 px-1 py-2"
+            className="absolute right-4 px-1 py-2"
           >
-            <Text className="text-sm font-medium text-blue-600">
-              {passwordVisible ? "Hide" : "Show"}
+            <Text className="font-sans-medium text-sm text-highlight">
+              {visible ? "Ocultar" : "Mostrar"}
             </Text>
           </Pressable>
         )}
       </View>
-
-      {error ? (
-        <Text className="mt-1 text-sm text-red-600">{error}</Text>
-      ) : helperText ? (
-        <Text className="mt-1 text-sm text-slate-500">{helperText}</Text>
+      <FieldError>{error}</FieldError>
+      {!error && helperText ? (
+        <Text variant="subtitle">{helperText}</Text>
       ) : null}
     </View>
   );

@@ -6,7 +6,7 @@ export default function BookFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
 
   return (
-    <MainLayout title="">
+    <MainLayout>
       <BookForm id={id} />
     </MainLayout>
   );

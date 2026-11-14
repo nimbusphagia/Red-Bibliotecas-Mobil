@@ -5,11 +5,7 @@ import { Text } from "../base/Text";
 
 type Props = { className?: string; title?: string };
 
-export function Card({
-  title,
-  className = "",
-  children,
-}: PropsWithChildren<Props>) {
+export function Card({ title, className, children }: PropsWithChildren<Props>) {
   return (
     <View
       className={cn(

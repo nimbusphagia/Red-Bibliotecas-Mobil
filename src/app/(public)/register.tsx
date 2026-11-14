@@ -5,44 +5,36 @@ import {
   TextField,
   Button,
   Text,
+  FieldError,
 } from "@/features/shared/components";
-import {
-  toFormErrors,
-  type FormErrors,
-} from "@/features/shared/errors/messages";
-import { LoadingScreen } from "@/features/shared/layout/LoadingScreen";
 import { Image } from "expo-image";
 import { useRef, useState } from "react";
 import type { TextInputInstance } from "react-native";
 import { View } from "react-native";
 import splash from "../../../assets/images/splash1.avif";
+import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
+import { LoadingScreen } from "@/features/shared/layout/LoadingScreen";
 
 export default function RegisterScreen() {
   const { finishSetup } = useSession();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [errors, setErrors] = useState<FormErrors>({ fields: {} });
-  const [submitting, setSubmitting] = useState(false);
 
   const passwordRef = useRef<TextInputInstance>(null);
   const confirmRef = useRef<TextInputInstance>(null);
 
-  async function submit() {
-    if (submitting) return;
+  const { errors, setErrors, submitting, run } = useFormSubmit();
+
+  function submit() {
     if (password !== confirm) {
       setErrors({ fields: { confirm: "Las contraseñas no coinciden" } });
       return;
     }
-    setErrors({ fields: {} });
-    setSubmitting(true);
-    try {
+    run(async () => {
       await completeSetup({ username, password });
       finishSetup();
-    } catch (error) {
-      setErrors(toFormErrors(error));
-      setSubmitting(false);
-    }
+    });
   }
 
   if (submitting) {
@@ -85,9 +77,7 @@ export default function RegisterScreen() {
           returnKeyType="done"
           onSubmitEditing={submit}
         />
-        {errors.form ? (
-          <Text className="text-sm text-red-600">{errors.form}</Text>
-        ) : null}
+        <FieldError>{errors.form}</FieldError>
         <Button title="Registrar" onPress={submit} />
       </FormScreen>
       <Image source={splash} contentFit="cover" style={{ flex: 1 }} />

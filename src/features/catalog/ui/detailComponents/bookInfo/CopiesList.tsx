@@ -15,7 +15,7 @@ export default function CopiesList({ copies }: Props) {
       {copies.map((c) => {
         const isAvailable = ["available", "damaged"].includes(c.status);
         return (
-          <PillRow key={c.id} className="justify-around py-2">
+          <PillRow key={c.id} className="flex-1 justify-around py-2">
             <PillRowColumn textVariant="h3" title={String(c.copyNumber)} />
             <PillRowColumn
               textVariant="subtitle"
@@ -31,11 +31,11 @@ export default function CopiesList({ copies }: Props) {
               textVariant="subtitle"
               title={c.labelText ?? "---"}
             />
-            <PillRowColumn variant="children">
-              <Link href={`/shelves/${c.shelfId}`} asChild className="p-3">
+            <View className="flex-row items-center gap-4">
+              <Link href={`/shelves/${c.shelfId}`} asChild>
                 <Button
-                  variant="pill-secondary"
-                  lucideIcon={
+                  variant="secondary"
+                  icon={
                     <ShelvingUnit
                       size={20}
                       color={colors.highlight}
@@ -47,12 +47,9 @@ export default function CopiesList({ copies }: Props) {
               <Link
                 href={isAvailable ? "/loans/new" : `/loans/${c.id}`}
                 asChild
-                className="p-3"
               >
                 <Button
-                  variant="pill"
-                  className="bg-primary"
-                  lucideIcon={
+                  icon={
                     isAvailable ? (
                       <BookUp size={20} color={colors.bg} strokeWidth={2} />
                     ) : (
@@ -61,7 +58,7 @@ export default function CopiesList({ copies }: Props) {
                   }
                 />
               </Link>
-            </PillRowColumn>
+            </View>
           </PillRow>
         );
       })}

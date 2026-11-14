@@ -7,15 +7,13 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { registerCopies } from "@/features/inventory/internal/movement/service";
 import {
   Button,
+  FieldError,
   FieldRow,
   PageHeader,
   Text,
   type Option,
 } from "@/features/shared/components";
-import {
-  toFormErrors,
-  type FormErrors,
-} from "@/features/shared/errors/messages";
+import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { cn } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
@@ -56,9 +54,8 @@ function Form({ book }: { book?: BookListItem }) {
   const { isExpanded } = useLayoutMode();
 
   const [v, setValues] = useState(() => (book ? fromBook(book) : EMPTY_VALUES));
-  const [errors, setErrors] = useState<FormErrors>({ fields: {} });
-  const [submitting, setSubmitting] = useState(false);
   const [editing, setEditing] = useState<Field | null>(null);
+  const { errors, setErrors, submitting, run } = useFormSubmit();
 
   const isEdit = !!book;
   const locked = (book?.copyCount ?? 0) > 0;
@@ -92,38 +89,36 @@ function Form({ book }: { book?: BookListItem }) {
     setErrors({ fields: {} });
   };
 
-  async function submit() {
-    if (submitting || session.status !== "signed-in") return;
-    setErrors({ fields: {} });
-    setSubmitting(true);
-    try {
-      if (book) {
-        await updateBook(book.id, toBookInput(v));
-        router.back();
-        return;
-      }
-      const { lines } = await registerCopies(session.account.id, {
-        shelfId: v.shelf?.id,
-        lines: [
-          {
-            book: toBookInput(v),
-            quantity: Number(v.quantity) || 1,
-            omitWords: v.omitWords
-              .split(",")
-              .map((w) => w.trim())
-              .filter(Boolean),
-          },
-        ],
-      });
-      router.replace(`/catalog/${lines[0].bookId}`);
-    } catch (error) {
-      const e = toFormErrors(error);
-      setErrors(e);
-      if (e.suggestedOmitWords?.length) {
-        set({ omitWords: e.suggestedOmitWords.join(", ") });
-      }
-      setSubmitting(false);
-    }
+  function submit() {
+    if (session.status !== "signed-in") return;
+    run(
+      async () => {
+        if (book) {
+          await updateBook(book.id, toBookInput(v));
+          router.back();
+          return;
+        }
+        const { lines } = await registerCopies(session.account.id, {
+          shelfId: v.shelf?.id,
+          lines: [
+            {
+              book: toBookInput(v),
+              quantity: Number(v.quantity) || 1,
+              omitWords: v.omitWords
+                .split(",")
+                .map((w) => w.trim())
+                .filter(Boolean),
+            },
+          ],
+        });
+        router.replace(`/catalog/${lines[0].bookId}`);
+      },
+      (e) => {
+        if (e.suggestedOmitWords?.length) {
+          set({ omitWords: e.suggestedOmitWords.join(", ") });
+        }
+      },
+    );
   }
 
   const shown = new Set(fields.map((f) => f.error ?? f.key));
@@ -135,21 +130,17 @@ function Form({ book }: { book?: BookListItem }) {
   return (
     <>
       <PageHeader title={isEdit ? "Editar libro" : "Registrar libro"}>
-        <View className="flex-1 flex-row items-center justify-end gap-5">
-          <Button
-            title="Cancelar"
-            variant="pill-secondary"
-            onPress={() => router.back()}
-          />
-          <Button
-            title={isEdit ? "Guardar" : "Registrar"}
-            variant="pill"
-            className="bg-highlight"
-            loading={submitting}
-            disabled={!canSubmit}
-            onPress={submit}
-          />
-        </View>
+        <Button
+          title="Cancelar"
+          variant="secondary"
+          onPress={() => router.back()}
+        />
+        <Button
+          title={isEdit ? "Guardar" : "Registrar"}
+          loading={submitting}
+          disabled={!canSubmit}
+          onPress={submit}
+        />
       </PageHeader>
 
       <ScrollView
@@ -157,11 +148,7 @@ function Form({ book }: { book?: BookListItem }) {
         contentContainerClassName="gap-4 p-4 pt-7"
         keyboardShouldPersistTaps="handled"
       >
-        {errors.form || orphanErrors ? (
-          <Text className="text-sm text-red-600">
-            {errors.form ?? orphanErrors}
-          </Text>
-        ) : null}
+        <FieldError>{errors.form ?? orphanErrors}</FieldError>
         {locked && (
           <Text variant="subtitle">
             Título, escritor, categoría y subcategoría están bloqueados porque
@@ -222,13 +209,13 @@ function Form({ book }: { book?: BookListItem }) {
                                 (f.key === "collection" && !v.publisher)
                               }
                               onPress={() => setEditing(f)}
-                              labelClass="py-[6]"
-                              contentClass={cn(
-                                "py-[6]",
-                                g.title === "Ejemplares" ? "text-center" : "",
-                              )}
-                              containerClass={
-                                g.title === "Ejemplares" ? "w-[50%]" : ""
+                              contentClass={
+                                g.title === "Ejemplares"
+                                  ? "text-center"
+                                  : undefined
+                              }
+                              className={
+                                g.title === "Ejemplares" ? "w-[50%]" : undefined
                               }
                             />
                           );

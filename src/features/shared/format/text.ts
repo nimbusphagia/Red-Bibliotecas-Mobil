@@ -8,5 +8,3 @@ export const searchKey = (s: string) =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
-
-export const arrToString = (arr: string[]) => arr.join(", ");

@@ -14,8 +14,3 @@ export function addDays(iso: string, days: number): string {
   d.setDate(d.getDate() + days);
   return toISODate(d);
 }
-
-export function daysBetween(fromIso: string, toIso: string): number {
-  const ms = parseISODate(toIso).getTime() - parseISODate(fromIso).getTime();
-  return Math.round(ms / 86_400_000); // rounding absorbs DST 23/25-hour days
-}

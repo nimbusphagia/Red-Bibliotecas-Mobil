@@ -1,67 +1,17 @@
-import { Text } from "../../base/Text";
-import { useDebounce } from "../../../hooks/useDebounce";
-import { cn, colors } from "../../../theme";
 import { X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, TextInput, View } from "react-native";
+import { useDebounce } from "../../../hooks/useDebounce";
+import { cn, colors } from "../../../theme";
+import { Text } from "../../base/Text";
+import type { Option } from "./option";
 
-export type Option = { id: number; label: string };
-
-type SimpleProps = {
-  label: string;
-  options: Option[];
-  value?: number;
-  onChange: (id?: number) => void;
-  disabled?: boolean;
-};
-
-export function SimpleSelect({
-  label,
-  options,
-  value,
-  onChange,
-  disabled,
-}: SimpleProps) {
-  return (
-    <View className={cn("gap-3", disabled && "opacity-50")}>
-      <Text variant="h3">{label}</Text>
-      <View className="flex-row flex-wrap gap-x-3 gap-y-4">
-        {options.map((o) => {
-          const selected = o.id === value;
-          return (
-            <Pressable
-              key={o.id}
-              disabled={disabled}
-              onPress={() => onChange(selected ? undefined : o.id)}
-              className={cn(
-                "rounded-full px-4 py-1.5",
-                selected ? "bg-primary" : "bg-fg1",
-              )}
-            >
-              <Text
-                className={cn(
-                  "font-semibold",
-                  selected ? "text-bg" : "text-secondary",
-                )}
-              >
-                {o.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
-
-type SearchProps = {
+export type SearchSelectProps = {
   label?: string;
   value?: Option;
   onChange: (option?: Option) => void;
   fetchOptions: (search: string) => Promise<Option[]>;
   placeholder?: string;
-  clearLabel?: string;
-  disabled?: boolean;
   onCreate?: (name: string) => void;
   initiallyOpen?: boolean;
 };
@@ -72,11 +22,9 @@ export function SearchSelect({
   onChange,
   fetchOptions,
   placeholder = "Todos",
-  clearLabel = "Quitar filtro",
-  disabled,
   onCreate,
   initiallyOpen,
-}: SearchProps) {
+}: SearchSelectProps) {
   const [open, setOpen] = useState(!!initiallyOpen);
   const [search, setSearch] = useState("");
   const [options, setOptions] = useState<Option[]>([]);
@@ -141,12 +89,8 @@ export function SearchSelect({
         </View>
       ) : (
         <Pressable
-          disabled={disabled}
           onPress={() => setOpen(true)}
-          className={cn(
-            "h-12 justify-center rounded-full bg-fg1 px-4",
-            disabled && "opacity-50",
-          )}
+          className={cn("h-12 justify-center rounded-full bg-fg1 px-4")}
         >
           <Text variant="subtitle">{value?.label ?? placeholder}</Text>
         </Pressable>
@@ -154,13 +98,17 @@ export function SearchSelect({
 
       {isOpen && (
         <View className="max-h-[240] overflow-hidden rounded-[30] bg-fg2">
-          <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled">
+          <ScrollView
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
             {value && (
               <Pressable
                 onPress={() => pick(undefined)}
                 className="border-b border-fg1 px-4 py-2"
               >
-                <Text variant="subtitle">{clearLabel}</Text>
+                <Text variant="subtitle">Quitar</Text>
               </Pressable>
             )}
             {canCreate && (
@@ -197,46 +145,6 @@ export function SearchSelect({
               );
             })}
           </ScrollView>
-        </View>
-      )}
-    </View>
-  );
-}
-
-type MultiProps = Omit<SearchProps, "value" | "onChange" | "clearLabel"> & {
-  values: Option[];
-  onChange: (options: Option[]) => void;
-};
-
-export function MultiSearchSelect({
-  label,
-  values,
-  onChange,
-  disabled,
-  ...search
-}: MultiProps) {
-  const add = (option?: Option) => {
-    if (option && !values.some((v) => v.id === option.id)) {
-      onChange([...values, option]);
-    }
-  };
-
-  return (
-    <View className="gap-2">
-      {label && <Text variant="h3">{label}</Text>}
-      {!disabled && <SearchSelect {...search} onChange={add} />}
-      {values.length > 0 && (
-        <View className="flex-row flex-wrap justify-center gap-3 pt-3">
-          {values.map((o) => (
-            <Pressable
-              key={o.id}
-              disabled={disabled}
-              onPress={() => onChange(values.filter((v) => v.id !== o.id))}
-              className="flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-1.5"
-            >
-              <Text className="font-semibold text-bg">{o.label}</Text>
-            </Pressable>
-          ))}
         </View>
       )}
     </View>

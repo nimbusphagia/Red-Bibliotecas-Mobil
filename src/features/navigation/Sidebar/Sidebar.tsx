@@ -3,11 +3,9 @@ import { Href, usePathname } from "expo-router";
 import { View } from "react-native";
 import { SidebarItem } from "./SidebarItem";
 
-type Props = {
-  expanded: boolean;
-};
+type Props = {};
 
-export function Sidebar({ expanded }: Props) {
+export function Sidebar({}: Props) {
   const pathname = usePathname();
 
   const isActive = (href: Href): boolean => {
@@ -22,14 +20,7 @@ export function Sidebar({ expanded }: Props) {
       <View className=" gap-[10%]">
         {NAVBAR.main.map((item) => {
           const active = isActive(item.href);
-          return (
-            <SidebarItem
-              key={item.key}
-              item={item}
-              active={active}
-              expanded={expanded}
-            />
-          );
+          return <SidebarItem key={item.key} item={item} active={active} />;
         })}
       </View>
       <View className="gap-[10%]">
@@ -39,7 +30,6 @@ export function Sidebar({ expanded }: Props) {
               key={item.key}
               item={item}
               active={isActive(item.href)}
-              expanded={expanded}
             />
           );
         })}

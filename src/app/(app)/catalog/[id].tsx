@@ -6,7 +6,7 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <MainLayout title="">
+    <MainLayout>
       <BookDetail id={id} />
     </MainLayout>
   );

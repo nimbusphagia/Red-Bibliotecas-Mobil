@@ -2,13 +2,41 @@ import { View } from "react-native";
 import { cn } from "../../theme";
 import { Text } from "../base/Text";
 
+type Variant = "field" | "code";
+
+const styles: Record<
+  Variant,
+  {
+    container: string;
+    label: string;
+    labelFilled: string;
+    content: string;
+    contentFilled: string;
+  }
+> = {
+  field: {
+    container: "rounded-lg border",
+    label: "w-[120px] rounded-l-lg bg-fg2 pl-4 text-highlight",
+    labelFilled: "bg-primary text-bg",
+    content: "flex-1 rounded-r-lg bg-fg2 pr-4 text-right",
+    contentFilled: "bg-fg1",
+  },
+  code: {
+    container: "gap-2",
+    label: "w-[60] rounded-lg bg-primary text-center text-bg font-sans-bold",
+    labelFilled: "",
+    content: "flex-1 rounded-lg border border-fg1 bg-fg2 px-4",
+    contentFilled: "",
+  },
+};
+
 type Props = {
-  label: string | null;
+  label: string;
   content: string | null;
-  quoted?: boolean;
-  highlight?: "label" | "content";
-  fixedHighlight?: string;
-  containerClass?: string;
+  variant?: Variant;
+  error?: boolean;
+  disabled?: boolean;
+  className?: string;
   labelClass?: string;
   contentClass?: string;
 };
@@ -16,43 +44,50 @@ type Props = {
 export function PairedRow({
   label,
   content,
-  highlight,
-  quoted = false,
-  containerClass = "",
-  labelClass = "",
-  contentClass = "",
+  variant = "field",
+  error,
+  disabled,
+  className,
+  labelClass,
+  contentClass,
 }: Props) {
-  const textClass = "py-[5] max-w-full";
-  const highlighted = "bg-primary text-bg";
+  const s = styles[variant];
+  const filled = content !== null;
+  const disabledClass = disabled && "bg-fg1/60 text-primary/70";
 
-  if (content === null || label === null) return;
   return (
     <View
       className={cn(
         "w-full flex-row items-center justify-between",
-        containerClass,
+        s.container,
+        variant === "field" && (error ? "border-red-500" : "border-fg1"),
+        className,
       )}
     >
       <Text
         variant="h3"
         className={cn(
-          textClass,
-          highlight === "label" ? highlighted : "",
+          "max-w-full py-[6]",
+          s.label,
+          filled && s.labelFilled,
+          disabledClass,
           labelClass,
         )}
       >
         {label}
       </Text>
       <Text
-        variant="h2"
+        variant="h3"
         numberOfLines={1}
         className={cn(
-          textClass,
-          highlight === "content" ? highlighted : "",
+          "max-w-full py-[6]",
+          s.content,
+          filled && s.contentFilled,
+          disabledClass,
           contentClass,
         )}
       >
-        {quoted ? `"${content}"` : content}
+        {content ?? "---"}
       </Text>
     </View>
   );

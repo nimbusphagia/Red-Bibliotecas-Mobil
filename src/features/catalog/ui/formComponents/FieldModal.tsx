@@ -4,16 +4,16 @@ import { createSeries } from "@/features/catalog/internal/series/service";
 import {
   Button,
   Dialog,
+  FieldError,
   MultiSearchSelect,
-  PillInput,
+  TextField,
   SearchSelect,
   SimpleSelect,
-  Text,
   type Option,
 } from "@/features/shared/components";
 import { toFormErrors } from "@/features/shared/errors/messages";
 import { useCallback, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { searchAuthors, searchCollections, useOptions } from "../options";
 import { display, type Field } from "./fields";
 import NewAuthorForm from "./NewAuthorForm";
@@ -89,94 +89,94 @@ export default function FieldModal({
 
   return (
     <Dialog onClose={onClose}>
-      {newAuthor !== null ? (
-        <NewAuthorForm
-          initialName={newAuthor}
-          onCancel={() => setNewAuthor(null)}
-          onCreated={(author) => {
-            commit([...(values[key] as Option[]), author]);
-            setNewAuthor(null);
-          }}
-        />
-      ) : (
-        <>
-          {(kind === "text" || kind === "number") && (
-            <>
-              <PillInput
-                label={label}
-                value={draft}
-                onChangeText={(t) =>
-                  setDraft(kind === "number" ? t.replace(/\D/g, "") : t)
-                }
-                keyboardType={kind === "number" ? "number-pad" : "default"}
-                autoCapitalize={key === "title" ? "words" : "none"}
-                helperText={
-                  field.max
-                    ? `Entre ${field.min ?? 0} y ${field.max}`
-                    : undefined
-                }
-                onSubmitEditing={confirm}
-                autoFocus
-              />
-              <View className="flex-row justify-end gap-5">
-                <Button
-                  title="Cancelar"
-                  variant="pill-secondary"
-                  onPress={onClose}
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName="gap-4"
+        showsVerticalScrollIndicator={false}
+      >
+        {newAuthor !== null ? (
+          <NewAuthorForm
+            initialName={newAuthor}
+            onCancel={() => setNewAuthor(null)}
+            onCreated={(author) => {
+              commit([...(values[key] as Option[]), author]);
+              setNewAuthor(null);
+            }}
+          />
+        ) : (
+          <>
+            {(kind === "text" || kind === "number") && (
+              <>
+                <TextField
+                  label={label}
+                  value={draft}
+                  onChangeText={(t) =>
+                    setDraft(kind === "number" ? t.replace(/\D/g, "") : t)
+                  }
+                  keyboardType={kind === "number" ? "number-pad" : "default"}
+                  autoCapitalize={key === "title" ? "words" : "none"}
+                  helperText={
+                    field.max
+                      ? `Entre ${field.min ?? 0} y ${field.max}`
+                      : undefined
+                  }
+                  onSubmitEditing={confirm}
+                  autoFocus
                 />
-                <Button
-                  title="Aceptar"
-                  variant="pill"
-                  disabled={!valid}
-                  onPress={confirm}
-                />
-              </View>
-            </>
-          )}
+                <View className="flex-row justify-end gap-5">
+                  <Button
+                    title="Cancelar"
+                    variant="secondary"
+                    onPress={onClose}
+                  />
+                  <Button title="Aceptar" disabled={!valid} onPress={confirm} />
+                </View>
+              </>
+            )}
 
-          {kind === "pick" && (
-            <SimpleSelect
-              label={label}
-              options={options}
-              value={(values[key] as Option | undefined)?.id}
-              onChange={(id) => pick(options.find((o) => o.id === id))}
-            />
-          )}
-
-          {kind === "search" && (
-            <SearchSelect
-              label={label}
-              initiallyOpen
-              value={values[key] as Option | undefined}
-              onChange={pick}
-              fetchOptions={
-                key === "collection" ? fetchCollections : field.fetch!
-              }
-              placeholder="Ninguna"
-              clearLabel="Quitar"
-              onCreate={create}
-            />
-          )}
-
-          {kind === "multi" && (
-            <>
-              <MultiSearchSelect
+            {kind === "pick" && (
+              <SimpleSelect
                 label={label}
-                values={values[key] as Option[]}
-                onChange={commit}
-                fetchOptions={searchAuthors}
-                placeholder="Agregar..."
-                onCreate={setNewAuthor}
+                options={options}
+                value={(values[key] as Option | undefined)?.id}
+                onChange={(id) => pick(options.find((o) => o.id === id))}
               />
-              <View className="flex-row justify-end">
-                <Button title="Listo" variant="pill" onPress={onClose} />
-              </View>
-            </>
-          )}
+            )}
 
-          {error ? <Text className="text-sm text-red-600">{error}</Text> : null}
-        </>
-      )}
+            {kind === "search" && (
+              <SearchSelect
+                label={label}
+                initiallyOpen
+                value={values[key] as Option | undefined}
+                onChange={pick}
+                fetchOptions={
+                  key === "collection" ? fetchCollections : field.fetch!
+                }
+                placeholder="Ninguna"
+                onCreate={create}
+              />
+            )}
+
+            {kind === "multi" && (
+              <>
+                <MultiSearchSelect
+                  label={label}
+                  values={values[key] as Option[]}
+                  onChange={commit}
+                  fetchOptions={searchAuthors}
+                  placeholder="Agregar..."
+                  onCreate={setNewAuthor}
+                />
+                <View className="flex-row justify-end">
+                  <Button title="Listo" onPress={onClose} />
+                </View>
+              </>
+            )}
+
+            <FieldError>{error}</FieldError>
+          </>
+        )}
+      </ScrollView>
     </Dialog>
   );
 }

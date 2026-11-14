@@ -6,15 +6,12 @@ export { Card } from "./cards/Card";
 export { DualCard } from "./cards/DualCard";
 export { FormScreen } from "./form/FormScreen";
 export { FieldRow } from "./form/input/FieldRow";
-export { PillInput } from "./form/input/PillInput";
 export { TextField } from "./form/input/TextField";
 export { Searchbar } from "./form/search/Searchbar";
-export {
-  MultiSearchSelect,
-  SearchSelect,
-  SimpleSelect,
-  type Option,
-} from "./form/select/Select";
+export { MultiSearchSelect } from "./form/select/MultiSearchSelect";
+export type { Option } from "./form/select/option";
+export { SearchSelect } from "./form/select/SearchSelect";
+export { SimpleSelect } from "./form/select/SimpleSelect";
 export { PairedRow } from "./list/PairedRow";
 export { PillRow, PillRowColumn } from "./list/PillRow";
-export { Table, type TableColumn } from "./table/Table";
+export { FieldError } from "./form/FieldError";

@@ -1,6 +1,7 @@
 import { listSeries } from "@/features/catalog/internal/series/service";
 import {
   Button,
+  Dialog,
   SearchSelect,
   SimpleSelect,
   Text,
@@ -9,7 +10,7 @@ import {
 import { colors } from "@/features/shared/theme";
 import { Circle, SlidersHorizontal } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import {
   fetchCollections,
   loadCategories,
@@ -67,8 +68,8 @@ export default function FilterPanel({ filters, onChange }: Props) {
     <>
       <View>
         <Button
-          variant="pill-secondary"
-          lucideIcon={<SlidersHorizontal size={18} color={colors.primary} />}
+          variant="secondary"
+          icon={<SlidersHorizontal size={18} color={colors.primary} />}
           onPress={() => setOpen(true)}
         />
         {active && (
@@ -84,83 +85,68 @@ export default function FilterPanel({ filters, onChange }: Props) {
           </View>
         )}
       </View>
-      <Modal
-        transparent
-        visible={open}
-        animationType="slide"
-        onRequestClose={() => setOpen(false)}
-      >
-        <View className="flex-1 items-center justify-center ">
-          <Pressable
-            style={StyleSheet.absoluteFill}
-            className="bg-black/5"
-            onPress={() => setOpen(false)}
-          />
-          <View className="max-h-[80%] w-[480px] max-w-full gap-4 rounded-2xl bg-bg p-7 pt-6 border border-fg1">
-            <View className="flex-row items-center justify-between">
-              <Text variant="h3">Filtros</Text>
-              <View className="flex-row gap-5">
-                <Button
-                  title="Limpiar"
-                  variant="pill-secondary"
-                  onPress={() => onChange({})}
-                />
-                <Button
-                  title="Cerrar"
-                  variant="pill"
-                  onPress={() => setOpen(false)}
-                />
-              </View>
+      {open && (
+        <Dialog onClose={() => setOpen(false)}>
+          <View className="flex-row items-center justify-between">
+            <Text variant="h3">Filtros</Text>
+            <View className="flex-row gap-5">
+              <Button
+                title="Limpiar"
+                variant="secondary"
+                onPress={() => onChange({})}
+              />
+              <Button title="Cerrar" onPress={() => setOpen(false)} />
             </View>
-
-            <ScrollView
-              keyboardShouldPersistTaps="handled"
-              contentContainerStyle={{ gap: 20 }}
-            >
-              <SearchSelect
-                label="Autor"
-                value={filters.author}
-                onChange={(author) => set({ author, series: undefined })}
-                fetchOptions={fetchAuthors}
-              />
-              <SearchSelect
-                label="Editorial"
-                value={filters.publisher}
-                onChange={(publisher) =>
-                  set({ publisher, collectionId: undefined })
-                }
-                fetchOptions={fetchPublishers}
-              />
-              <SearchSelect
-                label="Serie"
-                value={filters.series}
-                onChange={(series) => set({ series })}
-                fetchOptions={fetchSeries}
-              />
-              {collections.length > 0 && (
-                <SimpleSelect
-                  label="Colección"
-                  options={collections}
-                  value={filters.collectionId}
-                  onChange={(collectionId) => set({ collectionId })}
-                />
-              )}
-              <SimpleSelect
-                label="Categoría"
-                options={categories}
-                value={filters.categoryId}
-                onChange={(categoryId) => set({ categoryId })}
-              />
-              <SimpleSelect
-                label="Subcategoría"
-                options={subcategories}
-                value={filters.subcategoryId}
-                onChange={(subcategoryId) => set({ subcategoryId })}
-              />
-            </ScrollView>
           </View>
-        </View>
-      </Modal>
+
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ gap: 20 }}
+            showsVerticalScrollIndicator={false}
+          >
+            <SearchSelect
+              label="Autor"
+              value={filters.author}
+              onChange={(author) => set({ author, series: undefined })}
+              fetchOptions={fetchAuthors}
+            />
+            <SearchSelect
+              label="Editorial"
+              value={filters.publisher}
+              onChange={(publisher) =>
+                set({ publisher, collectionId: undefined })
+              }
+              fetchOptions={fetchPublishers}
+            />
+            <SearchSelect
+              label="Serie"
+              value={filters.series}
+              onChange={(series) => set({ series })}
+              fetchOptions={fetchSeries}
+            />
+            {collections.length > 0 && (
+              <SimpleSelect
+                label="Colección"
+                options={collections}
+                value={filters.collectionId}
+                onChange={(collectionId) => set({ collectionId })}
+              />
+            )}
+            <SimpleSelect
+              label="Categoría"
+              options={categories}
+              value={filters.categoryId}
+              onChange={(categoryId) => set({ categoryId })}
+            />
+            <SimpleSelect
+              label="Subcategoría"
+              options={subcategories}
+              value={filters.subcategoryId}
+              onChange={(subcategoryId) => set({ subcategoryId })}
+            />
+          </ScrollView>
+        </Dialog>
+      )}
     </>
   );
 }
