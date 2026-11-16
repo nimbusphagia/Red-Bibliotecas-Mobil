@@ -4,13 +4,19 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { useCallback, useState } from "react";
 import CatalogHeader from "./list/ListHeader";
 import CatalogMain from "./list/ListMain";
-import type { CatalogFilters } from "./list/searchFilters/FilterPanel";
+import { View } from "react-native";
+import type {
+  CatalogFilters,
+  FilterDialog,
+} from "./list/searchFilters/FilterPanel";
+import QuickFilters from "./list/searchFilters/QuickFilters";
 
 const PAGE_SIZE = 20;
 
 export default function BookList() {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<CatalogFilters>({});
+  const [dialog, setDialog] = useState<FilterDialog>(null);
 
   const debouncedSearch = useDebounce(search);
 
@@ -40,7 +46,12 @@ export default function BookList() {
         onSearchChange={setSearch}
         filters={filters}
         onFiltersChange={setFilters}
+        dialog={dialog}
+        onDialogChange={setDialog}
       />
+      <View className="px-4 pt-2 ">
+        <QuickFilters filters={filters} onOpen={setDialog} />
+      </View>
       <CatalogMain list={list} />
     </>
   );

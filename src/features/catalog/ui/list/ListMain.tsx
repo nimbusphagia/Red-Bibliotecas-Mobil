@@ -7,7 +7,7 @@ type Props = {
 };
 export default function ListMain({ list }: Props) {
   return (
-    <View className="flex-1 pt-7">
+    <View className="flex-1 pt-2">
       <Books
         books={list.items}
         loading={list.loading}

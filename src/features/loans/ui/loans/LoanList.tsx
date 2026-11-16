@@ -70,6 +70,7 @@ export default function LoanList({ onToggle }: Props) {
         create={
           <Link href="/loans/new" asChild>
             <Button
+              variant="highlight"
               title="Nuevo"
               icon={<SquarePlus size={18} color={colors.bg} />}
             />

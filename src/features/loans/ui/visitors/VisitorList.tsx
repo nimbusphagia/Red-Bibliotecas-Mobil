@@ -75,6 +75,7 @@ export default function VisitorList({ onToggle }: Props) {
         onToggle={onToggle}
         create={
           <Button
+            variant="highlight"
             title="Nuevo"
             icon={<UserPlus size={18} color={colors.bg} />}
             onPress={() => setDialog({})}

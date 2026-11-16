@@ -54,7 +54,7 @@ const ENTITY = "loan";
 const LEND_PROBLEM: Record<CopyStatus, LendProblemKind | null> = {
   available: null,
   on_loan: "on_loan",
-  damaged: "damaged",
+  damaged: null,
   lost: "lost",
   discarded: "discarded",
 };

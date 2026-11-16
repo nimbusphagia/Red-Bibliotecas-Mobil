@@ -14,6 +14,12 @@ export default function CopiesList({ copies }: Props) {
     <View className="flex-1 gap-5 py-3">
       {copies.map((c) => {
         const isAvailable = ["available", "damaged"].includes(c.status);
+        const href = isAvailable
+          ? {
+              pathname: "/loans/new" as const,
+              params: { copyId: String(c.id) },
+            }
+          : c.loan && (`/loans/${c.loan.loanId}` as const);
         return (
           <PillRow key={c.id} className="flex-1 justify-around py-2">
             <PillRowColumn textVariant="h3" title={String(c.copyNumber)} />
@@ -44,20 +50,19 @@ export default function CopiesList({ copies }: Props) {
                   }
                 />
               </Link>
-              <Link
-                href={isAvailable ? "/loans/new" : `/loans/${c.id}`}
-                asChild
-              >
-                <Button
-                  icon={
-                    isAvailable ? (
-                      <BookUp size={20} color={colors.bg} strokeWidth={2} />
-                    ) : (
-                      <BookDown size={20} color={colors.bg} strokeWidth={2} />
-                    )
-                  }
-                />
-              </Link>
+              {href && (
+                <Link href={href} asChild>
+                  <Button
+                    icon={
+                      isAvailable ? (
+                        <BookUp size={20} color={colors.bg} strokeWidth={2} />
+                      ) : (
+                        <BookDown size={20} color={colors.bg} strokeWidth={2} />
+                      )
+                    }
+                  />
+                </Link>
+              )}
             </View>
           </PillRow>
         );

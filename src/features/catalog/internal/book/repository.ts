@@ -87,6 +87,14 @@ const filterBy = (column: AnyColumn, value: number | boolean | undefined) =>
 const roleOrder = sql`case ${bookCollaborator.role}
   when 'writer' then 0 when 'illustrator' then 1 else 2 end`;
 
+const firstWriterKey = sql`(${db
+  .select({ key: author.nameKey })
+  .from(bookCollaborator)
+  .innerJoin(author, eq(author.id, bookCollaborator.collaboratorId))
+  .where(eq(bookCollaborator.bookId, book.id))
+  .orderBy(roleOrder, asc(author.nameKey))
+  .limit(1)})`;
+
 async function collaboratorsOf(
   bookIds: number[],
 ): Promise<Map<number, BookCollaboratorDetail[]>> {
@@ -211,6 +219,8 @@ export async function listBooks(
     title: book.titleKey,
     createdAt: book.createdAt,
     availableCount,
+    author: firstWriterKey,
+    publisher: publisher.nameKey,
   }[sortBy];
 
   const [rows, [{ n }]] = await Promise.all([

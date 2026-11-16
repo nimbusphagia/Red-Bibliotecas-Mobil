@@ -6,6 +6,10 @@ import {
   ValidationError,
   IncompleteBookError,
   LabelConflictError,
+  LendProblemKind,
+  CopiesNotLendableError,
+  LoanLimitError,
+  VisitorBlockedError,
 } from "./errors";
 
 const LINE_PREFIX = /^lines\.\d+\.(book\.)?/;
@@ -15,9 +19,18 @@ export type FormErrors = {
   fields: Record<string, string>;
   suggestedOmitWords?: string[];
 };
+
 const MESSAGES_ES: Record<string, string> = {
   "The series author must be a writer or illustrator of the book":
     "El autor de la serie debe ser escritor o ilustrador del libro",
+};
+
+const LEND_PROBLEM_ES: Record<LendProblemKind, string> = {
+  not_found: "no existe",
+  on_loan: "ya está prestado",
+  damaged: "está dañado",
+  lost: "está perdido",
+  discarded: "está descartado",
 };
 
 export function toFormErrors(error: unknown): FormErrors {
@@ -52,6 +65,26 @@ export function toFormErrors(error: unknown): FormErrors {
         omitWords: `El tejuelo ${error.labelText} ya lo usa «${error.conflictingBook.title}». Omite palabras en común para diferenciarlo.`,
       },
       suggestedOmitWords: error.suggestedOmitWords,
+    };
+  }
+  if (error instanceof CopiesNotLendableError) {
+    const lines = error.problems.map(
+      (p) => `${p.labelText ?? `#${p.copyId}`} ${LEND_PROBLEM_ES[p.problem]}`,
+    );
+    return { fields: { copyIds: lines.join("\n") } };
+  }
+  if (error instanceof LoanLimitError) {
+    return {
+      fields: {
+        copyIds: `Ya tiene ${error.open} ejemplares abiertos; el máximo es ${error.max}`,
+      },
+    };
+  }
+  if (error instanceof VisitorBlockedError) {
+    return {
+      fields: {
+        visitorId: `Bloqueado: tiene ${error.overdue} ejemplares vencidos`,
+      },
     };
   }
   if (error instanceof ForbiddenError) {

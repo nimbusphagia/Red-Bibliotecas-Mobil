@@ -1,12 +1,11 @@
 import { getBookItem } from "@/features/catalog/internal/book/service";
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { FieldError, Text } from "@/features/shared/components";
+import { FieldError, FormHeader, Text } from "@/features/shared/components";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView } from "react-native";
 import FieldModal from "./form/fields/FieldModal";
 import { type Field } from "./form/fields/fields";
-import { BookFormHeader } from "./form/BookFormHeader";
 import { BookFormSections } from "./form/BookFormSections";
 import { useBookForm } from "./form/useBookForm";
 
@@ -34,7 +33,14 @@ function Form({ book }: { book?: BookListItem }) {
 
   return (
     <>
-      <BookFormHeader form={form} />
+      <FormHeader
+        title={form.isEdit ? "Editar libro" : "Registrar libro"}
+        submitTitle={form.isEdit ? "Guardar" : "Registrar"}
+        submitting={form.submitting}
+        canSubmit={form.canSubmit}
+        onSubmit={form.submit}
+        onCancel={form.cancel}
+      />
 
       <ScrollView
         className="flex-1"

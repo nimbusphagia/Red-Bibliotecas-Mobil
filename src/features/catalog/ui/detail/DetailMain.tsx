@@ -5,9 +5,9 @@ import { ScrollView, View } from "react-native";
 import BookInfo from "./bookInfo/BookInfo";
 import CopiesList from "./bookInfo/CopiesList";
 import LabelInfo from "./bookInfo/LabelInfo";
-import { Button, Text } from "@/features/shared/components";
-import { PropsWithChildren, ReactNode } from "react";
-import { cn, colors } from "@/features/shared/theme";
+import { Button } from "@/features/shared/components";
+import { Section } from "@/features/shared/components";
+import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookPlus, PencilLine, Tag } from "lucide-react-native";
 
@@ -20,7 +20,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
   return (
     <ScrollView className="flex-1" contentContainerClassName="gap-4 p-4">
       <View className="flex-row items-start pb-6 gap-6 border-b border-fg1">
-        <DetailSection
+        <Section
           title="Tejuelo"
           lead={
             <Button
@@ -31,10 +31,10 @@ export default function DetailMain({ book, copies, codes }: Props) {
           }
         >
           <LabelInfo book={book} codes={codes} />
-        </DetailSection>
+        </Section>
         <View className="bg-fg1 w-[1px] h-full"></View>
 
-        <DetailSection
+        <Section
           title="Detalles"
           expand={true}
           lead={
@@ -60,10 +60,10 @@ export default function DetailMain({ book, copies, codes }: Props) {
           }
         >
           <BookInfo book={book} />
-        </DetailSection>
+        </Section>
       </View>
 
-      <DetailSection
+      <Section
         title="Ejemplares"
         expand={true}
         lead={
@@ -77,34 +77,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
         }
       >
         <CopiesList copies={copies} />
-      </DetailSection>
+      </Section>
     </ScrollView>
-  );
-}
-
-type SectionProps = {
-  title: string;
-  lead?: ReactNode;
-  expand?: boolean;
-  className?: string;
-};
-
-function DetailSection({
-  title,
-  lead,
-  expand,
-  className = "",
-  children,
-}: PropsWithChildren<SectionProps>) {
-  return (
-    <View className={cn("h2 gap-2", expand ? "flex-1" : "", className)}>
-      <View className="flex-row items-center gap-2 ">
-        <Text variant="h2" className="text-highlight">
-          {title}
-        </Text>
-        {lead ?? null}
-      </View>
-      {children}
-    </View>
   );
 }

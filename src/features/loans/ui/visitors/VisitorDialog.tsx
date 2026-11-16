@@ -21,7 +21,7 @@ import {
 import { gradeLabel } from "@/features/shared/format/translate";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 const ROLES: { value: VisitorRole; label: string }[] = [
   { value: "student", label: "Estudiante" },
@@ -66,39 +66,45 @@ export default function VisitorDialog({ visitor, onClose, onSaved }: Props) {
 
   return (
     <Dialog onClose={onClose}>
-      <Text variant="h3">
-        {visitor ? "Editar visitante" : "Nuevo visitante"}
-      </Text>
-      <TextField
-        label="Nombre"
-        value={name}
-        onChangeText={setName}
-        error={errors.fields.name}
-        autoCapitalize="words"
-        onSubmitEditing={save}
-      />
-      {!visitor && (
-        <View className="gap-3">
-          <Text variant="h3">Rol</Text>
-          <InlineFilter options={ROLES} value={role} onChange={setRole} />
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName="gap-4"
+        showsVerticalScrollIndicator={false}
+      >
+        <Text variant="h3">
+          {visitor ? "Editar visitante" : "Nuevo visitante"}
+        </Text>
+        <TextField
+          label="Nombre"
+          value={name}
+          onChangeText={setName}
+          error={errors.fields.name}
+          autoCapitalize="words"
+          onSubmitEditing={save}
+        />
+        {!visitor && (
+          <View className="gap-3">
+            <Text variant="h3">Rol</Text>
+            <InlineFilter options={ROLES} value={role} onChange={setRole} />
+          </View>
+        )}
+        {role === "student" && (
+          <View className="gap-2">
+            <SimpleSelect
+              label="Grado"
+              options={grades}
+              value={gradeId}
+              onChange={setGradeId}
+            />
+            <FieldError>{errors.fields.gradeId}</FieldError>
+          </View>
+        )}
+        <FieldError>{errors.form}</FieldError>
+        <View className="flex-row justify-end gap-5">
+          <Button title="Cancelar" variant="secondary" onPress={onClose} />
+          <Button title="Guardar" loading={submitting} onPress={save} />
         </View>
-      )}
-      {role === "student" && (
-        <View className="gap-2">
-          <SimpleSelect
-            label="Grado"
-            options={grades}
-            value={gradeId}
-            onChange={setGradeId}
-          />
-          <FieldError>{errors.fields.gradeId}</FieldError>
-        </View>
-      )}
-      <FieldError>{errors.form}</FieldError>
-      <View className="flex-row justify-end gap-5">
-        <Button title="Cancelar" variant="secondary" onPress={onClose} />
-        <Button title="Guardar" loading={submitting} onPress={save} />
-      </View>
+      </ScrollView>
     </Dialog>
   );
 }

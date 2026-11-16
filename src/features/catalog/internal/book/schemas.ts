@@ -9,7 +9,13 @@ import { z } from "zod";
 import { nameField } from "../_shared/fields";
 import type { BookListFilters } from "./types";
 
-export const BOOK_SORT_KEYS = ["title", "createdAt", "availableCount"] as const;
+export const BOOK_SORT_KEYS = [
+  "title",
+  "createdAt",
+  "availableCount",
+  "author",
+  "publisher",
+] as const;
 export type BookSort = (typeof BOOK_SORT_KEYS)[number];
 
 const collaboratorSchema = z.object({

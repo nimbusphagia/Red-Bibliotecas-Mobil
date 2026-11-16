@@ -9,7 +9,7 @@ import {
 } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
 import { Circle, SlidersHorizontal } from "lucide-react-native";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { ScrollView, View } from "react-native";
 import {
   fetchCollections,
@@ -29,6 +29,9 @@ export type CatalogFilters = {
   collectionId?: number;
 };
 
+export type FilterField = "author" | "publisher" | "category" | "subcategory";
+export type FilterDialog = FilterField | "all" | null;
+
 const LIMIT = 20;
 
 const fetchAuthors = (s: string) => searchAuthors(s, true);
@@ -37,12 +40,22 @@ const fetchPublishers = (s: string) => searchPublishers(s, true);
 type Props = {
   filters: CatalogFilters;
   onChange: (filters: CatalogFilters) => void;
+  open: FilterDialog;
+  onOpenChange: (open: FilterDialog) => void;
 };
 
-export default function FilterPanel({ filters, onChange }: Props) {
-  const [open, setOpen] = useState(false);
-  const set = (patch: Partial<CatalogFilters>) =>
+export default function FilterPanel({
+  filters,
+  onChange,
+  open,
+  onOpenChange: setOpen,
+}: Props) {
+  const all = open === "all";
+  const shows = (field: FilterField) => all || open === field;
+  const set = (patch: Partial<CatalogFilters>) => {
     onChange({ ...filters, ...patch });
+    if (!all) setOpen(null);
+  };
   const active = Object.values(filters).some((v) => v !== undefined);
   const authorId = filters.author?.id;
   const publisherId = filters.publisher?.id;
@@ -70,7 +83,7 @@ export default function FilterPanel({ filters, onChange }: Props) {
         <Button
           variant="secondary"
           icon={<SlidersHorizontal size={18} color={colors.primary} />}
-          onPress={() => setOpen(true)}
+          onPress={() => setOpen("all")}
         />
         {active && (
           <View
@@ -86,45 +99,54 @@ export default function FilterPanel({ filters, onChange }: Props) {
         )}
       </View>
       {open && (
-        <Dialog onClose={() => setOpen(false)}>
-          <View className="flex-row items-center justify-between">
-            <Text variant="h3">Filtros</Text>
-            <View className="flex-row gap-5">
-              <Button
-                title="Limpiar"
-                variant="secondary"
-                onPress={() => onChange({})}
-              />
-              <Button title="Cerrar" onPress={() => setOpen(false)} />
+        <Dialog onClose={() => setOpen(null)}>
+          {all && (
+            <View className="flex-row items-center justify-between">
+              <Text variant="h3">Filtros</Text>
+              <View className="flex-row gap-5">
+                <Button
+                  title="Limpiar"
+                  variant="secondary"
+                  onPress={() => onChange({})}
+                />
+                <Button title="Cerrar" onPress={() => setOpen(null)} />
+              </View>
             </View>
-          </View>
-
+          )}
           <ScrollView
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ gap: 20 }}
             showsVerticalScrollIndicator={false}
           >
-            <SearchSelect
-              label="Autor"
-              value={filters.author}
-              onChange={(author) => set({ author, series: undefined })}
-              fetchOptions={fetchAuthors}
-            />
-            <SearchSelect
-              label="Editorial"
-              value={filters.publisher}
-              onChange={(publisher) =>
-                set({ publisher, collectionId: undefined })
-              }
-              fetchOptions={fetchPublishers}
-            />
-            <SearchSelect
-              label="Serie"
-              value={filters.series}
-              onChange={(series) => set({ series })}
-              fetchOptions={fetchSeries}
-            />
-            {collections.length > 0 && (
+            {shows("author") && (
+              <SearchSelect
+                label="Autor"
+                value={filters.author}
+                onChange={(author) => set({ author, series: undefined })}
+                fetchOptions={fetchAuthors}
+                initiallyOpen={!all}
+              />
+            )}
+            {shows("publisher") && (
+              <SearchSelect
+                label="Editorial"
+                value={filters.publisher}
+                onChange={(publisher) =>
+                  set({ publisher, collectionId: undefined })
+                }
+                fetchOptions={fetchPublishers}
+                initiallyOpen={!all}
+              />
+            )}
+            {all && (
+              <SearchSelect
+                label="Serie"
+                value={filters.series}
+                onChange={(series) => set({ series })}
+                fetchOptions={fetchSeries}
+              />
+            )}
+            {all && collections.length > 0 && (
               <SimpleSelect
                 label="Colección"
                 options={collections}
@@ -132,18 +154,22 @@ export default function FilterPanel({ filters, onChange }: Props) {
                 onChange={(collectionId) => set({ collectionId })}
               />
             )}
-            <SimpleSelect
-              label="Categoría"
-              options={categories}
-              value={filters.categoryId}
-              onChange={(categoryId) => set({ categoryId })}
-            />
-            <SimpleSelect
-              label="Subcategoría"
-              options={subcategories}
-              value={filters.subcategoryId}
-              onChange={(subcategoryId) => set({ subcategoryId })}
-            />
+            {shows("category") && (
+              <SimpleSelect
+                label="Categoría"
+                options={categories}
+                value={filters.categoryId}
+                onChange={(categoryId) => set({ categoryId })}
+              />
+            )}
+            {shows("subcategory") && (
+              <SimpleSelect
+                label="Subcategoría"
+                options={subcategories}
+                value={filters.subcategoryId}
+                onChange={(subcategoryId) => set({ subcategoryId })}
+              />
+            )}
           </ScrollView>
         </Dialog>
       )}
