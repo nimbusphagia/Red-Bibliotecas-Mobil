@@ -1,6 +1,4 @@
 import { Button, PageHeader, Searchbar } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
-import { ArrowLeftRight } from "lucide-react-native";
 import type { ReactNode } from "react";
 
 type Props = {

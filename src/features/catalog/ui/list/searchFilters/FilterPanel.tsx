@@ -29,6 +29,15 @@ export type CatalogFilters = {
   collectionId?: number;
 };
 
+export const toBookParams = (f: CatalogFilters) => ({
+  authorId: f.author?.id,
+  publisherId: f.publisher?.id,
+  seriesId: f.series?.id,
+  categoryId: f.categoryId,
+  subcategoryId: f.subcategoryId,
+  collectionId: f.collectionId,
+});
+
 export type FilterField = "author" | "publisher" | "category" | "subcategory";
 export type FilterDialog = FilterField | "all" | null;
 

@@ -5,9 +5,10 @@ import { useCallback, useState } from "react";
 import CatalogHeader from "./list/ListHeader";
 import CatalogMain from "./list/ListMain";
 import { View } from "react-native";
-import type {
-  CatalogFilters,
-  FilterDialog,
+import {
+  toBookParams,
+  type CatalogFilters,
+  type FilterDialog,
 } from "./list/searchFilters/FilterPanel";
 import QuickFilters from "./list/searchFilters/QuickFilters";
 
@@ -23,12 +24,7 @@ export default function BookList() {
   const fetchPage = useCallback(
     (offset: number) =>
       listBooks({
-        authorId: filters.author?.id,
-        publisherId: filters.publisher?.id,
-        seriesId: filters.series?.id,
-        categoryId: filters.categoryId,
-        subcategoryId: filters.subcategoryId,
-        collectionId: filters.collectionId,
+        ...toBookParams,
         search: debouncedSearch,
         active: true,
         limit: PAGE_SIZE,

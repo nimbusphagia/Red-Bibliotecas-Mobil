@@ -14,7 +14,6 @@ export type SearchSelectProps = {
   placeholder?: string;
   onCreate?: (name: string) => void;
   initiallyOpen?: boolean;
-  exact?: boolean;
 };
 
 export function SearchSelect({
@@ -25,7 +24,6 @@ export function SearchSelect({
   placeholder = "Todos",
   onCreate,
   initiallyOpen,
-  exact,
 }: SearchSelectProps) {
   const [open, setOpen] = useState(!!initiallyOpen);
   const [search, setSearch] = useState("");
@@ -38,7 +36,7 @@ export function SearchSelect({
     fetchOptions(debounced).then((o) => {
       if (stale) return;
       setOptions(o);
-      if (debounced === "" && !exact) setNone(o.length === 0);
+      if (debounced === "") setNone(o.length === 0);
     });
     return () => {
       stale = true;
@@ -46,7 +44,6 @@ export function SearchSelect({
   }, [debounced, fetchOptions]);
 
   const empty = none && !value && !onCreate;
-  const idle = exact && debounced === "";
   const isOpen = open && !empty;
 
   const typed = debounced.trim().toLowerCase();
@@ -99,7 +96,7 @@ export function SearchSelect({
         </Pressable>
       )}
 
-      {isOpen && !idle && (
+      {isOpen && (
         <View className="max-h-[240] overflow-hidden rounded-[30] bg-fg2">
           <ScrollView
             nestedScrollEnabled
