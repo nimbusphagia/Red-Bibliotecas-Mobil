@@ -7,8 +7,6 @@ import {
   Text,
   type Option,
 } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
-import { Circle, SlidersHorizontal } from "lucide-react-native";
 import { useCallback } from "react";
 import { ScrollView, View } from "react-native";
 import {
@@ -65,7 +63,6 @@ export default function FilterPanel({
     onChange({ ...filters, ...patch });
     if (!all) setOpen(null);
   };
-  const active = Object.values(filters).some((v) => v !== undefined);
   const authorId = filters.author?.id;
   const publisherId = filters.publisher?.id;
 
@@ -88,25 +85,6 @@ export default function FilterPanel({
 
   return (
     <>
-      <View>
-        <Button
-          variant="secondary"
-          icon={<SlidersHorizontal size={18} color={colors.primary} />}
-          onPress={() => setOpen("all")}
-        />
-        {active && (
-          <View
-            className="absolute right-0 top-0"
-            style={{ pointerEvents: "none" }}
-          >
-            <Circle
-              size={10}
-              color={colors.highlight}
-              fill={colors.highlight}
-            />
-          </View>
-        )}
-      </View>
       {open && (
         <Dialog onClose={() => setOpen(null)}>
           {all && (
@@ -147,7 +125,7 @@ export default function FilterPanel({
                 initiallyOpen={!all}
               />
             )}
-            {all && (
+            {all && filters.author && (
               <SearchSelect
                 label="Serie"
                 value={filters.series}

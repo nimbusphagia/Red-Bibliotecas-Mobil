@@ -18,7 +18,7 @@ export function ItemList<T extends { id: number }>({
   toolbar,
 }: Props<T>) {
   return (
-    <View className="flex-1 gap-5 pt-7">
+    <View className="flex-1 gap-5 pt-2">
       {toolbar && (
         <View className="flex-row items-center justify-between px-4">
           {toolbar}

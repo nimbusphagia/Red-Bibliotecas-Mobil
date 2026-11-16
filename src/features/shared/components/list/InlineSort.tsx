@@ -34,9 +34,10 @@ export function InlineSort<K extends string>({
             key={key}
             title={label}
             variant={selected ? "highlight" : "secondary"}
+            className="gap-1"
             icon={
               selected ? (
-                <Arrow size={16} strokeWidth={3} color={colors.bg} />
+                <Arrow size={12} strokeWidth={3} color={colors.bg} />
               ) : undefined
             }
             onPress={() =>
