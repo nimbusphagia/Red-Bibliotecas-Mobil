@@ -34,16 +34,17 @@ export const NAVBAR: Navbar = {
       icon: LibraryBig,
     },
     {
-      key: "shelves",
-      label: "Organización",
-      href: "/shelves",
-      icon: ShelvingUnit,
-    },
-    {
       key: "loans",
       label: "Préstamos",
       href: "/loans",
       icon: Tickets,
+    },
+
+    {
+      key: "shelves",
+      label: "Organización",
+      href: "/shelves",
+      icon: ShelvingUnit,
     },
     {
       key: "stock",

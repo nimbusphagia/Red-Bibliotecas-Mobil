@@ -15,3 +15,6 @@ export { SimpleSelect } from "./form/select/SimpleSelect";
 export { PairedRow } from "./list/PairedRow";
 export { PillRow, PillRowColumn } from "./list/PillRow";
 export { FieldError } from "./form/FieldError";
+export { InlineFilter } from "./list/InlineFilter";
+export { InlineSort, type SortOption } from "./list/InlineSort";
+export { ItemList } from "./list/ItemList";

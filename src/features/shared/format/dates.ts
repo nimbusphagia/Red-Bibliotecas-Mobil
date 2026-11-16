@@ -14,3 +14,8 @@ export function addDays(iso: string, days: number): string {
   d.setDate(d.getDate() + days);
   return toISODate(d);
 }
+
+export const formatISO = (iso: string) => iso.split("-").reverse().join("/");
+
+export const formatDate = (d: Date) =>
+  `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;

@@ -2,19 +2,13 @@ import { LoanListItem } from "@/features/loans/internal/loan/types";
 import { Text } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
 import { ClockExclamationPoint } from "lucide-react-native";
+import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { View } from "react-native";
 
 type Props = {
   loan: LoanListItem;
   index: number;
 };
-
-const pad = (n: number) => String(n).padStart(2, "0");
-
-const formatISO = (iso: string) => iso.split("-").reverse().join("/");
-
-const formatDate = (d: Date) =>
-  `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 
 export default function LoanRow({ loan, index }: Props) {
   const returned = loan.lineCount - loan.openCount;
