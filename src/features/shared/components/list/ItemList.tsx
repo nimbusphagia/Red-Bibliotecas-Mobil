@@ -28,7 +28,8 @@ export function ItemList<T extends { id: number }>({
         data={items}
         keyExtractor={(i) => String(i.id)}
         renderItem={({ item }) => renderItem(item)}
-        contentContainerStyle={{ gap: 16 }}
+        contentContainerStyle={{ gap: 12 }}
+        showsVerticalScrollIndicator={false}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         ListFooterComponent={loading ? <ActivityIndicator /> : undefined}

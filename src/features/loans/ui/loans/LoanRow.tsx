@@ -1,51 +1,45 @@
 import type { LoanListItem } from "@/features/loans/internal/loan/types";
-import { Button, PillRow, Text } from "@/features/shared/components";
+import { Button, Column, PillRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
-import { formatISO } from "@/features/shared/format/dates";
-import { cn, colors } from "@/features/shared/theme";
+import { formatDate, formatISO } from "@/features/shared/format/dates";
+import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookDown, ClockAlert, Eye } from "lucide-react-native";
-import { View } from "react-native";
 
 type Props = { loan: LoanListItem };
 
 export default function LoanRow({ loan }: Props) {
-  const colClass = "flex-1 justify-center items-center gap-[1px]";
   return (
-    <PillRow className="gap-10">
-      <View className={cn(colClass, "max-w-[50]")}>
-        <Text variant="subtitle" className="text-highlight">
-          #{loan.id}
-        </Text>
-      </View>
-
-      <View className={colClass}>
-        <Text variant="h3">{loan.visitorName}</Text>
-      </View>
-      <View className={colClass}>
+    <PillRow className="gap-6">
+      <Column text={`#${loan.id}`} variant="id" />
+      <Column
+        variant="subtitled"
+        text={loan.visitorName}
+        subtitle1={formatDate(loan.createdAt)}
+        containerClass="max-w-[150]"
+      />
+      <Column variant="actions">
         <StatusBadge
           text={loan.overdue ? "Vencido" : "Activo"}
           variant={"pending"}
         />
-      </View>
+      </Column>
 
-      <View className={colClass}>
-        <View className="flex-row items-center gap-3">
-          <Text variant="h3" className="font-semibold text-[15px]">
-            {formatISO(loan.expiresBy)}
-          </Text>
-          {loan.overdue && (
-            <ClockAlert size={16} color={colors.highlight} strokeWidth={2.5} />
-          )}
-        </View>
-      </View>
-      <View className={`${colClass} items-center`}>
-        <Text variant="h3" className="font-semibold text-[14px]">
-          {loan.lineCount - loan.openCount} de {loan.lineCount}
-        </Text>
-        <Text variant="subtitle">devueltos</Text>
-      </View>
-      <View className="flex-row items-center gap-6">
+      <Column
+        variant="subtitled"
+        text={formatISO(loan.expiresBy)}
+        subtitle1="Vence"
+      >
+        {loan.overdue && (
+          <ClockAlert size={16} color={colors.highlight} strokeWidth={2.5} />
+        )}
+      </Column>
+      <Column
+        variant="subtitled"
+        text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
+        subtitle1="Devueltos"
+      />
+      <Column variant="actions" expand={false}>
         <Link href={`/loans/${loan.id}`} asChild>
           <Button
             variant="secondary"
@@ -58,7 +52,7 @@ export default function LoanRow({ loan }: Props) {
             icon={<BookDown size={18} color={colors.highlight} />}
           />
         )}
-      </View>
+      </Column>
     </PillRow>
   );
 }

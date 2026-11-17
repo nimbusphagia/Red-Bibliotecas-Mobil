@@ -7,6 +7,7 @@ import {
   ShelvingUnit,
   Tickets,
   User,
+  UserRoundGroup,
 } from "lucide-react-native";
 
 export type NavItem = {
@@ -39,7 +40,12 @@ export const NAVBAR: Navbar = {
       href: "/loans",
       icon: Tickets,
     },
-
+    {
+      key: "visitors",
+      label: "Visitantes",
+      href: "/visitors",
+      icon: UserRoundGroup,
+    },
     {
       key: "shelves",
       label: "Organización",

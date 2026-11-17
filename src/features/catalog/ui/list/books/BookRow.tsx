@@ -1,15 +1,13 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { Button, Column, PillRow, Text } from "@/features/shared/components";
-import { cn, colors } from "@/features/shared/theme";
+import { Button, Column, PillRow } from "@/features/shared/components";
+import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
-import { BookUp, Dot, Eye } from "lucide-react-native";
-import { View } from "react-native";
+import { BookUp, Eye } from "lucide-react-native";
 
 type Props = {
   book: BookListItem;
 };
 export default function BookRow({ book }: Props) {
-  const colClass = "flex-1 justify-center gap-[1px]";
   return (
     <PillRow>
       <Column text={`#${book.id}`} variant="id" />
@@ -18,6 +16,7 @@ export default function BookRow({ book }: Props) {
         subtitle1={book.publisherName ?? undefined}
         subtitle2={book.collectionName ?? undefined}
         variant="subtitled"
+        containerClass="max-w-[300]"
       />
       <Column
         text={formatContributors(book.collaborators)}

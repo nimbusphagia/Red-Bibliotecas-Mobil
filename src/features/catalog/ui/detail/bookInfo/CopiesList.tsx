@@ -1,5 +1,6 @@
 import { CopyItem } from "@/features/inventory/internal/copy/types";
-import { Button, PillRow, PillRowColumn } from "@/features/shared/components";
+import { Button, Column, PillRow } from "@/features/shared/components";
+import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
@@ -22,26 +23,25 @@ export default function CopiesList({ copies }: Props) {
           : c.loan && (`/loans/${c.loan.loanId}` as const);
         return (
           <PillRow key={c.id} className="flex-1 justify-around py-2">
-            <PillRowColumn textVariant="subtitle" title={"#" + c.id} />
-            <PillRowColumn
-              variant="highlight"
-              textVariant="subtitle"
-              title={c.labelText ?? "---"}
+            <Column
+              text={`#${c.id}`}
+              variant="id"
+              containerClass="justify-start"
             />
-
-            <PillRowColumn
-              variant={isAvailable ? "badge" : "text"}
-              textVariant="subtitle"
-              title={COPY_STATUS_ES[c.status]}
-            />
-
-            <PillRowColumn
-              textVariant="subtitle"
-              title={
-                c.shelfName === "Default" ? "Estanteria General" : c.shelfName
+            <Column text={c.labelText ?? "---"} containerClass="" />
+            <Column variant="actions" containerClass="justify-start">
+              <StatusBadge
+                text={COPY_STATUS_ES[c.status]}
+                variant={isAvailable ? "active" : "pending"}
+              />
+            </Column>
+            <Column
+              text={
+                c.shelfName === "Default" ? "Estantería General" : c.shelfName
               }
+              containerClass="justify-start"
             />
-            <View className="flex-row items-center gap-4">
+            <Column variant="actions" expand={false}>
               <Link href={`/shelves/${c.shelfId}`} asChild>
                 <Button
                   variant="secondary"
@@ -67,7 +67,7 @@ export default function CopiesList({ copies }: Props) {
                   />
                 </Link>
               )}
-            </View>
+            </Column>
           </PillRow>
         );
       })}

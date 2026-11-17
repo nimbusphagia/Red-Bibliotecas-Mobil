@@ -4,8 +4,8 @@ import { listCopiesByBook } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   Button,
+  Column,
   PillRow,
-  PillRowColumn,
   Text,
   type Option,
 } from "@/features/shared/components";
@@ -15,6 +15,7 @@ import { ChevronDown, ChevronUp, Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import { copyOption } from "../options";
+import { StatusBadge } from "@/features/shared/components/base/Badge";
 
 type Props = {
   book: BookListItem;
@@ -68,19 +69,26 @@ export default function PickerBook({ book, selected, onAdd }: Props) {
           const added = selected.some((o) => o.id === c.id);
           return (
             <PillRow key={c.id} className="items-center bg-bg py-2">
-              <PillRowColumn
-                variant="highlight"
-                title={c.labelText ?? `#${c.id}`}
-              />
-              <PillRowColumn title={`ID ${c.id}`} />
-              <PillRowColumn title={COPY_STATUS_ES[c.status]} />
-              <Button
-                disabled={!lendable || added}
-                icon={<Plus size={18} color={colors.bg} />}
-                onPress={() =>
-                  onAdd(copyOption(c.id, c.labelText, c.bookTitle))
-                }
-              />
+              <Column variant="id" text={`#${c.id}`} />
+              <Column text={c.labelText ?? undefined} />
+              <Column>
+                <StatusBadge
+                  variant={c.status === "on_loan" ? "active" : "pending"}
+                  text={COPY_STATUS_ES[c.status]}
+                />
+              </Column>
+              <Column variant="actions" expand={false}>
+                <Button
+                  variant="secondary"
+                  disabled={!lendable || added}
+                  icon={
+                    <Plus size={16} strokeWidth={3} color={colors.primary} />
+                  }
+                  onPress={() =>
+                    onAdd(copyOption(c.id, c.labelText, c.bookTitle))
+                  }
+                />
+              </Column>
             </PillRow>
           );
         })}

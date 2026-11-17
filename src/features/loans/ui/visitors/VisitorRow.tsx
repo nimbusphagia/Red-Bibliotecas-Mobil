@@ -1,35 +1,33 @@
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
-import { Button, PillRow, Text } from "@/features/shared/components";
+import { Button, Column, PillRow } from "@/features/shared/components";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
 import { colors } from "@/features/shared/theme";
 import { Pencil } from "lucide-react-native";
-import { View } from "react-native";
 
 type Props = { visitor: VisitorListItem; onEdit: () => void };
 
 export default function VisitorRow({ visitor, onEdit }: Props) {
   return (
     <PillRow>
-      <View className="flex-1 justify-center gap-[1px]">
-        <Text variant="h3" className="text-highlight">
-          {visitor.name}
-        </Text>
-        <Text variant="subtitle">{ROLE_ES[visitor.role]}</Text>
-      </View>
-      <View className="flex-1 justify-center">
-        {visitor.grade !== null && visitor.level !== null && (
-          <Text variant="h3" className="font-semibold text-[15px]">
-            {gradeLabel(visitor.grade, visitor.level)}
-          </Text>
-        )}
-      </View>
-      <View className="flex-row items-center">
+      <Column variant="id" text={`#${visitor.id}`} />
+      <Column
+        variant="subtitled"
+        text={visitor.name}
+        subtitle1={ROLE_ES[visitor.role]}
+        subtitle2={
+          visitor.role === "student"
+            ? gradeLabel(visitor.grade!, visitor.level!)
+            : undefined
+        }
+      />
+      <Column variant="subtitled" text={"1 / 2"} subtitle1="Libros devueltos" />
+      <Column variant="actions" expand={false}>
         <Button
           variant="secondary"
-          icon={<Pencil size={18} color={colors.highlight} />}
+          icon={<Pencil size={16} color={colors.highlight} />}
           onPress={onEdit}
         />
-      </View>
+      </Column>
     </PillRow>
   );
 }

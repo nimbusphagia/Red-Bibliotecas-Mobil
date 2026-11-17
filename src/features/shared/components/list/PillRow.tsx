@@ -25,7 +25,7 @@ const columnVariants = {
   },
   subtitled: {
     container: "flex-col justify-center items-start ",
-    text: "text-[15px]",
+    text: "",
   },
   date: { container: "", text: "" },
   actions: { container: "flex-row justify-center gap-6", text: "" },
@@ -63,11 +63,17 @@ export function Column({
       {text && (
         <Text
           variant="h3"
-          className={cn(variant && columnVariants[variant].text, textClass)}
+          className={cn(
+            "text-[15px]",
+            variant && columnVariants[variant].text,
+            textClass,
+          )}
+          numberOfLines={1}
         >
           {text}
         </Text>
       )}
+      {children}
       {variant === "subtitled" && (
         <View className="flex-row justify-start">
           <Text variant="subtitle">{subtitle1}</Text>
@@ -75,35 +81,6 @@ export function Column({
           <Text variant="subtitle">{subtitle2}</Text>
         </View>
       )}
-      {variant === "actions" && children}
-    </View>
-  );
-}
-
-const columnStyles = {
-  text: "text-primary",
-  badge:
-    "bg-fg1 rounded-full px-4 py-[5px] border border-fg1 self-center text-center text-highlight",
-  highlight:
-    "border-fg1 border px-4 py-[5px] bg-primary text-bg text-center rounded-full",
-};
-
-type PillColumnProps = {
-  title: string;
-  variant?: keyof typeof columnStyles;
-  textVariant?: TextVariant;
-};
-
-export function PillRowColumn({
-  title,
-  variant = "text",
-  textVariant = "subtitle",
-}: PillColumnProps) {
-  return (
-    <View className="flex-row justify-center items-center">
-      <Text variant={textVariant} className={columnStyles[variant]}>
-        {title}
-      </Text>
     </View>
   );
 }
