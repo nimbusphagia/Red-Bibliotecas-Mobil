@@ -1,5 +1,5 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { Button, PillRow, Text } from "@/features/shared/components";
+import { Button, Column, PillRow, Text } from "@/features/shared/components";
 import { cn, colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookUp, Dot, Eye } from "lucide-react-native";
@@ -12,55 +12,38 @@ export default function BookRow({ book }: Props) {
   const colClass = "flex-1 justify-center gap-[1px]";
   return (
     <PillRow>
-      <View className={cn(colClass, "max-w-[50]")}>
-        <Text variant="h3" className="font-semibold text-[15px]">
-          #{book.id}
-        </Text>
-      </View>
-
-      <View className={colClass}>
-        <Text variant="h3" className="">
-          {book.title}
-        </Text>
-        <View className="flex-row  items-center">
-          <Text variant="subtitle">{book.publisherName}</Text>
-          {book.collectionName && (
-            <>
-              <Dot color={colors.secondary} />
-              <Text variant="subtitle">"{book.collectionName}"</Text>
-            </>
-          )}
-        </View>
-      </View>
-      <View className={colClass}>
-        <Text variant="h3" className="font-semibold text-[15px]">
-          {formatContributors(book.collaborators)}
-        </Text>
-        <Text variant="subtitle">
-          {book.seriesName ? `"${book.seriesName}"` : ""}
-        </Text>
-      </View>
-
-      <View className={cn(colClass, "items-center max-w-[240]")}>
-        <Text variant="h3" className="font-semibold text-[14px]">
-          {book.availableCount} / {book.activeCount}
-        </Text>
-        <Text variant="subtitle" className="font-semibold">
-          En inventario
-        </Text>
-      </View>
-      <View className="flex-row items-center gap-6">
-        <Link href={`/catalog/${book.id}`} asChild>
+      <Column text={`#${book.id}`} variant="id" />
+      <Column
+        text={book.title}
+        subtitle1={book.publisherName ?? undefined}
+        subtitle2={book.collectionName ?? undefined}
+        variant="subtitled"
+      />
+      <Column
+        text={formatContributors(book.collaborators)}
+        subtitle1={book.seriesName ? `"${book.seriesName}"` : undefined}
+        variant="subtitled"
+      />
+      <Column
+        text={`${book.availableCount} / ${book.activeCount}`}
+        subtitle1={book.availableCount === 0 ? "No disponibles" : "Disponibles"}
+        variant="subtitled"
+        containerClass="max-w-[150px]"
+      />
+      <Column variant="actions" expand={false}>
+        <>
+          <Link href={`/catalog/${book.id}`} asChild>
+            <Button
+              variant="secondary"
+              icon={<Eye size={18} color={colors.highlight} />}
+            />
+          </Link>
           <Button
-            variant="secondary"
-            icon={<Eye size={18} color={colors.highlight} />}
+            variant="highlight"
+            icon={<BookUp size={18} color={colors.bg} />}
           />
-        </Link>
-        <Button
-          variant="highlight"
-          icon={<BookUp size={18} color={colors.bg} />}
-        />
-      </View>
+        </>
+      </Column>
     </PillRow>
   );
 }
