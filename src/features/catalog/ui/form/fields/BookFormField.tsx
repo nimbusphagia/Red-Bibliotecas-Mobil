@@ -35,12 +35,12 @@ export function BookFormField({ field: f, form, compact, onEdit }: Props) {
   return (
     <FieldRow
       label={label}
-      value={display(values[f.key]) ?? f.fallback ?? null}
+      value={display(values[f.key]) ?? undefined}
       error={error}
       disabled={disabled || (f.key === "collection" && !values.publisher)}
       onPress={() => onEdit(f)}
       className={compact ? "w-[50%]" : undefined}
-      contentClass={compact ? "text-center" : undefined}
+      contentClass={compact ? "flex-1 text-center" : undefined}
     />
   );
 }

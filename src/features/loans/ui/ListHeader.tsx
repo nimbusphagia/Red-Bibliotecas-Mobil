@@ -1,10 +1,8 @@
-import { Button, PageHeader, Searchbar } from "@/features/shared/components";
+import { PageHeader, Searchbar } from "@/features/shared/components";
 import type { ReactNode } from "react";
 
 type Props = {
   title: string;
-  toggleTitle: string;
-  onToggle: () => void;
   create: ReactNode;
   search: string;
   onSearchChange: (text: string) => void;
@@ -13,23 +11,13 @@ type Props = {
 
 export default function ListHeader({
   title,
-  toggleTitle,
-  onToggle,
   create,
   search,
   onSearchChange,
   placeholder,
 }: Props) {
   return (
-    <PageHeader
-      title={title}
-      lead={
-        <>
-          <Button variant="secondary" title={toggleTitle} onPress={onToggle} />
-          {create}
-        </>
-      }
-    >
+    <PageHeader title={title} lead={create}>
       <Searchbar
         value={search}
         onChangeText={onSearchChange}

@@ -4,10 +4,8 @@ import type {
   LoanListItem,
 } from "@/features/loans/internal/loan/types";
 import {
-  LabeledItem,
   LabeledItem2,
   PageHeader,
-  PairedRow,
   Section,
 } from "@/features/shared/components";
 import { formatDate, formatISO } from "@/features/shared/format/dates";

@@ -31,13 +31,16 @@ export function useBookForm(book?: BookListItem) {
 
   const isRequired = (f: Field) =>
     f.required === true || (f.required === "create" && !isEdit);
+
   const canSubmit = fields
     .filter(isRequired)
     .every((f) => display(values[f.key]) !== null);
+
   const isVisible = (f: Field) =>
-    f.key !== "omitWords" ||
-    errors.fields.omitWords !== undefined ||
-    values.omitWords !== "";
+    !(f.createOnly && isEdit) &&
+    (f.key !== "omitWords" ||
+      errors.fields.omitWords !== undefined ||
+      values.omitWords !== "");
 
   const set = (patch: Partial<BookFormValues>) =>
     setValues((p) => ({

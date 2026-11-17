@@ -1,10 +1,11 @@
 import { Pressable, View } from "react-native";
-import { PairedRow } from "../../list/PairedRow";
+import { cn } from "../../../theme";
+import { LabeledItem } from "../../list/LabeledItem";
 import { FieldError } from "../FieldError";
 
 type Props = {
   label: string;
-  value: string | null;
+  value?: string;
   onPress: () => void;
   disabled?: boolean;
   error?: string;
@@ -23,13 +24,16 @@ export function FieldRow({
 }: Props) {
   return (
     <View className="gap-1">
-      <Pressable onPress={onPress} disabled={disabled}>
-        <PairedRow
+      <Pressable
+        onPress={onPress}
+        disabled={disabled}
+        className={cn(disabled && "opacity-50")}
+      >
+        <LabeledItem
           label={label}
           content={value}
-          error={!!error}
-          disabled={disabled}
-          className={className}
+          labelClass="w-[110px]"
+          className={cn(error && "border border-red-500", className)}
           contentClass={contentClass}
         />
       </Pressable>

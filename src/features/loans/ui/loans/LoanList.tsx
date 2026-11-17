@@ -34,9 +34,7 @@ const SORTS: SortOption<LoanSort>[] = [
   { key: "expiresBy", label: "Vencimiento", defaultDir: "asc" },
 ];
 
-type Props = { onToggle: () => void };
-
-export default function LoanList({ onToggle }: Props) {
+export default function LoanList() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<{ by: LoanSort; dir: SortDirection }>({
@@ -65,8 +63,6 @@ export default function LoanList({ onToggle }: Props) {
     <>
       <ListHeader
         title="Préstamos"
-        toggleTitle="Visitantes"
-        onToggle={onToggle}
         create={
           <Link href="/loans/new" asChild>
             <Button

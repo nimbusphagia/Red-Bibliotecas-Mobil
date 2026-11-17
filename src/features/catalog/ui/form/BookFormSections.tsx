@@ -1,4 +1,4 @@
-import { Text } from "@/features/shared/components";
+import { Divider, FormSection } from "@/features/shared/components";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { cn } from "@/features/shared/theme";
 import { Fragment } from "react";
@@ -27,25 +27,17 @@ export function BookFormSections({ form, onEdit }: Props) {
             {groups.map((g, j) => (
               <Fragment key={g.title}>
                 {j > 0 && <Divider />}
-                <View className="gap-4">
-                  <Text
-                    variant="h1"
-                    className="text-highlight font-sans-medium"
-                  >
-                    {g.title}
-                  </Text>
-                  <View className="gap-4">
-                    {g.fields.filter(form.isVisible).map((f) => (
-                      <BookFormField
-                        key={f.key}
-                        field={f}
-                        form={form}
-                        compact={g.compact}
-                        onEdit={onEdit}
-                      />
-                    ))}
-                  </View>
-                </View>
+                <FormSection title={g.title}>
+                  {g.fields.filter(form.isVisible).map((f) => (
+                    <BookFormField
+                      key={f.key}
+                      field={f}
+                      form={form}
+                      compact={g.compact}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </FormSection>
               </Fragment>
             ))}
           </View>
@@ -54,7 +46,3 @@ export function BookFormSections({ form, onEdit }: Props) {
     </View>
   );
 }
-
-const Divider = ({ vertical }: { vertical?: boolean }) => (
-  <View className={vertical ? "w-px self-stretch bg-fg1" : "h-px bg-fg1"} />
-);

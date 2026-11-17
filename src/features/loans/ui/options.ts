@@ -1,9 +1,16 @@
-import {
-  findCopyByLabel,
-  getCopy,
-} from "@/features/inventory/internal/copy/service";
+import { getBookItem } from "@/features/catalog/internal/book/service";
+import type { BookListItem } from "@/features/catalog/internal/book/types";
+import { fullName } from "@/features/catalog/ui/options";
+import { getCopy } from "@/features/inventory/internal/copy/service";
 import { listVisitors } from "@/features/loans/internal/visitor/service";
 import type { Option } from "@/features/shared/components";
+
+export type LoanCopy = {
+  id: number;
+  labelText: string | null;
+  title: string;
+  author: string;
+};
 
 export const searchVisitors = async (search: string): Promise<Option[]> =>
   (await listVisitors({ search, active: true, limit: 20 })).items.map((v) => ({
@@ -11,20 +18,22 @@ export const searchVisitors = async (search: string): Promise<Option[]> =>
     label: v.name,
   }));
 
-export const copyOption = (
+export const writersOf = (book: BookListItem) =>
+  [
+    ...new Set(
+      book.collaborators.filter((c) => c.role === "writer").map(fullName),
+    ),
+  ].join(", ");
+
+export const toLoanCopy = (
   id: number,
   labelText: string | null,
-  title: string,
-): Option => ({ id, label: `${labelText ?? `#${id}`} · ${title}` });
+  book: BookListItem,
+): LoanCopy => ({ id, labelText, title: book.title, author: writersOf(book) });
 
-export async function copyByLabel(text: string): Promise<Option | null> {
-  const c = await findCopyByLabel(text);
-  return c && copyOption(c.id, c.labelText, c.title);
-}
-
-export async function copyById(text: string): Promise<Option | null> {
-  const id = Number(text);
-  if (!Number.isInteger(id) || id <= 0) return null;
-  const c = await getCopy(id).catch(() => null);
-  return c && copyOption(c.id, c.labelText, c.bookTitle);
+export async function copyById(id: number) {
+  const copy = await getCopy(id).catch(() => null);
+  if (!copy) return null;
+  const book = await getBookItem(copy.bookId);
+  return { book, copy: toLoanCopy(copy.id, copy.labelText, book) };
 }

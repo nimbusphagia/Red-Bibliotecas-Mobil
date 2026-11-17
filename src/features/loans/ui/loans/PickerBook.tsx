@@ -1,30 +1,30 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { fullName } from "@/features/catalog/ui/options";
 import { listCopiesByBook } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
-import {
-  Button,
-  Column,
-  PillRow,
-  Text,
-  type Option,
-} from "@/features/shared/components";
-import { COPY_STATUS_ES } from "@/features/shared/format/translate";
+import { Chip, Text } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
-import { ChevronDown, ChevronUp, Plus } from "lucide-react-native";
+import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
-import { copyOption } from "../options";
-import { StatusBadge } from "@/features/shared/components/base/Badge";
+import { toLoanCopy, writersOf, type LoanCopy } from "../options";
+
+const lendable = (c: CopyItem) =>
+  c.status === "available" || c.status === "damaged";
 
 type Props = {
   book: BookListItem;
-  selected: Option[];
-  onAdd: (option: Option) => void;
+  selected: LoanCopy[];
+  onToggle: (copy: LoanCopy) => void;
+  defaultOpen?: boolean;
 };
 
-export default function PickerBook({ book, selected, onAdd }: Props) {
-  const [open, setOpen] = useState(false);
+export default function PickerBook({
+  book,
+  selected,
+  onToggle,
+  defaultOpen,
+}: Props) {
+  const [open, setOpen] = useState(!!defaultOpen);
   const [copies, setCopies] = useState<CopyItem[]>();
 
   useEffect(() => {
@@ -33,19 +33,13 @@ export default function PickerBook({ book, selected, onAdd }: Props) {
       bookId: book.id,
       excludeReleased: true,
       limit: 100,
-    }).then((p) => setCopies(p.items));
+    }).then((p) => setCopies(p.items.filter(lendable)));
   }, [open, copies, book.id]);
 
-  const writers = book.collaborators
-    .filter((c) => c.role === "writer")
-    .map(fullName);
-  const subtitle = [...new Set(writers), `${book.availableCount} disponibles`]
-    .filter(Boolean)
-    .join(" · ");
   const Chevron = open ? ChevronUp : ChevronDown;
 
   return (
-    <View className="gap-3 rounded-[30px] border border-fg1 bg-fg2 px-5 py-3">
+    <View className="gap-3 rounded-lg border border-fg1 bg-fg2 px-5 py-3 items-center">
       <Pressable
         onPress={() => setOpen((o) => !o)}
         className="flex-row items-center gap-4"
@@ -54,44 +48,34 @@ export default function PickerBook({ book, selected, onAdd }: Props) {
           <Text variant="h3" className="text-highlight">
             {book.title}
           </Text>
-          <Text variant="subtitle">{subtitle}</Text>
+          <View className="flex-row items-center">
+            <Text variant="subtitle" className="text-primary">
+              {writersOf(book)}
+            </Text>
+            <Dot size={16} color={colors.secondary} />
+            <Text variant="subtitle">{book.availableCount}</Text>
+          </View>
         </View>
-        <Chevron size={18} color={colors.primary} />
+        <Chevron size={18} color={colors.secondary} strokeWidth={3} />
       </Pressable>
 
       {open && !copies && <ActivityIndicator />}
       {open && copies?.length === 0 && (
-        <Text variant="subtitle">Sin ejemplares</Text>
+        <Text variant="subtitle">Sin ejemplares disponibles</Text>
       )}
-      {open &&
-        copies?.map((c) => {
-          const lendable = c.status === "available" || c.status === "damaged";
-          const added = selected.some((o) => o.id === c.id);
-          return (
-            <PillRow key={c.id} className="items-center bg-bg py-2">
-              <Column variant="id" text={`#${c.id}`} />
-              <Column text={c.labelText ?? undefined} />
-              <Column>
-                <StatusBadge
-                  variant={c.status === "on_loan" ? "active" : "pending"}
-                  text={COPY_STATUS_ES[c.status]}
-                />
-              </Column>
-              <Column variant="actions" expand={false}>
-                <Button
-                  variant="secondary"
-                  disabled={!lendable || added}
-                  icon={
-                    <Plus size={16} strokeWidth={3} color={colors.primary} />
-                  }
-                  onPress={() =>
-                    onAdd(copyOption(c.id, c.labelText, c.bookTitle))
-                  }
-                />
-              </Column>
-            </PillRow>
-          );
-        })}
+      {open && !!copies?.length && (
+        <View className="flex-row flex-wrap gap-2 gap-y-4 justify-center">
+          {copies.map((c) => (
+            <Chip
+              key={c.id}
+              label={`#${c.id}`}
+              detail={undefined}
+              selected={selected.some((s) => s.id === c.id)}
+              onPress={() => onToggle(toLoanCopy(c.id, c.labelText, book))}
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 }

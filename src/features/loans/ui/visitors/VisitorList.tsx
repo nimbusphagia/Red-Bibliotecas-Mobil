@@ -36,9 +36,7 @@ const SORTS: SortOption<VisitorSort>[] = [
   { key: "createdAt", label: "Fecha de registro", defaultDir: "desc" },
 ];
 
-type Props = { onToggle: () => void };
-
-export default function VisitorList({ onToggle }: Props) {
+export default function VisitorList() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<{ by: VisitorSort; dir: SortDirection }>({
@@ -71,8 +69,6 @@ export default function VisitorList({ onToggle }: Props) {
     <>
       <ListHeader
         title="Visitantes"
-        toggleTitle="Préstamos"
-        onToggle={onToggle}
         create={
           <Button
             variant="highlight"

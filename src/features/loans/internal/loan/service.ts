@@ -48,6 +48,7 @@ import type {
   ReturnResult,
   VisitorLoanStatus,
 } from "./types";
+import { VisitorRole } from "../visitor/types";
 
 const ENTITY = "loan";
 
@@ -97,6 +98,13 @@ export async function getVisitorLoanStatus(
 }
 
 // Loans
+const expiresOn = async (role: VisitorRole, today: string) =>
+  addDays(today, (await getLoanRule(role)).maxDays);
+
+export async function getLoanExpiry(visitorId: number): Promise<string> {
+  const { role } = await getVisitor(visitorId);
+  return expiresOn(role, toISODate());
+}
 export async function lendCopies(
   actorId: number,
   input: LendInput,
@@ -110,9 +118,8 @@ export async function lendCopies(
       { path: "visitorId", message: "The visitor is inactive" },
     ]);
   }
-  const { maxDays } = await getLoanRule(visitor.role);
   const today = toISODate();
-  const expiresBy = addDays(today, maxDays);
+  const expiresBy = await expiresOn(visitor.role, today);
 
   return mapWriteErrors(ENTITY, async () =>
     inTransaction((tx) => {

@@ -16,7 +16,7 @@ export type Field = {
   lockable?: boolean;
   inline?: boolean;
   error?: string;
-  fallback?: string;
+  createOnly?: true;
   min?: number;
   max?: number;
   load?: () => Promise<Option[]>;
@@ -101,6 +101,15 @@ export const COLUMNS: Group[][] = [
           error: "subcategoryId",
           load: loadSubcategories,
         },
+        {
+          key: "shelf",
+          required: true,
+          label: "Estante",
+          kind: "pick",
+          createOnly: true,
+          inline: true,
+          load: loadShelves,
+        },
       ],
     },
     {
@@ -115,13 +124,6 @@ export const COLUMNS: Group[][] = [
           required: true,
           min: 1,
           max: 100,
-        },
-        {
-          key: "shelf",
-          label: "Estante",
-          kind: "pick",
-          fallback: "General",
-          load: loadShelves,
         },
         { key: "omitWords", label: "Omitir", kind: "text" },
       ],
