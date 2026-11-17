@@ -20,9 +20,7 @@ export function Section({
   return (
     <View className={cn("gap-2", expand ? "flex-1" : "", className)}>
       <View className="flex-row items-center gap-2 ">
-        <Text variant="h2" className="text-highlight">
-          {title}
-        </Text>
+        <Text variant="h2">{title}</Text>
         {lead ?? null}
       </View>
       {children}

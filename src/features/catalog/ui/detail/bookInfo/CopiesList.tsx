@@ -22,20 +22,24 @@ export default function CopiesList({ copies }: Props) {
           : c.loan && (`/loans/${c.loan.loanId}` as const);
         return (
           <PillRow key={c.id} className="flex-1 justify-around py-2">
-            <PillRowColumn textVariant="h3" title={String(c.copyNumber)} />
+            <PillRowColumn textVariant="subtitle" title={"#" + c.id} />
             <PillRowColumn
+              variant="highlight"
               textVariant="subtitle"
-              title={c.shelfName === "Default" ? "General" : c.shelfName}
+              title={c.labelText ?? "---"}
             />
+
             <PillRowColumn
               variant={isAvailable ? "badge" : "text"}
               textVariant="subtitle"
               title={COPY_STATUS_ES[c.status]}
             />
+
             <PillRowColumn
-              variant="highlight"
               textVariant="subtitle"
-              title={c.labelText ?? "---"}
+              title={
+                c.shelfName === "Default" ? "Estanteria General" : c.shelfName
+              }
             />
             <View className="flex-row items-center gap-4">
               <Link href={`/shelves/${c.shelfId}`} asChild>

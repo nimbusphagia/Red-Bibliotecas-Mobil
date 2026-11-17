@@ -25,7 +25,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
           lead={
             <Button
               variant="secondary"
-              className="min-h-8 "
+              className="bg-fg2 border-fg2 min-h-8"
               icon={<Tag size={14} strokeWidth={2.5} color={colors.primary} />}
             />
           }
@@ -47,7 +47,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
             >
               <Button
                 variant="secondary"
-                className="min-h-8"
+                className="bg-fg2 border-fg2 min-h-8"
                 icon={
                   <PencilLine
                     size={14}
@@ -69,7 +69,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
         lead={
           <Button
             variant="secondary"
-            className="min-h-8"
+            className="bg-fg2 border-fg2 min-h-8"
             icon={
               <BookPlus size={15} strokeWidth={2.5} color={colors.primary} />
             }

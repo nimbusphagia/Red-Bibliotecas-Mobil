@@ -3,7 +3,13 @@ import type {
   LoanLine,
   LoanListItem,
 } from "@/features/loans/internal/loan/types";
-import { PageHeader, PairedRow, Section } from "@/features/shared/components";
+import {
+  LabeledItem,
+  LabeledItem2,
+  PageHeader,
+  PairedRow,
+  Section,
+} from "@/features/shared/components";
 import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { LOAN_STATE_ES } from "@/features/shared/format/translate";
 import { routeIdSchema } from "@/features/shared/types/schemas";
@@ -39,21 +45,26 @@ export default function LoanDetail({ id }: { id: string }) {
   const state =
     loan.openCount === 0 ? "closed" : loan.overdue ? "overdue" : "open";
   const rows = [
+    { label: "Prestado a", content: loan.visitorName },
     { label: "Estado", content: LOAN_STATE_ES[state] },
-    { label: "Prestado", content: formatDate(loan.createdAt) },
-    { label: "Vencimiento", content: formatISO(loan.expiresBy) },
-    { label: "Registrado por", content: loan.loanedByUsername },
-    { label: "Notas", content: loan.notes },
+    { label: "Encargado", content: loan.loanedByUsername },
+    { label: "Inicio", content: formatDate(loan.createdAt) },
+    { label: "Fecha de devolucion", content: formatISO(loan.expiresBy) },
+    { label: "Notas", content: loan.notes ?? "---" },
   ];
 
   return (
     <>
-      <PageHeader title={loan.visitorName} />
+      <PageHeader title={`Prestamo #${loan.id}`} />
       <ScrollView className="flex-1" contentContainerClassName="gap-6 p-4">
         <Section title="Detalles">
           <View className="max-w-xl gap-2">
             {rows.map((r) => (
-              <PairedRow key={r.label} {...r} labelClass="w-[35%]" />
+              <LabeledItem2
+                key={r.label}
+                {...r}
+                labelClass="w-[40%] text-left"
+              />
             ))}
           </View>
         </Section>

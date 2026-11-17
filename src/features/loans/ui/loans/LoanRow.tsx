@@ -1,23 +1,34 @@
 import type { LoanListItem } from "@/features/loans/internal/loan/types";
 import { Button, PillRow, Text } from "@/features/shared/components";
-import { formatDate, formatISO } from "@/features/shared/format/dates";
-import { colors } from "@/features/shared/theme";
+import { StatusBadge } from "@/features/shared/components/base/Badge";
+import { formatISO } from "@/features/shared/format/dates";
+import { cn, colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
-import { BookCheck, ClockAlert, Eye } from "lucide-react-native";
+import { BookDown, ClockAlert, Eye } from "lucide-react-native";
 import { View } from "react-native";
 
 type Props = { loan: LoanListItem };
 
 export default function LoanRow({ loan }: Props) {
-  const colClass = "flex-1 justify-center gap-[1px]";
+  const colClass = "flex-1 justify-center items-center gap-[1px]";
   return (
-    <PillRow>
-      <View className={colClass}>
-        <Text variant="h3" className="text-highlight">
-          {loan.visitorName}
+    <PillRow className="gap-10">
+      <View className={cn(colClass, "max-w-[50]")}>
+        <Text variant="subtitle" className="text-highlight">
+          #{loan.id}
         </Text>
-        <Text variant="subtitle">Prestado el {formatDate(loan.createdAt)}</Text>
       </View>
+
+      <View className={colClass}>
+        <Text variant="h3">{loan.visitorName}</Text>
+      </View>
+      <View className={colClass}>
+        <StatusBadge
+          text={loan.overdue ? "Vencido" : "Activo"}
+          variant={"pending"}
+        />
+      </View>
+
       <View className={colClass}>
         <View className="flex-row items-center gap-3">
           <Text variant="h3" className="font-semibold text-[15px]">
@@ -27,7 +38,6 @@ export default function LoanRow({ loan }: Props) {
             <ClockAlert size={16} color={colors.highlight} strokeWidth={2.5} />
           )}
         </View>
-        <Text variant="subtitle">Vencimiento</Text>
       </View>
       <View className={`${colClass} items-center`}>
         <Text variant="h3" className="font-semibold text-[14px]">
@@ -44,8 +54,8 @@ export default function LoanRow({ loan }: Props) {
         </Link>
         {loan.openCount > 0 && (
           <Button
-            variant="highlight"
-            icon={<BookCheck size={18} color={colors.bg} />}
+            variant="secondary"
+            icon={<BookDown size={18} color={colors.highlight} />}
           />
         )}
       </View>

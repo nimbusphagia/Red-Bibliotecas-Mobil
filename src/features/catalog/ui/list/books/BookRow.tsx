@@ -12,8 +12,14 @@ export default function BookRow({ book }: Props) {
   const colClass = "flex-1 justify-center gap-[1px]";
   return (
     <PillRow>
+      <View className={cn(colClass, "max-w-[50]")}>
+        <Text variant="h3" className="font-semibold text-[15px]">
+          #{book.id}
+        </Text>
+      </View>
+
       <View className={colClass}>
-        <Text variant="h3" className="text-highlight">
+        <Text variant="h3" className="">
           {book.title}
         </Text>
         <View className="flex-row  items-center">
@@ -35,12 +41,12 @@ export default function BookRow({ book }: Props) {
         </Text>
       </View>
 
-      <View className={cn(colClass, "items-center")}>
+      <View className={cn(colClass, "items-center max-w-[240]")}>
         <Text variant="h3" className="font-semibold text-[14px]">
-          {book.availableCount} de {book.activeCount}
+          {book.availableCount} / {book.activeCount}
         </Text>
         <Text variant="subtitle" className="font-semibold">
-          {book.onLoanCount} prestados
+          En inventario
         </Text>
       </View>
       <View className="flex-row items-center gap-6">

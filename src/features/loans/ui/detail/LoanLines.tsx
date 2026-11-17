@@ -17,23 +17,25 @@ export default function LoanLines({ lines }: { lines: LoanLine[] }) {
     <View className="gap-4 py-3">
       {lines.map((l) => (
         <PillRow key={l.id} className="items-center py-2">
-          <PillRowColumn
-            variant="highlight"
-            title={l.labelText ?? `#${l.copyId}`}
-          />
+          <PillRowColumn variant="text" title={`#${l.copyId}`} />
           <View className="flex-1 justify-center">
             <Text variant="h3" numberOfLines={1}>
               {l.bookTitle}
             </Text>
-            <Text variant="subtitle">
-              Ejemplar {l.copyNumber}
+            <Text variant="subtitle" className="text-[12px]">
+              {l.labelText}
               {l.resolvedAt && ` · ${formatDate(l.resolvedAt)}`}
             </Text>
           </View>
-          <PillRowColumn
-            variant={l.outcome ? "badge" : "text"}
-            title={l.outcome ? OUTCOME_ES[l.outcome] : "Pendiente"}
-          />
+
+          <View className="flex-1 justify-center">
+            <Text variant="h3" numberOfLines={1}>
+              {l.outcome ? OUTCOME_ES[l.outcome] : "Pendiente"}
+            </Text>
+            <Text variant="subtitle" className="text-[12px]">
+              {l.resolvedAt && ` · ${formatDate(l.resolvedAt)}`}
+            </Text>
+          </View>
           <View className="flex-row items-center gap-4">
             <Link href={`/catalog/${l.bookId}`} asChild>
               <Button

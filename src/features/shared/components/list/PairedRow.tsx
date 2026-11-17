@@ -16,7 +16,7 @@ const styles: Record<
 > = {
   field: {
     container: "rounded-lg border",
-    label: "w-[120px] rounded-l-lg bg-fg2 pl-4 text-highlight",
+    label: "w-[100px] rounded-l-lg bg-fg2 pl-4 text-highlight",
     labelFilled: "bg-primary text-bg",
     content: "flex-1 rounded-r-lg bg-fg2 pr-4 text-right",
     contentFilled: "bg-fg1",
@@ -67,7 +67,7 @@ export function PairedRow({
       <Text
         variant="h3"
         className={cn(
-          "max-w-full py-[6]",
+          "max-w-full py-[5] text-[14px]",
           s.label,
           filled && s.labelFilled,
           disabledClass,
@@ -80,7 +80,7 @@ export function PairedRow({
         variant="h3"
         numberOfLines={1}
         className={cn(
-          "max-w-full py-[6]",
+          "max-w-full py-[5] text-[14px]",
           s.content,
           filled && s.contentFilled,
           disabledClass,
