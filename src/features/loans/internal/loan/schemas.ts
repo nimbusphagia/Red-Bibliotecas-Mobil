@@ -17,6 +17,9 @@ export type OpenLineSort = (typeof OPEN_LINE_SORT_KEYS)[number];
 
 export const MAX_RETURN_ITEMS = 50;
 
+export const LINE_STATUSES = ["pending", ...LINE_OUTCOMES] as const;
+export type LineStatus = (typeof LINE_STATUSES)[number];
+
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 
 const unique = (ids: number[]) => new Set(ids).size === ids.length;
@@ -83,8 +86,19 @@ export const listLinesSchema = z.object({
   offset: listShape(LOAN_SORT_KEYS, "createdAt").offset,
 });
 
+const visitorLinePage = listShape(["createdAt"], "createdAt", "desc");
+
+export const listVisitorLinesSchema = z.object({
+  visitorId: idSchema,
+  status: z.enum(LINE_STATUSES).optional(),
+  sortDir: visitorLinePage.sortDir,
+  limit: visitorLinePage.limit,
+  offset: visitorLinePage.offset,
+});
+
 export type LendInput = z.input<typeof lendSchema>;
 export type ReturnInput = z.input<typeof returnSchema>;
 export type LoanListParams = z.input<typeof listLoansSchema>;
 export type OpenLinesParams = z.input<typeof listOpenLinesSchema>;
 export type LoanLinesParams = z.input<typeof listLinesSchema>;
+export type VisitorLinesParams = z.input<typeof listVisitorLinesSchema>;

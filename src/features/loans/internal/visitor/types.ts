@@ -23,7 +23,7 @@ export type VisitorListItem = Visitor & {
   grade: number | null;
   level: (typeof GRADE_LEVELS)[number] | null;
   lineCount: number;
-  returnedCount: number;
+  pendingCount: number;
   problemCount: number;
 };
 

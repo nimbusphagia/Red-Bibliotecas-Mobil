@@ -2,7 +2,8 @@ import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import { Button, Column, PillRow } from "@/features/shared/components";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
 import { colors } from "@/features/shared/theme";
-import { Pencil } from "lucide-react-native";
+import { Link } from "expo-router";
+import { Eye, Pencil } from "lucide-react-native";
 
 type Props = { visitor: VisitorListItem; onEdit: () => void };
 
@@ -22,8 +23,8 @@ export default function VisitorRow({ visitor, onEdit }: Props) {
       />
       <Column
         variant="subtitled"
-        text={`${visitor.returnedCount} / ${visitor.lineCount}`}
-        subtitle1="Libros devueltos"
+        text={String(visitor.pendingCount)}
+        subtitle1="Pendiente"
       />
       <Column
         variant="subtitled"
@@ -31,6 +32,12 @@ export default function VisitorRow({ visitor, onEdit }: Props) {
         subtitle1="Perdidos o dañados"
       />
       <Column variant="actions" expand={false}>
+        <Link href={`/visitors/${visitor.id}`} asChild>
+          <Button
+            variant="secondary"
+            icon={<Eye size={16} color={colors.highlight} />}
+          />
+        </Link>
         <Button
           variant="secondary"
           icon={<Pencil size={16} color={colors.highlight} />}

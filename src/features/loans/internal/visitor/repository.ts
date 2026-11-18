@@ -20,6 +20,7 @@ import {
   eq,
   getTableColumns,
   inArray,
+  isNull,
   sql,
 } from "drizzle-orm";
 import type { Page } from "@/features/shared/types/types";
@@ -57,6 +58,17 @@ const linesOf = (...outcomes: LineOutcome[]) =>
       ),
     )})`.mapWith(Number);
 
+const pendingLines = sql<number>`(${db
+  .select({ n: count() })
+  .from(loanMovementLine)
+  .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+  .where(
+    and(
+      eq(loanMovement.loanedToId, visitor.id),
+      isNull(loanMovementLine.resolvedAt),
+    ),
+  )})`.mapWith(Number);
+
 const selectVisitors = () =>
   db
     .select({
@@ -64,7 +76,7 @@ const selectVisitors = () =>
       grade: schoolGrade.grade,
       level: schoolGrade.level,
       lineCount: linesOf(),
-      returnedCount: linesOf("returned", "returned_damaged"),
+      pendingCount: pendingLines,
       problemCount: linesOf("returned_damaged", "lost"),
     })
     .from(visitor)

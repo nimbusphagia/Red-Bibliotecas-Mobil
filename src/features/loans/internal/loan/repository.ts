@@ -43,6 +43,8 @@ import type {
   OpenCounts,
   OpenLineFilters,
   OpenLoanLine,
+  VisitorLine,
+  VisitorLineFilters,
 } from "./types";
 
 const lines: Reference = {
@@ -55,6 +57,20 @@ const openLines: Reference = {
 };
 const lineCount = rowCount(lines, loanMovement.id);
 const openCount = rowCount(openLines, loanMovement.id);
+
+const resolver = alias(account, "resolver");
+
+const lineColumns = {
+  id: loanMovementLine.id,
+  copyId: loanMovementLine.copyId,
+  bookId: copy.bookId,
+  bookTitle: book.title,
+  copyNumber: copy.copyNumber,
+  labelText: label.text,
+  resolvedAt: loanMovementLine.resolvedAt,
+  outcome: loanMovementLine.outcome,
+  resolvedByUsername: resolver.username,
+};
 
 // Writes
 export function insertLoanMovementSync(
@@ -217,22 +233,11 @@ export async function listLoanLines(
   loanId: number,
   page: { limit: number; offset: number },
 ): Promise<Page<LoanLine>> {
-  const resolver = alias(account, "resolver");
   const where = eq(loanMovementLine.movementId, loanId);
 
   const [items, [{ n }]] = await Promise.all([
     db
-      .select({
-        id: loanMovementLine.id,
-        copyId: loanMovementLine.copyId,
-        bookId: copy.bookId,
-        bookTitle: book.title,
-        copyNumber: copy.copyNumber,
-        labelText: label.text,
-        resolvedAt: loanMovementLine.resolvedAt,
-        outcome: loanMovementLine.outcome,
-        resolvedByUsername: resolver.username,
-      })
+      .select(lineColumns)
       .from(loanMovementLine)
       .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
@@ -249,6 +254,49 @@ export async function listLoanLines(
     db.select({ n: count() }).from(loanMovementLine).where(where),
   ]);
   return toPage(items, n, page);
+}
+
+export async function listVisitorLines(
+  filters: VisitorLineFilters,
+): Promise<Page<VisitorLine>> {
+  const { visitorId, status, sortDir } = filters;
+
+  const where = and(
+    eq(loanMovement.loanedToId, visitorId),
+    status === undefined
+      ? undefined
+      : status === "pending"
+        ? isNull(loanMovementLine.resolvedAt)
+        : eq(loanMovementLine.outcome, status),
+  );
+
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({
+        ...lineColumns,
+        loanId: loanMovementLine.movementId,
+        createdAt: loanMovementLine.createdAt,
+      })
+      .from(loanMovementLine)
+      .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+      .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
+      .innerJoin(book, eq(book.id, copy.bookId))
+      .leftJoin(label, eq(label.copyId, copy.id))
+      .leftJoin(resolver, eq(resolver.id, loanMovementLine.resolvedById))
+      .where(where)
+      .orderBy(
+        direction(sortDir)(loanMovementLine.createdAt),
+        direction(sortDir)(loanMovementLine.id),
+      )
+      .limit(filters.limit)
+      .offset(filters.offset),
+    db
+      .select({ n: count() })
+      .from(loanMovementLine)
+      .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+      .where(where),
+  ]);
+  return toPage(items, n, filters);
 }
 
 export async function listOpenLines(

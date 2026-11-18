@@ -1,7 +1,7 @@
 import type { LINE_OUTCOMES, loanMovement } from "@/db/schema";
 import type { ExitResult } from "@/features/inventory/internal/movement/types";
 import type { ListFilters } from "@/features/shared/types/types";
-import type { LoanSort, OpenLineSort } from "./schemas";
+import type { LineStatus, LoanSort, OpenLineSort } from "./schemas";
 
 export type LoanMovement = typeof loanMovement.$inferSelect;
 export type LineOutcome = (typeof LINE_OUTCOMES)[number];
@@ -47,6 +47,16 @@ export type LoanLine = {
   resolvedAt: Date | null;
   outcome: LineOutcome | null;
   resolvedByUsername: string | null;
+};
+
+export type VisitorLine = LoanLine & { loanId: number; createdAt: Date };
+
+export type VisitorLineFilters = Pick<
+  ListFilters<"createdAt">,
+  "sortDir" | "limit" | "offset"
+> & {
+  visitorId: number;
+  status?: LineStatus;
 };
 
 export type OpenLineFilters = ListFilters<OpenLineSort> & {

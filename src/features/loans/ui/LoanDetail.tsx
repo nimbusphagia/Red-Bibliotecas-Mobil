@@ -35,9 +35,7 @@ type Row = { label: string; content: string };
 const Rows = ({ rows }: { rows: Row[] }) => (
   <View className="max-w-xl gap-2">
     {rows.map((r, i) => (
-      <>
-        <LabeledItem key={i} {...r} labelClass="w-[40%] text-left" />
-      </>
+      <LabeledItem key={i} {...r} labelClass="w-[40%] text-left" />
     ))}
   </View>
 );

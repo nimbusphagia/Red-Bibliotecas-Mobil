@@ -32,7 +32,9 @@ import {
   listLinesSchema,
   listLoansSchema,
   listOpenLinesSchema,
+  listVisitorLinesSchema,
   returnSchema,
+  VisitorLinesParams,
   type LendInput,
   type LoanLinesParams,
   type LoanListParams,
@@ -46,6 +48,7 @@ import type {
   LoanListItem,
   OpenLoanLine,
   ReturnResult,
+  VisitorLine,
   VisitorLoanStatus,
 } from "./types";
 import { VisitorRole } from "../visitor/types";
@@ -81,6 +84,14 @@ export async function listLoanLines(
   const { loanId, ...page } = parseOrThrow(listLinesSchema, params);
   await getLoan(loanId);
   return repo.listLoanLines(loanId, page);
+}
+
+export async function listVisitorLines(
+  params: VisitorLinesParams,
+): Promise<Page<VisitorLine>> {
+  const parsed = parseOrThrow(listVisitorLinesSchema, params);
+  await getVisitor(parsed.visitorId);
+  return repo.listVisitorLines(parsed);
 }
 
 export async function listOpenLoanLines(
