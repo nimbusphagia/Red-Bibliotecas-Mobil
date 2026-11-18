@@ -93,10 +93,10 @@ export function insertLoanLinesSync(
 export function findOpenLinesByCopyIdsSync(
   ex: Executor,
   copyIds: number[],
-): { copyId: number }[] {
+): { id: number; copyId: number }[] {
   if (copyIds.length === 0) return [];
   return ex
-    .select({ copyId: loanMovementLine.copyId })
+    .select({ id: loanMovementLine.id, copyId: loanMovementLine.copyId })
     .from(loanMovementLine)
     .where(
       and(

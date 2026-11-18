@@ -1,0 +1,1940 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "e4cd6db2-ec30-4793-8242-3e82b36ff7d9",
+  "prevId": "e196ed89-19cb-41a9-907a-4cad59e5b813",
+  "tables": {
+    "account": {
+      "name": "account",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'staff'"
+        },
+        "active": {
+          "name": "active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "uq_account_username_lower": {
+          "name": "uq_account_username_lower",
+          "columns": [
+            "lower(\"username\")"
+          ],
+          "isUnique": true
+        },
+        "uq_account_single_owner": {
+          "name": "uq_account_single_owner",
+          "columns": [
+            "role"
+          ],
+          "isUnique": true,
+          "where": "role = 'owner'"
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_account_role": {
+          "name": "ck_account_role",
+          "value": "\"account\".\"role\" IN ('owner', 'admin', 'staff')"
+        }
+      }
+    },
+    "author": {
+      "name": "author",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_protected": {
+          "name": "is_protected",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        }
+      },
+      "indexes": {
+        "uq_author_name_key": {
+          "name": "uq_author_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "book": {
+      "name": "book",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title_key": {
+          "name": "title_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "publisher_id": {
+          "name": "publisher_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "collection_id": {
+          "name": "collection_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "series_id": {
+          "name": "series_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "subcategory_id": {
+          "name": "subcategory_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "publication_year": {
+          "name": "publication_year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "page_count": {
+          "name": "page_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "idx_book_publisher": {
+          "name": "idx_book_publisher",
+          "columns": [
+            "publisher_id"
+          ],
+          "isUnique": false
+        },
+        "idx_book_collection": {
+          "name": "idx_book_collection",
+          "columns": [
+            "collection_id"
+          ],
+          "isUnique": false
+        },
+        "idx_book_series": {
+          "name": "idx_book_series",
+          "columns": [
+            "series_id"
+          ],
+          "isUnique": false
+        },
+        "idx_book_category": {
+          "name": "idx_book_category",
+          "columns": [
+            "category_id"
+          ],
+          "isUnique": false
+        },
+        "idx_book_subcategory": {
+          "name": "idx_book_subcategory",
+          "columns": [
+            "subcategory_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "book_publisher_id_publisher_id_fk": {
+          "name": "book_publisher_id_publisher_id_fk",
+          "tableFrom": "book",
+          "tableTo": "publisher",
+          "columnsFrom": [
+            "publisher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "book_series_id_series_id_fk": {
+          "name": "book_series_id_series_id_fk",
+          "tableFrom": "book",
+          "tableTo": "series",
+          "columnsFrom": [
+            "series_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "book_category_id_category_id_fk": {
+          "name": "book_category_id_category_id_fk",
+          "tableFrom": "book",
+          "tableTo": "category",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "book_subcategory_id_subcategory_id_fk": {
+          "name": "book_subcategory_id_subcategory_id_fk",
+          "tableFrom": "book",
+          "tableTo": "subcategory",
+          "columnsFrom": [
+            "subcategory_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "fk_book_collection_publisher": {
+          "name": "fk_book_collection_publisher",
+          "tableFrom": "book",
+          "tableTo": "collection",
+          "columnsFrom": [
+            "publisher_id",
+            "collection_id"
+          ],
+          "columnsTo": [
+            "publisher_id",
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_book_page_count": {
+          "name": "ck_book_page_count",
+          "value": "\"book\".\"page_count\" > 0"
+        },
+        "ck_book_collection_requires_publisher": {
+          "name": "ck_book_collection_requires_publisher",
+          "value": "\"book\".\"collection_id\" IS NULL OR \"book\".\"publisher_id\" IS NOT NULL"
+        }
+      }
+    },
+    "book_collaborator": {
+      "name": "book_collaborator",
+      "columns": {
+        "book_id": {
+          "name": "book_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "collaborator_id": {
+          "name": "collaborator_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_book_collaborator_author": {
+          "name": "idx_book_collaborator_author",
+          "columns": [
+            "collaborator_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "book_collaborator_book_id_book_id_fk": {
+          "name": "book_collaborator_book_id_book_id_fk",
+          "tableFrom": "book_collaborator",
+          "tableTo": "book",
+          "columnsFrom": [
+            "book_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "book_collaborator_collaborator_id_author_id_fk": {
+          "name": "book_collaborator_collaborator_id_author_id_fk",
+          "tableFrom": "book_collaborator",
+          "tableTo": "author",
+          "columnsFrom": [
+            "collaborator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "book_collaborator_book_id_collaborator_id_role_pk": {
+          "columns": [
+            "book_id",
+            "collaborator_id",
+            "role"
+          ],
+          "name": "book_collaborator_book_id_collaborator_id_role_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_book_collaborator_role": {
+          "name": "ck_book_collaborator_role",
+          "value": "\"book_collaborator\".\"role\" IN ('writer', 'illustrator', 'translator')"
+        }
+      }
+    },
+    "category": {
+      "name": "category",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_category_name_key": {
+          "name": "uq_category_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        },
+        "uq_category_code": {
+          "name": "uq_category_code",
+          "columns": [
+            "code"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "collection": {
+      "name": "collection",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "publisher_id": {
+          "name": "publisher_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_collection_publisher_name_key": {
+          "name": "uq_collection_publisher_name_key",
+          "columns": [
+            "publisher_id",
+            "name_key"
+          ],
+          "isUnique": true
+        },
+        "uq_collection_publisher_id": {
+          "name": "uq_collection_publisher_id",
+          "columns": [
+            "publisher_id",
+            "id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "collection_publisher_id_publisher_id_fk": {
+          "name": "collection_publisher_id_publisher_id_fk",
+          "tableFrom": "collection",
+          "tableTo": "publisher",
+          "columnsFrom": [
+            "publisher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "copy": {
+      "name": "copy",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "book_id": {
+          "name": "book_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "shelf_id": {
+          "name": "shelf_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "copy_number": {
+          "name": "copy_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'available'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_copy_book_number": {
+          "name": "uq_copy_book_number",
+          "columns": [
+            "book_id",
+            "copy_number"
+          ],
+          "isUnique": true,
+          "where": "status NOT IN ('lost', 'discarded')"
+        },
+        "idx_copy_book": {
+          "name": "idx_copy_book",
+          "columns": [
+            "book_id"
+          ],
+          "isUnique": false
+        },
+        "idx_copy_shelf": {
+          "name": "idx_copy_shelf",
+          "columns": [
+            "shelf_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "copy_book_id_book_id_fk": {
+          "name": "copy_book_id_book_id_fk",
+          "tableFrom": "copy",
+          "tableTo": "book",
+          "columnsFrom": [
+            "book_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "copy_shelf_id_shelf_id_fk": {
+          "name": "copy_shelf_id_shelf_id_fk",
+          "tableFrom": "copy",
+          "tableTo": "shelf",
+          "columnsFrom": [
+            "shelf_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_copy_status": {
+          "name": "ck_copy_status",
+          "value": "\"copy\".\"status\" IN ('available', 'on_loan', 'lost', 'discarded', 'damaged')"
+        },
+        "ck_copy_number_positive": {
+          "name": "ck_copy_number_positive",
+          "value": "\"copy\".\"copy_number\" > 0"
+        }
+      }
+    },
+    "label": {
+      "name": "label",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "copy_id": {
+          "name": "copy_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "category_code": {
+          "name": "category_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "author_code": {
+          "name": "author_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "subcategory_code": {
+          "name": "subcategory_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title_code": {
+          "name": "title_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "copy_number": {
+          "name": "copy_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "print_status": {
+          "name": "print_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending_print'"
+        },
+        "printed_at": {
+          "name": "printed_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "revision": {
+          "name": "revision",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_label_text_active": {
+          "name": "uq_label_text_active",
+          "columns": [
+            "lower(\"text\")"
+          ],
+          "isUnique": true,
+          "where": "revoked_at IS NULL"
+        },
+        "uq_label_copy": {
+          "name": "uq_label_copy",
+          "columns": [
+            "copy_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "label_copy_id_copy_id_fk": {
+          "name": "label_copy_id_copy_id_fk",
+          "tableFrom": "label",
+          "tableTo": "copy",
+          "columnsFrom": [
+            "copy_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_label_print_status": {
+          "name": "ck_label_print_status",
+          "value": "\"label\".\"print_status\" IN ('pending_print', 'printed')"
+        },
+        "ck_label_copy_number_positive": {
+          "name": "ck_label_copy_number_positive",
+          "value": "\"label\".\"copy_number\" > 0"
+        },
+        "ck_label_revision_positive": {
+          "name": "ck_label_revision_positive",
+          "value": "\"label\".\"revision\" > 0"
+        }
+      }
+    },
+    "label_revision": {
+      "name": "label_revision",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "label_id": {
+          "name": "label_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "revision_number": {
+          "name": "revision_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "category_code": {
+          "name": "category_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "author_code": {
+          "name": "author_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "subcategory_code": {
+          "name": "subcategory_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title_code": {
+          "name": "title_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "copy_number": {
+          "name": "copy_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "change_reason": {
+          "name": "change_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_label_revision_number": {
+          "name": "uq_label_revision_number",
+          "columns": [
+            "label_id",
+            "revision_number"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "label_revision_label_id_label_id_fk": {
+          "name": "label_revision_label_id_label_id_fk",
+          "tableFrom": "label_revision",
+          "tableTo": "label",
+          "columnsFrom": [
+            "label_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_label_revision_number_positive": {
+          "name": "ck_label_revision_number_positive",
+          "value": "\"label_revision\".\"revision_number\" > 0"
+        },
+        "ck_label_revision_copy_number_positive": {
+          "name": "ck_label_revision_copy_number_positive",
+          "value": "\"label_revision\".\"copy_number\" > 0"
+        }
+      }
+    },
+    "loan_movement": {
+      "name": "loan_movement",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "loaned_by_id": {
+          "name": "loaned_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "loaned_to_id": {
+          "name": "loaned_to_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_by": {
+          "name": "expires_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_loan_movement_visitor": {
+          "name": "idx_loan_movement_visitor",
+          "columns": [
+            "loaned_to_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "loan_movement_loaned_by_id_account_id_fk": {
+          "name": "loan_movement_loaned_by_id_account_id_fk",
+          "tableFrom": "loan_movement",
+          "tableTo": "account",
+          "columnsFrom": [
+            "loaned_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "loan_movement_loaned_to_id_visitor_id_fk": {
+          "name": "loan_movement_loaned_to_id_visitor_id_fk",
+          "tableFrom": "loan_movement",
+          "tableTo": "visitor",
+          "columnsFrom": [
+            "loaned_to_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "loan_movement_line": {
+      "name": "loan_movement_line",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "movement_id": {
+          "name": "movement_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "copy_id": {
+          "name": "copy_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "resolved_at": {
+          "name": "resolved_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "resolved_by_id": {
+          "name": "resolved_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "outcome": {
+          "name": "outcome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_loan_line_open_copy": {
+          "name": "uq_loan_line_open_copy",
+          "columns": [
+            "copy_id"
+          ],
+          "isUnique": true,
+          "where": "resolved_at IS NULL"
+        },
+        "idx_loan_line_copy": {
+          "name": "idx_loan_line_copy",
+          "columns": [
+            "copy_id"
+          ],
+          "isUnique": false
+        },
+        "uq_loan_movement_line": {
+          "name": "uq_loan_movement_line",
+          "columns": [
+            "movement_id",
+            "copy_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "loan_movement_line_movement_id_loan_movement_id_fk": {
+          "name": "loan_movement_line_movement_id_loan_movement_id_fk",
+          "tableFrom": "loan_movement_line",
+          "tableTo": "loan_movement",
+          "columnsFrom": [
+            "movement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "loan_movement_line_copy_id_copy_id_fk": {
+          "name": "loan_movement_line_copy_id_copy_id_fk",
+          "tableFrom": "loan_movement_line",
+          "tableTo": "copy",
+          "columnsFrom": [
+            "copy_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "loan_movement_line_resolved_by_id_account_id_fk": {
+          "name": "loan_movement_line_resolved_by_id_account_id_fk",
+          "tableFrom": "loan_movement_line",
+          "tableTo": "account",
+          "columnsFrom": [
+            "resolved_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_loan_line_outcome": {
+          "name": "ck_loan_line_outcome",
+          "value": "\"loan_movement_line\".\"outcome\" IN ('returned', 'returned_damaged', 'lost')"
+        },
+        "ck_loan_line_resolved_pair": {
+          "name": "ck_loan_line_resolved_pair",
+          "value": "(\"loan_movement_line\".\"resolved_at\" IS NULL AND \"loan_movement_line\".\"outcome\" IS NULL) OR (\"loan_movement_line\".\"resolved_at\" IS NOT NULL AND \"loan_movement_line\".\"outcome\" IS NOT NULL)"
+        }
+      }
+    },
+    "loan_rule": {
+      "name": "loan_rule",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "max_days": {
+          "name": "max_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_loan_rule_role": {
+          "name": "uq_loan_rule_role",
+          "columns": [
+            "role"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_loan_rule_role": {
+          "name": "ck_loan_rule_role",
+          "value": "\"loan_rule\".\"role\" IN ('student', 'teacher')"
+        },
+        "ck_loan_rule_max_days_positive": {
+          "name": "ck_loan_rule_max_days_positive",
+          "value": "\"loan_rule\".\"max_days\" > 0"
+        }
+      }
+    },
+    "publisher": {
+      "name": "publisher",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_publisher_name_key": {
+          "name": "uq_publisher_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "school_grade": {
+      "name": "school_grade",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "grade": {
+          "name": "grade",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "level": {
+          "name": "level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_school_grade": {
+          "name": "uq_school_grade",
+          "columns": [
+            "level",
+            "grade"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_school_grade_level": {
+          "name": "ck_school_grade_level",
+          "value": "\"school_grade\".\"level\" IN ('primary', 'secondary')"
+        },
+        "ck_school_grade_range": {
+          "name": "ck_school_grade_range",
+          "value": "(\"school_grade\".\"level\" = 'primary' AND \"school_grade\".\"grade\" BETWEEN 1 AND 6) OR (\"school_grade\".\"level\" = 'secondary' AND \"school_grade\".\"grade\" BETWEEN 1 AND 5)"
+        }
+      }
+    },
+    "series": {
+      "name": "series",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_series_author_name_key": {
+          "name": "uq_series_author_name_key",
+          "columns": [
+            "author_id",
+            "name_key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "series_author_id_author_id_fk": {
+          "name": "series_author_id_author_id_fk",
+          "tableFrom": "series",
+          "tableTo": "author",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "shelf": {
+      "name": "shelf",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_default": {
+          "name": "is_default",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        }
+      },
+      "indexes": {
+        "uq_shelf_name_lower": {
+          "name": "uq_shelf_name_lower",
+          "columns": [
+            "lower(\"name\")"
+          ],
+          "isUnique": true
+        },
+        "uq_shelf_single_default": {
+          "name": "uq_shelf_single_default",
+          "columns": [
+            "is_default"
+          ],
+          "isUnique": true,
+          "where": "is_default = 1"
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "stock_movement": {
+      "name": "stock_movement",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "signed_by_id": {
+          "name": "signed_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stock_movement_signed_by_id_account_id_fk": {
+          "name": "stock_movement_signed_by_id_account_id_fk",
+          "tableFrom": "stock_movement",
+          "tableTo": "account",
+          "columnsFrom": [
+            "signed_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_stock_movement_type_reason": {
+          "name": "ck_stock_movement_type_reason",
+          "value": "(\"stock_movement\".\"type\" = 'entry' AND \"stock_movement\".\"reason\" IN ('purchase', 'donation', 'other')) OR (\"stock_movement\".\"type\" = 'exit' AND \"stock_movement\".\"reason\" IN ('loss', 'damage', 'discard'))"
+        }
+      }
+    },
+    "stock_movement_line": {
+      "name": "stock_movement_line",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "movement_id": {
+          "name": "movement_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "copy_id": {
+          "name": "copy_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "loan_line_id": {
+          "name": "loan_line_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_stock_movement_line_copy": {
+          "name": "idx_stock_movement_line_copy",
+          "columns": [
+            "copy_id"
+          ],
+          "isUnique": false
+        },
+        "uq_stock_movement_line": {
+          "name": "uq_stock_movement_line",
+          "columns": [
+            "movement_id",
+            "copy_id"
+          ],
+          "isUnique": true
+        },
+        "uq_stock_movement_line_loan_line": {
+          "name": "uq_stock_movement_line_loan_line",
+          "columns": [
+            "loan_line_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "stock_movement_line_movement_id_stock_movement_id_fk": {
+          "name": "stock_movement_line_movement_id_stock_movement_id_fk",
+          "tableFrom": "stock_movement_line",
+          "tableTo": "stock_movement",
+          "columnsFrom": [
+            "movement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_movement_line_copy_id_copy_id_fk": {
+          "name": "stock_movement_line_copy_id_copy_id_fk",
+          "tableFrom": "stock_movement_line",
+          "tableTo": "copy",
+          "columnsFrom": [
+            "copy_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_movement_line_loan_line_id_loan_movement_line_id_fk": {
+          "name": "stock_movement_line_loan_line_id_loan_movement_line_id_fk",
+          "tableFrom": "stock_movement_line",
+          "tableTo": "loan_movement_line",
+          "columnsFrom": [
+            "loan_line_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "subcategory": {
+      "name": "subcategory",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uq_subcategory_name_key": {
+          "name": "uq_subcategory_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        },
+        "uq_subcategory_code": {
+          "name": "uq_subcategory_code",
+          "columns": [
+            "code"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "visitor": {
+      "name": "visitor",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name_key": {
+          "name": "name_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "grade_id": {
+          "name": "grade_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "active": {
+          "name": "active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "uq_visitor_name_key": {
+          "name": "uq_visitor_name_key",
+          "columns": [
+            "name_key"
+          ],
+          "isUnique": true
+        },
+        "idx_visitor_grade": {
+          "name": "idx_visitor_grade",
+          "columns": [
+            "grade_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "visitor_role_loan_rule_role_fk": {
+          "name": "visitor_role_loan_rule_role_fk",
+          "tableFrom": "visitor",
+          "tableTo": "loan_rule",
+          "columnsFrom": [
+            "role"
+          ],
+          "columnsTo": [
+            "role"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "visitor_grade_id_school_grade_id_fk": {
+          "name": "visitor_grade_id_school_grade_id_fk",
+          "tableFrom": "visitor",
+          "tableTo": "school_grade",
+          "columnsFrom": [
+            "grade_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_visitor_role": {
+          "name": "ck_visitor_role",
+          "value": "\"visitor\".\"role\" IN ('student', 'teacher')"
+        },
+        "ck_visitor_grade_by_role": {
+          "name": "ck_visitor_grade_by_role",
+          "value": "(\"visitor\".\"role\" = 'student' AND \"visitor\".\"grade_id\" IS NOT NULL) OR (\"visitor\".\"role\" = 'teacher' AND \"visitor\".\"grade_id\" IS NULL)"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {
+      "uq_account_username_lower": {
+        "columns": {
+          "lower(\"username\")": {
+            "isExpression": true
+          }
+        }
+      },
+      "uq_label_text_active": {
+        "columns": {
+          "lower(\"text\")": {
+            "isExpression": true
+          }
+        }
+      },
+      "uq_shelf_name_lower": {
+        "columns": {
+          "lower(\"name\")": {
+            "isExpression": true
+          }
+        }
+      }
+    }
+  }
+}

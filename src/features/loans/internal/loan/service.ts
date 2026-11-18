@@ -189,9 +189,9 @@ export async function returnCopies(
 
   return mapWriteErrors(ENTITY, async () =>
     inTransaction((tx) => {
-      const open = new Set(
-        repo.findOpenLinesByCopyIdsSync(tx, copyIds).map((l) => l.copyId),
-      );
+      const openLines = repo.findOpenLinesByCopyIdsSync(tx, copyIds);
+      const open = new Set(openLines.map((l) => l.copyId));
+      const loanLineByCopy = new Map(openLines.map((l) => [l.copyId, l.id]));
       const issues: ValidationIssue[] = [];
       items.forEach((item, i) => {
         if (!open.has(item.copyId)) {
@@ -222,18 +222,19 @@ export async function returnCopies(
 
       setCopiesStatusSync(tx, returned, "available");
 
-      const exit = (reason: ExitReason, ids: number[], notes: string) =>
+      const exit = (reason: ExitReason, ids: number[]) =>
         ids.length === 0
           ? null
-          : writeExit(tx, { reason, signedById: actorId, notes }, ids, {
+          : writeExit(tx, { reason, signedById: actorId, notes: null }, ids, {
               allowOnLoan: true,
+              loanLineByCopy,
             });
 
       return {
         returned: returned.length,
-        damaged: exit("damage", damaged, "Returned damaged from loan"),
-        lost: exit("loss", lost, "Lost on loan"),
-        discarded: exit("discard", discarded, "Irreparably damaged on loan"),
+        damaged: exit("damage", damaged),
+        lost: exit("loss", lost),
+        discarded: exit("discard", discarded),
       };
     }),
   );

@@ -20,6 +20,7 @@ import {
 
 type ExitOptions = {
   allowOnLoan?: boolean;
+  loanLineByCopy?: Map<number, number>;
 };
 
 function problemFor(
@@ -45,7 +46,7 @@ export function writeExit(
   tx: Tx,
   header: NewExitMovement,
   copyIds: number[],
-  { allowOnLoan = false }: ExitOptions = {},
+  { allowOnLoan = false, loanLineByCopy }: ExitOptions = {},
 ): ExitResult {
   const target = EXIT_STATUS[header.reason];
   const found = new Map(
@@ -65,7 +66,7 @@ export function writeExit(
   const movement = insertExitMovementSync(tx, header);
   if (target === "damaged") setCopiesStatusSync(tx, copyIds, "damaged");
   else releaseCopiesSync(tx, copyIds, target);
-  insertMovementLinesSync(tx, movement.id, copyIds);
+  insertMovementLinesSync(tx, movement.id, copyIds, loanLineByCopy);
 
   return {
     movement,

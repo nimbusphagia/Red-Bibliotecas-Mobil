@@ -5,9 +5,12 @@ import {
   book,
   copy,
   label,
+  loanMovement,
+  loanMovementLine,
   shelf,
   stockMovement,
   stockMovementLine,
+  visitor,
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
@@ -36,10 +39,17 @@ export function insertMovementLinesSync(
   ex: Executor,
   movementId: number,
   copyIds: number[],
+  loanLineByCopy?: Map<number, number>,
 ): void {
   if (copyIds.length === 0) return;
   ex.insert(stockMovementLine)
-    .values(copyIds.map((copyId) => ({ movementId, copyId })))
+    .values(
+      copyIds.map((copyId) => ({
+        movementId,
+        copyId,
+        loanLineId: loanLineByCopy?.get(copyId) ?? null,
+      })),
+    )
     .run();
 }
 export function insertExitMovementSync(
@@ -116,6 +126,7 @@ export async function listMovementLines(
   const [items, [{ n }]] = await Promise.all([
     db
       .select({
+        id: stockMovementLine.id,
         copyId: copy.id,
         bookId: copy.bookId,
         bookTitle: book.title,
@@ -124,12 +135,20 @@ export async function listMovementLines(
         shelfId: copy.shelfId,
         shelfName: shelf.name,
         labelText: label.text,
+        loanId: loanMovement.id,
+        visitorName: visitor.name,
       })
       .from(stockMovementLine)
       .innerJoin(copy, eq(copy.id, stockMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
       .innerJoin(shelf, eq(shelf.id, copy.shelfId))
       .leftJoin(label, eq(label.copyId, copy.id))
+      .leftJoin(
+        loanMovementLine,
+        eq(loanMovementLine.id, stockMovementLine.loanLineId),
+      )
+      .leftJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+      .leftJoin(visitor, eq(visitor.id, loanMovement.loanedToId))
       .where(where)
       .orderBy(asc(book.titleKey), asc(copy.copyNumber), asc(copy.id))
       .limit(page.limit)

@@ -15,6 +15,13 @@
       "when": 1794160287163,
       "tag": "0001_seed_reference_data",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795041840109,
+      "tag": "0002_stock_line_loan_link",
+      "breakpoints": true
     }
   ]
 }

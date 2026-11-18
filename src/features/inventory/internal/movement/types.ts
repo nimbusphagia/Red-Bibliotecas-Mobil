@@ -95,6 +95,7 @@ export type MovementListItem = StockMovement & {
 };
 
 export type MovementLine = {
+  id: number;
   copyId: number;
   bookId: number;
   bookTitle: string;
@@ -103,4 +104,6 @@ export type MovementLine = {
   shelfId: number;
   shelfName: string;
   labelText: string | null;
+  loanId: number | null;
+  visitorName: string | null;
 };

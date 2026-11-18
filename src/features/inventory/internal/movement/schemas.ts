@@ -1,4 +1,9 @@
-import { MOVEMENT_REASONS, MOVEMENT_TYPES } from "@/db/schema";
+import {
+  ENTRY_REASONS,
+  EXIT_REASONS,
+  MOVEMENT_REASONS,
+  MOVEMENT_TYPES,
+} from "@/db/schema";
 import { createBookSchema } from "@/features/catalog/internal/book/schemas";
 import { addDays, parseISODate } from "@/features/shared/format/dates";
 import { collapse } from "@/features/shared/format/text";
@@ -6,19 +11,19 @@ import { idSchema, listShape } from "@/features/shared/types/schemas";
 import type { Assert } from "@/features/shared/types/types";
 import { z } from "zod";
 
+export { ENTRY_REASONS, EXIT_REASONS };
+
 export const MAX_COPIES_PER_BOOK = 100;
 export const MAX_LINES = 50;
 export const MAX_OMIT_WORDS = 10;
 export const MAX_EXIT_COPIES = 100;
 
-export const ENTRY_REASONS = ["purchase", "donation", "other"] as const;
 export type _EntryReasonsAreMovementReasons = Assert<
   (typeof ENTRY_REASONS)[number] extends (typeof MOVEMENT_REASONS)[number]
     ? true
     : false
 >;
 
-export const EXIT_REASONS = ["loss", "damage", "discard"] as const;
 export type _ExitReasonsAreMovementReasons = Assert<
   (typeof EXIT_REASONS)[number] extends (typeof MOVEMENT_REASONS)[number]
     ? true

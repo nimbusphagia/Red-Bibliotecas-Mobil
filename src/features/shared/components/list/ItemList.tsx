@@ -34,7 +34,11 @@ export function ItemList<T extends { id: number }>({
         onEndReachedThreshold={0.5}
         ListFooterComponent={loading ? <ActivityIndicator /> : undefined}
         ListEmptyComponent={
-          loading ? undefined : <Text variant="subtitle">Sin resultados</Text>
+          loading ? undefined : (
+            <Text variant="h3" className="text-secondary text-center pt-[10] ">
+              Sin resultados
+            </Text>
+          )
         }
       />
     </View>

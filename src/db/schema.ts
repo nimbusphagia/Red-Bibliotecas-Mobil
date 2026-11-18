@@ -45,6 +45,8 @@ export const COPY_STATUSES = [
 ] as const;
 export const PRINT_STATUSES = ["pending_print", "printed"] as const;
 export const MOVEMENT_TYPES = ["entry", "exit"] as const;
+export const ENTRY_REASONS = ["purchase", "donation", "other"] as const;
+export const EXIT_REASONS = ["loss", "damage", "discard"] as const;
 export const MOVEMENT_REASONS = [
   "purchase",
   "donation",
@@ -339,8 +341,10 @@ export const stockMovement = sqliteTable(
     notes: text("notes"),
   },
   (t) => [
-    check("ck_stock_movement_type", oneOf(t.type, MOVEMENT_TYPES)),
-    check("ck_stock_movement_reason", oneOf(t.reason, MOVEMENT_REASONS)),
+    check(
+      "ck_stock_movement_type_reason",
+      sql`(${t.type} = 'entry' AND ${oneOf(t.reason, ENTRY_REASONS)}) OR (${t.type} = 'exit' AND ${oneOf(t.reason, EXIT_REASONS)})`,
+    ),
   ],
 );
 
@@ -355,9 +359,11 @@ export const stockMovementLine = sqliteTable(
     copyId: integer("copy_id")
       .notNull()
       .references(() => copy.id),
+    loanLineId: integer("loan_line_id").references(() => loanMovementLine.id),
   },
   (t) => [
     unique("uq_stock_movement_line").on(t.movementId, t.copyId),
+    unique("uq_stock_movement_line_loan_line").on(t.loanLineId),
     index("idx_stock_movement_line_copy").on(t.copyId),
   ],
 );
