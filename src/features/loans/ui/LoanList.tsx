@@ -15,8 +15,8 @@ import type { SortDirection } from "@/features/shared/types/types";
 import { Link } from "expo-router";
 import { SquarePlus } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import ListHeader from "../ListHeader";
-import LoanRow from "./LoanRow";
+import ListHeader from "./ListHeader";
+import LoanRow from "./loans/list/LoanRow";
 
 const PAGE_SIZE = 20;
 

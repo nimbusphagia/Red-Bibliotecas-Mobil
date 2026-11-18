@@ -84,4 +84,5 @@ export type ReturnResult = {
   returned: number;
   damaged: ExitResult | null;
   lost: ExitResult | null;
+  discarded: ExitResult | null;
 };

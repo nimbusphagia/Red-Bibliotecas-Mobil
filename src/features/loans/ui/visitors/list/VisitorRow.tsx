@@ -20,7 +20,16 @@ export default function VisitorRow({ visitor, onEdit }: Props) {
             : undefined
         }
       />
-      <Column variant="subtitled" text={"1 / 2"} subtitle1="Libros devueltos" />
+      <Column
+        variant="subtitled"
+        text={`${visitor.returnedCount} / ${visitor.lineCount}`}
+        subtitle1="Libros devueltos"
+      />
+      <Column
+        variant="subtitled"
+        text={String(visitor.problemCount)}
+        subtitle1="Perdidos o dañados"
+      />
       <Column variant="actions" expand={false}>
         <Button
           variant="secondary"

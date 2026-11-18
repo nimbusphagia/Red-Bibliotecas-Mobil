@@ -7,9 +7,22 @@ import {
   toPage,
   type Reference,
 } from "@/db/helpers";
-import { loanMovement, schoolGrade, visitor } from "@/db/schema";
+import {
+  loanMovement,
+  loanMovementLine,
+  schoolGrade,
+  visitor,
+} from "@/db/schema";
+import {
+  and,
+  asc,
+  count,
+  eq,
+  getTableColumns,
+  inArray,
+  sql,
+} from "drizzle-orm";
 import type { Page } from "@/features/shared/types/types";
-import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import type {
   NewVisitor,
   Visitor,
@@ -18,6 +31,7 @@ import type {
   VisitorPatch,
   VisitorUsage,
 } from "./types";
+import { LineOutcome } from "../loan/types";
 
 const loans: Reference = {
   table: loanMovement,
@@ -29,12 +43,29 @@ export async function findVisitorById(id: number): Promise<Visitor | null> {
   return row ?? null;
 }
 
+const linesOf = (...outcomes: LineOutcome[]) =>
+  sql<number>`(${db
+    .select({ n: count() })
+    .from(loanMovementLine)
+    .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+    .where(
+      and(
+        eq(loanMovement.loanedToId, visitor.id),
+        outcomes.length
+          ? inArray(loanMovementLine.outcome, outcomes)
+          : undefined,
+      ),
+    )})`.mapWith(Number);
+
 const selectVisitors = () =>
   db
     .select({
       ...getTableColumns(visitor),
       grade: schoolGrade.grade,
       level: schoolGrade.level,
+      lineCount: linesOf(),
+      returnedCount: linesOf("returned", "returned_damaged"),
+      problemCount: linesOf("returned_damaged", "lost"),
     })
     .from(visitor)
     .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id));

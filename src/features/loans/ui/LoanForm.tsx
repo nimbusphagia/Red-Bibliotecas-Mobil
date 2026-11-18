@@ -23,12 +23,12 @@ import { cn, colors } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
-import CopyTable from "./loans/CopyTable";
+import CopyTable from "./loans/form/CopyTable";
 import {
   CopySearchDialog,
   NotesDialog,
   PickVisitorDialog,
-} from "./loans/LoanDialogs";
+} from "./loans/form/LoanDialogs";
 import { copyById, type LoanCopy } from "./options";
 import { Dot } from "lucide-react-native";
 

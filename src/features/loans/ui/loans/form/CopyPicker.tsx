@@ -11,7 +11,7 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { cn } from "@/features/shared/theme";
 import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { copyById, type LoanCopy } from "../options";
+import { copyById, type LoanCopy } from "../../options";
 import PickerBook from "./PickerBook";
 
 const PAGE_SIZE = 10;

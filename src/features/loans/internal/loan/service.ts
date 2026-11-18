@@ -196,11 +196,18 @@ export async function returnCopies(
         items.filter((i) => i.outcome === outcome).map((i) => i.copyId);
       const returned = idsOf("returned");
       const damaged = idsOf("returned_damaged");
-      const lost = idsOf("lost");
+
+      const lostItems = items.filter((i) => i.outcome === "lost");
+      const discarded = lostItems
+        .filter((i) => i.reason === "discard")
+        .map((i) => i.copyId);
+      const lost = lostItems
+        .filter((i) => i.reason !== "discard")
+        .map((i) => i.copyId);
 
       repo.resolveLinesSync(tx, returned, "returned", actorId);
       repo.resolveLinesSync(tx, damaged, "returned_damaged", actorId);
-      repo.resolveLinesSync(tx, lost, "lost", actorId);
+      repo.resolveLinesSync(tx, [...lost, ...discarded], "lost", actorId);
 
       setCopiesStatusSync(tx, returned, "available");
 
@@ -215,6 +222,7 @@ export async function returnCopies(
         returned: returned.length,
         damaged: exit("damage", damaged, "Returned damaged from loan"),
         lost: exit("loss", lost, "Lost on loan"),
+        discarded: exit("discard", discarded, "Irreparably damaged on loan"),
       };
     }),
   );

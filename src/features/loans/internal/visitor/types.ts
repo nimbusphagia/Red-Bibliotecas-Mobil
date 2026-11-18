@@ -22,6 +22,9 @@ export type VisitorPatch = Partial<{
 export type VisitorListItem = Visitor & {
   grade: number | null;
   level: (typeof GRADE_LEVELS)[number] | null;
+  lineCount: number;
+  returnedCount: number;
+  problemCount: number;
 };
 
 export type VisitorListFilters = ListFilters<VisitorSort> & {

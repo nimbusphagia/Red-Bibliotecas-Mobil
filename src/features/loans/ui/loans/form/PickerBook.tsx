@@ -6,7 +6,7 @@ import { colors } from "@/features/shared/theme";
 import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
-import { toLoanCopy, writersOf, type LoanCopy } from "../options";
+import { toLoanCopy, writersOf, type LoanCopy } from "../../options";
 
 const lendable = (c: CopyItem) =>
   c.status === "available" || c.status === "damaged";

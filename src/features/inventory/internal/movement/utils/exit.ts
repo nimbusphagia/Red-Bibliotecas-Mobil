@@ -33,7 +33,7 @@ function problemFor(
     case "damaged":
       return target === "damaged" ? "already_damaged" : null;
     case "on_loan":
-      return allowOnLoan && target !== "discarded" ? null : "on_loan";
+      return allowOnLoan ? null : "on_loan";
     case "lost":
       return "lost";
     case "discarded":

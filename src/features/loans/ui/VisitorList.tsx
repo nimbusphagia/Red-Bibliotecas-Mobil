@@ -17,9 +17,9 @@ import { colors } from "@/features/shared/theme";
 import type { SortDirection } from "@/features/shared/types/types";
 import { UserPlus } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import ListHeader from "../ListHeader";
-import VisitorDialog from "./VisitorDialog";
-import VisitorRow from "./VisitorRow";
+import ListHeader from "./ListHeader";
+import VisitorDialog from "./visitors/form/VisitorDialog";
+import VisitorRow from "./visitors/list/VisitorRow";
 
 const PAGE_SIZE = 20;
 

@@ -6,9 +6,9 @@ import {
   Text,
 } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
-import { Trash, X } from "lucide-react-native";
+import { Trash } from "lucide-react-native";
 import { View } from "react-native";
-import type { LoanCopy } from "../options";
+import type { LoanCopy } from "../../options";
 
 type Props = {
   copies: LoanCopy[];

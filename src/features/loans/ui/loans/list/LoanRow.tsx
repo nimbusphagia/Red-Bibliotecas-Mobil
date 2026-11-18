@@ -1,4 +1,9 @@
-import type { LoanListItem } from "@/features/loans/internal/loan/types";
+import { loanStateOf } from "@/features/loans/internal/loan/rules";
+import { LOAN_STATE_ES } from "@/features/shared/format/translate";
+import type {
+  LoanListItem,
+  LoanState,
+} from "@/features/loans/internal/loan/types";
 import { Button, Column, PillRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { formatDate, formatISO } from "@/features/shared/format/dates";
@@ -8,7 +13,15 @@ import { BookDown, ClockAlert, Eye } from "lucide-react-native";
 
 type Props = { loan: LoanListItem };
 
+const LOAN_BADGE: Record<LoanState, "active" | "pending" | "finished"> = {
+  open: "pending",
+  overdue: "active",
+  closed: "finished",
+};
+
 export default function LoanRow({ loan }: Props) {
+  const state = loanStateOf(loan);
+
   return (
     <PillRow className="gap-6">
       <Column text={`#${loan.id}`} variant="id" />
@@ -19,10 +32,7 @@ export default function LoanRow({ loan }: Props) {
         containerClass="max-w-[150]"
       />
       <Column variant="actions">
-        <StatusBadge
-          text={loan.overdue ? "Vencido" : "Activo"}
-          variant={"pending"}
-        />
+        <StatusBadge text={LOAN_STATE_ES[state]} variant={LOAN_BADGE[state]} />
       </Column>
 
       <Column
@@ -39,7 +49,11 @@ export default function LoanRow({ loan }: Props) {
         text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
         subtitle1="Devueltos"
       />
-      <Column variant="actions" expand={false}>
+      <Column
+        variant="actions"
+        expand={false}
+        containerClass="w-[104px] justify-end"
+      >
         <Link href={`/loans/${loan.id}`} asChild>
           <Button
             variant="secondary"

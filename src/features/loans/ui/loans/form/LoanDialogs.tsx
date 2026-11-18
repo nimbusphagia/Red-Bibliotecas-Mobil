@@ -7,9 +7,9 @@ import {
 } from "@/features/shared/components";
 import { useState } from "react";
 import { View } from "react-native";
-import { searchVisitors, type LoanCopy } from "../options";
+import { searchVisitors, type LoanCopy } from "../../options";
 import CopyPicker from "./CopyPicker";
-import VisitorForm from "../visitors/VisitorForm";
+import VisitorForm from "../../visitors/form/VisitorForm";
 
 export function PickVisitorDialog({
   value,

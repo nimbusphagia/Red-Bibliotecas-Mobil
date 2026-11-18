@@ -10,6 +10,7 @@ import {
   LabeledItem2,
   PageHeader,
   Section,
+  Text,
 } from "@/features/shared/components";
 import { formatDate, formatISO } from "@/features/shared/format/dates";
 import {
@@ -21,27 +22,21 @@ import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import LoanLines from "./detail/LoanLines";
-import { cn } from "@/features/shared/theme";
+import LoanLines from "./loans/detail/LoanLines";
+import { cn, colors } from "@/features/shared/theme";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
+import { Dot } from "lucide-react-native";
+import { useSession } from "@/features/account/internal/session";
+import { loanStateOf } from "../internal/loan/rules";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
 type Row = { label: string; content: string };
 
-const Rows = ({ rows, square }: { rows: Row[]; square?: boolean }) => (
+const Rows = ({ rows }: { rows: Row[] }) => (
   <View className="max-w-xl gap-2">
-    {rows.map((r) => (
+    {rows.map((r, i) => (
       <>
-        {square ? (
-          <LabeledItem2
-            key={r.label}
-            {...r}
-            labelClass="w-[40%] text-left"
-            contentClass="text-right"
-          />
-        ) : (
-          <LabeledItem key={r.label} {...r} labelClass="w-[40%] text-left" />
-        )}
+        <LabeledItem key={i} {...r} labelClass="w-[40%] text-left" />
       </>
     ))}
   </View>
@@ -49,32 +44,32 @@ const Rows = ({ rows, square }: { rows: Row[]; square?: boolean }) => (
 
 export default function LoanDetail({ id }: { id: string }) {
   const [data, setData] = useState<Data | null>(null);
+  const session = useSession();
   const { isExpanded } = useLayoutMode();
+
+  const load = useCallback(async () => {
+    const loanId = routeIdSchema.parse(id);
+    const loan = await getLoan(loanId);
+    const [page, visitor] = await Promise.all([
+      listLoanLines({ loanId, limit: 100 }),
+      getVisitorItem(loan.loanedToId),
+    ]);
+    setData({ loan, lines: page.items, visitor });
+  }, [id]);
 
   useFocusEffect(
     useCallback(() => {
-      const loanId = routeIdSchema.parse(id);
-      let cancelled = false;
-      getLoan(loanId)
-        .then(async (loan) => {
-          const [page, visitor] = await Promise.all([
-            listLoanLines({ loanId, limit: 100 }),
-            getVisitorItem(loan.loanedToId),
-          ]);
-          return { loan, lines: page.items, visitor };
-        })
-        .then((d) => !cancelled && setData(d));
-      return () => {
-        cancelled = true;
-      };
-    }, [id]),
+      load();
+    }, [load]),
   );
 
   if (!data) return <ActivityIndicator />;
+
+  if (session.status !== "signed-in") return null;
+
   const { loan, lines, visitor } = data;
 
-  const state =
-    loan.openCount === 0 ? "closed" : loan.overdue ? "overdue" : "open";
+  const state = loanStateOf(loan);
   const visitorRows: Row[] = [
     { label: "Nombre", content: visitor.name },
     { label: "Rol", content: ROLE_ES[visitor.role] },
@@ -97,7 +92,15 @@ export default function LoanDetail({ id }: { id: string }) {
 
   return (
     <>
-      <PageHeader title={`Prestamo #${loan.id}`} />
+      <PageHeader
+        title={`Prestamo #${loan.id}`}
+        lead={
+          <View className="flex-row gap-2 items-center">
+            <Dot size={16} strokeWidth={3} color={colors.primary} />
+            <Text variant="h3">{LOAN_STATE_ES[loanStateOf(loan)]}</Text>
+          </View>
+        }
+      />
       <ScrollView className="flex-1" contentContainerClassName="gap-6 p-4">
         <View className={cn("gap-6", isExpanded && "flex-row")}>
           <Section title="Prestado a" expand={isExpanded}>
@@ -107,8 +110,23 @@ export default function LoanDetail({ id }: { id: string }) {
             <Rows rows={rows} />
           </Section>
         </View>
-        <Section title="Ejemplares" expand>
-          <LoanLines lines={lines} />
+        <Section
+          title="Ejemplares"
+          expand
+          lead={
+            <View className="flex-row gap-2 items-center">
+              <Dot size={16} strokeWidth={3} color={colors.primary} />
+              <Text variant="h3" className="font-sans-semibold">
+                {loan.lineCount - loan.openCount} / {loan.lineCount}
+              </Text>
+            </View>
+          }
+        >
+          <LoanLines
+            lines={lines}
+            actorId={session.account.id}
+            onChanged={load}
+          />
         </Section>
       </ScrollView>
     </>

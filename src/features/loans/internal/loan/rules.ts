@@ -24,3 +24,10 @@ export function statusOf(counts: OpenCounts): VisitorLoanStatus {
     remaining: blocked ? 0 : Math.max(0, MAX_OPEN_COPIES - counts.open),
   };
 }
+import type { LoanListItem, LoanState } from "./types";
+
+export const loanStateOf = ({
+  overdue,
+  openCount,
+}: Pick<LoanListItem, "overdue" | "openCount">): LoanState =>
+  overdue ? "overdue" : openCount > 0 ? "open" : "closed";
