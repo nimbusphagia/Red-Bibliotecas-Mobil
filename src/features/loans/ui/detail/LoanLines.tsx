@@ -21,10 +21,7 @@ export default function LoanLines({ lines }: { lines: LoanLine[] }) {
           />
           <Column
             variant="subtitled"
-            containerClass="justify-center "
-            subtitle1={
-              (l.resolvedAt && ` · ${formatDate(l.resolvedAt)}`) ?? undefined
-            }
+            subtitle1={l.resolvedAt ? formatDate(l.resolvedAt) : undefined}
           >
             <StatusBadge
               text={l.outcome ? OUTCOME_ES[l.outcome] : "Pendiente"}

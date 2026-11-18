@@ -19,7 +19,7 @@ import {
 import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
-import { cn } from "@/features/shared/theme";
+import { cn, colors } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -30,6 +30,7 @@ import {
   PickVisitorDialog,
 } from "./loans/LoanDialogs";
 import { copyById, type LoanCopy } from "./options";
+import { Dot } from "lucide-react-native";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
@@ -108,21 +109,12 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
             title="Detalles"
             className={isExpanded ? "flex-1" : undefined}
           >
-            <View className="gap-2">
-              <FieldRow
-                label="Visitante *"
-                value={visitor?.label}
-                error={errors.fields.visitorId}
-                onPress={() => setEditing("visitor")}
-              />
-              {status && (
-                <Text variant="subtitle">
-                  {status.blocked
-                    ? `Bloqueado: ${status.overdue} ejemplares vencidos`
-                    : `${status.open} abiertos · puede llevar ${status.remaining} más`}
-                </Text>
-              )}
-            </View>
+            <FieldRow
+              label="Visitante *"
+              value={visitor?.label}
+              error={errors.fields.visitorId}
+              onPress={() => setEditing("visitor")}
+            />
             <LabeledItem
               label="Encargado"
               content={
@@ -148,20 +140,42 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
               content={formatDate(new Date())}
               labelClass="w-[110px]"
             />
+            {status && (
+              <View className="flex-row items-center justify-end">
+                {status.blocked ? (
+                  <Text variant="subtitle">
+                    Bloqueado: {status.overdue} ejemplares vencidos
+                  </Text>
+                ) : (
+                  <>
+                    <Text variant="subtitle">
+                      {status.open} prestamos activos
+                    </Text>
+                    <Dot color={colors.secondary} />
+                    <Text variant="subtitle">
+                      {status.remaining
+                        ? `Puede prestar ${status.remaining} más`
+                        : "Limite alcanzado"}
+                    </Text>
+                  </>
+                )}
+              </View>
+            )}
           </FormSection>
 
           <Divider vertical={isExpanded} />
 
           <FormSection
-            title="Ejemplares *"
+            title="Ejemplares"
             className={isExpanded ? "flex-1" : undefined}
+            lead={
+              <Button
+                variant="secondary"
+                title="Agregar"
+                onPress={() => setEditing("copies")}
+              />
+            }
           >
-            <Button
-              variant="secondary"
-              title="Agregar ejemplares"
-              className="self-start"
-              onPress={() => setEditing("copies")}
-            />
             <CopyTable
               copies={copies}
               error={errors.fields.copyIds}

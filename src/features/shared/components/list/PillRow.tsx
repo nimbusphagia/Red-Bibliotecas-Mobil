@@ -74,10 +74,10 @@ export function Column({
         </Text>
       )}
       {children}
-      {variant === "subtitled" && (
+      {variant === "subtitled" && !!(subtitle1 || subtitle2) && (
         <View className="flex-row justify-start items-center">
           <Text variant="subtitle">{subtitle1}</Text>
-          {subtitle1! && subtitle2 && <Dot color={colors.secondary} />}
+          {subtitle1 && subtitle2 && <Dot color={colors.secondary} />}
           <Text variant="subtitle">{subtitle2}</Text>
         </View>
       )}

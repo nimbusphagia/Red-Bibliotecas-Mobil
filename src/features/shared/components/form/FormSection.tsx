@@ -1,20 +1,24 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { View } from "react-native";
 import { cn } from "../../theme";
 import { Text } from "../base/Text";
 
-type Props = { title: string; className?: string };
+type Props = { title: string; lead?: ReactNode; className?: string };
 
 export function FormSection({
   title,
+  lead,
   className,
   children,
 }: PropsWithChildren<Props>) {
   return (
     <View className={cn("gap-4", className)}>
-      <Text variant="h1" className="font-sans-medium text-highlight">
-        {title}
-      </Text>
+      <View className="flex-row items-center justify-between">
+        <Text variant="h1" className="font-sans-medium text-highlight">
+          {title}
+        </Text>
+        {lead}
+      </View>
       {children}
     </View>
   );

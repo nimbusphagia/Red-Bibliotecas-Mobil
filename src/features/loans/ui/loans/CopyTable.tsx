@@ -6,7 +6,7 @@ import {
   Text,
 } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
-import { X } from "lucide-react-native";
+import { Trash, X } from "lucide-react-native";
 import { View } from "react-native";
 import type { LoanCopy } from "../options";
 
@@ -32,7 +32,7 @@ export default function CopyTable({ copies, error, onRemove }: Props) {
           <Column variant="actions" expand={false}>
             <Button
               variant="secondary"
-              icon={<X size={16} color={colors.highlight} />}
+              icon={<Trash size={14} strokeWidth={3} color={colors.primary} />}
               onPress={() => onRemove(c.id)}
             />
           </Column>

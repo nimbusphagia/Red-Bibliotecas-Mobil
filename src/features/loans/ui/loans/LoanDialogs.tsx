@@ -9,6 +9,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { searchVisitors, type LoanCopy } from "../options";
 import CopyPicker from "./CopyPicker";
+import VisitorForm from "../visitors/VisitorForm";
 
 export function PickVisitorDialog({
   value,
@@ -19,19 +20,31 @@ export function PickVisitorDialog({
   onChange: (option?: Option) => void;
   onClose: () => void;
 }) {
+  const [newName, setNewName] = useState<string | null>(null);
+  const pick = (option?: Option) => {
+    onChange(option);
+    onClose();
+  };
+
   return (
     <Dialog onClose={onClose}>
-      <SearchSelect
-        label="Visitante"
-        initiallyOpen
-        value={value}
-        onChange={(o) => {
-          onChange(o);
-          onClose();
-        }}
-        fetchOptions={searchVisitors}
-        placeholder="Buscar visitante..."
-      />
+      {newName === null ? (
+        <SearchSelect
+          label="Visitante"
+          initiallyOpen
+          value={value}
+          onChange={pick}
+          fetchOptions={searchVisitors}
+          placeholder="Buscar visitante..."
+          onCreate={setNewName}
+        />
+      ) : (
+        <VisitorForm
+          initialName={newName}
+          onCancel={() => setNewName(null)}
+          onSaved={(v) => pick({ id: v.id, label: v.name })}
+        />
+      )}
     </Dialog>
   );
 }

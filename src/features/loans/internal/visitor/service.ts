@@ -4,8 +4,12 @@ import {
   makeRemove,
   makeUpdate,
 } from "@/features/catalog/internal/_shared/service";
-import { ValidationError } from "@/features/shared/errors/errors";
 import { searchKey } from "@/features/shared/format/text";
+import {
+  NotFoundError,
+  ValidationError,
+} from "@/features/shared/errors/errors";
+import { idSchema } from "@/features/shared/types/schemas";
 import type { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
 import * as repo from "./repository";
@@ -37,6 +41,12 @@ export async function listVisitors(
   params: VisitorListParams = {},
 ): Promise<Page<VisitorListItem>> {
   return repo.listVisitors(parseOrThrow(listVisitorsSchema, params));
+}
+
+export async function getVisitorItem(id: number): Promise<VisitorListItem> {
+  const found = await repo.findVisitorItemById(parseOrThrow(idSchema, id));
+  if (!found) throw new NotFoundError(ENTITY, id);
+  return found;
 }
 
 export const createVisitor = makeCreate({

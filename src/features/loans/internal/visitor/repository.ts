@@ -29,6 +29,23 @@ export async function findVisitorById(id: number): Promise<Visitor | null> {
   return row ?? null;
 }
 
+const selectVisitors = () =>
+  db
+    .select({
+      ...getTableColumns(visitor),
+      grade: schoolGrade.grade,
+      level: schoolGrade.level,
+    })
+    .from(visitor)
+    .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id));
+
+export async function findVisitorItemById(
+  id: number,
+): Promise<VisitorListItem | null> {
+  const [row] = await selectVisitors().where(eq(visitor.id, id));
+  return row ?? null;
+}
+
 export async function listVisitors(
   filters: VisitorListFilters,
 ): Promise<Page<VisitorListItem>> {
@@ -47,14 +64,7 @@ export async function listVisitors(
   ];
 
   const [items, [{ n }]] = await Promise.all([
-    db
-      .select({
-        ...getTableColumns(visitor),
-        grade: schoolGrade.grade,
-        level: schoolGrade.level,
-      })
-      .from(visitor)
-      .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id))
+    selectVisitors()
       .where(where)
       .orderBy(
         direction(sortDir)(sortKey),
