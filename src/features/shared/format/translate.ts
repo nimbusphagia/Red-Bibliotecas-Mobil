@@ -2,6 +2,10 @@ import { CopyStatus } from "@/features/inventory/internal/copy/types";
 import type { VisitorRole } from "@/features/loans/internal/visitor/types";
 import type { GRADE_LEVELS } from "@/db/schema";
 import { LineOutcome, LoanState } from "@/features/loans/internal/loan/types";
+import {
+  MovementReason,
+  MovementType,
+} from "@/features/inventory/internal/movement/types";
 
 export const COPY_STATUS_ES: Record<CopyStatus, string> = {
   available: "Disponible",
@@ -36,4 +40,17 @@ export const LOAN_STATE_ES: Record<LoanState, string> = {
   open: "Activo",
   overdue: "Vencido",
   closed: "Devuelto",
+};
+export const MOVEMENT_TYPE_ES: Record<MovementType, string> = {
+  entry: "Entrada",
+  exit: "Salida",
+};
+
+export const MOVEMENT_REASON_ES: Record<MovementReason, string> = {
+  purchase: "Compra",
+  donation: "Donación",
+  loss: "Pérdida",
+  damage: "Daño",
+  discard: "Descarte",
+  other: "Otro",
 };

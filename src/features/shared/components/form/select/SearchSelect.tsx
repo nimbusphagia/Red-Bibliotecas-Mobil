@@ -97,7 +97,7 @@ export function SearchSelect({
       )}
 
       {isOpen && (
-        <View className="max-h-[240] overflow-hidden rounded-[30] bg-fg2">
+        <View className="max-h-[240] overflow-hidden rounded-lg bg-fg2">
           <ScrollView
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"
@@ -106,15 +106,17 @@ export function SearchSelect({
             {value && (
               <Pressable
                 onPress={() => pick(undefined)}
-                className="border-b border-fg1 px-4 py-2"
+                className="border-b border-fg1 px-4 py-3"
               >
-                <Text variant="subtitle">Quitar</Text>
+                <Text variant="subtitle" className="font-sans-semibold">
+                  Quitar filtro
+                </Text>
               </Pressable>
             )}
             {canCreate && (
               <Pressable
                 onPress={create}
-                className="border-b border-fg1 px-4 py-2"
+                className="border-b border-fg1 px-4 py-3"
               >
                 <Text
                   variant="subtitle"
@@ -125,7 +127,7 @@ export function SearchSelect({
               </Pressable>
             )}
             {options.length === 0 && (
-              <Text variant="subtitle" className="px-4 py-3">
+              <Text variant="subtitle" className="px-4 py-3 text-center">
                 Sin resultados
               </Text>
             )}
@@ -136,7 +138,7 @@ export function SearchSelect({
                 <Pressable
                   key={o.id}
                   onPress={() => pick(o)}
-                  className={cn("px-4 py-2", separatorClass)}
+                  className={cn("px-4 py-3", separatorClass)}
                 >
                   <Text variant="subtitle" className="font-semibold">
                     {o.label}

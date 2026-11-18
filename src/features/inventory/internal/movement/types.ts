@@ -4,6 +4,8 @@ import type { CopyStatus, ReleasedStatus } from "../copy/types";
 import type { ENTRY_REASONS, EXIT_REASONS, MovementSort } from "./schemas";
 
 export type StockMovement = typeof stockMovement.$inferSelect;
+export type MovementType = StockMovement["type"];
+export type MovementReason = StockMovement["reason"];
 export type EntryReason = (typeof ENTRY_REASONS)[number];
 export type ExitReason = (typeof EXIT_REASONS)[number];
 

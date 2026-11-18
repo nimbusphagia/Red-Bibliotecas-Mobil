@@ -2,23 +2,22 @@ import { View } from "react-native";
 import { cn } from "../../../theme";
 import { Text } from "../../base/Text";
 import { Chip } from "./Chip";
-import type { Option } from "./option";
 
-type SimpleProps = {
+type SimpleProps<V extends string | number> = {
   label: string;
-  options: Option[];
-  value?: number;
-  onChange: (id?: number) => void;
+  options: { id: V; label: string }[];
+  value?: V;
+  onChange: (id?: V) => void;
   disabled?: boolean;
 };
 
-export function SimpleSelect({
+export function SimpleSelect<V extends string | number>({
   label,
   options,
   value,
   onChange,
   disabled,
-}: SimpleProps) {
+}: SimpleProps<V>) {
   return (
     <View className={cn("gap-3", disabled && "opacity-50")}>
       <Text variant="h3">{label}</Text>
