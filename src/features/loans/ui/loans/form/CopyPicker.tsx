@@ -62,7 +62,7 @@ export default function CopyPicker({ selected, onToggle, className }: Props) {
           className="w-28"
           value={idText}
           onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
-          placeholder="ID"
+          placeholder="#ID"
         />
         <FilterPanel
           filters={filters}

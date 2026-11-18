@@ -10,8 +10,8 @@ type Props = {
 
 export function SidebarItem({ item, active }: Props) {
   const [iconColor, bgColor, activeClass] = active
-    ? [colors.fg1, "bg-highlight", "shadow-md shadow-highlight/80 opacity-100"]
-    : [colors.highlight, "bg-fg2 border border-fg1", "shadow-none opacity-100"];
+    ? [colors.fg1, "bg-primary", "shadow-md shadow-highlight/80 opacity-100"]
+    : [colors.primary, "bg-fg1", "shadow-none opacity-100"];
   return (
     <Link href={item.href} asChild>
       <Pressable
@@ -22,7 +22,7 @@ export function SidebarItem({ item, active }: Props) {
                     rounded-full size-[44] 
                     ${bgColor} ${activeClass}`}
       >
-        <item.icon color={iconColor} strokeWidth={1.5} />
+        <item.icon color={iconColor} strokeWidth={2} />
       </Pressable>
     </Link>
   );

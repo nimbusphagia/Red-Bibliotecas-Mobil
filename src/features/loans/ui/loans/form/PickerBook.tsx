@@ -45,15 +45,15 @@ export default function PickerBook({
         className="flex-row items-center gap-4"
       >
         <View className="flex-1">
-          <Text variant="h3" className="text-highlight">
-            {book.title}
-          </Text>
+          <Text variant="h3">{book.title}</Text>
           <View className="flex-row items-center">
             <Text variant="subtitle" className="text-primary">
               {writersOf(book)}
             </Text>
-            <Dot size={16} color={colors.secondary} />
-            <Text variant="subtitle">{book.availableCount}</Text>
+            <Dot size={16} color={colors.primary} />
+            <Text variant="subtitle" className="text-primary">
+              {book.availableCount}
+            </Text>
           </View>
         </View>
         <Chevron size={18} color={colors.secondary} strokeWidth={3} />

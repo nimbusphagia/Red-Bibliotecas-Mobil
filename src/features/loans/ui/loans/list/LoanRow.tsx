@@ -10,6 +10,7 @@ import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookDown, ClockAlert, Eye } from "lucide-react-native";
+import { View } from "react-native";
 
 type Props = { loan: LoanListItem };
 
@@ -29,11 +30,13 @@ export default function LoanRow({ loan }: Props) {
         variant="subtitled"
         text={loan.visitorName}
         subtitle1={formatDate(loan.createdAt)}
-        containerClass="max-w-[150]"
       />
-      <Column variant="actions">
-        <StatusBadge text={LOAN_STATE_ES[state]} variant={LOAN_BADGE[state]} />
-      </Column>
+
+      <Column
+        variant="subtitled"
+        text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
+        subtitle1="Devueltos"
+      />
 
       <Column
         variant="subtitled"
@@ -45,27 +48,29 @@ export default function LoanRow({ loan }: Props) {
         )}
       </Column>
       <Column
-        variant="subtitled"
-        text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
-        subtitle1="Devueltos"
-      />
-      <Column
         variant="actions"
         expand={false}
-        containerClass="w-[104px] justify-end"
+        containerClass="w-[120px] justify-end"
       >
+        {loan.openCount > 0 ? (
+          <Link href={`/loans/${loan.id}`} asChild>
+            <Button
+              variant="primary"
+              icon={<BookDown size={16} strokeWidth={2.5} color={colors.bg} />}
+            />
+          </Link>
+        ) : (
+          <StatusBadge
+            text={LOAN_STATE_ES[state]}
+            variant={LOAN_BADGE[state]}
+          />
+        )}
         <Link href={`/loans/${loan.id}`} asChild>
           <Button
             variant="secondary"
-            icon={<Eye size={18} color={colors.highlight} />}
+            icon={<Eye size={16} strokeWidth={2.5} color={colors.primary} />}
           />
         </Link>
-        {loan.openCount > 0 && (
-          <Button
-            variant="secondary"
-            icon={<BookDown size={18} color={colors.highlight} />}
-          />
-        )}
       </Column>
     </PillRow>
   );

@@ -35,5 +35,5 @@ export const OUTCOME_ES: Record<LineOutcome, string> = {
 export const LOAN_STATE_ES: Record<LoanState, string> = {
   open: "Activo",
   overdue: "Vencido",
-  closed: "Finalizado",
+  closed: "Devuelto",
 };

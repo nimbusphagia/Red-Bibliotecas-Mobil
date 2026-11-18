@@ -71,8 +71,7 @@ export default function VisitorList() {
         title="Visitantes"
         create={
           <Button
-            variant="highlight"
-            title="Nuevo"
+            title="Agregar"
             icon={<UserPlus size={18} color={colors.bg} />}
             onPress={() => setDialog({})}
           />

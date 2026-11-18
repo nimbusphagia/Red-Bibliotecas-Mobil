@@ -10,7 +10,7 @@ export function PageHeader({
   children,
 }: PropsWithChildren<Props>) {
   return (
-    <View className="flex-row items-center gap-5 px-4">
+    <View className="flex-row items-center gap-5 px-4 pb-3">
       <Text className="text-highlight text-[24px] font-sans-semibold">
         {title}
       </Text>

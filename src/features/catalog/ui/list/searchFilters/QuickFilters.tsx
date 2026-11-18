@@ -71,7 +71,7 @@ export default function QuickFilters({ filters, onOpen }: Props) {
           <Button
             key={field}
             title={label}
-            variant={active ? "highlight" : "secondary"}
+            variant={active ? "primary" : "secondary"}
             onPress={() => onOpen(field)}
           />
         ))}

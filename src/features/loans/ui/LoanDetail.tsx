@@ -6,8 +6,8 @@ import type {
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
-  LabeledItem,
-  LabeledItem2,
+  DetailRow,
+  DetailRows,
   PageHeader,
   Section,
   Text,
@@ -30,15 +30,6 @@ import { useSession } from "@/features/account/internal/session";
 import { loanStateOf } from "../internal/loan/rules";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
-type Row = { label: string; content: string };
-
-const Rows = ({ rows }: { rows: Row[] }) => (
-  <View className="max-w-xl gap-2">
-    {rows.map((r, i) => (
-      <LabeledItem key={i} {...r} labelClass="w-[40%] text-left" />
-    ))}
-  </View>
-);
 
 export default function LoanDetail({ id }: { id: string }) {
   const [data, setData] = useState<Data | null>(null);
@@ -68,7 +59,7 @@ export default function LoanDetail({ id }: { id: string }) {
   const { loan, lines, visitor } = data;
 
   const state = loanStateOf(loan);
-  const visitorRows: Row[] = [
+  const visitorRows: DetailRow[] = [
     { label: "Nombre", content: visitor.name },
     { label: "Rol", content: ROLE_ES[visitor.role] },
     ...(visitor.role === "student"
@@ -80,7 +71,7 @@ export default function LoanDetail({ id }: { id: string }) {
         ]
       : []),
   ];
-  const rows: Row[] = [
+  const rows: DetailRow[] = [
     { label: "Estado", content: LOAN_STATE_ES[state] },
     { label: "Encargado", content: loan.loanedByUsername },
     { label: "Inicio", content: formatDate(loan.createdAt) },
@@ -102,10 +93,10 @@ export default function LoanDetail({ id }: { id: string }) {
       <ScrollView className="flex-1" contentContainerClassName="gap-6 p-4">
         <View className={cn("gap-6", isExpanded && "flex-row")}>
           <Section title="Prestado a" expand={isExpanded}>
-            <Rows rows={visitorRows} />
+            <DetailRows rows={visitorRows} />
           </Section>
           <Section title="Detalles" expand={isExpanded}>
-            <Rows rows={rows} />
+            <DetailRows rows={rows} />
           </Section>
         </View>
         <Section
@@ -122,6 +113,7 @@ export default function LoanDetail({ id }: { id: string }) {
         >
           <LoanLines
             lines={lines}
+            expiresBy={formatISO(loan.expiresBy)}
             actorId={session.account.id}
             onChanged={load}
           />

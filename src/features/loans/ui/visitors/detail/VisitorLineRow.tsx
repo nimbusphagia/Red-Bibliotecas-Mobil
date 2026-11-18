@@ -10,24 +10,31 @@ import { Eye } from "lucide-react-native";
 export default function VisitorLineRow({ line }: { line: VisitorLine }) {
   return (
     <PillRow>
-      <Column variant="id" text={`#${line.copyId}`} />
+      <Column variant="id" text={`#${line.loanId}`} />
       <Column
         variant="subtitled"
         text={line.bookTitle}
-        subtitle1={`Préstamo #${line.loanId}`}
-        subtitle2={formatDate(line.createdAt)}
+        subtitle1={formatDate(line.createdAt)}
       />
-      <Column text={line.labelText ?? undefined} textClass="text-[14px]" />
       <Column
         variant="subtitled"
-        subtitle1={line.resolvedAt ? formatDate(line.resolvedAt) : undefined}
+        text={line.labelText ?? undefined}
+        textClass="text-[14px]"
+      />
+      <Column
+        variant="subtitled"
+        text={line.resolvedAt ? formatDate(line.resolvedAt) : "---"}
+        subtitle1="Finalizó"
+      />
+      <Column
+        variant="actions"
+        expand={false}
+        containerClass="w-[200] justify-end"
       >
         <StatusBadge
           text={line.outcome ? OUTCOME_ES[line.outcome] : "Pendiente"}
           variant={line.outcome ? "active" : "pending"}
         />
-      </Column>
-      <Column variant="actions" expand={false}>
         <Link href={`/loans/${line.loanId}`} asChild>
           <Button
             variant="secondary"

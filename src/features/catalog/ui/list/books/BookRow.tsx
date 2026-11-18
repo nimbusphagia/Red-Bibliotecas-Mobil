@@ -34,13 +34,10 @@ export default function BookRow({ book }: Props) {
           <Link href={`/catalog/${book.id}`} asChild>
             <Button
               variant="secondary"
-              icon={<Eye size={18} color={colors.highlight} />}
+              icon={<Eye size={18} color={colors.primary} />}
             />
           </Link>
-          <Button
-            variant="highlight"
-            icon={<BookUp size={18} color={colors.bg} />}
-          />
+          <Button icon={<BookUp size={18} color={colors.bg} />} />
         </>
       </Column>
     </PillRow>

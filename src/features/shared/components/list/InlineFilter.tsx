@@ -18,7 +18,7 @@ export function InlineFilter<V extends string>({
         <Button
           key={o.value}
           title={o.label}
-          variant={o.value === value ? "highlight" : "secondary"}
+          variant={o.value === value ? "primary" : "secondary"}
           onPress={() => onChange(o.value)}
         />
       ))}

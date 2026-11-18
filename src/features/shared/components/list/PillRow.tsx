@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { cn, colors } from "../../theme";
-import { Text, TextVariant } from "../base/Text";
+import { Text } from "../base/Text";
 import { PropsWithChildren, ReactNode } from "react";
 import { Dot } from "lucide-react-native";
 

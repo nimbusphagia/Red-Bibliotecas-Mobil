@@ -1,27 +1,36 @@
 import type { LineStatus } from "@/features/loans/internal/loan/schemas";
-import { listVisitorLines } from "@/features/loans/internal/loan/service";
+import {
+  getVisitorLoanStatus,
+  listVisitorLines,
+} from "@/features/loans/internal/loan/service";
+import type { VisitorLoanStatus } from "@/features/loans/internal/loan/types";
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
+  DetailRows,
   InlineFilter,
   InlineSort,
   ItemList,
   PageHeader,
-  Text,
+  Section,
+  type DetailRow,
   type SortOption,
 } from "@/features/shared/components";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
+import { cn } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import VisitorLineRow from "./visitors/detail/VisitorLineRow";
 
 const PAGE_SIZE = 20;
 
 type Filter = "all" | LineStatus;
+type Data = { visitor: VisitorListItem; status: VisitorLoanStatus };
 
 const FILTERS: { value: Filter; label: string }[] = [
   { value: "all", label: "Todos" },
@@ -37,13 +46,17 @@ const SORTS: SortOption<"createdAt">[] = [
 
 export default function VisitorDetail({ id }: { id: string }) {
   const visitorId = routeIdSchema.parse(id);
-  const [visitor, setVisitor] = useState<VisitorListItem | null>(null);
+  const { isExpanded } = useLayoutMode();
+  const [data, setData] = useState<Data | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");
 
   useFocusEffect(
     useCallback(() => {
-      getVisitorItem(visitorId).then(setVisitor);
+      Promise.all([
+        getVisitorItem(visitorId),
+        getVisitorLoanStatus(visitorId),
+      ]).then(([visitor, status]) => setData({ visitor, status }));
     }, [visitorId]),
   );
 
@@ -61,41 +74,63 @@ export default function VisitorDetail({ id }: { id: string }) {
 
   const list = useInfiniteList(fetchPage);
 
-  if (!visitor) return <ActivityIndicator />;
+  if (!data) return <ActivityIndicator />;
+
+  const { visitor, status } = data;
+
+  const detailRows: DetailRow[] = [
+    { label: "Nombre", content: visitor.name },
+    { label: "Rol", content: ROLE_ES[visitor.role] },
+    ...(visitor.role === "student"
+      ? [
+          {
+            label: "Grado",
+            content: gradeLabel(visitor.grade!, visitor.level!),
+          },
+        ]
+      : []),
+  ];
+  const summaryRows: DetailRow[] = [
+    { label: "Activos", content: String(status.open) },
+    { label: "Total prestados", content: String(visitor.lineCount) },
+    { label: "Prestamos vencidos", content: String(status.overdue) },
+    { label: "Infracciones", content: String(visitor.problemCount) },
+  ];
 
   return (
     <>
-      <PageHeader
-        title={visitor.name}
-        lead={
-          <Text variant="subtitle">
-            {ROLE_ES[visitor.role]}
-            {visitor.role === "student" &&
-              ` · ${gradeLabel(visitor.grade!, visitor.level!)}`}
-          </Text>
-        }
-      />
-      <ItemList
-        toolbar={
-          <>
-            <InlineFilter
-              options={FILTERS}
-              value={filter}
-              onChange={setFilter}
-            />
-            <InlineSort
-              options={SORTS}
-              sortBy="createdAt"
-              sortDir={sortDir}
-              onChange={(_, dir) => setSortDir(dir)}
-            />
-          </>
-        }
-        items={list.items}
-        loading={list.loading}
-        onEndReached={list.loadMore}
-        renderItem={(line) => <VisitorLineRow line={line} />}
-      />
+      <PageHeader title={`${visitor.name}`} />
+      <View className={cn("gap-6 px-4", isExpanded && "flex-row")}>
+        <Section title="Detalles" expand={isExpanded}>
+          <DetailRows rows={detailRows} />
+        </Section>
+        <Section title="Resumen" expand={isExpanded}>
+          <DetailRows rows={summaryRows} />
+        </Section>
+      </View>
+      <Section title="Historial de Prestamos" expand className="px-4">
+        <ItemList
+          toolbar={
+            <>
+              <InlineFilter
+                options={FILTERS}
+                value={filter}
+                onChange={setFilter}
+              />
+              <InlineSort
+                options={SORTS}
+                sortBy="createdAt"
+                sortDir={sortDir}
+                onChange={(_, dir) => setSortDir(dir)}
+              />
+            </>
+          }
+          items={list.items}
+          loading={list.loading}
+          onEndReached={list.loadMore}
+          renderItem={(line) => <VisitorLineRow line={line} />}
+        />
+      </Section>
     </>
   );
 }

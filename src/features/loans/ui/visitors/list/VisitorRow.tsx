@@ -21,28 +21,18 @@ export default function VisitorRow({ visitor, onEdit }: Props) {
             : undefined
         }
       />
-      <Column
-        variant="subtitled"
-        text={String(visitor.pendingCount)}
-        subtitle1="Pendiente"
-      />
-      <Column
-        variant="subtitled"
-        text={String(visitor.problemCount)}
-        subtitle1="Perdidos o dañados"
-      />
       <Column variant="actions" expand={false}>
+        <Button
+          variant="secondary"
+          icon={<Pencil size={16} color={colors.highlight} strokeWidth={2} />}
+          onPress={onEdit}
+        />
         <Link href={`/visitors/${visitor.id}`} asChild>
           <Button
             variant="secondary"
-            icon={<Eye size={16} color={colors.highlight} />}
+            icon={<Eye size={16} color={colors.highlight} strokeWidth={2} />}
           />
         </Link>
-        <Button
-          variant="secondary"
-          icon={<Pencil size={16} color={colors.highlight} />}
-          onPress={onEdit}
-        />
       </Column>
     </PillRow>
   );

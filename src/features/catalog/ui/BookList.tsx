@@ -63,7 +63,6 @@ export default function BookList() {
           <>
             <QuickFilters filters={filters} onOpen={setDialog} />
             <View className="flex-row items-center gap-4">
-              <View className="w-px self-stretch bg-fg1" />
               <InlineSort
                 options={SORTS}
                 sortBy={sort.by}

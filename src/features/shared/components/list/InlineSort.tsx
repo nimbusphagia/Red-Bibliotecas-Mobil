@@ -33,7 +33,7 @@ export function InlineSort<K extends string>({
           <Button
             key={key}
             title={label}
-            variant={selected ? "highlight" : "secondary"}
+            variant={selected ? "primary" : "secondary"}
             className="gap-1"
             icon={
               selected ? (

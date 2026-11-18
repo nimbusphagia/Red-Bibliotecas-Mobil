@@ -13,7 +13,7 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { colors } from "@/features/shared/theme";
 import type { SortDirection } from "@/features/shared/types/types";
 import { Link } from "expo-router";
-import { SquarePlus } from "lucide-react-native";
+import { BookUp, SquarePlus } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import ListHeader from "./ListHeader";
 import LoanRow from "./loans/list/LoanRow";
@@ -36,7 +36,7 @@ const SORTS: SortOption<LoanSort>[] = [
 
 export default function LoanList() {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>("open");
   const [sort, setSort] = useState<{ by: LoanSort; dir: SortDirection }>({
     by: "createdAt",
     dir: "desc",
@@ -66,9 +66,8 @@ export default function LoanList() {
         create={
           <Link href="/loans/new" asChild>
             <Button
-              variant="highlight"
-              title="Nuevo"
-              icon={<SquarePlus size={18} color={colors.bg} />}
+              title="Prestar"
+              icon={<BookUp size={18} color={colors.bg} />}
             />
           </Link>
         }
