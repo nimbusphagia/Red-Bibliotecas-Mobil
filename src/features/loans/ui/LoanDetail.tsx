@@ -28,6 +28,7 @@ import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { Dot } from "lucide-react-native";
 import { useSession } from "@/features/account/internal/session";
 import { loanStateOf } from "../internal/loan/rules";
+import { loanDetailRows } from "./loans/detail/loanRows";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
 
@@ -58,7 +59,6 @@ export default function LoanDetail({ id }: { id: string }) {
 
   const { loan, lines, visitor } = data;
 
-  const state = loanStateOf(loan);
   const visitorRows: DetailRow[] = [
     { label: "Nombre", content: visitor.name },
     { label: "Rol", content: ROLE_ES[visitor.role] },
@@ -70,13 +70,6 @@ export default function LoanDetail({ id }: { id: string }) {
           },
         ]
       : []),
-  ];
-  const rows: DetailRow[] = [
-    { label: "Estado", content: LOAN_STATE_ES[state] },
-    { label: "Encargado", content: loan.loanedByUsername },
-    { label: "Inicio", content: formatDate(loan.createdAt) },
-    { label: "Fecha de devolucion", content: formatISO(loan.expiresBy) },
-    { label: "Notas", content: loan.notes ?? "---" },
   ];
 
   return (
@@ -96,7 +89,7 @@ export default function LoanDetail({ id }: { id: string }) {
             <DetailRows rows={visitorRows} />
           </Section>
           <Section title="Detalles" expand={isExpanded}>
-            <DetailRows rows={rows} />
+            <DetailRows rows={loanDetailRows(loan)} />
           </Section>
         </View>
         <Section

@@ -5,12 +5,10 @@ import {
   book,
   copy,
   label,
-  loanMovement,
   loanMovementLine,
   shelf,
   stockMovement,
   stockMovementLine,
-  visitor,
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
@@ -135,8 +133,7 @@ export async function listMovementLines(
         shelfId: copy.shelfId,
         shelfName: shelf.name,
         labelText: label.text,
-        loanId: loanMovement.id,
-        visitorName: visitor.name,
+        loanId: loanMovementLine.movementId,
       })
       .from(stockMovementLine)
       .innerJoin(copy, eq(copy.id, stockMovementLine.copyId))
@@ -147,8 +144,6 @@ export async function listMovementLines(
         loanMovementLine,
         eq(loanMovementLine.id, stockMovementLine.loanLineId),
       )
-      .leftJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
-      .leftJoin(visitor, eq(visitor.id, loanMovement.loanedToId))
       .where(where)
       .orderBy(asc(book.titleKey), asc(copy.copyNumber), asc(copy.id))
       .limit(page.limit)

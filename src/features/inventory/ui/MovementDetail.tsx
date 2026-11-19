@@ -1,15 +1,18 @@
+import { getLoan } from "@/features/loans/internal/loan/service";
+import type { LoanListItem } from "@/features/loans/internal/loan/types";
+import { loanDetailRows } from "@/features/loans/ui/loans/detail/loanRows";
 import {
   getMovement,
   listMovementLines,
 } from "@/features/inventory/internal/movement/service";
 import type { MovementListItem } from "@/features/inventory/internal/movement/types";
 import {
-  DetailRows,
+  Button,
+  DetailColumns,
   ItemList,
   PageHeader,
-  Section,
   Text,
-  type DetailRow,
+  type DetailColumn,
 } from "@/features/shared/components";
 import { formatDate } from "@/features/shared/format/dates";
 import {
@@ -17,7 +20,10 @@ import {
   MOVEMENT_TYPE_ES,
 } from "@/features/shared/format/translate";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import { colors } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
+import { Link } from "expo-router";
+import { Eye } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import MovementLineRow from "./movements/detail/MovementLineRow";
@@ -27,6 +33,7 @@ const PAGE_SIZE = 20;
 export default function MovementDetail({ id }: { id: string }) {
   const movementId = routeIdSchema.parse(id);
   const [movement, setMovement] = useState<MovementListItem | null>(null);
+  const [loan, setLoan] = useState<LoanListItem | null>(null);
 
   useEffect(() => {
     getMovement(movementId).then(setMovement);
@@ -40,32 +47,77 @@ export default function MovementDetail({ id }: { id: string }) {
 
   const list = useInfiniteList(fetchPage);
 
+  const loanLine = list.items.find((l) => l.loanId !== null);
+  const loanId = loanLine?.loanId ?? null;
+
+  useEffect(() => {
+    if (loanId === null) {
+      setLoan(null);
+      return;
+    }
+    getLoan(loanId).then(setLoan);
+  }, [loanId]);
+
   if (!movement) return <ActivityIndicator />;
 
-  const rows: DetailRow[] = [
-    { label: "Tipo", content: MOVEMENT_TYPE_ES[movement.type] },
-    { label: "Motivo", content: MOVEMENT_REASON_ES[movement.reason] },
-    { label: "Firmado por", content: movement.signedByUsername },
-    { label: "Fecha", content: formatDate(movement.createdAt) },
-    { label: "Ejemplares", content: String(movement.copyCount) },
-    { label: "Notas", content: movement.notes ?? "---" },
+  const columns: DetailColumn[] = [
+    {
+      title: "Detalles",
+      variant: "box",
+      rows: [
+        { label: "Motivo", content: MOVEMENT_REASON_ES[movement.reason] },
+        { label: "Firmado por", content: movement.signedByUsername },
+        { label: "Fecha", content: formatDate(movement.createdAt) },
+        { label: "Ejemplares", content: String(movement.copyCount) },
+        { label: "Notas", content: movement.notes ?? "---" },
+      ],
+    },
   ];
+
+  if (loan && loanLine) {
+    columns.push({
+      title: "Préstamo",
+      lead: (
+        <Link href={`/loans/${loan.id}`} asChild>
+          <Button
+            variant="secondary"
+            className="bg-fg2 border-fg2 min-h-8"
+            icon={<Eye size={16} strokeWidth={2.5} color={colors.primary} />}
+          />
+        </Link>
+      ),
+      rows: [
+        { label: "Prestado a", content: loan.visitorName },
+        {
+          label: "Ejemplar",
+          content: `${loanLine.bookTitle} #${loanLine.copyId}`,
+        },
+        ...loanDetailRows(loan, { withState: false }),
+      ],
+    });
+  }
 
   return (
     <>
-      <PageHeader title={`Movimiento #${movement.id}`} />
-      <View className="p-4">
-        <Section title="Detalles">
-          <DetailRows rows={rows} />
-        </Section>
-      </View>
-      <ItemList
-        toolbar={<Text variant="h2">Ejemplares</Text>}
-        items={list.items}
-        loading={list.loading}
-        onEndReached={list.loadMore}
-        renderItem={(line) => <MovementLineRow line={line} />}
+      <PageHeader
+        title={`Movimiento #${movement.id}`}
+        lead={<Text variant="h3">{MOVEMENT_TYPE_ES[movement.type]}</Text>}
       />
+      <View className="px-4">
+        <DetailColumns columns={columns} />
+      </View>
+      {!loanLine && (
+        <ItemList
+          columns={2}
+          toolbar={<Text variant="h2">Ejemplares</Text>}
+          items={list.items}
+          loading={list.loading}
+          onEndReached={list.loadMore}
+          renderItem={(line) => (
+            <MovementLineRow line={line} movementType={movement.type} />
+          )}
+        />
+      )}
     </>
   );
 }

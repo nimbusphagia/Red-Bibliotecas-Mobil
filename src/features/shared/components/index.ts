@@ -18,6 +18,7 @@ export { SimpleSelect } from "./form/select/SimpleSelect";
 export { LabeledItem } from "./list/LabeledItem";
 export { LabeledItem2 } from "./list/LabeledItem2";
 export { DetailRows, type DetailRow } from "./list/DetailRows";
+export { DetailColumns, type DetailColumn } from "./list/DetailColumns";
 export { PillRow, Column } from "./list/PillRow";
 export { FieldError } from "./form/FieldError";
 export { InlineFilter } from "./list/InlineFilter";

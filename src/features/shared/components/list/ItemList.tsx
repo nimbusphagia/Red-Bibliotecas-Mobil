@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { ActivityIndicator, FlatList, View } from "react-native";
+import { useLayoutMode } from "../../hooks/useLayoutMode";
 import { Text } from "../base/Text";
 
 type Props<T extends { id: number }> = {
@@ -8,6 +9,7 @@ type Props<T extends { id: number }> = {
   onEndReached: () => void;
   renderItem: (item: T) => ReactElement;
   toolbar?: ReactNode;
+  columns?: number;
 };
 
 export function ItemList<T extends { id: number }>({
@@ -16,7 +18,12 @@ export function ItemList<T extends { id: number }>({
   onEndReached,
   renderItem,
   toolbar,
+  columns = 1,
 }: Props<T>) {
+  const { isExpanded } = useLayoutMode();
+  const numColumns = isExpanded ? columns : 1;
+  const multi = numColumns > 1;
+
   return (
     <View className="flex-1 gap-5 pt-2">
       {toolbar && (
@@ -25,10 +32,26 @@ export function ItemList<T extends { id: number }>({
         </View>
       )}
       <FlatList
+        key={numColumns}
+        numColumns={numColumns}
         data={items}
         keyExtractor={(i) => String(i.id)}
-        renderItem={({ item }) => renderItem(item)}
+        renderItem={({ item }) =>
+          multi ? (
+            <View
+              style={{
+                flex: 1,
+                maxWidth: `${100 / numColumns}%` as `${number}%`,
+              }}
+            >
+              {renderItem(item)}
+            </View>
+          ) : (
+            renderItem(item)
+          )
+        }
         contentContainerStyle={{ gap: 12 }}
+        columnWrapperStyle={multi ? { gap: 12 } : undefined}
         showsVerticalScrollIndicator={false}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}

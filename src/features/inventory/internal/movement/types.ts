@@ -105,5 +105,4 @@ export type MovementLine = {
   shelfName: string;
   labelText: string | null;
   loanId: number | null;
-  visitorName: string | null;
 };
