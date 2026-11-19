@@ -39,6 +39,7 @@ export type CopyItem = {
   notes: string | null;
   shelfId: number;
   shelfName: string;
+  shelfIsDefault: boolean;
   labelText: string | null;
   labelRevoked: boolean;
   loan: CopyLoan | null;

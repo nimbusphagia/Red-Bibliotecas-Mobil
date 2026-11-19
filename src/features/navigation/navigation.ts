@@ -5,8 +5,9 @@ import {
   LucideIcon,
   PackageSearch,
   ShelvingUnit,
+  Tags,
   Tickets,
-  User,
+  UserRound,
   UserRoundGroup,
 } from "lucide-react-native";
 
@@ -29,12 +30,6 @@ export const NAVBAR: Navbar = {
       icon: House,
     },
     {
-      key: "catalog",
-      label: "Libros",
-      href: "/catalog",
-      icon: LibraryBig,
-    },
-    {
       key: "loans",
       label: "Préstamos",
       href: "/loans",
@@ -46,6 +41,20 @@ export const NAVBAR: Navbar = {
       href: "/visitors",
       icon: UserRoundGroup,
     },
+    {
+      key: "catalog",
+      label: "Libros",
+      href: "/catalog",
+      icon: LibraryBig,
+    },
+
+    {
+      key: "labels",
+      label: "Tejuelos",
+      href: "/labels",
+      icon: Tags,
+    },
+
     {
       key: "shelves",
       label: "Organización",
@@ -64,7 +73,7 @@ export const NAVBAR: Navbar = {
       key: "account",
       label: "Usuario",
       href: "/account",
-      icon: User,
+      icon: UserRound,
     },
   ],
 };

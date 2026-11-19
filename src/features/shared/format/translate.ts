@@ -54,3 +54,5 @@ export const MOVEMENT_REASON_ES: Record<MovementReason, string> = {
   discard: "Descarte",
   other: "Otro",
 };
+export const shelfLabel = (shelf: { name: string; isDefault: boolean }) =>
+  shelf.isDefault ? "Estantería General" : shelf.name;

@@ -96,6 +96,7 @@ const itemColumns = {
   notes: copy.notes,
   shelfId: copy.shelfId,
   shelfName: shelf.name,
+  shelfIsDefault: shelf.isDefault,
   labelText: label.text,
   labelRevoked: sql<boolean>`${label.revokedAt} is not null`.mapWith(Boolean),
   loanId: loanMovement.id,

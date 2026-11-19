@@ -15,17 +15,21 @@ import { findCopiesByIdsSync, setCopiesShelfSync } from "../copy/repository";
 import type { CopyStatus } from "../copy/types";
 import { requireStockRole } from "../movement/utils/auth";
 import * as repo from "./repository";
+import { searchKey } from "@/features/shared/format/text";
 import {
   createShelfSchema,
+  listShelfCopiesSchema,
   listShelvesSchema,
   moveCopiesSchema,
   updateShelfSchema,
   type MoveCopiesInput,
+  type ShelfCopiesParams,
   type ShelfListParams,
 } from "./schemas";
 import type {
   NewShelf,
   Shelf,
+  ShelfCopy,
   ShelfListItem,
   ShelfPatch,
   ShelfUsage,
@@ -47,10 +51,22 @@ export async function listShelves(
   return repo.listShelves(parseOrThrow(listShelvesSchema, params));
 }
 
+export async function listShelfCopies(
+  params: ShelfCopiesParams,
+): Promise<Page<ShelfCopy>> {
+  const { shelfId, ...page } = parseOrThrow(listShelfCopiesSchema, params);
+  await getShelf(shelfId);
+  return repo.listShelfCopies(shelfId, page);
+}
+
 export const createShelf = makeCreate({
   entity: ENTITY,
   schema: createShelfSchema,
-  build: ({ name, description }): NewShelf => ({ name, description }),
+  build: ({ name, description }): NewShelf => ({
+    name,
+    nameKey: searchKey(name),
+    description,
+  }),
   insert: repo.insertShelf,
 });
 
@@ -59,10 +75,10 @@ export const updateShelf = makeUpdate({
   schema: updateShelfSchema,
   find: repo.findShelfById,
   update: repo.updateShelf,
-  build: (_, patch): ShelfPatch =>
-    Object.fromEntries(
-      Object.entries(patch).filter(([, v]) => v !== undefined),
-    ),
+  build: (_, { name, description }): ShelfPatch => ({
+    ...(name !== undefined && { name, nameKey: searchKey(name) }),
+    ...(description !== undefined && { description }),
+  }),
 });
 
 export const deleteShelf = makeRemove({

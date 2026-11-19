@@ -47,6 +47,9 @@ export function toFormErrors(error: unknown): FormErrors {
   if (error instanceof SetupClosedError) {
     return { form: "La configuración inicial ya se completó", fields: {} };
   }
+  if (error instanceof DuplicateError && error.entity === "shelf") {
+    return { fields: { name: "Ya existe una estantería con ese nombre" } };
+  }
   if (error instanceof DuplicateError && error.entity === "account") {
     return { fields: { username: "Ese nombre de usuario ya existe" } };
   }

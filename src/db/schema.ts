@@ -224,20 +224,20 @@ export const account = sqliteTable(
 );
 
 // Inventory
-
 export const shelf = sqliteTable(
   "shelf",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
     name: text("name").notNull(),
+    nameKey: text("name_key").notNull(),
     description: text("description"),
     isDefault: integer("is_default", { mode: "boolean" })
       .notNull()
       .default(false),
   },
   (t) => [
-    uniqueIndex("uq_shelf_name_lower").on(lower(t.name)),
+    uniqueIndex("uq_shelf_name_key").on(t.nameKey),
     uniqueIndex("uq_shelf_single_default")
       .on(t.isDefault)
       .where(sql`is_default = 1`),

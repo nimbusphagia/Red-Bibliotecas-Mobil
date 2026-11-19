@@ -7,13 +7,15 @@ import {
   toPage,
   type Reference,
 } from "@/db/helpers";
-import { copy, shelf } from "@/db/schema";
+import { book, copy, label, shelf } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
-import { and, asc, count, eq, getTableColumns, sql } from "drizzle-orm";
+import { and, asc, count, eq, getTableColumns, notInArray } from "drizzle-orm";
+import { RELEASED_STATUSES } from "../copy/types";
 import type {
   NewShelf,
   Shelf,
+  ShelfCopy,
   ShelfListFilters,
   ShelfListItem,
   ShelfPatch,
@@ -21,8 +23,13 @@ import type {
 } from "./types";
 
 const copies: Reference = { table: copy, column: copy.shelfId };
-const copyCount = rowCount(copies, shelf.id);
-const nameKey = sql`lower(${shelf.name})`;
+const activeCopies: Reference = {
+  ...copies,
+  where: notInArray(copy.status, [...RELEASED_STATUSES]),
+};
+
+const copyUsage = rowCount(copies, shelf.id);
+const activeCopyCount = rowCount(activeCopies, shelf.id);
 
 export async function findShelfById(id: number): Promise<Shelf | null> {
   const [row] = await db.select().from(shelf).where(eq(shelf.id, id));
@@ -41,17 +48,19 @@ export async function listShelves(
   filters: ShelfListFilters,
 ): Promise<Page<ShelfListItem>> {
   const { tokens, sortBy, sortDir, limit, offset } = filters;
-  const where = and(...likeTokens(nameKey, tokens));
-  const sortKey = { name: nameKey, copyCount, createdAt: shelf.createdAt }[
-    sortBy
-  ];
+  const where = and(...likeTokens(shelf.nameKey, tokens));
+  const sortKey = {
+    name: shelf.nameKey,
+    copyCount: activeCopyCount,
+    createdAt: shelf.createdAt,
+  }[sortBy];
 
   const [items, [{ n }]] = await Promise.all([
     db
-      .select({ ...getTableColumns(shelf), copyCount })
+      .select({ ...getTableColumns(shelf), copyCount: activeCopyCount })
       .from(shelf)
       .where(where)
-      .orderBy(direction(sortDir)(sortKey), asc(nameKey), asc(shelf.id))
+      .orderBy(direction(sortDir)(sortKey), asc(shelf.nameKey), asc(shelf.id))
       .limit(limit)
       .offset(offset),
     db.select({ n: count() }).from(shelf).where(where),
@@ -61,7 +70,7 @@ export async function listShelves(
 
 export async function countShelfUsage(id: number): Promise<ShelfUsage | null> {
   const [row] = await db
-    .select({ copies: copyCount })
+    .select({ copies: copyUsage })
     .from(shelf)
     .where(eq(shelf.id, id));
   return row ?? null;
@@ -96,4 +105,34 @@ export async function deleteShelfIfUnused(id: number): Promise<boolean> {
     )
     .returning({ id: shelf.id });
   return deleted.length > 0;
+}
+export async function listShelfCopies(
+  shelfId: number,
+  page: { limit: number; offset: number },
+): Promise<Page<ShelfCopy>> {
+  const where = and(
+    eq(copy.shelfId, shelfId),
+    notInArray(copy.status, [...RELEASED_STATUSES]),
+  );
+
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({
+        id: copy.id,
+        bookId: copy.bookId,
+        bookTitle: book.title,
+        copyNumber: copy.copyNumber,
+        status: copy.status,
+        labelText: label.text,
+      })
+      .from(copy)
+      .innerJoin(book, eq(book.id, copy.bookId))
+      .leftJoin(label, eq(label.copyId, copy.id))
+      .where(where)
+      .orderBy(asc(book.titleKey), asc(copy.copyNumber), asc(copy.id))
+      .limit(page.limit)
+      .offset(page.offset),
+    db.select({ n: count() }).from(copy).where(where),
+  ]);
+  return toPage(items, n, page);
 }

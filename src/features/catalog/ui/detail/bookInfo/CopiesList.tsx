@@ -1,7 +1,7 @@
 import { CopyItem } from "@/features/inventory/internal/copy/types";
 import { Button, Column, PillRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
-import { COPY_STATUS_ES } from "@/features/shared/format/translate";
+import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
 import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookDown, BookUp, ShelvingUnit } from "lucide-react-native";
@@ -36,9 +36,10 @@ export default function CopiesList({ copies }: Props) {
               />
             </Column>
             <Column
-              text={
-                c.shelfName === "Default" ? "Estantería General" : c.shelfName
-              }
+              text={shelfLabel({
+                name: c.shelfName,
+                isDefault: c.shelfIsDefault,
+              })}
               containerClass="justify-start"
             />
             <Column variant="actions" expand={false}>
