@@ -1,0 +1,91 @@
+import type { LabelSort } from "@/features/inventory/internal/label/schemas";
+import { listLabels } from "@/features/inventory/internal/label/service";
+import type { PrintStatus } from "@/features/inventory/internal/label/types";
+import {
+  InlineFilter,
+  InlineSort,
+  ItemList,
+  type SortOption,
+} from "@/features/shared/components";
+import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import type { SortDirection } from "@/features/shared/types/types";
+import { useCallback, useState } from "react";
+import { ListHeader } from "./labels/list/ListHeader";
+import LabelRow from "./labels/list/LabelRow";
+import { View } from "react-native";
+import ShelfFilter from "./labels/list/ShelfFilter";
+
+const PAGE_SIZE = 20;
+
+type StatusFilter = "all" | PrintStatus;
+
+const FILTERS: { value: StatusFilter; label: string }[] = [
+  { value: "all", label: "Todos" },
+  { value: "printed", label: "Impresos" },
+  { value: "pending_print", label: "No impresos" },
+];
+
+const SORTS: SortOption<LabelSort>[] = [
+  { key: "printedAt", label: "Fecha de impresión", defaultDir: "desc" },
+  { key: "createdAt", label: "Fecha de creación", defaultDir: "desc" },
+];
+
+export default function LabelList() {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<StatusFilter>("all");
+  const [shelfId, setShelfId] = useState<number>();
+  const [sort, setSort] = useState<{ by: LabelSort; dir: SortDirection }>({
+    by: "printedAt",
+    dir: "desc",
+  });
+
+  const debouncedSearch = useDebounce(search);
+
+  const fetchPage = useCallback(
+    (offset: number) =>
+      listLabels({
+        search: debouncedSearch,
+        printStatus: filter === "all" ? undefined : filter,
+        shelfId,
+        sortBy: sort.by,
+        sortDir: sort.dir,
+        limit: PAGE_SIZE,
+        offset,
+      }),
+    [debouncedSearch, filter, shelfId, sort],
+  );
+
+  const list = useInfiniteList(fetchPage);
+
+  return (
+    <>
+      <ListHeader search={search} onSearchChange={setSearch} />
+      <ItemList
+        toolbar={
+          <>
+            <View className="flex-row items-center gap-4">
+              <InlineFilter
+                options={FILTERS}
+                value={filter}
+                onChange={setFilter}
+              />
+              <View className="w-px self-stretch bg-fg1" />
+              <ShelfFilter value={shelfId} onChange={setShelfId} />
+            </View>
+            <InlineSort
+              options={SORTS}
+              sortBy={sort.by}
+              sortDir={sort.dir}
+              onChange={(by, dir) => setSort({ by, dir })}
+            />
+          </>
+        }
+        items={list.items}
+        loading={list.loading}
+        onEndReached={list.loadMore}
+        renderItem={(label) => <LabelRow label={label} />}
+      />
+    </>
+  );
+}

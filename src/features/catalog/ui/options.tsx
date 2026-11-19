@@ -67,11 +67,14 @@ export const searchSeries = async (search: string): Promise<Option[]> =>
     label: `${s.name} · ${fullName({ firstName: s.authorFirstName, lastName: s.authorLastName })}`,
   }));
 
-export const loadShelves = async (): Promise<Option[]> =>
-  (await listShelves({ limit: 100 })).items.map((s) => ({
-    id: s.id,
-    label: shelfLabel(s),
-  }));
+export const loadShelves = async (): Promise<Option[]> => {
+  const { items } = await listShelves({ limit: 100 });
+  const ordered = [
+    ...items.filter((s) => s.isDefault),
+    ...items.filter((s) => !s.isDefault),
+  ];
+  return ordered.map((s) => ({ id: s.id, label: shelfLabel(s) }));
+};
 
 export function useOptions(load: (() => Promise<Option[]>) | null) {
   const [options, setOptions] = useState<Option[]>([]);

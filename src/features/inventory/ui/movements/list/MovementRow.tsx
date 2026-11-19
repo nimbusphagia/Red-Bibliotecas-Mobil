@@ -1,6 +1,5 @@
 import type { MovementListItem } from "@/features/inventory/internal/movement/types";
 import { Button, Column, PillRow } from "@/features/shared/components";
-import { StatusBadge } from "@/features/shared/components/base/Badge";
 import {
   MOVEMENT_REASON_ES,
   MOVEMENT_TYPE_ES,
@@ -20,27 +19,14 @@ export default function MovementRow({ movement }: Props) {
         variant="subtitled"
         subtitle1={formatDateES(movement.createdAt)}
         text={movement.signedByUsername}
-        expand={false}
-        containerClass="w-[200]"
       />
       <Column
         variant="subtitled"
         text={String(movement.copyCount)}
-        subtitle1={`Ejemplar${movement.copyCount > 1 ? "es" : ""}`}
-        expand={false}
-        containerClass="w-[100]"
+        subtitle1={MOVEMENT_TYPE_ES[movement.type]}
       />
-      <Column variant="actions" expand={false} containerClass="w-[250]">
-        <StatusBadge
-          text={MOVEMENT_TYPE_ES[movement.type]}
-          variant={movement.type === "entry" ? "active" : "pending"}
-        />
-      </Column>
-      <Column
-        text={MOVEMENT_REASON_ES[movement.reason]}
-        expand={false}
-        containerClass="w-[200] justify-center"
-      />
+      <Column text={MOVEMENT_REASON_ES[movement.reason]} />
+
       <Column variant="actions" expand={false} containerClass="w-[90]">
         <Link href={`/stock/${movement.id}`} asChild>
           <Button

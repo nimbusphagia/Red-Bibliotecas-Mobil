@@ -6,7 +6,7 @@ import {
 } from "@/features/shared/types/schemas";
 import { z } from "zod";
 
-export const LABEL_SORT_KEYS = ["createdAt", "text"] as const;
+export const LABEL_SORT_KEYS = ["createdAt", "printedAt"] as const;
 export type LabelSort = (typeof LABEL_SORT_KEYS)[number];
 
 export const MAX_PRINT_LABELS = 500;
@@ -15,6 +15,7 @@ export const listLabelsSchema = z
   .object({
     ...listShape(LABEL_SORT_KEYS, "createdAt", "desc"),
     printStatus: z.enum(PRINT_STATUSES).optional(),
+    shelfId: idSchema.optional(),
     bookId: idSchema.optional(),
     includeRevoked: z.boolean().default(false),
   })

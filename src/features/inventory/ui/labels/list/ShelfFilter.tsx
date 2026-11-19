@@ -1,0 +1,43 @@
+import { loadShelves, useOptions } from "@/features/catalog/ui/options";
+import { Button, Dialog, SimpleSelect } from "@/features/shared/components";
+import { useState } from "react";
+import { ScrollView } from "react-native";
+
+type Props = {
+  value?: number;
+  onChange: (shelfId?: number) => void;
+};
+
+export default function ShelfFilter({ value, onChange }: Props) {
+  const [open, setOpen] = useState(false);
+  const shelves = useOptions(loadShelves);
+  const selected = shelves.find((s) => s.id === value);
+
+  return (
+    <>
+      <Button
+        title={selected?.label ?? "Estantería"}
+        variant={value === undefined ? "secondary" : "primary"}
+        onPress={() => setOpen(true)}
+      />
+      {open && (
+        <Dialog onClose={() => setOpen(false)}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <SimpleSelect
+              label="Estantería"
+              options={shelves}
+              value={value}
+              onChange={(id) => {
+                onChange(id);
+                setOpen(false);
+              }}
+            />
+          </ScrollView>
+        </Dialog>
+      )}
+    </>
+  );
+}

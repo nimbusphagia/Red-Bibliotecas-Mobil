@@ -1,6 +1,13 @@
 import { db } from "@/db/client";
 import { direction, likeTokens, toPage } from "@/db/helpers";
-import { book, copy, label } from "@/db/schema";
+import {
+  author,
+  book,
+  bookCollaborator,
+  copy,
+  label,
+  shelf,
+} from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
 import {
@@ -72,22 +79,47 @@ export function revokeLabelsSync(ex: Executor, copyIds: number[]): void {
 
 const textKey = sql`lower(${label.text})`;
 
+const writerName = sql<string | null>`(${db
+  .select({
+    name: sql<string>`${author.firstName} || coalesce(' ' || ${author.lastName}, '')`,
+  })
+  .from(bookCollaborator)
+  .innerJoin(author, eq(author.id, bookCollaborator.collaboratorId))
+  .where(
+    and(
+      eq(bookCollaborator.bookId, book.id),
+      eq(bookCollaborator.role, "writer"),
+    ),
+  )
+  .orderBy(asc(author.nameKey))
+  .limit(1)})`;
+
 export async function listLabels(
   filters: LabelListFilters,
 ): Promise<Page<LabelItem>> {
-  const { tokens, printStatus, bookId, includeRevoked, sortBy, sortDir } =
-    filters;
+  const {
+    tokens,
+    printStatus,
+    shelfId,
+    bookId,
+    includeRevoked,
+    sortBy,
+    sortDir,
+  } = filters;
 
   const where = and(
     includeRevoked ? undefined : isNull(label.revokedAt),
     printStatus === undefined ? undefined : eq(label.printStatus, printStatus),
+    shelfId === undefined ? undefined : eq(copy.shelfId, shelfId),
     bookId === undefined ? undefined : eq(copy.bookId, bookId),
     ...tokens.map((t) =>
       or(...likeTokens(textKey, [t]), ...likeTokens(book.titleKey, [t])),
     ),
   );
-
-  const sortKey = { createdAt: label.createdAt, text: textKey }[sortBy];
+  const sortKey = {
+    createdAt: label.createdAt,
+    printedAt: label.printedAt,
+  }[sortBy];
 
   const [items, [{ n }]] = await Promise.all([
     db
@@ -96,6 +128,9 @@ export async function listLabels(
         copyId: label.copyId,
         bookId: book.id,
         bookTitle: book.title,
+        authorName: writerName,
+        shelfName: shelf.name,
+        shelfIsDefault: shelf.isDefault,
         copyNumber: label.copyNumber,
         text: label.text,
         printStatus: label.printStatus,
@@ -106,8 +141,13 @@ export async function listLabels(
       .from(label)
       .innerJoin(copy, eq(copy.id, label.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
+      .innerJoin(shelf, eq(shelf.id, copy.shelfId))
       .where(where)
-      .orderBy(direction(sortDir)(sortKey), asc(label.id))
+      .orderBy(
+        sql`${sortKey} is null`,
+        direction(sortDir)(sortKey),
+        asc(label.id),
+      )
       .limit(filters.limit)
       .offset(filters.offset),
     db

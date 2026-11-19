@@ -21,8 +21,11 @@ export type LabelOwner = {
   seriesId: number | null;
 };
 
+export type PrintStatus = (typeof PRINT_STATUSES)[number];
+
 export type LabelListFilters = ListFilters<LabelSort> & {
-  printStatus?: (typeof PRINT_STATUSES)[number];
+  printStatus?: PrintStatus;
+  shelfId?: number;
   bookId?: number;
   includeRevoked: boolean;
 };
@@ -32,9 +35,12 @@ export type LabelItem = {
   copyId: number;
   bookId: number;
   bookTitle: string;
+  authorName: string | null;
+  shelfName: string;
+  shelfIsDefault: boolean;
   copyNumber: number;
   text: string;
-  printStatus: (typeof PRINT_STATUSES)[number];
+  printStatus: PrintStatus;
   printedAt: Date | null;
   revision: number;
   revoked: boolean;

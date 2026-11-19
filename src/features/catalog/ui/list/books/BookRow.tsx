@@ -10,7 +10,6 @@ type Props = {
 export default function BookRow({ book }: Props) {
   return (
     <PillRow>
-      <Column text={`#${book.id}`} variant="id" />
       <Column
         text={book.title}
         subtitle1={book.publisherName ?? undefined}
