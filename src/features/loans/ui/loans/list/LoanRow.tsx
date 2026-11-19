@@ -4,12 +4,12 @@ import type {
   LoanListItem,
   LoanState,
 } from "@/features/loans/internal/loan/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Button, Column, PillRow, Text } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
-import { formatDate, formatISO } from "@/features/shared/format/dates";
+import { formatDate, formatDateES } from "@/features/shared/format/dates";
 import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
-import { BookDown, ClockAlert, Eye } from "lucide-react-native";
+import { BookDown, ClockAlert, Eye, Flag } from "lucide-react-native";
 import { View } from "react-native";
 
 type Props = { loan: LoanListItem };
@@ -29,7 +29,7 @@ export default function LoanRow({ loan }: Props) {
       <Column
         variant="subtitled"
         text={loan.visitorName}
-        subtitle1={formatDate(loan.createdAt)}
+        subtitle1={formatDateES(loan.createdAt)}
       />
 
       <Column
@@ -38,39 +38,36 @@ export default function LoanRow({ loan }: Props) {
         subtitle1="Devueltos"
       />
 
-      <Column
-        variant="subtitled"
-        text={formatISO(loan.expiresBy)}
-        subtitle1="Vence"
-      >
-        {loan.overdue && (
-          <ClockAlert size={16} color={colors.highlight} strokeWidth={2.5} />
-        )}
+      <Column variant="subtitled" subtitle1={formatDateES(loan.expiresBy)}>
+        <View className="flex-row items-center gap-1">
+          <Text variant="h3" className="text-[14px]">
+            {LOAN_STATE_ES[state]}
+          </Text>
+          {loan.overdue && (
+            <Flag size={14} color={colors.highlight} strokeWidth={2.5} />
+          )}
+        </View>
       </Column>
       <Column
         variant="actions"
         expand={false}
         containerClass="w-[120px] justify-end"
       >
-        {loan.openCount > 0 ? (
-          <Link href={`/loans/${loan.id}`} asChild>
-            <Button
-              variant="primary"
-              icon={<BookDown size={16} strokeWidth={2.5} color={colors.bg} />}
-            />
-          </Link>
-        ) : (
-          <StatusBadge
-            text={LOAN_STATE_ES[state]}
-            variant={LOAN_BADGE[state]}
-          />
-        )}
         <Link href={`/loans/${loan.id}`} asChild>
           <Button
             variant="secondary"
             icon={<Eye size={16} strokeWidth={2.5} color={colors.primary} />}
           />
         </Link>
+
+        {loan.openCount > 0 && (
+          <Link href={`/loans/${loan.id}`} asChild>
+            <Button
+              variant="primary"
+              icon={<BookDown size={16} strokeWidth={2.5} color={colors.bg} />}
+            />
+          </Link>
+        )}
       </Column>
     </PillRow>
   );

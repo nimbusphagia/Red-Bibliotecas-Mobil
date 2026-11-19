@@ -22,7 +22,7 @@ export function SidebarItem({ item, active }: Props) {
                     rounded-full size-[44] 
                     ${bgColor} ${activeClass}`}
       >
-        <item.icon color={iconColor} strokeWidth={2} />
+        <item.icon color={iconColor} strokeWidth={1.8} />
       </Pressable>
     </Link>
   );

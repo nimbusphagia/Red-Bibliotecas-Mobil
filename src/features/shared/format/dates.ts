@@ -1,3 +1,6 @@
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
 const pad = (n: number) => String(n).padStart(2, "0");
 
 export function toISODate(date: Date = new Date()): string {
@@ -19,3 +22,13 @@ export const formatISO = (iso: string) => iso.split("-").reverse().join("/");
 
 export const formatDate = (d: Date) =>
   `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+
+export const formatDateES = (input: string | Date, full?: boolean) => {
+  const date =
+    input instanceof Date && !Number.isNaN(input.getTime())
+      ? input
+      : new Date(input);
+  return format(date, `d 'de' MMMM ${full ? "yyyy" : ""}`, {
+    locale: es,
+  });
+};

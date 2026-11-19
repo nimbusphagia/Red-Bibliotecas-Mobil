@@ -61,7 +61,7 @@ export default function MovementList() {
 
   return (
     <>
-      <PageHeader title="Inventario" />
+      <PageHeader title="Historial de Movimientos" />
       <ItemList
         toolbar={
           <>
