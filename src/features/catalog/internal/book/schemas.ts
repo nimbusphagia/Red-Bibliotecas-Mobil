@@ -85,6 +85,7 @@ export const listBooksSchema = z
     seriesId: idSchema.optional(),
     categoryId: idSchema.optional(),
     subcategoryId: idSchema.optional(),
+    shelfId: idSchema.optional(),
     active: z.boolean().optional(),
   })
   .transform(withTokens);

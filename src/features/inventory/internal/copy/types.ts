@@ -16,6 +16,7 @@ export type CopyLookup = {
   title: string;
   copyNumber: number;
   status: CopyStatus;
+  shelfId: number;
   labelText: string | null;
 };
 

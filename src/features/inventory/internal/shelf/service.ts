@@ -90,7 +90,6 @@ export const deleteShelf = makeRemove({
 });
 
 const NOT_MOVABLE: Partial<Record<CopyStatus, string>> = {
-  on_loan: "The copy is on loan",
   lost: "The copy is lost",
   discarded: "The copy is discarded",
 };
@@ -103,7 +102,7 @@ export async function moveCopies(
   const { shelfId, copyIds } = parseOrThrow(moveCopiesSchema, input);
   const target = await getShelf(shelfId);
 
-  inTransaction((tx) => {
+  const moved = inTransaction((tx) => {
     const found = new Map(
       findCopiesByIdsSync(tx, copyIds).map((c) => [c.id, c]),
     );
@@ -114,8 +113,11 @@ export async function moveCopies(
       if (message) issues.push({ path: `copyIds.${i}`, message });
     });
     if (issues.length > 0) throw new ValidationError(issues);
-    setCopiesShelfSync(tx, copyIds, shelfId);
+
+    const toMove = copyIds.filter((id) => found.get(id)!.shelfId !== shelfId);
+    setCopiesShelfSync(tx, toMove, shelfId);
+    return toMove.length;
   });
 
-  return { shelf: target, moved: copyIds.length };
+  return { shelf: target, moved };
 }

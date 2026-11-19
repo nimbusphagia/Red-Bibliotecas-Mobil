@@ -49,6 +49,7 @@ function selectLookup(ex: Executor) {
       bookId: copy.bookId,
       title: book.title,
       copyNumber: copy.copyNumber,
+      shelfId: copy.shelfId,
       status: copy.status,
       labelText: label.text,
     })

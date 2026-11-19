@@ -23,6 +23,9 @@ export type FormErrors = {
 const MESSAGES_ES: Record<string, string> = {
   "The series author must be a writer or illustrator of the book":
     "El autor de la serie debe ser escritor o ilustrador del libro",
+  "The copy is lost": "El ejemplar está perdido",
+  "The copy is discarded": "El ejemplar está descartado",
+  "The copy does not exist": "El ejemplar no existe",
 };
 
 const LEND_PROBLEM_ES: Record<LendProblemKind, string> = {

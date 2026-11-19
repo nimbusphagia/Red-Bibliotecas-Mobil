@@ -170,6 +170,7 @@ export async function listBooks(
     seriesId,
     categoryId,
     subcategoryId,
+    shelfId,
     active,
     sortBy,
     sortDir,
@@ -204,9 +205,25 @@ export async function listBooks(
           book.id,
         );
 
+  const byShelf =
+    shelfId === undefined
+      ? undefined
+      : hasRows(
+          {
+            table: copy,
+            column: copy.bookId,
+            where: and(
+              eq(copy.shelfId, shelfId),
+              notInArray(copy.status, [...RELEASED_STATUSES]),
+            ),
+          },
+          book.id,
+        );
+
   const where = and(
     ...search,
     byCollaborator,
+    byShelf,
     filterBy(book.publisherId, publisherId),
     filterBy(book.collectionId, collectionId),
     filterBy(book.seriesId, seriesId),

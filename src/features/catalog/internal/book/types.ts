@@ -50,6 +50,7 @@ export type BookListFilters = ListFilters<BookSort> & {
   seriesId?: number;
   categoryId?: number;
   subcategoryId?: number;
+  shelfId?: number;
   active?: boolean;
 };
 

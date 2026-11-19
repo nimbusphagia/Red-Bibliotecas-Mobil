@@ -30,18 +30,6 @@ export const NAVBAR: Navbar = {
       icon: House,
     },
     {
-      key: "loans",
-      label: "Préstamos",
-      href: "/loans",
-      icon: Tickets,
-    },
-    {
-      key: "visitors",
-      label: "Visitantes",
-      href: "/visitors",
-      icon: UserRoundGroup,
-    },
-    {
       key: "catalog",
       label: "Libros",
       href: "/catalog",
@@ -49,10 +37,29 @@ export const NAVBAR: Navbar = {
     },
 
     {
+      key: "loans",
+      label: "Préstamos",
+      href: "/loans",
+      icon: Tickets,
+    },
+    {
       key: "labels",
       label: "Tejuelos",
       href: "/labels",
       icon: Tags,
+    },
+    {
+      key: "visitors",
+      label: "Visitantes",
+      href: "/visitors",
+      icon: UserRoundGroup,
+    },
+
+    {
+      key: "stock",
+      label: "Inventario",
+      href: "/stock",
+      icon: PackageSearch,
     },
 
     {
@@ -60,12 +67,6 @@ export const NAVBAR: Navbar = {
       label: "Organización",
       href: "/shelves",
       icon: ShelvingUnit,
-    },
-    {
-      key: "stock",
-      label: "Inventario",
-      href: "/stock",
-      icon: PackageSearch,
     },
   ],
   footer: [
