@@ -1,8 +1,7 @@
 import { CopyItem } from "@/features/inventory/internal/copy/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
-import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookDown, BookUp, ShelvingUnit } from "lucide-react-native";
 import { View } from "react-native";
@@ -22,7 +21,7 @@ export default function CopiesList({ copies }: Props) {
             }
           : c.loan && (`/loans/${c.loan.loanId}` as const);
         return (
-          <PillRow key={c.id} className="flex-1 justify-around py-2">
+          <ListRow key={c.id}>
             <Column
               text={`#${c.id}`}
               variant="id"
@@ -52,7 +51,7 @@ export default function CopiesList({ copies }: Props) {
                 </Link>
               )}
             </Column>
-          </PillRow>
+          </ListRow>
         );
       })}
     </View>

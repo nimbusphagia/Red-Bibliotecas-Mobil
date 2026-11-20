@@ -1,5 +1,5 @@
 import type { VisitorLine } from "@/features/loans/internal/loan/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { formatDate } from "@/features/shared/format/dates";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
@@ -8,7 +8,7 @@ import { Eye } from "lucide-react-native";
 
 export default function VisitorLineRow({ line }: { line: VisitorLine }) {
   return (
-    <PillRow>
+    <ListRow>
       <Column variant="id" text={`#${line.loanId}`} />
       <Column
         variant="subtitled"
@@ -34,6 +34,6 @@ export default function VisitorLineRow({ line }: { line: VisitorLine }) {
           <Button variant="secondary" icon={Eye} />
         </Link>
       </Column>
-    </PillRow>
+    </ListRow>
   );
 }

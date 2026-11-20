@@ -1,5 +1,5 @@
 import { LabelCodes } from "@/features/inventory/internal/label/types";
-import { LabeledItem2 } from "@/features/shared/components";
+import { LabeledItem } from "@/features/shared/components";
 import { View } from "react-native";
 import { BookListItem } from "../../../internal/book/types";
 
@@ -23,7 +23,7 @@ export default function LabelInfo({ book, codes }: Props) {
   return (
     <View className="w-[230px] gap-2">
       {rows.map(({ label, content }, i) => (
-        <LabeledItem2
+        <LabeledItem
           key={i}
           label={label ?? "---"}
           content={content ?? "---"}

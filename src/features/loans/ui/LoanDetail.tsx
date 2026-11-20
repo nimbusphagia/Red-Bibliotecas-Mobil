@@ -7,11 +7,12 @@ import type {
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
+  DetailColumns,
   DetailRow,
-  DetailRows,
   Icon,
   PageHeader,
   Section,
+  StatusIndicator,
   Text,
 } from "@/features/shared/components";
 import { formatISO } from "@/features/shared/format/dates";
@@ -21,7 +22,6 @@ import {
   ROLE_ES,
 } from "@/features/shared/format/translate";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
-import { cn } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
 import { Dot } from "lucide-react-native";
@@ -78,32 +78,22 @@ export default function LoanDetail({ id }: { id: string }) {
     <>
       <PageHeader
         title={`Prestamo #${loan.id}`}
-        lead={
-          <View className="flex-row gap-2 items-center">
-            <Icon icon={Dot} />
-            <Text variant="item">{LOAN_STATE_ES[loanStateOf(loan)]}</Text>
-          </View>
-        }
+        lead={<StatusIndicator text={LOAN_STATE_ES[loanStateOf(loan)]} />}
       />
       <ScreenBody>
-        <View className={cn("gap-6", isExpanded && "flex-row")}>
-          <Section title="Prestado a" expand={isExpanded}>
-            <DetailRows rows={visitorRows} />
-          </Section>
-          <Section title="Detalles" expand={isExpanded}>
-            <DetailRows rows={loanDetailRows(loan)} />
-          </Section>
-        </View>
+        <DetailColumns
+          columns={[
+            { title: "Prestado a", rows: visitorRows },
+            { title: "Detalles", rows: loanDetailRows(loan) },
+          ]}
+        />
         <Section
           title="Ejemplares"
           expand
           lead={
-            <View className="flex-row gap-2 items-center">
-              <Icon icon={Dot} />
-              <Text variant="item" className="font-sans-semibold">
-                {loan.lineCount - loan.openCount} / {loan.lineCount}
-              </Text>
-            </View>
+            <StatusIndicator
+              text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
+            />
           }
         >
           <LoanLines

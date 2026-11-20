@@ -7,12 +7,11 @@ import {
   Button,
   Column,
   Icon,
-  PillRow,
+  ListRow,
   Text,
 } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { LOAN_STATE_ES } from "@/features/shared/format/translate";
-import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookDown, Eye, Flag } from "lucide-react-native";
 import { View } from "react-native";
@@ -29,7 +28,7 @@ export default function LoanRow({ loan }: Props) {
   const state = loanStateOf(loan);
 
   return (
-    <PillRow className="gap-6">
+    <ListRow>
       <Column text={`#${loan.id}`} variant="id" />
       <Column
         variant="subtitled"
@@ -64,6 +63,6 @@ export default function LoanRow({ loan }: Props) {
           </Link>
         )}
       </Column>
-    </PillRow>
+    </ListRow>
   );
 }

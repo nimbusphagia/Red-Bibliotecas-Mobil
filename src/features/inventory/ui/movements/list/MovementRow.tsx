@@ -1,5 +1,5 @@
 import type { MovementListItem } from "@/features/inventory/internal/movement/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { MOVEMENT_REASON_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
@@ -11,7 +11,7 @@ export default function MovementRow({ movement }: Props) {
   const amount =
     (movement.type === "entry" ? "+" : "-") + String(movement.copyCount);
   return (
-    <PillRow className="">
+    <ListRow>
       <Column text={`#${movement.id}`} variant="id" />
       <Column
         variant="subtitled"
@@ -29,6 +29,6 @@ export default function MovementRow({ movement }: Props) {
           <Button variant="secondary" icon={Eye} />
         </Link>
       </Column>
-    </PillRow>
+    </ListRow>
   );
 }

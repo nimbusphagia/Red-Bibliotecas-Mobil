@@ -1,5 +1,5 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { Link } from "expo-router";
 import { BookUp, Eye } from "lucide-react-native";
 
@@ -8,7 +8,7 @@ type Props = {
 };
 export default function BookRow({ book }: Props) {
   return (
-    <PillRow>
+    <ListRow>
       <Column
         text={book.title}
         subtitle1={book.publisherName ?? undefined}
@@ -35,7 +35,7 @@ export default function BookRow({ book }: Props) {
           <Button icon={BookUp} />
         </>
       </Column>
-    </PillRow>
+    </ListRow>
   );
 }
 

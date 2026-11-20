@@ -5,13 +5,14 @@ import { cn } from "../../theme";
 import { Text } from "../base/Text";
 import { Icon } from "../base/Icon";
 
-type Props = { children: ReactNode; className?: string };
+type Props = { children: ReactNode; compact?: boolean; className?: string };
 
-export function PillRow({ children, className }: Props) {
+export function ListRow({ children, compact, className }: Props) {
   return (
     <View
       className={cn(
-        "border border-fg1 flex-row justify-between gap-8 py-2 px-4 rounded-full bg-fg2",
+        "flex-row items-center justify-between gap-3 rounded-full border border-fg1 bg-fg2 px-4",
+        compact ? "py-1" : "py-2",
         className,
       )}
     >
@@ -29,7 +30,7 @@ const columnVariants = {
     text: "",
   },
   date: { container: "", text: "" },
-  actions: { container: "flex-row justify-center gap-6", text: "" },
+  actions: { container: "flex-row justify-center gap-3", text: "" },
 };
 
 type ColumnProps = {

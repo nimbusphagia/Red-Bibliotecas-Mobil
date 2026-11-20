@@ -63,9 +63,7 @@ export default function ShelfDetail({ id }: { id: string }) {
   return (
     <>
       <PageHeader title={shelfLabel(shelf)} />
-      <View className="px-4">
-        <DetailColumns columns={columns} />
-      </View>
+      <DetailColumns columns={columns} />
       <ItemList
         columns={2}
         toolbar={<Text variant="section">Ejemplares</Text>}

@@ -98,9 +98,7 @@ export default function MovementDetail({ id }: { id: string }) {
         title={`Movimiento #${movement.id}`}
         lead={<Text variant="item">{MOVEMENT_TYPE_ES[movement.type]}</Text>}
       />
-      <View className="px-4">
-        <DetailColumns columns={columns} />
-      </View>
+      <DetailColumns columns={columns} />
       {!loanLine && (
         <ItemList
           columns={2}

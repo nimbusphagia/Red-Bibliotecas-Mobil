@@ -1,5 +1,5 @@
 import type { ShelfCopy } from "@/features/inventory/internal/shelf/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
@@ -9,7 +9,7 @@ type Props = { copy: ShelfCopy; onMove: () => void };
 
 export default function ShelfCopyRow({ copy, onMove }: Props) {
   return (
-    <PillRow className="gap-6 py-1">
+    <ListRow compact>
       <Column variant="id" text={`#${copy.id}`} />
       <Column
         variant="subtitled"
@@ -32,6 +32,6 @@ export default function ShelfCopyRow({ copy, onMove }: Props) {
           <Button variant="secondary" icon={Eye} />
         </Link>
       </Column>
-    </PillRow>
+    </ListRow>
   );
 }

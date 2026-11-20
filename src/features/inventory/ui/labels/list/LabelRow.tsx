@@ -1,5 +1,5 @@
 import type { LabelItem } from "@/features/inventory/internal/label/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Column, ListRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import {
   PRINT_STATUS_ES,
@@ -10,7 +10,7 @@ type Props = { label: LabelItem };
 
 export default function LabelRow({ label }: Props) {
   return (
-    <PillRow>
+    <ListRow>
       <Column variant="id" text={`#${label.copyId}`} />
       <Column
         variant="subtitled"
@@ -34,6 +34,6 @@ export default function LabelRow({ label }: Props) {
           variant={label.printStatus === "printed" ? "active" : "pending"}
         />
       </Column>
-    </PillRow>
+    </ListRow>
   );
 }

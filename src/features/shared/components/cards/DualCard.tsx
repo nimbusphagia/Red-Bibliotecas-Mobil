@@ -13,7 +13,7 @@ const needsAttention = (s: Stat) =>
 
 export function DualCard({ title, positiveStat, negativeStat }: Props) {
   return (
-    <Card title={title} className="bg-transparent border-transparent">
+    <Card title={title} variant="flat">
       <View className="flex-row gap-3">
         <StatTile stat={positiveStat} />
         <StatTile

@@ -1,8 +1,7 @@
 import type { LoanLine } from "@/features/loans/internal/loan/types";
-import { Button, Column, PillRow } from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
-import { colors } from "@/features/shared/theme";
 import { BookDown, Flag } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
@@ -29,7 +28,7 @@ export default function LoanLines({
   return (
     <View className="gap-2 ">
       {lines.map((l) => (
-        <PillRow key={l.id} className="py-2">
+        <ListRow key={l.id}>
           <Column text={`#${l.copyId}`} variant="id" />
           <Column
             variant="subtitled"
@@ -64,7 +63,7 @@ export default function LoanLines({
               />
             )}
           </Column>
-        </PillRow>
+        </ListRow>
       ))}
       {active && (
         <ReturnLineDialog

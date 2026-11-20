@@ -7,7 +7,7 @@ import type { VisitorLoanStatus } from "@/features/loans/internal/loan/types";
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
-  DetailRows,
+  DetailColumns,
   InlineFilter,
   InlineSort,
   ItemList,
@@ -19,7 +19,6 @@ import {
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
-import { cn } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useFocusEffect } from "expo-router";
@@ -100,15 +99,13 @@ export default function VisitorDetail({ id }: { id: string }) {
   return (
     <>
       <PageHeader title={`${visitor.name}`} />
-      <View className={cn("gap-6 px-4", isExpanded && "flex-row")}>
-        <Section title="Detalles" expand={isExpanded}>
-          <DetailRows rows={detailRows} />
-        </Section>
-        <Section title="Resumen" expand={isExpanded}>
-          <DetailRows rows={summaryRows} />
-        </Section>
-      </View>
-      <Section title="Historial de Prestamos" expand className="px-4">
+      <DetailColumns
+        columns={[
+          { title: "Detalles", rows: detailRows },
+          { title: "Resumen", rows: summaryRows },
+        ]}
+      />
+      <Section title="Historial de Prestamos" expand>
         <ItemList
           toolbar={
             <>

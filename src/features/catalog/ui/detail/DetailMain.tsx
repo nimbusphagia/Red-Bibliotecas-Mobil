@@ -1,61 +1,55 @@
+// DetailMain.tsx
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { LabelCodes } from "@/features/inventory/internal/label/types";
-import { Button, Section } from "@/features/shared/components";
+import { Button, DetailColumns, Section } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";
 import { BookPlus, PencilLine, Tag } from "lucide-react-native";
-import { View } from "react-native";
-import BookInfo from "./bookInfo/BookInfo";
+import { bookDetailRows, bookLabelRows } from "./bookInfo/bookRows";
 import CopiesList from "./bookInfo/CopiesList";
-import LabelInfo from "./bookInfo/LabelInfo";
 
 type Props = {
   book: BookListItem;
   copies: CopyItem[];
   codes: LabelCodes | null;
 };
+
 export default function DetailMain({ book, copies, codes }: Props) {
   return (
     <ScreenBody>
-      <View className="flex-row items-start pb-6 gap-6 border-b border-fg1">
-        <Section
-          title="Tejuelo"
-          lead={
-            <Button
-              variant="secondary"
-              className="bg-fg2 border-fg2 min-h-8"
-              icon={Tag}
-            />
-          }
-        >
-          <LabelInfo book={book} codes={codes} />
-        </Section>
-        <View className="bg-fg1 w-[1px] h-full"></View>
-
-        <Section
-          title="Detalles"
-          expand={true}
-          lead={
-            <Link
-              href={{
-                pathname: "/catalog/form",
-                params: { id: String(book.id) },
-              }}
-              asChild
-            >
-              <Button variant="ghost" size="sm" icon={PencilLine} />
-            </Link>
-          }
-        >
-          <BookInfo book={book} />
-        </Section>
-      </View>
-
+      <DetailColumns
+        divided
+        columns={[
+          {
+            title: "Tejuelo",
+            variant: "box",
+            fit: true,
+            lead: <Button variant="ghost" size="sm" icon={Tag} />,
+            rows: bookLabelRows(book, codes),
+          },
+          {
+            title: "Detalles",
+            columns: 2,
+            lead: (
+              <Link
+                href={{
+                  pathname: "/catalog/form",
+                  params: { id: String(book.id) },
+                }}
+                asChild
+              >
+                <Button variant="ghost" size="sm" icon={PencilLine} />
+              </Link>
+            ),
+            rows: bookDetailRows(book),
+          },
+        ]}
+      />
       <Section
         title="Ejemplares"
-        expand={true}
-        lead={<Button variant="ghost" icon={BookPlus} />}
+        expand
+        lead={<Button variant="ghost" size="sm" icon={BookPlus} />}
       >
         <CopiesList copies={copies} />
       </Section>

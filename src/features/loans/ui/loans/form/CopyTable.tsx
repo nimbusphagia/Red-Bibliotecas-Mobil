@@ -2,7 +2,7 @@ import {
   Button,
   Column,
   FieldError,
-  PillRow,
+  ListRow,
   Text,
 } from "@/features/shared/components";
 import { Trash } from "lucide-react-native";
@@ -20,7 +20,7 @@ export default function CopyTable({ copies, error, onRemove }: Props) {
     <View className="gap-2">
       {copies.length === 0 && <Text variant="caption">Sin ejemplares</Text>}
       {copies.map((c) => (
-        <PillRow key={c.id} className="items-center gap-4 py-1">
+        <ListRow key={c.id} compact>
           <Column variant="id" text={`#${c.id}`} />
           <Column
             variant="subtitled"
@@ -35,7 +35,7 @@ export default function CopyTable({ copies, error, onRemove }: Props) {
               onPress={() => onRemove(c.id)}
             />
           </Column>
-        </PillRow>
+        </ListRow>
       ))}
       <FieldError>{error}</FieldError>
     </View>
