@@ -2,7 +2,11 @@ import {
   getShelf,
   listShelfCopies,
 } from "@/features/inventory/internal/shelf/service";
-import type { Shelf } from "@/features/inventory/internal/shelf/types";
+import type {
+  Shelf,
+  ShelfCopy,
+} from "@/features/inventory/internal/shelf/types";
+import MoveCopyDialog from "./shelves/form/MoveCopyDialog";
 import {
   DetailColumns,
   ItemList,
@@ -22,6 +26,7 @@ const PAGE_SIZE = 20;
 
 export default function ShelfDetail({ id }: { id: string }) {
   const shelfId = routeIdSchema.parse(id);
+  const [moving, setMoving] = useState<ShelfCopy | null>(null);
   const [shelf, setShelf] = useState<Shelf | null>(null);
 
   useEffect(() => {
@@ -67,8 +72,21 @@ export default function ShelfDetail({ id }: { id: string }) {
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
-        renderItem={(copy) => <ShelfCopyRow copy={copy} />}
+        renderItem={(copy) => (
+          <ShelfCopyRow copy={copy} onMove={() => setMoving(copy)} />
+        )}
       />
+      {moving && (
+        <MoveCopyDialog
+          copy={moving}
+          currentShelfId={shelfId}
+          onClose={() => setMoving(null)}
+          onMoved={() => {
+            setMoving(null);
+            list.reload();
+          }}
+        />
+      )}
     </>
   );
 }

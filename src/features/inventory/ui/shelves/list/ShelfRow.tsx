@@ -10,7 +10,6 @@ type Props = { shelf: ShelfListItem; onEdit: () => void };
 export default function ShelfRow({ shelf, onEdit }: Props) {
   return (
     <PillRow>
-      <Column variant="id" text={`#${shelf.id}`} />
       <Column
         variant="subtitled"
         text={shelfLabel(shelf)}

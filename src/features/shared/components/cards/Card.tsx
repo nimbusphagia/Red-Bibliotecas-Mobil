@@ -9,15 +9,11 @@ export function Card({ title, className, children }: PropsWithChildren<Props>) {
   return (
     <View
       className={cn(
-        "rounded-[30px] bg-fg2 py-4 px-5 items-center gap-1",
+        "gap-3 rounded-lg border border-fg1 bg-fg2 px-5 py-4",
         className,
       )}
     >
-      {title && (
-        <Text className="text-[20px] text-highlight font-semibold">
-          {title}
-        </Text>
-      )}
+      {title && <Text variant="h2">{title}</Text>}
       {children}
     </View>
   );

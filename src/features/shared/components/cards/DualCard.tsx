@@ -1,36 +1,26 @@
 import { View } from "react-native";
-import { Text } from "../base/Text";
 import { Card } from "./Card";
-type Stat = {
-  name: string;
-  numberData: number;
-};
+import { StatTile, type Stat } from "./StatTile";
+
 type Props = {
   title: string;
   positiveStat: Stat;
   negativeStat: Stat;
 };
+
+const needsAttention = (s: Stat) =>
+  typeof s.numberData === "number" && s.numberData > 0;
+
 export function DualCard({ title, positiveStat, negativeStat }: Props) {
   return (
-    <Card title={title}>
-      <View className="flex flex-row gap-5">
-        <StatComponent stat={positiveStat} />
-        <StatComponent stat={negativeStat} />
+    <Card title={title} className="bg-transparent border-transparent">
+      <View className="flex-row gap-3">
+        <StatTile stat={positiveStat} />
+        <StatTile
+          stat={negativeStat}
+          highlight={needsAttention(negativeStat)}
+        />
       </View>
     </Card>
-  );
-}
-
-type StatComponentProps = {
-  stat: Stat;
-};
-function StatComponent({ stat }: StatComponentProps) {
-  return (
-    <View className="flex items-center">
-      <Text className="text-[28px] text-highlight font-bold">
-        {stat.numberData}
-      </Text>
-      <Text className="text-primary">{stat.name}</Text>
-    </View>
   );
 }

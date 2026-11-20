@@ -1,20 +1,20 @@
 import { Button, PageHeader } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
-import { BookDown, BookUp, NotebookPen } from "lucide-react-native";
+import { Link } from "expo-router";
+import { BookDown, BookUp } from "lucide-react-native";
 
-type Props = {};
-export default function DashboardHeader({}: Props) {
+export default function DashboardHeader() {
   return (
     <PageHeader title="Inicio">
-      <Button
-        title="Nuevo ejemplar"
-        icon={<NotebookPen size={18} color={colors.bg} />}
-      />
-      <Button title="Prestar" icon={<BookUp size={18} color={colors.bg} />} />
-      <Button
-        title="Devolver"
-        icon={<BookDown size={18} color={colors.bg} />}
-      />
+      <Link href="/loans/new" asChild>
+        <Button title="Prestar" icon={<BookUp size={18} color={colors.bg} />} />
+      </Link>
+      <Link href="/loans" asChild>
+        <Button
+          title="Devolver"
+          icon={<BookDown size={18} color={colors.bg} />}
+        />
+      </Link>
     </PageHeader>
   );
 }

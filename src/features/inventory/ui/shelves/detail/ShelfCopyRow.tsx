@@ -4,11 +4,11 @@ import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
-import { Eye } from "lucide-react-native";
+import { ArrowRightLeft, Eye } from "lucide-react-native";
 
-type Props = { copy: ShelfCopy };
+type Props = { copy: ShelfCopy; onMove: () => void };
 
-export default function ShelfCopyRow({ copy }: Props) {
+export default function ShelfCopyRow({ copy, onMove }: Props) {
   return (
     <PillRow className="gap-6 py-1">
       <Column variant="id" text={`#${copy.id}`} />
@@ -26,8 +26,13 @@ export default function ShelfCopyRow({ copy }: Props) {
       <Column
         variant="actions"
         expand={false}
-        containerClass="w-[48px] justify-end"
+        containerClass="w-[104px] justify-end"
       >
+        <Button
+          variant="secondary"
+          icon={<ArrowRightLeft size={16} color={colors.highlight} />}
+          onPress={onMove}
+        />
         <Link href={`/catalog/${copy.bookId}`} asChild>
           <Button
             variant="secondary"

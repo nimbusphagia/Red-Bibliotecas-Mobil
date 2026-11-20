@@ -25,3 +25,4 @@ export { InlineFilter } from "./list/InlineFilter";
 export { InlineSort, type SortOption } from "./list/InlineSort";
 export { ItemList } from "./list/ItemList";
 export { Chip } from "./form/select/Chip";
+export { StatTile } from "./cards/StatTile";
