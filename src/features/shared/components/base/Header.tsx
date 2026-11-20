@@ -1,23 +1,47 @@
 import type { PropsWithChildren, ReactNode } from "react";
 import { View } from "react-native";
+import { useLayoutMode } from "../../hooks/useLayoutMode";
+import { Searchbar } from "../form/search/Searchbar";
 import { Text } from "./Text";
 
-type Props = { title?: string; lead?: ReactNode };
+type Props = {
+  title: string;
+  lead?: ReactNode;
+  search?: {
+    value: string;
+    onChange: (t: string) => void;
+    placeholder?: string;
+  };
+};
 
 export function PageHeader({
-  title = "",
+  title,
   lead,
+  search,
   children,
 }: PropsWithChildren<Props>) {
+  const { isExpanded } = useLayoutMode();
+
+  const searchbar = search && (
+    <Searchbar
+      value={search.value}
+      onChangeText={search.onChange}
+      placeholder={search.placeholder}
+      className={isExpanded ? undefined : "w-full h-10"}
+    />
+  );
+
   return (
-    <View className="flex-row items-center gap-4 px-4 pb-3">
-      <Text className="text-highlight text-[24px] font-sans-semibold">
-        {title}
-      </Text>
-      {lead}
-      <View className="flex-1 flex-row items-center justify-end gap-4">
-        {children}
+    <View className="gap-3">
+      <View className="flex-row items-center gap-4">
+        <Text variant="title">{title}</Text>
+        {lead}
+        <View className="flex-1 flex-row items-center justify-end gap-4">
+          {isExpanded && searchbar}
+          {children}
+        </View>
       </View>
+      {!isExpanded && searchbar}
     </View>
   );
 }

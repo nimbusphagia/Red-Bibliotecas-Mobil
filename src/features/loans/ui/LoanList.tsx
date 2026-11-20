@@ -6,6 +6,7 @@ import {
   InlineFilter,
   InlineSort,
   ItemList,
+  PageHeader,
   type SortOption,
 } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
@@ -14,7 +15,6 @@ import type { SortDirection } from "@/features/shared/types/types";
 import { Link } from "expo-router";
 import { BookUp } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import ListHeader from "./ListHeader";
 import LoanRow from "./loans/list/LoanRow";
 
 const PAGE_SIZE = 20;
@@ -60,16 +60,18 @@ export default function LoanList() {
 
   return (
     <>
-      <ListHeader
+      <PageHeader
         title="Préstamos"
-        create={
+        lead={
           <Link href="/loans/new" asChild>
             <Button title="Prestar" icon={BookUp} />
           </Link>
         }
-        search={search}
-        onSearchChange={setSearch}
-        placeholder="Buscar por visitante..."
+        search={{
+          value: search,
+          onChange: setSearch,
+          placeholder: "Buscar por visitante...",
+        }}
       />
       <ItemList
         toolbar={

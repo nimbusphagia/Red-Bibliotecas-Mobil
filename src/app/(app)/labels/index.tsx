@@ -1,10 +1,10 @@
 import LabelList from "@/features/inventory/ui/LabelList";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 
 export default function LabelsScreen() {
   return (
-    <MainLayout>
+    <Screen>
       <LabelList />
-    </MainLayout>
+    </Screen>
   );
 }

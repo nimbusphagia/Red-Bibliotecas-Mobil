@@ -25,11 +25,9 @@ export function ItemList<T extends { id: number }>({
   const multi = numColumns > 1;
 
   return (
-    <View className="flex-1 gap-4 pt-2">
+    <View className="flex-1 gap-4">
       {toolbar && (
-        <View className="flex-row items-center justify-between px-1">
-          {toolbar}
-        </View>
+        <View className="flex-row items-center justify-between">{toolbar}</View>
       )}
       <FlatList
         key={numColumns}

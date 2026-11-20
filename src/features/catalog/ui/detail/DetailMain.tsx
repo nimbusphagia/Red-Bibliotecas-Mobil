@@ -2,9 +2,10 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { LabelCodes } from "@/features/inventory/internal/label/types";
 import { Button, Section } from "@/features/shared/components";
+import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";
 import { BookPlus, PencilLine, Tag } from "lucide-react-native";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import BookInfo from "./bookInfo/BookInfo";
 import CopiesList from "./bookInfo/CopiesList";
 import LabelInfo from "./bookInfo/LabelInfo";
@@ -16,7 +17,7 @@ type Props = {
 };
 export default function DetailMain({ book, copies, codes }: Props) {
   return (
-    <ScrollView className="flex-1" contentContainerClassName="gap-4 p-4">
+    <ScreenBody>
       <View className="flex-row items-start pb-6 gap-6 border-b border-fg1">
         <Section
           title="Tejuelo"
@@ -58,6 +59,6 @@ export default function DetailMain({ book, copies, codes }: Props) {
       >
         <CopiesList copies={copies} />
       </Section>
-    </ScrollView>
+    </ScreenBody>
   );
 }

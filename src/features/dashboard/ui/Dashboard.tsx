@@ -1,12 +1,14 @@
-import { View } from "react-native";
 import DashboardHeader from "./components/Header";
 import DashboardMain from "./components/Main";
+import { ScreenBody } from "@/features/shared/layout/Screen";
 
 export default function Dashboard() {
   return (
-    <View>
+    <>
       <DashboardHeader />
-      <DashboardMain />
-    </View>
+      <ScreenBody>
+        <DashboardMain />
+      </ScreenBody>
+    </>
   );
 }

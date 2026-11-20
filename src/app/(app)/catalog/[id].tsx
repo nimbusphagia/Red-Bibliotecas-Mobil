@@ -1,13 +1,13 @@
 import BookDetail from "@/features/catalog/ui/BookDetail";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 import { useLocalSearchParams } from "expo-router";
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <MainLayout>
+    <Screen>
       <BookDetail id={id} />
-    </MainLayout>
+    </Screen>
   );
 }

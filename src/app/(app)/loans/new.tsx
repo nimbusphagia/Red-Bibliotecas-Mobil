@@ -1,13 +1,13 @@
 import LoanForm from "@/features/loans/ui/LoanForm";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 import { useLocalSearchParams } from "expo-router";
 
 export default function NewLoanScreen() {
   const { copyId } = useLocalSearchParams<{ copyId?: string }>();
 
   return (
-    <MainLayout>
+    <Screen>
       <LoanForm copyId={copyId} />
-    </MainLayout>
+    </Screen>
   );
 }

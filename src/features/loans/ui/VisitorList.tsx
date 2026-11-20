@@ -9,6 +9,7 @@ import {
   InlineFilter,
   InlineSort,
   ItemList,
+  PageHeader,
   type SortOption,
 } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
@@ -16,7 +17,6 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import type { SortDirection } from "@/features/shared/types/types";
 import { UserPlus } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import ListHeader from "./ListHeader";
 import VisitorDialog from "./visitors/form/VisitorDialog";
 import VisitorRow from "./visitors/list/VisitorRow";
 
@@ -66,18 +66,20 @@ export default function VisitorList() {
 
   return (
     <>
-      <ListHeader
+      <PageHeader
         title="Visitantes"
-        create={
+        lead={
           <Button
             title="Agregar"
             icon={UserPlus}
             onPress={() => setDialog({})}
           />
         }
-        search={search}
-        onSearchChange={setSearch}
-        placeholder="Buscar por nombre..."
+        search={{
+          value: search,
+          onChange: setSearch,
+          placeholder: "Buscar por nombre...",
+        }}
       />
       <ItemList
         toolbar={

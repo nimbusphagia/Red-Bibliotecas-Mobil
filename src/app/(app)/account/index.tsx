@@ -1,6 +1,6 @@
 import { useSession } from "@/features/account/internal/session";
-import { Button, Text } from "@/features/shared/components";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Button, PageHeader, Text } from "@/features/shared/components";
+import { Screen } from "@/features/shared/layout/Screen";
 import { seedDev } from "@/util/testSeed";
 import { useState } from "react";
 import { View } from "react-native";
@@ -28,7 +28,8 @@ export default function AccountScreen() {
   };
 
   return (
-    <MainLayout title="Account">
+    <Screen>
+      <PageHeader title="Cuenta" />
       <View className="gap-1">
         <Text variant="section">{account.username}</Text>
         <Text>{ROLE_LABELS[account.role]}</Text>
@@ -42,6 +43,6 @@ export default function AccountScreen() {
           {seedMsg && <Text>{seedMsg}</Text>}
         </View>
       )}
-    </MainLayout>
+    </Screen>
   );
 }

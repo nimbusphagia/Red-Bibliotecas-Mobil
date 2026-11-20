@@ -1,8 +1,10 @@
 import type { BookSort } from "@/features/catalog/internal/book/schemas";
 import { listBooks } from "@/features/catalog/internal/book/service";
 import {
+  Button,
   InlineSort,
   ItemList,
+  PageHeader,
   type SortOption,
 } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
@@ -11,13 +13,14 @@ import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import BookRow from "./list/books/BookRow";
-import CatalogHeader from "./list/ListHeader";
 import FilterPanel, {
   toBookParams,
   type CatalogFilters,
   type FilterDialog,
 } from "./list/searchFilters/FilterPanel";
 import QuickFilters from "./list/searchFilters/QuickFilters";
+import { Link } from "expo-router";
+import { NotebookPen } from "lucide-react-native";
 
 const PAGE_SIZE = 20;
 
@@ -57,7 +60,19 @@ export default function BookList() {
 
   return (
     <>
-      <CatalogHeader search={search} onSearchChange={setSearch} />
+      <PageHeader
+        title="Libros"
+        lead={
+          <Link href="/catalog/form" asChild>
+            <Button title="Registrar" icon={NotebookPen} />
+          </Link>
+        }
+        search={{
+          value: search,
+          onChange: setSearch,
+          placeholder: "Buscar por título, autor o editorial...",
+        }}
+      />
       <ItemList
         toolbar={
           <>

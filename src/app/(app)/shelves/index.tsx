@@ -1,10 +1,10 @@
 import ShelfList from "@/features/inventory/ui/ShelfList";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 
 export default function ShelvesScreen() {
   return (
-    <MainLayout>
+    <Screen>
       <ShelfList />
-    </MainLayout>
+    </Screen>
   );
 }

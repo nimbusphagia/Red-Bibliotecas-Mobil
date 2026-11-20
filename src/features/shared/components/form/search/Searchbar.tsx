@@ -19,7 +19,7 @@ export function Searchbar({
   return (
     <View
       className={cn(
-        "flex flex-row items-center gap-2 w-[400px] h-full px-4 rounded-full bg-fg1",
+        "flex flex-row items-center gap-2 w-full max-w-[400px] h-full px-4 rounded-full bg-fg1",
         className,
       )}
     >

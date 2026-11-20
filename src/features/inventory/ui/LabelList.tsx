@@ -5,13 +5,13 @@ import {
   InlineFilter,
   InlineSort,
   ItemList,
+  PageHeader,
   type SortOption,
 } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
-import { ListHeader } from "./labels/list/ListHeader";
 import LabelRow from "./labels/list/LabelRow";
 import { View } from "react-native";
 import ShelfFilter from "./labels/list/ShelfFilter";
@@ -60,7 +60,14 @@ export default function LabelList() {
 
   return (
     <>
-      <ListHeader search={search} onSearchChange={setSearch} />
+      <PageHeader
+        title="Tejuelos"
+        search={{
+          value: search,
+          onChange: setSearch,
+          placeholder: "Buscar por título o tejuelo...",
+        }}
+      />
       <ItemList
         toolbar={
           <>

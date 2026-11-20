@@ -1,10 +1,10 @@
 import VisitorList from "@/features/loans/ui/VisitorList";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 
 export default function VisitorsScreen() {
   return (
-    <MainLayout>
+    <Screen>
       <VisitorList />
-    </MainLayout>
+    </Screen>
   );
 }

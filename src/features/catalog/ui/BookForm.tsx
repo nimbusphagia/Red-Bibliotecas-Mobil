@@ -3,11 +3,12 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { FieldError, FormHeader, Text } from "@/features/shared/components";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { BookFormSections } from "./form/BookFormSections";
 import FieldModal from "./form/fields/FieldModal";
 import { type Field } from "./form/fields/fields";
 import { useBookForm } from "./form/useBookForm";
+import { ScreenBody } from "@/features/shared/layout/Screen";
 
 export default function BookForm({ id }: { id?: string }) {
   const [book, setBook] = useState<BookListItem>();
@@ -42,11 +43,7 @@ function Form({ book }: { book?: BookListItem }) {
         onCancel={form.cancel}
       />
 
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-4 p-4 pt-7"
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScreenBody form>
         <FieldError>{form.errors.form ?? form.orphanErrors}</FieldError>
         {form.locked && (
           <Text variant="caption">
@@ -55,7 +52,7 @@ function Form({ book }: { book?: BookListItem }) {
           </Text>
         )}
         <BookFormSections form={form} onEdit={setEditing} />
-      </ScrollView>
+      </ScreenBody>
 
       {editing && (
         <FieldModal

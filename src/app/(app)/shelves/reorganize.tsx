@@ -1,10 +1,10 @@
 import ReorganizeForm from "@/features/inventory/ui/ReorganizeForm";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 
 export default function ReorganizeScreen() {
   return (
-    <MainLayout>
+    <Screen>
       <ReorganizeForm />
-    </MainLayout>
+    </Screen>
   );
 }

@@ -1,13 +1,13 @@
 import LoanDetail from "@/features/loans/ui/LoanDetail";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 import { useLocalSearchParams } from "expo-router";
 
 export default function LoanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <MainLayout>
+    <Screen>
       <LoanDetail id={id} />
-    </MainLayout>
+    </Screen>
   );
 }

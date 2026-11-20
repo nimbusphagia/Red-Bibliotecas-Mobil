@@ -2,8 +2,10 @@ import type { ShelfSort } from "@/features/inventory/internal/shelf/schemas";
 import { listShelves } from "@/features/inventory/internal/shelf/service";
 import type { ShelfListItem } from "@/features/inventory/internal/shelf/types";
 import {
+  Button,
   InlineSort,
   ItemList,
+  PageHeader,
   type SortOption,
 } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
@@ -11,8 +13,9 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import ShelfDialog from "./shelves/form/ShelfDialog";
-import { ListHeader } from "./shelves/list/ListHeader";
 import ShelfRow from "./shelves/list/ShelfRow";
+import { Link } from "expo-router";
+import { ArrowRightLeft, SquarePlus } from "lucide-react-native";
 
 const PAGE_SIZE = 20;
 
@@ -48,10 +51,29 @@ export default function ShelfList() {
 
   return (
     <>
-      <ListHeader
-        search={search}
-        onSearchChange={setSearch}
-        onCreate={() => setDialog({})}
+      <PageHeader
+        title="Estantería"
+        lead={
+          <>
+            <Button
+              title="Nuevo"
+              icon={SquarePlus}
+              onPress={() => setDialog({})}
+            />
+            <Link href="/shelves/reorganize" asChild>
+              <Button
+                variant="secondary"
+                title="Reorganizar"
+                icon={ArrowRightLeft}
+              />
+            </Link>
+          </>
+        }
+        search={{
+          value: search,
+          onChange: setSearch,
+          placeholder: "Buscar por nombre...",
+        }}
       />
       <ItemList
         toolbar={

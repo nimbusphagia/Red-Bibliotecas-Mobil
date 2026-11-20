@@ -1,10 +1,10 @@
 import LoanList from "@/features/loans/ui/LoanList";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 
 export default function LoansScreen() {
   return (
-    <MainLayout>
+    <Screen>
       <LoanList />
-    </MainLayout>
+    </Screen>
   );
 }

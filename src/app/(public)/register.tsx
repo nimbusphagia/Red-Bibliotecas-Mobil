@@ -4,7 +4,6 @@ import {
   FormScreen,
   TextField,
   Button,
-  Text,
   FieldError,
 } from "@/features/shared/components";
 import { Image } from "expo-image";

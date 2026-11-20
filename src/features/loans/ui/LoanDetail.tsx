@@ -26,10 +26,11 @@ import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
 import { Dot } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { loanStateOf } from "../internal/loan/rules";
 import LoanLines from "./loans/detail/LoanLines";
 import { loanDetailRows } from "./loans/detail/loanRows";
+import { ScreenBody } from "@/features/shared/layout/Screen";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
 
@@ -84,7 +85,7 @@ export default function LoanDetail({ id }: { id: string }) {
           </View>
         }
       />
-      <ScrollView className="flex-1" contentContainerClassName="gap-6 p-4">
+      <ScreenBody>
         <View className={cn("gap-6", isExpanded && "flex-row")}>
           <Section title="Prestado a" expand={isExpanded}>
             <DetailRows rows={visitorRows} />
@@ -112,7 +113,7 @@ export default function LoanDetail({ id }: { id: string }) {
             onChanged={load}
           />
         </Section>
-      </ScrollView>
+      </ScreenBody>
     </>
   );
 }

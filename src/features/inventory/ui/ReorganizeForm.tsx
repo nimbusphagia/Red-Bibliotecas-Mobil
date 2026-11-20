@@ -14,13 +14,14 @@ import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { cn } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import MoveCopyTable from "./shelves/form/MoveCopyTable";
 import {
   CopySearchDialog,
   PickShelfDialog,
 } from "./shelves/form/ReorganizeDialogs";
 import type { MoveCopy } from "./shelves/options";
+import { ScreenBody } from "@/features/shared/layout/Screen";
 
 export default function ReorganizeForm() {
   const router = useRouter();
@@ -72,11 +73,7 @@ export default function ReorganizeForm() {
         onSubmit={submit}
         onCancel={() => router.back()}
       />
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-4 p-4 pt-7"
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
         <View className={cn("gap-8", isExpanded && "flex-row")}>
           <FormSection
@@ -112,7 +109,7 @@ export default function ReorganizeForm() {
             />
           </FormSection>
         </View>
-      </ScrollView>
+      </ScreenBody>
 
       {editing === "target" && (
         <PickShelfDialog value={target} onChange={setTarget} onClose={close} />

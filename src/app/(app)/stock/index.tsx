@@ -1,10 +1,10 @@
 import MovementList from "@/features/inventory/ui/MovementList";
-import { MainLayout } from "@/features/shared/layout/MainLayout";
+import { Screen } from "@/features/shared/layout/Screen";
 
 export default function StockScreen() {
   return (
-    <MainLayout>
+    <Screen>
       <MovementList />
-    </MainLayout>
+    </Screen>
   );
 }

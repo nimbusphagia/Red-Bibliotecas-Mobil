@@ -23,7 +23,7 @@ import { cn, colors } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
 import { Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import CopyTable from "./loans/form/CopyTable";
 import {
   CopySearchDialog,
@@ -31,6 +31,7 @@ import {
   PickVisitorDialog,
 } from "./loans/form/LoanDialogs";
 import { copyById, type LoanCopy } from "./options";
+import { ScreenBody } from "@/features/shared/layout/Screen";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
@@ -98,11 +99,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
         onSubmit={submit}
         onCancel={() => router.back()}
       />
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-4 p-4 pt-7"
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
         <View className={cn("gap-8", isExpanded && "flex-row")}>
           <FormSection
@@ -183,7 +180,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
             />
           </FormSection>
         </View>
-      </ScrollView>
+      </ScreenBody>
 
       {editing === "visitor" && (
         <PickVisitorDialog
