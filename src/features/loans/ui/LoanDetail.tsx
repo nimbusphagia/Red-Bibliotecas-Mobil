@@ -1,3 +1,4 @@
+import { useSession } from "@/features/account/internal/session";
 import { getLoan, listLoanLines } from "@/features/loans/internal/loan/service";
 import type {
   LoanLine,
@@ -8,26 +9,26 @@ import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
   DetailRow,
   DetailRows,
+  Icon,
   PageHeader,
   Section,
   Text,
 } from "@/features/shared/components";
-import { formatDate, formatISO } from "@/features/shared/format/dates";
+import { formatISO } from "@/features/shared/format/dates";
 import {
   gradeLabel,
   LOAN_STATE_ES,
   ROLE_ES,
 } from "@/features/shared/format/translate";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
+import { cn } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
+import { Dot } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import LoanLines from "./loans/detail/LoanLines";
-import { cn, colors } from "@/features/shared/theme";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
-import { Dot } from "lucide-react-native";
-import { useSession } from "@/features/account/internal/session";
 import { loanStateOf } from "../internal/loan/rules";
+import LoanLines from "./loans/detail/LoanLines";
 import { loanDetailRows } from "./loans/detail/loanRows";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
@@ -78,8 +79,8 @@ export default function LoanDetail({ id }: { id: string }) {
         title={`Prestamo #${loan.id}`}
         lead={
           <View className="flex-row gap-2 items-center">
-            <Dot size={16} strokeWidth={3} color={colors.primary} />
-            <Text variant="h3">{LOAN_STATE_ES[loanStateOf(loan)]}</Text>
+            <Icon icon={Dot} />
+            <Text variant="item">{LOAN_STATE_ES[loanStateOf(loan)]}</Text>
           </View>
         }
       />
@@ -97,8 +98,8 @@ export default function LoanDetail({ id }: { id: string }) {
           expand
           lead={
             <View className="flex-row gap-2 items-center">
-              <Dot size={16} strokeWidth={3} color={colors.primary} />
-              <Text variant="h3" className="font-sans-semibold">
+              <Icon icon={Dot} />
+              <Text variant="item" className="font-sans-semibold">
                 {loan.lineCount - loan.openCount} / {loan.lineCount}
               </Text>
             </View>

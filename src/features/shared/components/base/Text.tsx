@@ -1,13 +1,16 @@
 import { Text as RNText, type TextProps } from "react-native";
 import { cn } from "../../theme";
 
-export type TextVariant = "h1" | "h2" | "h3" | "subtitle";
+export type TextVariant =
+  "display" | "title" | "section" | "item" | "itemSm" | "caption";
 
 const variantStyles: Record<TextVariant, string> = {
-  h1: "font-sans-bold text-[20px] text-primary",
-  h2: "font-sans-semibold text-[18px] text-primary",
-  h3: "font-sans-medium text-[16px] text-primary",
-  subtitle: "font-sans-medium text-[14px] text-secondary",
+  display: "font-sans-bold text-[28px] text-highlight",
+  title: "font-sans-semibold text-[24px] text-highlight",
+  section: "font-sans-semibold text-[18px] text-primary",
+  item: "font-sans-medium text-[16px] text-primary",
+  itemSm: "font-sans-medium text-[14px] text-primary",
+  caption: "font-sans-medium text-[14px] text-secondary",
 };
 
 type Props = TextProps & { variant?: TextVariant; className?: string };

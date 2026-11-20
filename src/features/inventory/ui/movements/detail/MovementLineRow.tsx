@@ -5,7 +5,6 @@ import type {
 import { Button, Column, PillRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
-import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { Eye } from "lucide-react-native";
 
@@ -32,10 +31,7 @@ export default function MovementLineRow({ line, movementType }: Props) {
       >
         {canOpenBook && (
           <Link href={`/catalog/${line.bookId}`} asChild>
-            <Button
-              variant="secondary"
-              icon={<Eye size={16} color={colors.highlight} />}
-            />
+            <Button variant="secondary" icon={Eye} />
           </Link>
         )}
       </Column>

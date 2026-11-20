@@ -14,9 +14,7 @@ export function LoadingScreen({ message }: { message?: string }) {
 export function BootErrorScreen({ onRetry }: { onRetry: () => void }) {
   return (
     <View className="flex-1 items-center justify-center gap-4 p-6">
-      <Text className="text-xl font-bold">
-        No se pudo iniciar la aplicación
-      </Text>
+      <Text variant="section">No se pudo iniciar la aplicación</Text>
       <Text>Ocurrió un error al preparar la base de datos.</Text>
       <Button title="Reintentar" onPress={onRetry} />
     </View>

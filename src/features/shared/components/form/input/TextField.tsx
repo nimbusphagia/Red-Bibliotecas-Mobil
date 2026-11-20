@@ -27,7 +27,7 @@ export function TextField({
 
   return (
     <View className={cn("w-full gap-2", editable === false && "opacity-50")}>
-      <Text variant="h3">{label}</Text>
+      <Text variant="item">{label}</Text>
       <View className="justify-center">
         <TextInput
           ref={ref}
@@ -37,7 +37,7 @@ export function TextField({
           secureTextEntry={secureTextEntry && !visible}
           className={cn(
             "h-12 rounded-full border bg-fg1 px-4 font-sans text-highlight",
-            error ? "border-red-500" : "border-transparent focus:border-fg1",
+            error ? "border-error" : "border-transparent focus:border-fg1",
             secureTextEntry && "pr-24",
             className,
           )}
@@ -53,7 +53,7 @@ export function TextField({
             hitSlop={8}
             className="absolute right-4 px-1 py-2"
           >
-            <Text className="font-sans-medium text-sm text-highlight">
+            <Text variant="itemSm" className="text-highlight">
               {visible ? "Ocultar" : "Mostrar"}
             </Text>
           </Pressable>
@@ -61,7 +61,7 @@ export function TextField({
       </View>
       <FieldError>{error}</FieldError>
       {!error && helperText ? (
-        <Text variant="subtitle">{helperText}</Text>
+        <Text variant="caption">{helperText}</Text>
       ) : null}
     </View>
   );

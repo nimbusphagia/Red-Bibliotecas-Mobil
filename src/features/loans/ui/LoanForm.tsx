@@ -21,6 +21,7 @@ import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { cn, colors } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
+import { Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import CopyTable from "./loans/form/CopyTable";
@@ -30,7 +31,6 @@ import {
   PickVisitorDialog,
 } from "./loans/form/LoanDialogs";
 import { copyById, type LoanCopy } from "./options";
-import { Dot } from "lucide-react-native";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
@@ -143,16 +143,16 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
             {status && (
               <View className="flex-row items-center justify-end">
                 {status.blocked ? (
-                  <Text variant="subtitle">
+                  <Text variant="caption">
                     Bloqueado: {status.overdue} ejemplares vencidos
                   </Text>
                 ) : (
                   <>
-                    <Text variant="subtitle">
+                    <Text variant="caption">
                       {status.open} prestamos activos
                     </Text>
                     <Dot color={colors.secondary} />
-                    <Text variant="subtitle">
+                    <Text variant="caption">
                       {status.remaining
                         ? `Puede prestar ${status.remaining} más`
                         : "Limite alcanzado"}

@@ -9,7 +9,7 @@ export default function DashboardStats() {
   const stats = useDashboardStats();
 
   return (
-    <View className="flex flex-row flex-wrap gap-5 pb-8 border-b border-fg1">
+    <View className="flex flex-row flex-wrap gap-4 pb-8 border-b border-fg1">
       <Link href="/loans" asChild>
         <Pressable>
           <DualCard

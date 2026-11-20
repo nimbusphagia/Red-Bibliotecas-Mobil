@@ -25,7 +25,7 @@ export function ItemList<T extends { id: number }>({
   const multi = numColumns > 1;
 
   return (
-    <View className="flex-1 gap-5 pt-2">
+    <View className="flex-1 gap-4 pt-2">
       {toolbar && (
         <View className="flex-row items-center justify-between px-1">
           {toolbar}
@@ -58,7 +58,10 @@ export function ItemList<T extends { id: number }>({
         ListFooterComponent={loading ? <ActivityIndicator /> : undefined}
         ListEmptyComponent={
           loading ? undefined : (
-            <Text variant="h3" className="text-secondary text-center pt-[10] ">
+            <Text
+              variant="item"
+              className="text-secondary text-center pt-[10] "
+            >
               Sin resultados
             </Text>
           )

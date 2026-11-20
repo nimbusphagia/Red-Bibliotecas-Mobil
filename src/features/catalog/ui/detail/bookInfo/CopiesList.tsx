@@ -12,7 +12,7 @@ type Props = {
 };
 export default function CopiesList({ copies }: Props) {
   return (
-    <View className="flex-1 gap-5 py-3">
+    <View className="flex-1 gap-4 py-3">
       {copies.map((c) => {
         const isAvailable = ["available", "damaged"].includes(c.status);
         const href = isAvailable
@@ -44,28 +44,11 @@ export default function CopiesList({ copies }: Props) {
             />
             <Column variant="actions" expand={false}>
               <Link href={`/shelves/${c.shelfId}`} asChild>
-                <Button
-                  variant="secondary"
-                  icon={
-                    <ShelvingUnit
-                      size={20}
-                      color={colors.highlight}
-                      strokeWidth={2}
-                    />
-                  }
-                />
+                <Button variant="secondary" icon={ShelvingUnit} />
               </Link>
               {href && (
                 <Link href={href} asChild>
-                  <Button
-                    icon={
-                      isAvailable ? (
-                        <BookUp size={20} color={colors.bg} strokeWidth={2} />
-                      ) : (
-                        <BookDown size={20} color={colors.bg} strokeWidth={2} />
-                      )
-                    }
-                  />
+                  <Button icon={isAvailable ? BookUp : BookDown} />
                 </Link>
               )}
             </Column>

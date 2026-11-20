@@ -1,19 +1,18 @@
-import { listLoans } from "@/features/loans/internal/loan/service";
 import type { LoanSort } from "@/features/loans/internal/loan/schemas";
+import { listLoans } from "@/features/loans/internal/loan/service";
 import type { LoanState } from "@/features/loans/internal/loan/types";
 import {
   Button,
   InlineFilter,
-  ItemList,
   InlineSort,
+  ItemList,
   type SortOption,
 } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { colors } from "@/features/shared/theme";
 import type { SortDirection } from "@/features/shared/types/types";
 import { Link } from "expo-router";
-import { BookUp, SquarePlus } from "lucide-react-native";
+import { BookUp } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import ListHeader from "./ListHeader";
 import LoanRow from "./loans/list/LoanRow";
@@ -65,10 +64,7 @@ export default function LoanList() {
         title="Préstamos"
         create={
           <Link href="/loans/new" asChild>
-            <Button
-              title="Prestar"
-              icon={<BookUp size={18} color={colors.bg} />}
-            />
+            <Button title="Prestar" icon={BookUp} />
           </Link>
         }
         search={search}

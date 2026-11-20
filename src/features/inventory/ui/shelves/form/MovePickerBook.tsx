@@ -2,7 +2,7 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { listCopiesByBook } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { writersOf } from "@/features/loans/ui/options";
-import { Chip, Text } from "@/features/shared/components";
+import { Chip, Icon, Text } from "@/features/shared/components";
 import { colors } from "@/features/shared/theme";
 import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -47,29 +47,29 @@ export default function MovePickerBook({
   const Chevron = open ? ChevronUp : ChevronDown;
 
   return (
-    <View className="gap-3 rounded-lg border border-fg1 bg-fg2 px-5 py-3 items-center">
+    <View className="gap-3 rounded-lg border border-fg1 bg-fg2 px-4 py-3 items-center">
       <Pressable
         onPress={() => setOpen((o) => !o)}
         className="flex-row items-center gap-4"
       >
         <View className="flex-1">
-          <Text variant="h3">{book.title}</Text>
+          <Text variant="item">{book.title}</Text>
           <View className="flex-row items-center">
-            <Text variant="subtitle" className="text-primary">
+            <Text variant="caption" className="text-primary">
               {writersOf(book)}
             </Text>
-            <Dot size={16} color={colors.primary} />
-            <Text variant="subtitle" className="text-primary">
+            <Icon icon={Dot} />
+            <Text variant="caption" className="text-primary">
               {book.activeCount}
             </Text>
           </View>
         </View>
-        <Chevron size={18} color={colors.secondary} strokeWidth={3} />
+        <Icon icon={Chevron} tone="secondary" />
       </Pressable>
 
       {open && !copies && <ActivityIndicator />}
       {open && copies?.length === 0 && (
-        <Text variant="subtitle">
+        <Text variant="caption">
           {shelfId === undefined
             ? "Sin ejemplares"
             : "Sin ejemplares en esta estantería"}

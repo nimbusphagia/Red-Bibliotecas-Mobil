@@ -1,5 +1,4 @@
 import { Button, PageHeader, Searchbar } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { ArrowRightLeft, SquarePlus } from "lucide-react-native";
 
@@ -15,16 +14,12 @@ export function ListHeader({ search, onSearchChange, onCreate }: Props) {
       title="Estantería"
       lead={
         <>
-          <Button
-            title="Nuevo"
-            icon={<SquarePlus size={18} color={colors.bg} />}
-            onPress={onCreate}
-          />
+          <Button title="Nuevo" icon={SquarePlus} onPress={onCreate} />
           <Link href="/shelves/reorganize" asChild>
             <Button
               variant="secondary"
               title="Reorganizar"
-              icon={<ArrowRightLeft size={18} color={colors.primary} />}
+              icon={ArrowRightLeft}
             />
           </Link>
         </>

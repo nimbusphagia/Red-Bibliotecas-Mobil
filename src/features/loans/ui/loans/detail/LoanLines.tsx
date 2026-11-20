@@ -46,18 +46,14 @@ export default function LoanLines({
               <>
                 <Button
                   variant="secondary"
-                  icon={
-                    <Flag size={16} color={colors.primary} strokeWidth={2.5} />
-                  }
+                  icon={Flag}
                   onPress={() => setActive({ line: l, reportOnly: true })}
                 />
 
                 <Button
                   title="Devolver"
                   variant="primary"
-                  icon={
-                    <BookDown size={16} color={colors.bg} strokeWidth={2.5} />
-                  }
+                  icon={BookDown}
                   onPress={() => setActive({ line: l, reportOnly: false })}
                 />
               </>

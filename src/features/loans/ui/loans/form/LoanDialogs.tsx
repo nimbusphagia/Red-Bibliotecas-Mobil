@@ -8,8 +8,8 @@ import {
 import { useState } from "react";
 import { View } from "react-native";
 import { searchVisitors, type LoanCopy } from "../../options";
-import CopyPicker from "./CopyPicker";
 import VisitorForm from "../../visitors/form/VisitorForm";
+import CopyPicker from "./CopyPicker";
 
 export function PickVisitorDialog({
   value,
@@ -74,7 +74,7 @@ export function NotesDialog({
         onSubmitEditing={confirm}
         autoFocus
       />
-      <View className="flex-row justify-end gap-5">
+      <View className="flex-row justify-end gap-4">
         <Button title="Cancelar" variant="secondary" onPress={onClose} />
         <Button title="Aceptar" onPress={confirm} />
       </View>

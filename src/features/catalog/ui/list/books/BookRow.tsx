@@ -1,6 +1,5 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { Button, Column, PillRow } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { BookUp, Eye } from "lucide-react-native";
 
@@ -31,12 +30,9 @@ export default function BookRow({ book }: Props) {
       <Column variant="actions" expand={false}>
         <>
           <Link href={`/catalog/${book.id}`} asChild>
-            <Button
-              variant="secondary"
-              icon={<Eye size={18} color={colors.primary} />}
-            />
+            <Button variant="secondary" icon={Eye} />
           </Link>
-          <Button icon={<BookUp size={18} color={colors.bg} />} />
+          <Button icon={BookUp} />
         </>
       </Column>
     </PillRow>

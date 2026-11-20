@@ -33,7 +33,7 @@ export default function ActiveLoans() {
   return (
     <View className="gap-4">
       <View className="flex-row items-center justify-between">
-        <Text variant="h2">Préstamos pendientes</Text>
+        <Text variant="section">Préstamos pendientes</Text>
         <Link href="/loans" asChild>
           <Button variant="secondary" title="Ver todos" />
         </Link>
@@ -42,7 +42,7 @@ export default function ActiveLoans() {
       {!loans ? (
         <ActivityIndicator />
       ) : loans.length === 0 ? (
-        <Text variant="subtitle">No hay préstamos pendientes</Text>
+        <Text variant="caption">No hay préstamos pendientes</Text>
       ) : (
         <View className="gap-3">
           {loans.map((l) => (

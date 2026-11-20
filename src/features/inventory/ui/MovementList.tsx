@@ -69,7 +69,7 @@ export default function MovementList() {
               <View>
                 <Button
                   variant="secondary"
-                  icon={<SlidersHorizontal size={18} color={colors.primary} />}
+                  icon={SlidersHorizontal}
                   onPress={() => setOpen(true)}
                 />
                 {active && (

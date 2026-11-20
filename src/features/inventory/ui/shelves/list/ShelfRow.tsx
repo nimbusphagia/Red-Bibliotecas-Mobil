@@ -1,7 +1,6 @@
 import type { ShelfListItem } from "@/features/inventory/internal/shelf/types";
 import { Button, Column, PillRow } from "@/features/shared/components";
 import { shelfLabel } from "@/features/shared/format/translate";
-import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { Eye, Pencil } from "lucide-react-native";
 
@@ -28,17 +27,10 @@ export default function ShelfRow({ shelf, onEdit }: Props) {
         containerClass="w-[104] justify-end"
       >
         {!shelf.isDefault && (
-          <Button
-            variant="secondary"
-            icon={<Pencil size={16} color={colors.highlight} strokeWidth={2} />}
-            onPress={onEdit}
-          />
+          <Button variant="secondary" icon={Pencil} onPress={onEdit} />
         )}
         <Link href={`/shelves/${shelf.id}`} asChild>
-          <Button
-            variant="secondary"
-            icon={<Eye size={16} color={colors.highlight} strokeWidth={2} />}
-          />
+          <Button variant="secondary" icon={Eye} />
         </Link>
       </Column>
     </PillRow>

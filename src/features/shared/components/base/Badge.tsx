@@ -16,7 +16,7 @@ export function StatusBadge({ text, variant, className }: Props) {
   };
   return (
     <Text
-      variant="subtitle"
+      variant="caption"
       className={cn(baseClass, variantClass[variant], className)}
     >
       {text}

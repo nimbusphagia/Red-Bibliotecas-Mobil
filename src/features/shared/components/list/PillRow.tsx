@@ -1,8 +1,9 @@
-import { View } from "react-native";
-import { cn, colors } from "../../theme";
-import { Text } from "../base/Text";
-import { PropsWithChildren, ReactNode } from "react";
 import { Dot } from "lucide-react-native";
+import { PropsWithChildren, ReactNode } from "react";
+import { View } from "react-native";
+import { cn } from "../../theme";
+import { Text } from "../base/Text";
+import { Icon } from "../base/Icon";
 
 type Props = { children: ReactNode; className?: string };
 
@@ -10,7 +11,7 @@ export function PillRow({ children, className }: Props) {
   return (
     <View
       className={cn(
-        "border border-fg1 flex-row justify-between gap-8 py-2 px-5 rounded-full bg-fg2",
+        "border border-fg1 flex-row justify-between gap-8 py-2 px-4 rounded-full bg-fg2",
         className,
       )}
     >
@@ -21,7 +22,7 @@ export function PillRow({ children, className }: Props) {
 const columnVariants = {
   id: {
     container: "max-w-[40px] justify-center items-center",
-    text: "font-semibold text-center",
+    text: "font-sans-semibold text-center",
   },
   subtitled: {
     container: "flex-col justify-center items-start ",
@@ -62,12 +63,8 @@ export function Column({
     >
       {text && (
         <Text
-          variant="h3"
-          className={cn(
-            "text-[15px]",
-            variant && columnVariants[variant].text,
-            textClass,
-          )}
+          variant="itemSm"
+          className={cn(variant && columnVariants[variant].text, textClass)}
           numberOfLines={1}
         >
           {text}
@@ -76,9 +73,9 @@ export function Column({
       {children}
       {variant === "subtitled" && !!(subtitle1 || subtitle2) && (
         <View className="flex-row justify-start items-center">
-          <Text variant="subtitle">{subtitle1}</Text>
-          {subtitle1 && subtitle2 && <Dot color={colors.secondary} />}
-          <Text variant="subtitle">{subtitle2}</Text>
+          <Text variant="caption">{subtitle1}</Text>
+          {subtitle1 && subtitle2 && <Icon icon={Dot} tone="secondary" />}
+          <Text variant="caption">{subtitle2}</Text>
         </View>
       )}
     </View>

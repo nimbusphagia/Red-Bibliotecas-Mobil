@@ -33,7 +33,7 @@ export function FieldRow({
           label={label}
           content={value}
           labelClass="w-[110px]"
-          className={cn(error && "border border-red-500", className)}
+          className={cn(error && "border border-error", className)}
           contentClass={contentClass}
         />
       </Pressable>

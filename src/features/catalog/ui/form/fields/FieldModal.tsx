@@ -6,9 +6,9 @@ import {
   Dialog,
   FieldError,
   MultiSearchSelect,
-  TextField,
   SearchSelect,
   SimpleSelect,
+  TextField,
   type Option,
 } from "@/features/shared/components";
 import { toFormErrors } from "@/features/shared/errors/messages";
@@ -123,7 +123,7 @@ export default function FieldModal({
                   onSubmitEditing={confirm}
                   autoFocus
                 />
-                <View className="flex-row justify-end gap-5">
+                <View className="flex-row justify-end gap-4">
                   <Button
                     title="Cancelar"
                     variant="secondary"

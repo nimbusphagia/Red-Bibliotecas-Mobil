@@ -1,7 +1,8 @@
 import { Dot } from "lucide-react-native";
 import { Pressable } from "react-native";
-import { cn, colors } from "../../../theme";
+import { cn } from "../../../theme";
 import { Text } from "../../base/Text";
+import { Icon } from "../../base/Icon";
 
 export function Chip({
   label,
@@ -17,7 +18,7 @@ export function Chip({
   onPress: () => void;
 }) {
   const textClass = cn(
-    "font-semibold",
+    "font-sans-semibold",
     selected ? "text-bg" : "text-secondary",
   );
 
@@ -33,7 +34,7 @@ export function Chip({
       <Text className={textClass}>{label}</Text>
       {detail && (
         <>
-          <Dot size={16} color={selected ? colors.bg : colors.secondary} />
+          <Icon icon={Dot} tone={selected ? "bg" : "secondary"} />
           <Text className={textClass}>{detail}</Text>
         </>
       )}

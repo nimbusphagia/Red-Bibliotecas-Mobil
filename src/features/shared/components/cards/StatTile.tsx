@@ -13,19 +13,14 @@ export function StatTile({ stat, highlight }: Props) {
   return (
     <View
       className={cn(
-        "min-w-[110px] items-start gap-0.5 rounded-lg border px-4 py-2",
+        "min-w-[110px] items-start gap-1 rounded-lg border px-4 py-2",
         highlight ? "border-primary bg-primary" : "border-fg1 bg-fg1/60",
       )}
     >
-      <Text
-        className={cn(
-          "font-sans-bold text-[28px]",
-          highlight ? "text-bg" : "text-highlight",
-        )}
-      >
+      <Text variant="display" className={cn(highlight && "text-bg")}>
         {stat.numberData}
       </Text>
-      <Text variant="subtitle" className={cn(highlight && "text-bg")}>
+      <Text variant="caption" className={cn(highlight && "text-bg")}>
         {stat.name}
       </Text>
     </View>

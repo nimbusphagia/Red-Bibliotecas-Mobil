@@ -20,10 +20,10 @@ export function FormScreen({ title, subtitle, children }: FormScreenProps) {
         >
           <View className="w-full max-w-lg p-6 md:p-8">
             <View className="mb-6">
-              <Text className="text-3xl font-bold">{title}</Text>
+              <Text variant="title">{title}</Text>
               {subtitle ? <Text className="mt-1">{subtitle}</Text> : null}
             </View>
-            <View className="gap-5">{children}</View>
+            <View className="gap-4">{children}</View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

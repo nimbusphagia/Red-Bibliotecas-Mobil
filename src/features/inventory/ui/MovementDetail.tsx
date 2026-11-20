@@ -1,11 +1,11 @@
-import { getLoan } from "@/features/loans/internal/loan/service";
-import type { LoanListItem } from "@/features/loans/internal/loan/types";
-import { loanDetailRows } from "@/features/loans/ui/loans/detail/loanRows";
 import {
   getMovement,
   listMovementLines,
 } from "@/features/inventory/internal/movement/service";
 import type { MovementListItem } from "@/features/inventory/internal/movement/types";
+import { getLoan } from "@/features/loans/internal/loan/service";
+import type { LoanListItem } from "@/features/loans/internal/loan/types";
+import { loanDetailRows } from "@/features/loans/ui/loans/detail/loanRows";
 import {
   Button,
   DetailColumns,
@@ -20,7 +20,6 @@ import {
   MOVEMENT_TYPE_ES,
 } from "@/features/shared/format/translate";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { colors } from "@/features/shared/theme";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { Link } from "expo-router";
 import { Eye } from "lucide-react-native";
@@ -79,11 +78,7 @@ export default function MovementDetail({ id }: { id: string }) {
       title: "Préstamo",
       lead: (
         <Link href={`/loans/${loan.id}`} asChild>
-          <Button
-            variant="secondary"
-            className="bg-fg2 border-fg2 min-h-8"
-            icon={<Eye size={16} strokeWidth={2.5} color={colors.primary} />}
-          />
+          <Button variant="ghost" size="sm" icon={Eye} />
         </Link>
       ),
       rows: [
@@ -101,7 +96,7 @@ export default function MovementDetail({ id }: { id: string }) {
     <>
       <PageHeader
         title={`Movimiento #${movement.id}`}
-        lead={<Text variant="h3">{MOVEMENT_TYPE_ES[movement.type]}</Text>}
+        lead={<Text variant="item">{MOVEMENT_TYPE_ES[movement.type]}</Text>}
       />
       <View className="px-4">
         <DetailColumns columns={columns} />
@@ -109,7 +104,7 @@ export default function MovementDetail({ id }: { id: string }) {
       {!loanLine && (
         <ItemList
           columns={2}
-          toolbar={<Text variant="h2">Ejemplares</Text>}
+          toolbar={<Text variant="section">Ejemplares</Text>}
           items={list.items}
           loading={list.loading}
           onEndReached={list.loadMore}

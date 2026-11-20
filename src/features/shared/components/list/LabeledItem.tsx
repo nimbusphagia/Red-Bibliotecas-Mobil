@@ -20,7 +20,7 @@ export function LabeledItem({
   contentClass,
 }: Props) {
   const baseTextClass = cn(
-    "text-[14px] py-[5px] px-[15px] border border-transparent",
+    "py-[5px] px-[15px] border border-transparent",
     !content && "text-secondary",
   );
   return (
@@ -32,7 +32,7 @@ export function LabeledItem({
       )}
     >
       <Text
-        variant="h3"
+        variant="itemSm"
         className={cn(
           baseTextClass,
           content && "bg-primary text-bg",
@@ -43,7 +43,7 @@ export function LabeledItem({
         {label}
       </Text>
       <Text
-        variant="h3"
+        variant="itemSm"
         numberOfLines={1}
         className={cn(
           baseTextClass,

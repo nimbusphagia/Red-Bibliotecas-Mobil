@@ -1,7 +1,7 @@
 import { useSession } from "@/features/account/internal/session";
+import { loadShelves, useOptions } from "@/features/catalog/ui/options";
 import { moveCopies } from "@/features/inventory/internal/shelf/service";
 import type { ShelfCopy } from "@/features/inventory/internal/shelf/types";
-import { loadShelves, useOptions } from "@/features/catalog/ui/options";
 import {
   Button,
   Dialog,
@@ -53,8 +53,8 @@ export default function MoveCopyDialog({
   return (
     <Dialog onClose={onClose}>
       <View className="gap-1">
-        <Text variant="h3">{`#${copy.id} ${copy.bookTitle}`}</Text>
-        <Text variant="subtitle">{copy.labelText}</Text>
+        <Text variant="item">{`#${copy.id} ${copy.bookTitle}`}</Text>
+        <Text variant="caption">{copy.labelText}</Text>
       </View>
       <ScrollView
         className="max-h-[260px]"
@@ -69,7 +69,7 @@ export default function MoveCopyDialog({
         />
       </ScrollView>
       <FieldError>{error}</FieldError>
-      <View className="flex-row justify-end gap-5">
+      <View className="flex-row justify-end gap-4">
         <Button title="Cancelar" variant="secondary" onPress={onClose} />
         <Button
           title="Mover"

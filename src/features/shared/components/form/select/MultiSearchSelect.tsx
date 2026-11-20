@@ -23,7 +23,7 @@ export function MultiSearchSelect({
 
   return (
     <View className="gap-2">
-      {label && <Text variant="h3">{label}</Text>}
+      {label && <Text variant="item">{label}</Text>}
       <SearchSelect {...search} onChange={add} />
       {values.length > 0 && (
         <View className="flex-row flex-wrap justify-center gap-3 pt-3">

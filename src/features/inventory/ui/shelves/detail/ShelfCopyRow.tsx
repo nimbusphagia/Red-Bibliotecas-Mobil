@@ -2,7 +2,6 @@ import type { ShelfCopy } from "@/features/inventory/internal/shelf/types";
 import { Button, Column, PillRow } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
-import { colors } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { ArrowRightLeft, Eye } from "lucide-react-native";
 
@@ -28,16 +27,9 @@ export default function ShelfCopyRow({ copy, onMove }: Props) {
         expand={false}
         containerClass="w-[104px] justify-end"
       >
-        <Button
-          variant="secondary"
-          icon={<ArrowRightLeft size={16} color={colors.highlight} />}
-          onPress={onMove}
-        />
+        <Button variant="secondary" icon={ArrowRightLeft} onPress={onMove} />
         <Link href={`/catalog/${copy.bookId}`} asChild>
-          <Button
-            variant="secondary"
-            icon={<Eye size={16} color={colors.highlight} />}
-          />
+          <Button variant="secondary" icon={Eye} />
         </Link>
       </Column>
     </PillRow>

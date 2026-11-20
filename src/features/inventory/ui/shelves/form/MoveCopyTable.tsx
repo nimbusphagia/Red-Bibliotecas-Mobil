@@ -5,7 +5,6 @@ import {
   PillRow,
   Text,
 } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
 import { Trash } from "lucide-react-native";
 import { View } from "react-native";
 import type { MoveCopy } from "../options";
@@ -25,7 +24,7 @@ export default function MoveCopyTable({
 }: Props) {
   return (
     <View className="gap-2">
-      {copies.length === 0 && <Text variant="subtitle">Sin ejemplares</Text>}
+      {copies.length === 0 && <Text variant="caption">Sin ejemplares</Text>}
       {copies.map((c) => (
         <PillRow key={c.id} className="items-center gap-4 py-1">
           <Column variant="id" text={`#${c.id}`} />
@@ -42,7 +41,7 @@ export default function MoveCopyTable({
           <Column variant="actions" expand={false}>
             <Button
               variant="secondary"
-              icon={<Trash size={14} strokeWidth={3} color={colors.primary} />}
+              icon={Trash}
               onPress={() => onRemove(c.id)}
             />
           </Column>

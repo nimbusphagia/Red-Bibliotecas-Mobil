@@ -2,6 +2,7 @@ export { Button } from "./base/Button";
 export { Dialog } from "./base/Dialog";
 export { PageHeader } from "./base/Header";
 export { Text, type TextVariant } from "./base/Text";
+export { Icon, type IconSize, type IconTone } from "./base/Icon";
 export { Section } from "./base/Section";
 export { Card } from "./cards/Card";
 export { DualCard } from "./cards/DualCard";

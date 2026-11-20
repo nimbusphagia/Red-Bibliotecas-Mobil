@@ -39,7 +39,7 @@ export default function ShelfForm({ shelf, onCancel, onSaved }: Props) {
       contentContainerClassName="gap-4"
       showsVerticalScrollIndicator={false}
     >
-      <Text variant="h3">
+      <Text variant="item">
         {shelf ? "Editar estantería" : "Nueva estantería"}
       </Text>
       <TextField
@@ -59,7 +59,7 @@ export default function ShelfForm({ shelf, onCancel, onSaved }: Props) {
         onSubmitEditing={save}
       />
       <FieldError>{errors.form}</FieldError>
-      <View className="flex-row justify-end gap-5">
+      <View className="flex-row justify-end gap-4">
         <Button title="Cancelar" variant="secondary" onPress={onCancel} />
         <Button title="Guardar" loading={submitting} onPress={save} />
       </View>

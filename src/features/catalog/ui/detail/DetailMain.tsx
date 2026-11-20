@@ -1,15 +1,13 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { LabelCodes } from "@/features/inventory/internal/label/types";
+import { Button, Section } from "@/features/shared/components";
+import { Link } from "expo-router";
+import { BookPlus, PencilLine, Tag } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
 import BookInfo from "./bookInfo/BookInfo";
 import CopiesList from "./bookInfo/CopiesList";
 import LabelInfo from "./bookInfo/LabelInfo";
-import { Button } from "@/features/shared/components";
-import { Section } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
-import { Link } from "expo-router";
-import { BookPlus, PencilLine, Tag } from "lucide-react-native";
 
 type Props = {
   book: BookListItem;
@@ -26,7 +24,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
             <Button
               variant="secondary"
               className="bg-fg2 border-fg2 min-h-8"
-              icon={<Tag size={14} strokeWidth={2.5} color={colors.primary} />}
+              icon={Tag}
             />
           }
         >
@@ -45,17 +43,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
               }}
               asChild
             >
-              <Button
-                variant="secondary"
-                className="bg-fg2 border-fg2 min-h-8"
-                icon={
-                  <PencilLine
-                    size={14}
-                    strokeWidth={2.5}
-                    color={colors.primary}
-                  />
-                }
-              />
+              <Button variant="ghost" size="sm" icon={PencilLine} />
             </Link>
           }
         >
@@ -66,15 +54,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
       <Section
         title="Ejemplares"
         expand={true}
-        lead={
-          <Button
-            variant="secondary"
-            className="bg-fg2 border-fg2 min-h-8"
-            icon={
-              <BookPlus size={15} strokeWidth={2.5} color={colors.primary} />
-            }
-          />
-        }
+        lead={<Button variant="ghost" icon={BookPlus} />}
       >
         <CopiesList copies={copies} />
       </Section>

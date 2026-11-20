@@ -6,7 +6,6 @@ import type {
   Shelf,
   ShelfCopy,
 } from "@/features/inventory/internal/shelf/types";
-import MoveCopyDialog from "./shelves/form/MoveCopyDialog";
 import {
   DetailColumns,
   ItemList,
@@ -21,6 +20,7 @@ import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import ShelfCopyRow from "./shelves/detail/ShelfCopyRow";
+import MoveCopyDialog from "./shelves/form/MoveCopyDialog";
 
 const PAGE_SIZE = 20;
 
@@ -68,7 +68,7 @@ export default function ShelfDetail({ id }: { id: string }) {
       </View>
       <ItemList
         columns={2}
-        toolbar={<Text variant="h2">Ejemplares</Text>}
+        toolbar={<Text variant="section">Ejemplares</Text>}
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}

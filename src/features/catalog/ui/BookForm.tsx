@@ -4,9 +4,9 @@ import { FieldError, FormHeader, Text } from "@/features/shared/components";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView } from "react-native";
+import { BookFormSections } from "./form/BookFormSections";
 import FieldModal from "./form/fields/FieldModal";
 import { type Field } from "./form/fields/fields";
-import { BookFormSections } from "./form/BookFormSections";
 import { useBookForm } from "./form/useBookForm";
 
 export default function BookForm({ id }: { id?: string }) {
@@ -49,7 +49,7 @@ function Form({ book }: { book?: BookListItem }) {
       >
         <FieldError>{form.errors.form ?? form.orphanErrors}</FieldError>
         {form.locked && (
-          <Text variant="subtitle">
+          <Text variant="caption">
             Título, escritor, categoría y subcategoría están bloqueados porque
             el libro ya tiene tejuelos.
           </Text>

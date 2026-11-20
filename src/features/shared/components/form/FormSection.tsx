@@ -14,9 +14,7 @@ export function FormSection({
   return (
     <View className={cn("gap-4", className)}>
       <View className="flex-row items-center justify-between">
-        <Text variant="h1" className="font-sans-medium text-highlight">
-          {title}
-        </Text>
+        <Text variant="section"> {title}</Text>
         {lead}
       </View>
       {children}

@@ -7,13 +7,12 @@ import type {
 import {
   Button,
   InlineFilter,
-  ItemList,
   InlineSort,
+  ItemList,
   type SortOption,
 } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { colors } from "@/features/shared/theme";
 import type { SortDirection } from "@/features/shared/types/types";
 import { UserPlus } from "lucide-react-native";
 import { useCallback, useState } from "react";
@@ -72,7 +71,7 @@ export default function VisitorList() {
         create={
           <Button
             title="Agregar"
-            icon={<UserPlus size={18} color={colors.bg} />}
+            icon={UserPlus}
             onPress={() => setDialog({})}
           />
         }

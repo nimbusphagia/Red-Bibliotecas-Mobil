@@ -63,14 +63,14 @@ export default function ReturnLineDialog({
 
   return (
     <Dialog onClose={onClose}>
-      <Text variant="h3" className="font-sans-semibold">
+      <Text variant="item" className="font-sans-semibold">
         {reportOnly ? "Reportar ejemplar" : "Devolver ejemplar"}
       </Text>
-      <Text variant="subtitle">
+      <Text variant="caption">
         {line.bookTitle} {line.labelText ? `· ${line.labelText}` : ""}
       </Text>
       <View className="gap-2">
-        <Text variant="subtitle">Estado del ejemplar</Text>
+        <Text variant="caption">Estado del ejemplar</Text>
         {choices.map((c) => (
           <Button
             key={c.key}
@@ -81,7 +81,7 @@ export default function ReturnLineDialog({
         ))}
       </View>
       <FieldError>{error}</FieldError>
-      <View className="flex-row justify-end gap-5">
+      <View className="flex-row justify-end gap-4">
         <Button title="Cancelar" variant="secondary" onPress={onClose} />
         <Button title="Confirmar" loading={submitting} onPress={confirm} />
       </View>

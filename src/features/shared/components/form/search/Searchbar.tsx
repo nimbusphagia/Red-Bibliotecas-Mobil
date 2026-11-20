@@ -1,6 +1,7 @@
 import { Search } from "lucide-react-native";
 import { TextInput, View } from "react-native";
 import { cn, colors } from "../../../theme";
+import { Icon } from "../../base/Icon";
 
 type Props = {
   value: string;
@@ -23,14 +24,14 @@ export function Searchbar({
       )}
     >
       <TextInput
-        className="flex-1 h-full text-primary font-sans font-medium"
+        className="flex-1 h-full text-primary font-sans-medium"
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={colors.secondary}
         returnKeyType="search"
       />
-      <Search size={18} color={colors.highlight} strokeWidth={3} />
+      <Icon icon={Search} tone="highlight" />
     </View>
   );
 }

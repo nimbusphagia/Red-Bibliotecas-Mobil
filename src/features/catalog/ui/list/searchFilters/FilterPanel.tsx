@@ -89,8 +89,8 @@ export default function FilterPanel({
         <Dialog onClose={() => setOpen(null)}>
           {all && (
             <View className="flex-row items-center justify-between">
-              <Text variant="h3">Filtros</Text>
-              <View className="flex-row gap-5">
+              <Text variant="item">Filtros</Text>
+              <View className="flex-row gap-4">
                 <Button
                   title="Limpiar"
                   variant="secondary"

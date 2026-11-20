@@ -1,3 +1,4 @@
+import { useOptions } from "@/features/catalog/ui/options";
 import { listSchoolGrades } from "@/features/loans/internal/reference/service";
 import {
   createVisitor,
@@ -8,7 +9,6 @@ import type {
   VisitorListItem,
   VisitorRole,
 } from "@/features/loans/internal/visitor/types";
-import { useOptions } from "@/features/catalog/ui/options";
 import {
   Button,
   FieldError,
@@ -74,7 +74,7 @@ export default function VisitorForm({
       contentContainerClassName="gap-4"
       showsVerticalScrollIndicator={false}
     >
-      <Text variant="h3">
+      <Text variant="item">
         {visitor ? "Editar visitante" : "Nuevo visitante"}
       </Text>
       <TextField
@@ -87,7 +87,7 @@ export default function VisitorForm({
       />
       {!visitor && (
         <View className="gap-3">
-          <Text variant="h3">Rol</Text>
+          <Text variant="item">Rol</Text>
           <InlineFilter options={ROLES} value={role} onChange={setRole} />
         </View>
       )}
@@ -103,7 +103,7 @@ export default function VisitorForm({
         </View>
       )}
       <FieldError>{errors.form}</FieldError>
-      <View className="flex-row justify-end gap-5">
+      <View className="flex-row justify-end gap-4">
         <Button title="Cancelar" variant="secondary" onPress={onCancel} />
         <Button title="Guardar" loading={submitting} onPress={save} />
       </View>

@@ -28,7 +28,7 @@ export function Dialog({
         />
         <View
           className={cn(
-            "max-h-[80%] w-[480px] max-w-full gap-4 rounded-2xl border border-fg1 bg-bg p-7 pt-6",
+            "max-h-[80%] w-[480px] max-w-full gap-4 rounded-2xl border border-fg1 bg-bg p-6 pt-6",
             className,
           )}
         >

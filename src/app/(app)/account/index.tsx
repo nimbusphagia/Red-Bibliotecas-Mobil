@@ -30,7 +30,7 @@ export default function AccountScreen() {
   return (
     <MainLayout title="Account">
       <View className="gap-1">
-        <Text className="text-lg font-semibold">{account.username}</Text>
+        <Text variant="section">{account.username}</Text>
         <Text>{ROLE_LABELS[account.role]}</Text>
       </View>
       <View className="mt-4 w-60">

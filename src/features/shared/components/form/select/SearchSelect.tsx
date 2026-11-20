@@ -67,11 +67,11 @@ export function SearchSelect({
 
   return (
     <View className="gap-2">
-      {label && <Text variant="h3">{label}</Text>}
+      {label && <Text variant="item">{label}</Text>}
 
       {empty ? (
         <View className="h-12 justify-center rounded-full bg-fg1 px-4">
-          <Text variant="subtitle">Sin resultados</Text>
+          <Text variant="caption">Sin resultados</Text>
         </View>
       ) : isOpen ? (
         <View className="h-12 flex-row items-center gap-2 rounded-full bg-fg1 px-4">
@@ -92,7 +92,7 @@ export function SearchSelect({
           onPress={() => setOpen(true)}
           className={cn("h-12 justify-center rounded-full bg-fg1 px-4")}
         >
-          <Text variant="subtitle">{value?.label ?? placeholder}</Text>
+          <Text variant="caption">{value?.label ?? placeholder}</Text>
         </Pressable>
       )}
 
@@ -108,7 +108,7 @@ export function SearchSelect({
                 onPress={() => pick(undefined)}
                 className="border-b border-fg1 px-4 py-3"
               >
-                <Text variant="subtitle" className="font-sans-semibold">
+                <Text variant="caption" className="font-sans-semibold">
                   Quitar filtro
                 </Text>
               </Pressable>
@@ -119,15 +119,15 @@ export function SearchSelect({
                 className="border-b border-fg1 px-4 py-3"
               >
                 <Text
-                  variant="subtitle"
-                  className="font-semibold text-highlight"
+                  variant="caption"
+                  className="font-sans-semibold text-highlight"
                 >
                   Crear «{search.trim()}»
                 </Text>
               </Pressable>
             )}
             {options.length === 0 && (
-              <Text variant="subtitle" className="px-4 py-3 text-center">
+              <Text variant="caption" className="px-4 py-3 text-center">
                 Sin resultados
               </Text>
             )}
@@ -140,7 +140,7 @@ export function SearchSelect({
                   onPress={() => pick(o)}
                   className={cn("px-4 py-3", separatorClass)}
                 >
-                  <Text variant="subtitle" className="font-semibold">
+                  <Text variant="caption" className="font-sans-semibold">
                     {o.label}
                   </Text>
                 </Pressable>

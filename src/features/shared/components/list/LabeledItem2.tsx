@@ -19,7 +19,7 @@ export function LabeledItem2({
   labelClass,
   contentClass,
 }: Props) {
-  const baseTextClass = cn("text-[14px] py-[5px] px-[15px] border");
+  const baseTextClass = cn("py-[5px] px-[15px] border");
   const rounded = "rounded-lg";
   return (
     <View
@@ -31,7 +31,7 @@ export function LabeledItem2({
       )}
     >
       <Text
-        variant="h2"
+        variant="itemSm"
         className={cn(
           baseTextClass,
           rounded,
@@ -42,7 +42,7 @@ export function LabeledItem2({
         {label}
       </Text>
       <Text
-        variant="h3"
+        variant="itemSm"
         numberOfLines={1}
         className={cn(
           baseTextClass,

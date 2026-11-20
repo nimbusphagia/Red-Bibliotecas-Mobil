@@ -10,12 +10,12 @@ export function PageHeader({
   children,
 }: PropsWithChildren<Props>) {
   return (
-    <View className="flex-row items-center gap-5 px-4 pb-3">
+    <View className="flex-row items-center gap-4 px-4 pb-3">
       <Text className="text-highlight text-[24px] font-sans-semibold">
         {title}
       </Text>
       {lead}
-      <View className="flex-1 flex-row items-center justify-end gap-5">
+      <View className="flex-1 flex-row items-center justify-end gap-4">
         {children}
       </View>
     </View>

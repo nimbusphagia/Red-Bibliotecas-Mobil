@@ -2,8 +2,8 @@ import { createAuthor } from "@/features/catalog/internal/author/service";
 import {
   Button,
   FieldError,
-  TextField,
   Text,
+  TextField,
   type Option,
 } from "@/features/shared/components";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
@@ -33,7 +33,7 @@ export default function NewAuthorForm({
 
   return (
     <>
-      <Text variant="h3">Nuevo autor</Text>
+      <Text variant="item">Nuevo autor</Text>
       <TextField
         label="Nombre"
         value={firstName}
@@ -50,7 +50,7 @@ export default function NewAuthorForm({
         onSubmitEditing={save}
       />
       <FieldError>{errors.form}</FieldError>
-      <View className="flex-row justify-end gap-5">
+      <View className="flex-row justify-end gap-4">
         <Button title="Cancelar" variant="secondary" onPress={onCancel} />
         <Button title="Crear" loading={submitting} onPress={save} />
       </View>
