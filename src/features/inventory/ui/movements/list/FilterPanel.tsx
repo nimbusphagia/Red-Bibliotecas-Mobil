@@ -6,6 +6,7 @@ import type {
 import {
   Button,
   Dialog,
+  DialogHeader,
   SimpleSelect,
   Text,
 } from "@/features/shared/components";
@@ -47,17 +48,19 @@ export default function FilterPanel({
 
   return (
     <Dialog onClose={onClose}>
-      <View className="flex-row items-center justify-between">
-        <Text variant="item">Filtros</Text>
-        <View className="flex-row gap-4">
-          <Button
-            title="Limpiar"
-            variant="secondary"
-            onPress={() => onChange({})}
-          />
-          <Button title="Cerrar" onPress={onClose} />
-        </View>
-      </View>
+      <DialogHeader
+        title="Filtros"
+        actions={
+          <>
+            <Button
+              title="Limpiar"
+              variant="secondary"
+              onPress={() => onChange({})}
+            />
+            <Button title="Cerrar" onPress={onClose} />
+          </>
+        }
+      />
       <SimpleSelect
         label="Tipo"
         options={TYPE_OPTIONS}

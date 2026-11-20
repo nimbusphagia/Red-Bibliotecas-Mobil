@@ -1,14 +1,14 @@
 import { createAuthor } from "@/features/catalog/internal/author/service";
 import {
-  Button,
+  DialogActions,
+  DialogBody,
+  DialogHeader,
   FieldError,
-  Text,
   TextField,
   type Option,
 } from "@/features/shared/components";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useState } from "react";
-import { View } from "react-native";
 import { fullName } from "../../options";
 
 type Props = {
@@ -33,27 +33,31 @@ export default function NewAuthorForm({
 
   return (
     <>
-      <Text variant="item">Nuevo autor</Text>
-      <TextField
-        label="Nombre"
-        value={firstName}
-        onChangeText={setFirstName}
-        error={errors.fields.firstName}
-        autoCapitalize="words"
-      />
-      <TextField
-        label="Apellido"
-        value={lastName}
-        onChangeText={setLastName}
-        error={errors.fields.lastName}
-        autoCapitalize="words"
-        onSubmitEditing={save}
-      />
+      <DialogHeader title="Nuevo autor" />
+      <DialogBody>
+        <TextField
+          label="Nombre"
+          value={firstName}
+          onChangeText={setFirstName}
+          error={errors.fields.firstName}
+          autoCapitalize="words"
+        />
+        <TextField
+          label="Apellido"
+          value={lastName}
+          onChangeText={setLastName}
+          error={errors.fields.lastName}
+          autoCapitalize="words"
+          onSubmitEditing={save}
+        />
+      </DialogBody>
       <FieldError>{errors.form}</FieldError>
-      <View className="flex-row justify-end gap-4">
-        <Button title="Cancelar" variant="secondary" onPress={onCancel} />
-        <Button title="Crear" loading={submitting} onPress={save} />
-      </View>
+      <DialogActions
+        confirmTitle="Crear"
+        loading={submitting}
+        onConfirm={save}
+        onCancel={onCancel}
+      />
     </>
   );
 }

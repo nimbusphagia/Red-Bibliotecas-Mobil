@@ -2,8 +2,9 @@ import { createCollection } from "@/features/catalog/internal/collection/service
 import { createPublisher } from "@/features/catalog/internal/publisher/service";
 import { createSeries } from "@/features/catalog/internal/series/service";
 import {
-  Button,
   Dialog,
+  DialogActions,
+  DialogBody,
   FieldError,
   MultiSearchSelect,
   SearchSelect,
@@ -13,7 +14,6 @@ import {
 } from "@/features/shared/components";
 import { toFormErrors } from "@/features/shared/errors/messages";
 import { useCallback, useState } from "react";
-import { ScrollView, View } from "react-native";
 import { searchAuthors, searchCollections, useOptions } from "../../options";
 import { display, type Field } from "./fields";
 import NewAuthorForm from "./NewAuthorForm";
@@ -89,49 +89,35 @@ export default function FieldModal({
 
   return (
     <Dialog onClose={onClose}>
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerClassName="gap-4"
-        showsVerticalScrollIndicator={false}
-      >
-        {newAuthor !== null ? (
-          <NewAuthorForm
-            initialName={newAuthor}
-            onCancel={() => setNewAuthor(null)}
-            onCreated={(author) => {
-              commit([...(values[key] as Option[]), author]);
-              setNewAuthor(null);
-            }}
-          />
-        ) : (
-          <>
+      {newAuthor !== null ? (
+        <NewAuthorForm
+          initialName={newAuthor}
+          onCancel={() => setNewAuthor(null)}
+          onCreated={(author) => {
+            commit([...(values[key] as Option[]), author]);
+            setNewAuthor(null);
+          }}
+        />
+      ) : (
+        <>
+          <DialogBody>
             {(kind === "text" || kind === "number") && (
-              <>
-                <TextField
-                  label={label}
-                  value={draft}
-                  onChangeText={(t) =>
-                    setDraft(kind === "number" ? t.replace(/\D/g, "") : t)
-                  }
-                  keyboardType={kind === "number" ? "number-pad" : "default"}
-                  autoCapitalize={key === "title" ? "words" : "none"}
-                  helperText={
-                    field.max
-                      ? `Entre ${field.min ?? 0} y ${field.max}`
-                      : undefined
-                  }
-                  onSubmitEditing={confirm}
-                  autoFocus
-                />
-                <View className="flex-row justify-end gap-4">
-                  <Button
-                    title="Cancelar"
-                    variant="secondary"
-                    onPress={onClose}
-                  />
-                  <Button title="Aceptar" disabled={!valid} onPress={confirm} />
-                </View>
-              </>
+              <TextField
+                label={label}
+                value={draft}
+                onChangeText={(t) =>
+                  setDraft(kind === "number" ? t.replace(/\D/g, "") : t)
+                }
+                keyboardType={kind === "number" ? "number-pad" : "default"}
+                autoCapitalize={key === "title" ? "words" : "none"}
+                helperText={
+                  field.max
+                    ? `Entre ${field.min ?? 0} y ${field.max}`
+                    : undefined
+                }
+                onSubmitEditing={confirm}
+                autoFocus
+              />
             )}
 
             {kind === "pick" && (
@@ -158,25 +144,32 @@ export default function FieldModal({
             )}
 
             {kind === "multi" && (
-              <>
-                <MultiSearchSelect
-                  label={label}
-                  values={values[key] as Option[]}
-                  onChange={commit}
-                  fetchOptions={searchAuthors}
-                  placeholder="Agregar..."
-                  onCreate={setNewAuthor}
-                />
-                <View className="flex-row justify-end">
-                  <Button title="Listo" onPress={onClose} />
-                </View>
-              </>
+              <MultiSearchSelect
+                label={label}
+                values={values[key] as Option[]}
+                onChange={commit}
+                fetchOptions={searchAuthors}
+                placeholder="Agregar..."
+                onCreate={setNewAuthor}
+              />
             )}
+          </DialogBody>
 
-            <FieldError>{error}</FieldError>
-          </>
-        )}
-      </ScrollView>
+          <FieldError>{error}</FieldError>
+
+          {(kind === "text" || kind === "number") && (
+            <DialogActions
+              confirmTitle="Aceptar"
+              disabled={!valid}
+              onConfirm={confirm}
+              onCancel={onClose}
+            />
+          )}
+          {kind === "multi" && (
+            <DialogActions confirmTitle="Listo" onConfirm={onClose} />
+          )}
+        </>
+      )}
     </Dialog>
   );
 }

@@ -1,7 +1,11 @@
 import { loadShelves, useOptions } from "@/features/catalog/ui/options";
-import { Button, Dialog, SimpleSelect } from "@/features/shared/components";
+import {
+  Button,
+  Dialog,
+  DialogBody,
+  SimpleSelect,
+} from "@/features/shared/components";
 import { useState } from "react";
-import { ScrollView } from "react-native";
 
 type Props = {
   value?: number;
@@ -22,10 +26,7 @@ export default function ShelfFilter({ value, onChange }: Props) {
       />
       {open && (
         <Dialog onClose={() => setOpen(false)}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
+          <DialogBody>
             <SimpleSelect
               label="Estantería"
               options={shelves}
@@ -35,7 +36,7 @@ export default function ShelfFilter({ value, onChange }: Props) {
                 setOpen(false);
               }}
             />
-          </ScrollView>
+          </DialogBody>
         </Dialog>
       )}
     </>

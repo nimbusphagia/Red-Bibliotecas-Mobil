@@ -1,6 +1,13 @@
 import { returnCopies } from "@/features/loans/internal/loan/service";
 import type { LoanLine } from "@/features/loans/internal/loan/types";
-import { Button, Dialog, FieldError, Text } from "@/features/shared/components";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogHeader,
+  FieldError,
+  Text,
+} from "@/features/shared/components";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useState } from "react";
 import { View } from "react-native";
@@ -63,12 +70,10 @@ export default function ReturnLineDialog({
 
   return (
     <Dialog onClose={onClose}>
-      <Text variant="item" className="font-sans-semibold">
-        {reportOnly ? "Reportar ejemplar" : "Devolver ejemplar"}
-      </Text>
-      <Text variant="caption">
-        {line.bookTitle} {line.labelText ? `· ${line.labelText}` : ""}
-      </Text>
+      <DialogHeader
+        title={reportOnly ? "Reportar ejemplar" : "Devolver ejemplar"}
+        subtitle={`${line.bookTitle}${line.labelText ? ` · ${line.labelText}` : ""}`}
+      />
       <View className="gap-2">
         <Text variant="caption">Estado del ejemplar</Text>
         {choices.map((c) => (
@@ -81,10 +86,12 @@ export default function ReturnLineDialog({
         ))}
       </View>
       <FieldError>{error}</FieldError>
-      <View className="flex-row justify-end gap-4">
-        <Button title="Cancelar" variant="secondary" onPress={onClose} />
-        <Button title="Confirmar" loading={submitting} onPress={confirm} />
-      </View>
+      <DialogActions
+        confirmTitle="Confirmar"
+        loading={submitting}
+        onConfirm={confirm}
+        onCancel={onClose}
+      />
     </Dialog>
   );
 }

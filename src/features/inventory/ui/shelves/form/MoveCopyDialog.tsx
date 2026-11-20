@@ -5,6 +5,9 @@ import type { ShelfCopy } from "@/features/inventory/internal/shelf/types";
 import {
   Button,
   Dialog,
+  DialogActions,
+  DialogBody,
+  DialogHeader,
   FieldError,
   SimpleSelect,
   Text,
@@ -52,32 +55,26 @@ export default function MoveCopyDialog({
 
   return (
     <Dialog onClose={onClose}>
-      <View className="gap-1">
-        <Text variant="item">{`#${copy.id} ${copy.bookTitle}`}</Text>
-        <Text variant="caption">{copy.labelText}</Text>
-      </View>
-      <ScrollView
-        className="max-h-[260px]"
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+      <DialogHeader
+        title={`#${copy.id} ${copy.bookTitle}`}
+        subtitle={copy.labelText ?? undefined}
+      />
+      <DialogBody className="max-h-[260px]">
         <SimpleSelect
           label="Destino"
           options={shelves}
           value={targetId}
           onChange={setTargetId}
         />
-      </ScrollView>
+      </DialogBody>
       <FieldError>{error}</FieldError>
-      <View className="flex-row justify-end gap-4">
-        <Button title="Cancelar" variant="secondary" onPress={onClose} />
-        <Button
-          title="Mover"
-          loading={submitting}
-          disabled={targetId === undefined}
-          onPress={confirm}
-        />
-      </View>
+      <DialogActions
+        confirmTitle="Mover"
+        loading={submitting}
+        disabled={targetId === undefined}
+        onConfirm={confirm}
+        onCancel={onClose}
+      />
     </Dialog>
   );
 }

@@ -2,6 +2,8 @@ import { listSeries } from "@/features/catalog/internal/series/service";
 import {
   Button,
   Dialog,
+  DialogBody,
+  DialogHeader,
   SearchSelect,
   SimpleSelect,
   Text,
@@ -88,23 +90,21 @@ export default function FilterPanel({
       {open && (
         <Dialog onClose={() => setOpen(null)}>
           {all && (
-            <View className="flex-row items-center justify-between">
-              <Text variant="item">Filtros</Text>
-              <View className="flex-row gap-4">
-                <Button
-                  title="Limpiar"
-                  variant="secondary"
-                  onPress={() => onChange({})}
-                />
-                <Button title="Cerrar" onPress={() => setOpen(null)} />
-              </View>
-            </View>
+            <DialogHeader
+              title="Filtros"
+              actions={
+                <>
+                  <Button
+                    title="Limpiar"
+                    variant="secondary"
+                    onPress={() => onChange({})}
+                  />
+                  <Button title="Cerrar" onPress={() => setOpen(null)} />
+                </>
+              }
+            />
           )}
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ gap: 20 }}
-            showsVerticalScrollIndicator={false}
-          >
+          <DialogBody>
             {shows("author") && (
               <SearchSelect
                 label="Autor"
@@ -157,7 +157,7 @@ export default function FilterPanel({
                 onChange={(subcategoryId) => set({ subcategoryId })}
               />
             )}
-          </ScrollView>
+          </DialogBody>
         </Dialog>
       )}
     </>

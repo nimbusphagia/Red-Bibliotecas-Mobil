@@ -1,5 +1,5 @@
 export { Button } from "./base/Button";
-export { Dialog } from "./base/Dialog";
+export { Dialog, DialogActions, DialogBody, DialogHeader } from "./base/Dialog";
 export { PageHeader } from "./base/Header";
 export { Icon, type IconSize, type IconTone } from "./base/Icon";
 export { Section } from "./base/Section";

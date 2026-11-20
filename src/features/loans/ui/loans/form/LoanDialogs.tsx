@@ -1,12 +1,11 @@
 import {
-  Button,
   Dialog,
+  DialogActions,
   SearchSelect,
   TextField,
   type Option,
 } from "@/features/shared/components";
 import { useState } from "react";
-import { View } from "react-native";
 import { searchVisitors, type LoanCopy } from "../../options";
 import VisitorForm from "../../visitors/form/VisitorForm";
 import CopyPicker from "./CopyPicker";
@@ -74,10 +73,21 @@ export function NotesDialog({
         onSubmitEditing={confirm}
         autoFocus
       />
-      <View className="flex-row justify-end gap-4">
-        <Button title="Cancelar" variant="secondary" onPress={onClose} />
-        <Button title="Aceptar" onPress={confirm} />
-      </View>
+      <Dialog onClose={onClose}>
+        <TextField
+          label="Notas"
+          value={draft}
+          onChangeText={setDraft}
+          maxLength={500}
+          onSubmitEditing={confirm}
+          autoFocus
+        />
+        <DialogActions
+          confirmTitle="Aceptar"
+          onConfirm={confirm}
+          onCancel={onClose}
+        />
+      </Dialog>
     </Dialog>
   );
 }
@@ -92,7 +102,7 @@ export function CopySearchDialog({
   onClose: () => void;
 }) {
   return (
-    <Dialog onClose={onClose} className="h-[70%] w-[530px]">
+    <Dialog onClose={onClose} size="lg">
       <CopyPicker className="flex-1" selected={selected} onToggle={onToggle} />
     </Dialog>
   );
