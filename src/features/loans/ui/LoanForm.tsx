@@ -7,19 +7,20 @@ import {
 import type { VisitorLoanStatus } from "@/features/loans/internal/loan/types";
 import {
   Button,
-  Divider,
   FieldError,
   FieldRow,
   FormHeader,
   FormSection,
+  Icon,
   LabeledItem,
+  SplitColumns,
   Text,
   type Option,
 } from "@/features/shared/components";
 import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
-import { cn, colors } from "@/features/shared/theme";
+import { ScreenBody } from "@/features/shared/layout/Screen";
+import { colors } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
 import { Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -31,13 +32,11 @@ import {
   PickVisitorDialog,
 } from "./loans/form/LoanDialogs";
 import { copyById, type LoanCopy } from "./options";
-import { ScreenBody } from "@/features/shared/layout/Screen";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
-  const { isExpanded } = useLayoutMode();
   const [visitor, setVisitor] = useState<Option>();
   const [status, setStatus] = useState<VisitorLoanStatus>();
   const [expiresBy, setExpiresBy] = useState<string>();
@@ -101,11 +100,8 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
       />
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
-        <View className={cn("gap-8", isExpanded && "flex-row")}>
-          <FormSection
-            title="Detalles"
-            className={isExpanded ? "flex-1" : undefined}
-          >
+        <SplitColumns>
+          <FormSection title="Detalles">
             <FieldRow
               label="Visitante *"
               value={visitor?.label}
@@ -119,7 +115,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
                   ? session.account.username
                   : undefined
               }
-              labelClass="w-[110px]"
+              labelWidth="form"
             />
             <FieldRow
               label="Notas"
@@ -130,12 +126,12 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
             <LabeledItem
               label="Vencimiento"
               content={expiresBy && formatISO(expiresBy)}
-              labelClass="w-[110px]"
+              labelWidth="form"
             />
             <LabeledItem
               label="Registro"
               content={formatDate(new Date())}
-              labelClass="w-[110px]"
+              labelWidth="form"
             />
             {status && (
               <View className="flex-row items-center justify-end">
@@ -148,7 +144,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
                     <Text variant="caption">
                       {status.open} prestamos activos
                     </Text>
-                    <Dot color={colors.secondary} />
+                    <Icon icon={Dot} tone="secondary" />
                     <Text variant="caption">
                       {status.remaining
                         ? `Puede prestar ${status.remaining} más`
@@ -160,11 +156,8 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
             )}
           </FormSection>
 
-          <Divider vertical={isExpanded} />
-
           <FormSection
             title="Ejemplares"
-            className={isExpanded ? "flex-1" : undefined}
             lead={
               <Button
                 variant="secondary"
@@ -179,7 +172,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
               onRemove={removeCopy}
             />
           </FormSection>
-        </View>
+        </SplitColumns>
       </ScreenBody>
 
       {editing === "visitor" && (

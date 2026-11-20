@@ -28,15 +28,15 @@ export default function BookInfo({ book }: Props) {
   ];
 
   return (
-    <View className="flex-1 flex-row items-start gap-[8px]">
+    <View className="flex-1 flex-row items-start gap-2">
       {columns.map((rows, i) => (
-        <View key={i} className="flex-1 gap-[8px]">
+        <View key={i} className="flex-1 gap-2">
           {rows.map(({ label, content }) => (
             <LabeledItem
               key={label}
               label={label}
               content={content}
-              labelClass="w-[28%]"
+              labelWidth="narrow"
             />
           ))}
         </View>

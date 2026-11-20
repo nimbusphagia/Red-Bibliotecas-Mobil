@@ -1,4 +1,3 @@
-// shared/components/list/DetailRows.tsx
 import { View } from "react-native";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
 import { cn } from "../../theme";
@@ -20,12 +19,7 @@ export function DetailRows({ rows, variant = "pill", columns = 1 }: Props) {
   const groups = Array.from({ length: n }, (_, i) =>
     rows.slice(i * size, (i + 1) * size),
   );
-  const labelClass =
-    variant === "box"
-      ? "w-[28%]"
-      : n > 1
-        ? "w-[28%] text-left"
-        : "w-[40%] text-left";
+  const labelWidth = variant === "pill" && n === 1 ? "wide" : "narrow";
 
   return (
     <View className={cn("flex-row items-start gap-2", n === 1 && "max-w-xl")}>
@@ -36,7 +30,7 @@ export function DetailRows({ rows, variant = "pill", columns = 1 }: Props) {
               key={`${r.label}-${j}`}
               {...r}
               variant={variant}
-              labelClass={labelClass}
+              labelWidth={labelWidth}
             />
           ))}
         </View>

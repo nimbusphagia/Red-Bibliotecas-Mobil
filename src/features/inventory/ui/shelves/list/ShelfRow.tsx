@@ -18,14 +18,9 @@ export default function ShelfRow({ shelf, onEdit }: Props) {
         variant="subtitled"
         text={String(shelf.copyCount)}
         subtitle1={`Ejemplar${shelf.copyCount === 1 ? "" : "es"}`}
-        expand={false}
-        containerClass="w-[100]"
+        width="md"
       />
-      <Column
-        variant="actions"
-        expand={false}
-        containerClass="w-[104] justify-end"
-      >
+      <Column variant="actions" width="md">
         {!shelf.isDefault && (
           <Button variant="secondary" icon={Pencil} onPress={onEdit} />
         )}

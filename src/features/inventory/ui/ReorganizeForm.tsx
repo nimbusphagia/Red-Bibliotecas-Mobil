@@ -2,19 +2,16 @@ import { useSession } from "@/features/account/internal/session";
 import { moveCopies } from "@/features/inventory/internal/shelf/service";
 import {
   Button,
-  Divider,
   FieldError,
   FieldRow,
   FormHeader,
   FormSection,
+  SplitColumns,
   type Option,
 } from "@/features/shared/components";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
-import { cn } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
 import MoveCopyTable from "./shelves/form/MoveCopyTable";
 import {
   CopySearchDialog,
@@ -27,7 +24,6 @@ export default function ReorganizeForm() {
   const router = useRouter();
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
-  const { isExpanded } = useLayoutMode();
   const [target, setTarget] = useState<Option>();
   const [copies, setCopies] = useState<MoveCopy[]>([]);
   const [editing, setEditing] = useState<"target" | "copies" | null>(null);
@@ -75,11 +71,8 @@ export default function ReorganizeForm() {
       />
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
-        <View className={cn("gap-8", isExpanded && "flex-row")}>
-          <FormSection
-            title="Detalles"
-            className={isExpanded ? "flex-1" : undefined}
-          >
+        <SplitColumns>
+          <FormSection title="Detalles">
             <FieldRow
               label="Destino *"
               value={target?.label}
@@ -88,11 +81,8 @@ export default function ReorganizeForm() {
             />
           </FormSection>
 
-          <Divider vertical={isExpanded} />
-
           <FormSection
             title="Ejemplares"
-            className={isExpanded ? "flex-1" : undefined}
             lead={
               <Button
                 variant="secondary"
@@ -108,7 +98,7 @@ export default function ReorganizeForm() {
               onRemove={removeCopy}
             />
           </FormSection>
-        </View>
+        </SplitColumns>
       </ScreenBody>
 
       {editing === "target" && (

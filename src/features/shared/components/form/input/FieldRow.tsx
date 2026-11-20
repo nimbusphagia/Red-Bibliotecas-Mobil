@@ -32,7 +32,7 @@ export function FieldRow({
         <LabeledItem
           label={label}
           content={value}
-          labelClass="w-[110px]"
+          labelWidth="form"
           className={cn(error && "border border-error", className)}
           contentClass={contentClass}
         />

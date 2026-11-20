@@ -5,6 +5,11 @@ import { Text } from "../base/Text";
 
 export type LabeledItemVariant = "pill" | "box";
 
+const labelWidths = {
+  narrow: "w-[28%]",
+  wide: "w-[40%]",
+  form: "w-[110px]",
+};
 type Props = {
   label: string;
   content?: string;
@@ -12,6 +17,7 @@ type Props = {
   expand?: boolean;
   className?: string;
   labelClass?: string;
+  labelWidth?: keyof typeof labelWidths;
   contentClass?: string;
 };
 
@@ -22,6 +28,7 @@ export function LabeledItem({
   expand,
   className,
   labelClass,
+  labelWidth,
   contentClass,
 }: Props) {
   const box = variant === "box";
@@ -47,6 +54,8 @@ export function LabeledItem({
                 "rounded-full border-transparent",
                 empty ? "text-secondary" : "bg-primary text-bg",
               ),
+          labelWidth && labelWidths[labelWidth],
+          labelClass,
           labelClass,
         )}
       >

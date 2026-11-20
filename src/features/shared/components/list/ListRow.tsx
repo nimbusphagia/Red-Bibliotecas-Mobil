@@ -20,6 +20,11 @@ export function ListRow({ children, compact, className }: Props) {
     </View>
   );
 }
+const columnWidths = {
+  sm: "w-12",
+  md: "w-28",
+  lg: "w-48",
+};
 const columnVariants = {
   id: {
     container: "max-w-[40px] justify-center items-center",
@@ -29,12 +34,12 @@ const columnVariants = {
     container: "flex-col justify-center items-start ",
     text: "",
   },
-  date: { container: "", text: "" },
   actions: { container: "flex-row justify-center gap-3", text: "" },
 };
 
 type ColumnProps = {
   text?: string;
+  width?: keyof typeof columnWidths;
   variant?: keyof typeof columnVariants;
   subtitle1?: string;
   subtitle2?: string;
@@ -49,6 +54,7 @@ export function Column({
   subtitle1,
   subtitle2,
   expand = true,
+  width,
   containerClass,
   textClass,
   children,
@@ -57,8 +63,10 @@ export function Column({
     <View
       className={cn(
         "flex-row items-center",
-        expand && "flex-1",
+        expand && !width && "flex-1",
         variant && columnVariants[variant].container,
+        width && ["shrink-0", columnWidths[width]],
+        width && variant === "actions" && "justify-end",
         containerClass,
       )}
     >

@@ -3,18 +3,15 @@ import { loadShelves, useOptions } from "@/features/catalog/ui/options";
 import { moveCopies } from "@/features/inventory/internal/shelf/service";
 import type { ShelfCopy } from "@/features/inventory/internal/shelf/types";
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogBody,
   DialogHeader,
   FieldError,
   SimpleSelect,
-  Text,
 } from "@/features/shared/components";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useState } from "react";
-import { ScrollView, View } from "react-native";
 
 type Props = {
   copy: ShelfCopy;
@@ -59,7 +56,7 @@ export default function MoveCopyDialog({
         title={`#${copy.id} ${copy.bookTitle}`}
         subtitle={copy.labelText ?? undefined}
       />
-      <DialogBody className="max-h-[260px]">
+      <DialogBody className="max-h-60">
         <SimpleSelect
           label="Destino"
           options={shelves}

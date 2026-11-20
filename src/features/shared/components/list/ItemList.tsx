@@ -56,10 +56,7 @@ export function ItemList<T extends { id: number }>({
         ListFooterComponent={loading ? <ActivityIndicator /> : undefined}
         ListEmptyComponent={
           loading ? undefined : (
-            <Text
-              variant="item"
-              className="text-secondary text-center pt-[10] "
-            >
+            <Text variant="item" className="text-secondary text-center pt-3">
               Sin resultados
             </Text>
           )

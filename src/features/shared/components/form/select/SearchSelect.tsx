@@ -5,6 +5,7 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import { cn, colors } from "../../../theme";
 import { Text } from "../../base/Text";
 import type { Option } from "./option";
+import { Icon } from "../../base/Icon";
 
 export type SearchSelectProps = {
   label?: string;
@@ -84,7 +85,7 @@ export function SearchSelect({
             className="h-full flex-1 font-sans text-highlight"
           />
           <Pressable onPress={close} hitSlop={8}>
-            <X size={18} color={colors.primary} />
+            <Icon icon={X} size="md" tone="primary" />
           </Pressable>
         </View>
       ) : (
@@ -97,7 +98,7 @@ export function SearchSelect({
       )}
 
       {isOpen && (
-        <View className="max-h-[240] overflow-hidden rounded-lg bg-fg2">
+        <View className="max-h-60 overflow-hidden rounded-lg bg-fg2">
           <ScrollView
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"

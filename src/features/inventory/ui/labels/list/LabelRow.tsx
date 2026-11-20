@@ -24,11 +24,7 @@ export default function LabelRow({ label }: Props) {
           isDefault: label.shelfIsDefault,
         })}
       />
-      <Column
-        variant="actions"
-        expand={false}
-        containerClass="w-[110] justify-end"
-      >
+      <Column variant="actions" width="md">
         <StatusBadge
           text={PRINT_STATUS_ES[label.printStatus]}
           variant={label.printStatus === "printed" ? "active" : "pending"}

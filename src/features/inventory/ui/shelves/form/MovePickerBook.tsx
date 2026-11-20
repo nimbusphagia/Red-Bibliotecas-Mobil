@@ -2,8 +2,7 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { listCopiesByBook } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { writersOf } from "@/features/loans/ui/options";
-import { Chip, Icon, Text } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
+import { Chip, ChipGroup, Icon, Text } from "@/features/shared/components";
 import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
@@ -76,7 +75,7 @@ export default function MovePickerBook({
         </Text>
       )}
       {open && !!copies?.length && (
-        <View className="flex-row flex-wrap gap-2 gap-y-4 justify-center">
+        <ChipGroup center>
           {copies.map((c) => (
             <Chip
               key={c.id}
@@ -86,7 +85,7 @@ export default function MovePickerBook({
               onPress={() => onToggle(toMoveCopy(c))}
             />
           ))}
-        </View>
+        </ChipGroup>
       )}
     </View>
   );

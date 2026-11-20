@@ -1,6 +1,5 @@
-import { Button, type Option } from "@/features/shared/components";
-import { colors } from "@/features/shared/theme";
-import { Circle, SlidersHorizontal } from "lucide-react-native";
+import { ActiveDot, Button, type Option } from "@/features/shared/components";
+import { SlidersHorizontal } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
 import { loadCategories, loadSubcategories, useOptions } from "../../options";
 import type { CatalogFilters, FilterDialog } from "./FilterPanel";
@@ -48,18 +47,7 @@ export default function QuickFilters({ filters, onOpen }: Props) {
           icon={SlidersHorizontal}
           onPress={() => onOpen("all")}
         />
-        {active && (
-          <View
-            className="absolute right-0 top-0"
-            style={{ pointerEvents: "none" }}
-          >
-            <Circle
-              size={10}
-              color={colors.highlight}
-              fill={colors.highlight}
-            />
-          </View>
-        )}
+        {active && <ActiveDot />}
       </View>
       <ScrollView
         horizontal

@@ -27,7 +27,7 @@ export default function LabelInfo({ book, codes }: Props) {
           key={i}
           label={label ?? "---"}
           content={content ?? "---"}
-          labelClass="w-[28%] "
+          labelWidth="narrow"
         />
       ))}
     </View>

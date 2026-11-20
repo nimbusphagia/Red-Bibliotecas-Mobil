@@ -40,7 +40,7 @@ export default function LoanLines({
             text={expiresBy}
             subtitle1={l.outcome ? "Finalizado" : "Vence"}
           />
-          <Column variant="actions" expand={false} containerClass="w-[180px]">
+          <Column variant="actions" width="lg">
             {!l.outcome ? (
               <>
                 <Button

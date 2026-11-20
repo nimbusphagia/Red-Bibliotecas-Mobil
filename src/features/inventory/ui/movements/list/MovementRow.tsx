@@ -24,7 +24,7 @@ export default function MovementRow({ movement }: Props) {
         subtitle1={MOVEMENT_REASON_ES[movement.reason]}
       />
 
-      <Column variant="actions" expand={false} containerClass="w-[90]">
+      <Column variant="actions" width="sm">
         <Link href={`/stock/${movement.id}`} asChild>
           <Button variant="secondary" icon={Eye} />
         </Link>

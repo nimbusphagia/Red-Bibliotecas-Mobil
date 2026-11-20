@@ -22,11 +22,7 @@ export default function ShelfCopyRow({ copy, onMove }: Props) {
           variant={copy.status === "on_loan" ? "pending" : "active"}
         />
       </Column>
-      <Column
-        variant="actions"
-        expand={false}
-        containerClass="w-[104px] justify-end"
-      >
+      <Column variant="actions" width="md">
         <Button variant="secondary" icon={ArrowRightLeft} onPress={onMove} />
         <Link href={`/catalog/${copy.bookId}`} asChild>
           <Button variant="secondary" icon={Eye} />

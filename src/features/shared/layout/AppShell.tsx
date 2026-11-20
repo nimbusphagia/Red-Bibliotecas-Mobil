@@ -1,6 +1,7 @@
 import { Sidebar } from "@/features/navigation/Sidebar/Sidebar";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ContentArea } from "../hooks/useLayoutMode";
 
 type Props = {
   children: React.ReactNode;
@@ -20,7 +21,7 @@ export function AppShell({ children }: Props) {
       }}
     >
       <Sidebar />
-      <View className="flex-1">{children}</View>
+      <ContentArea>{children}</ContentArea>
     </View>
   );
 }

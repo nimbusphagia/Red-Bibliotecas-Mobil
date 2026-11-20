@@ -18,12 +18,6 @@ import { View } from "react-native";
 
 type Props = { loan: LoanListItem };
 
-const LOAN_BADGE: Record<LoanState, "active" | "pending" | "finished"> = {
-  open: "pending",
-  overdue: "active",
-  closed: "finished",
-};
-
 export default function LoanRow({ loan }: Props) {
   const state = loanStateOf(loan);
 
@@ -48,11 +42,7 @@ export default function LoanRow({ loan }: Props) {
           {loan.overdue && <Icon icon={Flag} size="sm" tone="highlight" />}
         </View>
       </Column>
-      <Column
-        variant="actions"
-        expand={false}
-        containerClass="w-[120px] justify-end"
-      >
+      <Column variant="actions" width="md">
         <Link href={`/loans/${loan.id}`} asChild>
           <Button variant="secondary" icon={Eye} />
         </Link>

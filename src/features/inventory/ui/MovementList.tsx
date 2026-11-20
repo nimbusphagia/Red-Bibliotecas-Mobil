@@ -2,6 +2,7 @@ import type { MovementSort } from "@/features/inventory/internal/movement/schema
 import { listMovements } from "@/features/inventory/internal/movement/service";
 import type { MovementType } from "@/features/inventory/internal/movement/types";
 import {
+  ActiveDot,
   Button,
   InlineFilter,
   InlineSort,
@@ -10,9 +11,8 @@ import {
   type SortOption,
 } from "@/features/shared/components";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { colors } from "@/features/shared/theme";
 import type { SortDirection } from "@/features/shared/types/types";
-import { Circle, SlidersHorizontal } from "lucide-react-native";
+import { SlidersHorizontal } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import FilterPanel, {
@@ -72,18 +72,7 @@ export default function MovementList() {
                   icon={SlidersHorizontal}
                   onPress={() => setOpen(true)}
                 />
-                {active && (
-                  <View
-                    className="absolute right-0 top-0"
-                    style={{ pointerEvents: "none" }}
-                  >
-                    <Circle
-                      size={10}
-                      color={colors.highlight}
-                      fill={colors.highlight}
-                    />
-                  </View>
-                )}
+                {active && <ActiveDot />}
               </View>
               <InlineFilter
                 options={TYPE_FILTERS}

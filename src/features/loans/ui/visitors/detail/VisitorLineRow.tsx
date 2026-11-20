@@ -21,11 +21,7 @@ export default function VisitorLineRow({ line }: { line: VisitorLine }) {
         text={line.resolvedAt ? formatDate(line.resolvedAt) : "---"}
         subtitle1="Finalizó"
       />
-      <Column
-        variant="actions"
-        expand={false}
-        containerClass="w-[200] justify-end"
-      >
+      <Column variant="actions" width="lg">
         <StatusBadge
           text={line.outcome ? OUTCOME_ES[line.outcome] : "Pendiente"}
           variant={line.outcome ? "active" : "pending"}

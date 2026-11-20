@@ -24,11 +24,7 @@ export default function MovementLineRow({ line, movementType }: Props) {
       <Column variant="actions">
         <StatusBadge text={COPY_STATUS_ES[line.status]} variant="active" />
       </Column>
-      <Column
-        variant="actions"
-        expand={false}
-        containerClass="w-[48px] justify-end"
-      >
+      <Column variant="actions" width="sm">
         {canOpenBook && (
           <Link href={`/catalog/${line.bookId}`} asChild>
             <Button variant="secondary" icon={Eye} />
