@@ -4,7 +4,7 @@ import { View } from "react-native";
 import { SidebarItem } from "./SidebarItem";
 import { cn } from "@/features/shared/theme";
 
-export const SIDEBAR_WIDTH = 80;
+export const SIDEBAR_WIDTH = 70;
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -17,16 +17,16 @@ export function Sidebar() {
     <View
       className={cn(
         `w-[${SIDEBAR_WIDTH}]`,
-        " flex-col items-center justify-between p-[8] py-[12] pt-[30]",
+        "flex-col items-center justify-between p-4",
       )}
     >
-      <View className="flex-1 justify-between">
+      <View className="gap-6 bg-dark1 p-3 rounded-2xl">
         {NAVBAR.main.map((item) => {
           const active = isActive(item.href);
           return <SidebarItem key={item.key} item={item} active={active} />;
         })}
       </View>
-      <View className="h-[120] justify-end">
+      <View className="bg-dark1 rounded-2xl">
         {NAVBAR.footer.map((item) => {
           return (
             <SidebarItem

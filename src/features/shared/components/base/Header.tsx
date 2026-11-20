@@ -35,11 +35,11 @@ export function PageHeader({
     <View className="gap-3">
       <View className="flex-row items-center gap-4">
         <Text variant="title">{title}</Text>
-        {lead}
         <View className="flex-1 flex-row items-center justify-end gap-4">
           {isExpanded && searchbar}
           {children}
         </View>
+        {lead}
       </View>
       {!isExpanded && searchbar}
     </View>

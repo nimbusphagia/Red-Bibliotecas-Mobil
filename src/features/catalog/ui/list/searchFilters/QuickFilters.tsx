@@ -40,10 +40,10 @@ export default function QuickFilters({ filters, onOpen }: Props) {
   ] as const;
 
   return (
-    <View className=" shrink flex-row items-center gap-2">
+    <View className="shrink flex-row items-center gap-2">
       <View>
         <Button
-          variant="secondary"
+          variant="highlight"
           icon={SlidersHorizontal}
           onPress={() => onOpen("all")}
         />

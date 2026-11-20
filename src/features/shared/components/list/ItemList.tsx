@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import { ActivityIndicator, FlatList, View } from "react-native";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
 import { Text } from "../base/Text";
+import { colors } from "../../theme";
 
 type Props<T extends { id: number }> = {
   items: T[];
@@ -48,7 +49,7 @@ export function ItemList<T extends { id: number }>({
             renderItem(item)
           )
         }
-        contentContainerStyle={{ gap: 12 }}
+        contentContainerClassName="gap-3 p-2 bg-white rounded-2xl"
         columnWrapperStyle={multi ? { gap: 12 } : undefined}
         showsVerticalScrollIndicator={false}
         onEndReached={onEndReached}

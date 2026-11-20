@@ -15,7 +15,7 @@ export function AppShell({ children }: Props) {
       className="flex-row flex-1 "
       style={{
         paddingTop: insets.top,
-        paddingBottom: insets.bottom,
+        paddingBottom: insets.bottom / 2,
         paddingLeft: insets.left,
         paddingRight: insets.right,
       }}

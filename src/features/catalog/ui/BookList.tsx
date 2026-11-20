@@ -12,7 +12,7 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
-import BookRow from "./list/books/BookRow";
+import BookRow from "./list/BookRow";
 import FilterPanel, {
   toBookParams,
   type CatalogFilters,
@@ -20,7 +20,7 @@ import FilterPanel, {
 } from "./list/searchFilters/FilterPanel";
 import QuickFilters from "./list/searchFilters/QuickFilters";
 import { Link } from "expo-router";
-import { NotebookPen } from "lucide-react-native";
+import { Plus } from "lucide-react-native";
 
 const PAGE_SIZE = 20;
 
@@ -64,7 +64,7 @@ export default function BookList() {
         title="Libros"
         lead={
           <Link href="/catalog/form" asChild>
-            <Button title="Registrar" icon={NotebookPen} />
+            <Button variant="highlight" icon={Plus} size="md" />
           </Link>
         }
         search={{

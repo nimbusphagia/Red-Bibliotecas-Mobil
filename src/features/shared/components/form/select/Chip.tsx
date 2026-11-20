@@ -17,10 +17,7 @@ export function Chip({
   disabled?: boolean;
   onPress: () => void;
 }) {
-  const textClass = cn(
-    "font-sans-semibold",
-    selected ? "text-bg" : "text-secondary",
-  );
+  const textClass = cn("font-sans-medium", selected ? "text-bg" : "text-dark2");
 
   return (
     <Pressable
@@ -28,7 +25,7 @@ export function Chip({
       onPress={onPress}
       className={cn(
         "flex-row items-center rounded-full px-4 py-1.5",
-        selected ? "bg-primary" : "bg-fg1",
+        selected ? "bg-dark2" : "bg-bg",
       )}
     >
       <Text className={textClass}>{label}</Text>

@@ -6,11 +6,9 @@ import {
   DialogHeader,
   SearchSelect,
   SimpleSelect,
-  Text,
   type Option,
 } from "@/features/shared/components";
 import { useCallback } from "react";
-import { ScrollView, View } from "react-native";
 import {
   fetchCollections,
   loadCategories,
@@ -96,7 +94,7 @@ export default function FilterPanel({
                 <>
                   <Button
                     title="Limpiar"
-                    variant="secondary"
+                    variant="ghost"
                     onPress={() => onChange({})}
                   />
                   <Button title="Cerrar" onPress={() => setOpen(null)} />

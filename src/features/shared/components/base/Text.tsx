@@ -5,12 +5,12 @@ export type TextVariant =
   "display" | "title" | "section" | "item" | "itemSm" | "caption";
 
 const variantStyles: Record<TextVariant, string> = {
-  display: "font-sans-bold text-[28px] text-highlight",
-  title: "font-sans-semibold text-[24px] text-highlight",
-  section: "font-sans-semibold text-[18px] text-primary",
-  item: "font-sans-medium text-[16px] text-primary",
-  itemSm: "font-sans-medium text-[14px] text-primary",
-  caption: "font-sans-medium text-[14px] text-secondary",
+  display: "font-sans-bold text-[28px] text-dark1",
+  title: "font-sans-medium text-[28px] text-dark1",
+  section: "font-sans-semibold text-[18px] text-dark1",
+  item: "font-sans-medium text-[14px] text-dark1",
+  itemSm: "font-sans text-[14px] text-dark1",
+  caption: "font-sans text-[14px] text-dark3",
 };
 
 type Props = TextProps & { variant?: TextVariant; className?: string };

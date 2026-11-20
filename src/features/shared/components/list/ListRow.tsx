@@ -11,7 +11,7 @@ export function ListRow({ children, compact, className }: Props) {
   return (
     <View
       className={cn(
-        "flex-row items-center justify-between gap-3 rounded-full border border-fg1 bg-fg2 px-4",
+        "flex-row items-center justify-between gap-3 rounded-full px-4",
         compact ? "py-1" : "py-2",
         className,
       )}
@@ -34,7 +34,10 @@ const columnVariants = {
     container: "flex-col justify-center items-start ",
     text: "",
   },
-  actions: { container: "flex-row justify-center gap-3", text: "" },
+  actions: {
+    container: "flex-row justify-center gap-4",
+    text: "",
+  },
 };
 
 type ColumnProps = {

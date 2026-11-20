@@ -71,34 +71,34 @@ export function SearchSelect({
       {label && <Text variant="item">{label}</Text>}
 
       {empty ? (
-        <View className="h-12 justify-center rounded-full bg-fg1 px-4">
+        <View className="h-12 justify-center rounded-xl bg-fg1 px-4">
           <Text variant="caption">Sin resultados</Text>
         </View>
       ) : isOpen ? (
-        <View className="h-12 flex-row items-center gap-2 rounded-full bg-fg1 px-4">
+        <View className="h-12 flex-row items-center gap-2 rounded-xl bg-bg px-4">
           <TextInput
             autoFocus
             value={search}
             onChangeText={setSearch}
             placeholder={value?.label ?? "Buscar..."}
-            placeholderTextColor={colors.primary}
-            className="h-full flex-1 font-sans text-highlight"
+            placeholderTextColor={colors.dark1}
+            className="h-full flex-1 font-sans text-dark2"
           />
           <Pressable onPress={close} hitSlop={8}>
-            <Icon icon={X} size="md" tone="primary" />
+            <Icon icon={X} size="md" tone="dark2" />
           </Pressable>
         </View>
       ) : (
         <Pressable
           onPress={() => setOpen(true)}
-          className={cn("h-12 justify-center rounded-full bg-fg1 px-4")}
+          className={cn("h-12 justify-center rounded-lg bg-bg px-4")}
         >
-          <Text variant="caption">{value?.label ?? placeholder}</Text>
+          <Text variant="itemSm">{value?.label ?? placeholder}</Text>
         </Pressable>
       )}
 
       {isOpen && (
-        <View className="max-h-60 overflow-hidden rounded-lg bg-fg2">
+        <View className="max-h-60 overflow-hidden rounded-xl bg-bg">
           <ScrollView
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"
@@ -107,11 +107,9 @@ export function SearchSelect({
             {value && (
               <Pressable
                 onPress={() => pick(undefined)}
-                className="border-b border-fg1 px-4 py-3"
+                className="border-b border-white px-4 py-3"
               >
-                <Text variant="caption" className="font-sans-semibold">
-                  Quitar filtro
-                </Text>
+                <Text variant="item">Quitar filtro</Text>
               </Pressable>
             )}
             {canCreate && (
@@ -120,7 +118,7 @@ export function SearchSelect({
                 className="border-b border-fg1 px-4 py-3"
               >
                 <Text
-                  variant="caption"
+                  variant="item"
                   className="font-sans-semibold text-highlight"
                 >
                   Crear «{search.trim()}»
@@ -134,16 +132,14 @@ export function SearchSelect({
             )}
             {options.map((o, i) => {
               const separatorClass =
-                i !== options.length - 1 ? "border-b border-fg1" : "";
+                i !== options.length - 1 ? "border-b border-white" : "";
               return (
                 <Pressable
                   key={o.id}
                   onPress={() => pick(o)}
                   className={cn("px-4 py-3", separatorClass)}
                 >
-                  <Text variant="caption" className="font-sans-semibold">
-                    {o.label}
-                  </Text>
+                  <Text variant="itemSm">{o.label}</Text>
                 </Pressable>
               );
             })}

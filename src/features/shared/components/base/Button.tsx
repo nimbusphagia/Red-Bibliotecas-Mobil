@@ -26,27 +26,27 @@ const variantStyles: Record<
   { container: string; label: string; tone: IconTone; onDark: boolean }
 > = {
   highlight: {
-    container: "bg-highlight active:bg-primary",
-    label: "text-bg",
-    tone: "bg",
+    container: "bg-dark1 active:bg-primary",
+    label: "text-bg font-sans-medium",
+    tone: "white",
     onDark: true,
   },
   primary: {
-    container: "bg-primary active:bg-secondary",
-    label: "text-bg",
-    tone: "bg",
+    container: "bg-dark2 active:bg-secondary",
+    label: "text-white font-sans-medium",
+    tone: "white",
     onDark: true,
   },
   secondary: {
-    container: "bg-fg1 active:bg-fg2 border border-fg1",
-    label: "text-primary",
-    tone: "primary",
+    container: "bg-bg active:bg-bg border-dark3 border",
+    label: "text-dark2",
+    tone: "dark2",
     onDark: false,
   },
   ghost: {
-    container: "bg-fg2 active:bg-fg1 border border-fg2",
-    label: "text-primary",
-    tone: "primary",
+    container: "bg-bg active:bg-accent2",
+    label: "text-dark2",
+    tone: "dark2",
     onDark: false,
   },
 };
@@ -82,7 +82,7 @@ export function Button({
       disabled={isDisabled}
       hitSlop={s.hit}
       className={cn(
-        "flex-row items-center justify-center gap-2 rounded-full",
+        "flex-row items-center justify-center gap-2 rounded-xl",
         title ? s.withTitle : s.iconOnly,
         v.container,
         isDisabled && "opacity-80",
@@ -99,7 +99,7 @@ export function Button({
       {title && (
         <Text
           variant={size === "sm" ? "itemSm" : "item"}
-          className={cn("font-sans-semibold", v.label)}
+          className={cn("font-sans", v.label)}
         >
           {title}
         </Text>

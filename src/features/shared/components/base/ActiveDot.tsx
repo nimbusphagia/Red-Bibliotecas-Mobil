@@ -4,7 +4,7 @@ export function ActiveDot() {
   return (
     <View
       style={{ pointerEvents: "none" }}
-      className="absolute right-0 top-0 size-2.5 rounded-full bg-highlight"
+      className="absolute right-[-2] top-[-2] size-3 rounded-full bg-accent1"
     />
   );
 }

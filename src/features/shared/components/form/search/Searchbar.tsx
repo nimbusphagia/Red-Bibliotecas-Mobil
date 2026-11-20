@@ -19,19 +19,19 @@ export function Searchbar({
   return (
     <View
       className={cn(
-        "flex flex-row items-center gap-2 w-full max-w-[400px] h-full px-4 rounded-full bg-fg1",
+        "flex flex-row items-center gap-2 w-full max-w-[400px] h-full px-4 rounded-lg bg-white",
         className,
       )}
     >
       <TextInput
-        className="flex-1 h-full text-primary font-sans-medium"
+        className="flex-1 h-full text-dark1 font-sans"
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.secondary}
+        placeholderTextColor={colors.dark3}
         returnKeyType="search"
       />
-      <Icon icon={Search} tone="highlight" />
+      <Icon icon={Search} tone="dark1" />
     </View>
   );
 }

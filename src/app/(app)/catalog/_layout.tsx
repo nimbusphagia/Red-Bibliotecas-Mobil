@@ -1,4 +1,3 @@
-import { colors } from "@/features/shared/theme";
 import { Stack } from "expo-router";
 
 export default function CatalogLayout() {
@@ -6,7 +5,6 @@ export default function CatalogLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: colors.bg },
       }}
     />
   );

@@ -1,10 +1,21 @@
 module.exports = {
   palette: {
-    bg: "#FAF8F5",
+    bg: "#F5F7FB",
+    white: "#FFFFFF",
+
+    dark1: "#222026",
+    dark2: "#3F3E43",
+    dark3: "#8D8F93",
+
+    accent1: "#887FC2",
+    accent2: "#DBD3F5",
+
     fg1: "#F2ECE9",
     fg2: "#F7F3F0",
+
     primary: "#6996CF",
     secondary: "#8AAAD4",
+
     highlight: "#5789C9",
     error: "#D14343",
     success: "#4E9F6B",

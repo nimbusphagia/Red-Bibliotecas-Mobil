@@ -28,12 +28,10 @@ export default function BookRow({ book }: Props) {
         containerClass="max-w-[150px]"
       />
       <Column variant="actions" expand={false}>
-        <>
-          <Link href={`/catalog/${book.id}`} asChild>
-            <Button variant="secondary" icon={Eye} />
-          </Link>
-          <Button icon={BookUp} />
-        </>
+        <Link href={`/catalog/${book.id}`} asChild>
+          <Button variant="ghost" icon={Eye} />
+        </Link>
+        <Button variant="primary" icon={BookUp} />
       </Column>
     </ListRow>
   );

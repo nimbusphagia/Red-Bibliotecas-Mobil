@@ -1,14 +1,21 @@
 import type { LucideIcon } from "lucide-react-native";
 import { colors } from "../../theme";
 
-const sizes = { sm: 14, md: 18, lg: 24 } as const;
+const sizes = { sm: 14, md: 18, lg: 22 } as const;
 
 export type IconSize = keyof typeof sizes;
 export type IconTone =
   | "bg"
+  | "dark1"
+  | "dark2"
+  | "dark3"
   | "primary"
   | "secondary"
+  | "accent1"
+  | "accent2"
   | "highlight"
+  | "white"
+  | "dark1"
   | "error"
   | "success"
   | "warning";
