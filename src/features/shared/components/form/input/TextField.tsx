@@ -2,7 +2,7 @@ import type { Ref } from "react";
 import { useState } from "react";
 import type { TextInputInstance, TextInputProps } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
-import { cn, colors } from "../../../theme";
+import { cn, colors, useTone } from "../../../theme";
 import { Text } from "../../base/Text";
 import { FieldError } from "../FieldError";
 
@@ -24,20 +24,23 @@ export function TextField({
   ...rest
 }: Props) {
   const [visible, setVisible] = useState(false);
+  const t = useTone();
 
   return (
-    <View className={cn("w-full gap-2", editable === false && "opacity-50")}>
+    <View className={cn("w-full gap-2", editable === false && "opacity-80")}>
       <Text variant="item">{label}</Text>
       <View className="justify-center">
         <TextInput
           ref={ref}
           accessibilityLabel={label}
           editable={editable}
-          placeholderTextColor={colors.primary}
+          placeholderTextColor={colors[t.placeholder]}
           secureTextEntry={secureTextEntry && !visible}
           className={cn(
-            "h-12 rounded-full border bg-fg1 px-4 font-sans text-highlight",
-            error ? "border-error" : "border-transparent focus:border-fg1",
+            "h-12 rounded-lg border px-4 font-sans",
+            t.inset,
+            t.text,
+            error ? "border-error" : "border-transparent focus:border-accent2",
             secureTextEntry && "pr-24",
             className,
           )}
@@ -53,7 +56,7 @@ export function TextField({
             hitSlop={8}
             className="absolute right-4 px-1 py-2"
           >
-            <Text variant="itemSm" className="text-highlight">
+            <Text variant="itemSm" className="text-dark3">
               {visible ? "Ocultar" : "Mostrar"}
             </Text>
           </Pressable>

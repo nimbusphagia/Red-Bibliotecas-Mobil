@@ -24,7 +24,7 @@ import { routeIdSchema } from "@/features/shared/types/schemas";
 import { Link } from "expo-router";
 import { Eye } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import MovementLineRow from "./movements/detail/MovementLineRow";
 
 const PAGE_SIZE = 20;
@@ -62,7 +62,6 @@ export default function MovementDetail({ id }: { id: string }) {
   const columns: DetailColumn[] = [
     {
       title: "Detalles",
-      variant: "box",
       rows: [
         { label: "Motivo", content: MOVEMENT_REASON_ES[movement.reason] },
         { label: "Firmado por", content: movement.signedByUsername },

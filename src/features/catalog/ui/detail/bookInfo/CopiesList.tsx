@@ -17,7 +17,7 @@ type Props = {
 };
 export default function CopiesList({ copies }: Props) {
   return (
-    <View className="flex-1 gap-4">
+    <View className="flex-1 gap-2">
       {copies.length < 1 && (
         <View className="h-20 justify-end p-4">
           <Text variant="caption" className="text-center">
@@ -56,7 +56,7 @@ export default function CopiesList({ copies }: Props) {
             />
             <Column variant="actions" expand={false}>
               <Link href={`/shelves/${c.shelfId}`} asChild>
-                <Button variant="ghost" icon={ScanSearch} />
+                <Button variant="soft" icon={ScanSearch} />
               </Link>
               {href && (
                 <Link href={href} asChild>

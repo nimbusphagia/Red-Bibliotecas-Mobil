@@ -37,7 +37,7 @@ export function InlineSort<K extends string>({
           <Button
             key={key}
             title={label}
-            variant={"primary"}
+            variant={selected ? "accent" : "solid"}
             weight={selected ? "md" : "sm"}
             icon={selected ? Arrow : undefined}
             onPress={() =>

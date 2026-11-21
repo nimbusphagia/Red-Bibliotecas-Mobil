@@ -2,22 +2,23 @@ import { Dot } from "lucide-react-native";
 import { PropsWithChildren, ReactNode } from "react";
 import { View } from "react-native";
 import { cn } from "../../theme";
-import { Text } from "../base/Text";
 import { Icon } from "../base/Icon";
+import { Surface } from "../base/Surface";
+import { Text } from "../base/Text";
 
 type Props = { children: ReactNode; compact?: boolean; className?: string };
 
 export function ListRow({ children, compact, className }: Props) {
   return (
-    <View
+    <Surface
       className={cn(
-        "flex-row items-center justify-between gap-3 rounded-full px-2",
+        "flex-row items-center justify-between gap-3 px-3",
         compact ? "py-1" : "py-2",
         className,
       )}
     >
       {children}
-    </View>
+    </Surface>
   );
 }
 const columnWidths = {
@@ -86,7 +87,7 @@ export function Column({
       {variant === "subtitled" && !!(subtitle1 || subtitle2) && (
         <View className="flex-row justify-start items-center">
           <Text variant="caption">{subtitle1}</Text>
-          {subtitle1 && subtitle2 && <Icon icon={Dot} tone="secondary" />}
+          {subtitle1 && subtitle2 && <Icon icon={Dot} tone="dark3" />}
           <Text variant="caption">{subtitle2}</Text>
         </View>
       )}

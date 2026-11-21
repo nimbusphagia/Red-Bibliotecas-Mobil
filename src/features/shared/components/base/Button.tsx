@@ -4,65 +4,41 @@ import {
   Pressable,
   type PressableProps,
 } from "react-native";
-import { cn, colors } from "../../theme";
+import { cn, colors, useTone } from "../../theme";
 import { Icon, type IconSize, type IconTone } from "./Icon";
 import { Text } from "./Text";
 
-type Variant =
-  "accent" | "softAccent" | "highlight" | "primary" | "secondary" | "ghost";
+/**
+ * Variantes por ROL, no por color. El color real sale de la superficie
+ * (ver theme/tone.ts):
+ *  - accent: acción principal / seleccionado (accent2)
+ *  - solid:  acción neutra con peso (dark1 en blanco, dark2 en dark1)
+ *  - soft:   acción secundaria / iconos en filas (bg en blanco, dark2/60 en dark1)
+ */
+type Variant = "accent" | "solid" | "soft";
+
+/** @deprecated nombres viejos, migrar a Variant. Se mapean aquí para no romper pantallas pendientes. */
+type LegacyVariant =
+  "softAccent" | "highlight" | "primary" | "secondary" | "ghost";
+const legacy: Record<LegacyVariant, Variant> = {
+  softAccent: "accent",
+  highlight: "solid",
+  primary: "solid",
+  secondary: "soft",
+  ghost: "soft",
+};
+
 type Size = "sm" | "md" | "lg";
 
 type ButtonProps = Omit<PressableProps, "children"> & {
   title?: string;
   icon?: LucideIcon;
   iconTone?: IconTone;
-  variant?: Variant;
+  variant?: Variant | LegacyVariant;
   size?: Size;
   weight?: Size;
   loading?: boolean;
   className?: string;
-};
-
-const variantStyles: Record<
-  Variant,
-  { container: string; label: string; tone: IconTone; onDark: boolean }
-> = {
-  accent: {
-    container: "bg-accent2 active:bg-accent2",
-    label: "text-dark1 ",
-    tone: "dark1",
-    onDark: true,
-  },
-  softAccent: {
-    container: "bg-dark2 active:bg-accent2",
-    label: "text-accent2",
-    tone: "accent2",
-    onDark: true,
-  },
-  highlight: {
-    container: "bg-dark1 active:bg-primary",
-    label: "text-bg",
-    tone: "white",
-    onDark: true,
-  },
-  primary: {
-    container: "bg-dark2 active:bg-secondary",
-    label: "text-white",
-    tone: "white",
-    onDark: true,
-  },
-  secondary: {
-    container: "bg-bg active:bg-bg border border-dark3",
-    label: "text-dark1",
-    tone: "dark1",
-    onDark: false,
-  },
-  ghost: {
-    container: "bg-bg active:bg-accent2",
-    label: "text-dark1",
-    tone: "dark1",
-    onDark: false,
-  },
 };
 
 const sizeStyles: Record<
@@ -78,7 +54,7 @@ export function Button({
   title,
   icon,
   iconTone,
-  variant = "primary",
+  variant = "solid",
   size = "md",
   weight = "sm",
   loading = false,
@@ -87,7 +63,9 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-  const v = variantStyles[variant];
+  const name =
+    variant in legacy ? legacy[variant as LegacyVariant] : (variant as Variant);
+  const v = useTone().button[name];
   const s = sizeStyles[size];
 
   return (
@@ -97,19 +75,16 @@ export function Button({
       disabled={isDisabled}
       hitSlop={s.hit}
       className={cn(
-        "flex-row items-center justify-center gap-1 rounded-lg",
+        // Presionado por opacidad: no depende de ningún color de la paleta.
+        "flex-row items-center justify-center gap-1 rounded-lg active:opacity-80",
         title ? s.withTitle : s.iconOnly,
-        v.container,
+        v.box,
         isDisabled && "opacity-80",
         className,
       )}
       {...rest}
     >
-      {loading && (
-        <ActivityIndicator
-          color={v.onDark ? colors.spinnerOnDark : colors.spinnerOnLight}
-        />
-      )}
+      {loading && <ActivityIndicator color={colors[v.icon]} />}
 
       {title && (
         <Text
@@ -117,7 +92,7 @@ export function Button({
           className={cn(
             "font-sans",
             v.label,
-            weight === "md" && "font-sans-medium",
+            weight === "md" && "font-sans-regular",
           )}
         >
           {title}
@@ -127,7 +102,7 @@ export function Button({
         <Icon
           icon={icon}
           size={!title && s.icon === "md" ? "lg" : s.icon}
-          tone={iconTone ?? v.tone}
+          tone={iconTone ?? v.icon}
           stroke={weight}
         />
       )}

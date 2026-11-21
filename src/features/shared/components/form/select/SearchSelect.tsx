@@ -2,7 +2,7 @@ import { X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, TextInput, View } from "react-native";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { cn, colors } from "../../../theme";
+import { cn, colors, useTone } from "../../../theme";
 import { Text } from "../../base/Text";
 import type { Option } from "./option";
 import { Icon } from "../../base/Icon";
@@ -31,6 +31,7 @@ export function SearchSelect({
   const [options, setOptions] = useState<Option[]>([]);
   const [none, setNone] = useState(false);
   const debounced = useDebounce(search);
+  const t = useTone();
 
   useEffect(() => {
     let stale = false;
@@ -69,65 +70,58 @@ export function SearchSelect({
   return (
     <View className="gap-2">
       {label && (
-        <Text variant="item" className="text-white">
-          {label}
-        </Text>
+        <Text variant="item">{label}</Text>
       )}
 
       {empty ? (
-        <View className="h-12 justify-center rounded-xl bg-dark2 px-4">
-          <Text variant="caption" className="text-white">
-            Sin resultados
-          </Text>
+        <View className={cn("h-12 justify-center rounded-lg px-4", t.inset)}>
+          <Text variant="caption">Sin resultados</Text>
         </View>
       ) : isOpen ? (
-        <View className="h-12 flex-row items-center gap-2 rounded-xl bg-dark2 px-4">
+        <View className={cn("h-12 flex-row items-center gap-2 rounded-lg px-4", t.inset)}>
           <TextInput
             autoFocus
             value={search}
             onChangeText={setSearch}
             placeholder={value?.label ?? "Buscar..."}
-            placeholderTextColor={colors.white}
-            className="h-full flex-1 font-sans text-white"
+            placeholderTextColor={colors[t.placeholder]}
+            className={cn("h-full flex-1 font-sans", t.text)}
           />
           <Pressable onPress={close} hitSlop={8}>
-            <Icon icon={X} size="md" tone="dark2" />
+            <Icon icon={X} size="md" />
           </Pressable>
         </View>
       ) : (
         <Pressable
           onPress={() => setOpen(true)}
           className={cn(
-            "h-12 justify-center rounded-lg bg-dark2 px-4",
-            value && "bg-accent2",
+            "h-12 justify-center rounded-lg px-4 active:opacity-80",
+            value ? "bg-accent2" : t.inset,
           )}
         >
-          <Text
-            variant="itemSm"
-            className={cn(value ? "text-dark1" : "text-white")}
-          >
+          <Text variant="itemSm" className={cn(value && "text-dark1")}>
             {value?.label ?? placeholder}
           </Text>
         </Pressable>
       )}
 
       {isOpen && (
-        <View className="max-h-60 overflow-hidden rounded-xl bg-bg">
+        <View className={cn("max-h-60 overflow-hidden rounded-lg", t.inset)}>
           <ScrollView
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
             {value && (
-              <Pressable onPress={() => pick(undefined)} className=" px-4 py-3">
-                <Text variant="item" className="text-dark1">
+              <Pressable onPress={() => pick(undefined)} className="px-4 py-3 active:opacity-80">
+                <Text variant="item">
                   Quitar filtro
                 </Text>
               </Pressable>
             )}
             {canCreate && (
-              <Pressable onPress={create} className=" px-4 py-3">
-                <Text variant="item" className="font-sans-semibold text-dark1">
+              <Pressable onPress={create} className="px-4 py-3 active:opacity-80">
+                <Text variant="item" className="font-sans-semibold">
                   Crear «{search.trim()}»
                 </Text>
               </Pressable>
@@ -137,17 +131,14 @@ export function SearchSelect({
                 Sin resultados
               </Text>
             )}
-            {options.map((o, i) => {
-              const separatorClass = i !== options.length - 1 ? "" : "";
+            {options.map((o) => {
               return (
                 <Pressable
                   key={o.id}
                   onPress={() => pick(o)}
-                  className={cn("px-4 py-3", separatorClass)}
+                  className="px-4 py-3 active:opacity-80"
                 >
-                  <Text variant="itemSm" className="text-dark1">
-                    {o.label}
-                  </Text>
+                  <Text variant="itemSm">{o.label}</Text>
                 </Pressable>
               );
             })}

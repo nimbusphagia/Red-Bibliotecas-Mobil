@@ -36,6 +36,11 @@ function Form({ book }: { book?: BookListItem }) {
     <>
       <FormHeader
         title={form.isEdit ? "Editar libro" : "Registrar libro"}
+        subtitle={
+          form.locked
+            ? "Este libro ya cuenta con ejemplares con tejuelos emitidos, los datos principales no se pueden editar."
+            : undefined
+        }
         submitTitle={form.isEdit ? "Guardar" : "Registrar"}
         submitting={form.submitting}
         canSubmit={form.canSubmit}
@@ -45,12 +50,6 @@ function Form({ book }: { book?: BookListItem }) {
 
       <ScreenBody form>
         <FieldError>{form.errors.form ?? form.orphanErrors}</FieldError>
-        {form.locked && (
-          <Text variant="caption">
-            Título, escritor, categoría y subcategoría están bloqueados porque
-            el libro ya tiene tejuelos.
-          </Text>
-        )}
         <BookFormSections form={form} onEdit={setEditing} />
       </ScreenBody>
 

@@ -1,26 +1,12 @@
 import type { LucideIcon } from "lucide-react-native";
-import { colors } from "../../theme";
+import { colors, useTone, type ColorName } from "../../theme";
 
 const sizes = { sm: 12, md: 14, lg: 18 } as const;
-const strokes = { sm: 1.5, md: 2.5, lg: 3 } as const;
+const strokes = { sm: 1.5, md: 2, lg: 3 } as const;
 
 export type IconSize = keyof typeof sizes;
 export type IconStroke = keyof typeof strokes;
-export type IconTone =
-  | "bg"
-  | "dark1"
-  | "dark2"
-  | "dark3"
-  | "primary"
-  | "secondary"
-  | "accent1"
-  | "accent2"
-  | "highlight"
-  | "white"
-  | "dark1"
-  | "error"
-  | "success"
-  | "warning";
+export type IconTone = ColorName;
 
 type Props = {
   icon: LucideIcon;
@@ -32,13 +18,14 @@ type Props = {
 export function Icon({
   icon: Glyph,
   size = "md",
-  tone = "white",
+  tone,
   stroke = "md",
 }: Props) {
+  const t = useTone();
   return (
     <Glyph
       size={sizes[size]}
-      color={colors[tone]}
+      color={colors[tone ?? t.icon]}
       strokeWidth={strokes[stroke]}
     />
   );

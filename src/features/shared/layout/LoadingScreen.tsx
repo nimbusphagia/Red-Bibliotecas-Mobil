@@ -5,7 +5,7 @@ import { ActivityIndicator, View } from "react-native";
 export function LoadingScreen({ message }: { message?: string }) {
   return (
     <View className="flex-1 items-center justify-center gap-4">
-      <ActivityIndicator size="large" color={colors.spinnerOnLight} />
+      <ActivityIndicator size="large" color={colors.dark2} />
       {message ? <Text>{message}</Text> : null}
     </View>
   );

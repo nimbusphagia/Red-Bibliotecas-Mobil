@@ -16,9 +16,9 @@ export function SidebarItem({ item, active, standalone = false }: Props) {
     ? [
         "dark1" as const,
         "bg-white",
-        "shadow-md shadow-highlight/80 opacity-100",
+        "opacity-100",
       ]
-    : ["white" as const, "bg-dark2", "shadow-none opacity-100"];
+    : ["white" as const, "bg-dark2", "opacity-100"];
   return (
     <Link href={item.href} asChild>
       <Pressable

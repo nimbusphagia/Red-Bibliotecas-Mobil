@@ -1,8 +1,10 @@
 import { Button } from "../base/Button";
 import { PageHeader } from "../base/Header";
+import { Surface } from "../base/Surface";
 
 type Props = {
   title: string;
+  subtitle?: string;
   submitTitle: string;
   submitting: boolean;
   canSubmit: boolean;
@@ -12,6 +14,7 @@ type Props = {
 
 export function FormHeader({
   title,
+  subtitle,
   submitTitle,
   submitting,
   canSubmit,
@@ -19,14 +22,17 @@ export function FormHeader({
   onCancel,
 }: Props) {
   return (
-    <PageHeader title={title}>
-      <Button title="Cancelar" variant="secondary" onPress={onCancel} />
-      <Button
-        title={submitTitle}
-        loading={submitting}
-        disabled={!canSubmit}
-        onPress={onSubmit}
-      />
+    <PageHeader title={title} subtitle={subtitle}>
+      <Surface tone="dark" className="flex-row gap-4 rounded-lg p-2">
+        <Button title="Cancelar" variant="soft" onPress={onCancel} />
+        <Button
+          variant="accent"
+          title={submitTitle}
+          loading={submitting}
+          disabled={!canSubmit}
+          onPress={onSubmit}
+        />
+      </Surface>
     </PageHeader>
   );
 }

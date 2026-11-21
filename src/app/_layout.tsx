@@ -8,13 +8,12 @@ import {
 } from "@/features/shared/layout/LoadingScreen";
 import { colors } from "@/features/shared/theme";
 import {
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-  Poppins_800ExtraBold,
+  Outfit_300Light,
+  Outfit_400Regular,
+  Outfit_500Medium,
+  Outfit_600SemiBold,
   useFonts,
-} from "@expo-google-fonts/poppins";
+} from "@expo-google-fonts/outfit";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -33,11 +32,10 @@ export default function RootLayout() {
 function RootNavigator() {
   const session = useSession();
   const [loaded, error] = useFonts({
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-    Poppins_800ExtraBold,
+    Outfit_300Light,
+    Outfit_400Regular,
+    Outfit_500Medium,
+    Outfit_600SemiBold,
   });
 
   useEffect(() => {

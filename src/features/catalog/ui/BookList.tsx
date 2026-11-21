@@ -68,7 +68,6 @@ export default function BookList() {
               icon={Plus}
               size="md"
               title="Nuevo"
-              className="bg-dark1"
               weight="md"
             />
           </Link>

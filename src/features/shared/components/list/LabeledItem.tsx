@@ -1,12 +1,17 @@
 import { View } from "react-native";
-import { cn } from "../../theme";
+import { cn, useTone } from "../../theme";
 import { Text } from "../base/Text";
 
-export type LabeledItemVariant = "pill" | "box";
+/**
+ * pill: valor de solo lectura. input: campo editable (FieldRow).
+ * Los colores salen de la superficie: etiqueta = t.tag, campo = t.inset,
+ * campo con valor = accent2.
+ */
+export type LabeledItemVariant = "pill" | "input";
 
 const labelWidths = {
-  narrow: "w-[35%]",
-  wide: "w-[40%]",
+  narrow: "w-[28%]",
+  wide: "w-[30%]",
   form: "w-[110px]",
 };
 type Props = {
@@ -30,16 +35,16 @@ export function LabeledItem({
   labelWidth,
   contentClass,
 }: Props) {
-  const box = variant === "box";
+  const t = useTone();
+  const input = variant === "input";
   const empty = !content;
-  const cell = "rounded-lg px-4 py-2 bg-bg";
+  const cell = `rounded-lg px-2 py-2 ${input && "font-sans-medium"}`;
 
   return (
     <View
       className={cn(
-        "flex-row items-center",
+        "flex-row items-center justify-between",
         labelWidth === "narrow" ? "gap-6" : "gap-2",
-        box ? "rounded-xl gap-2" : "justify-between",
         expand && "flex-1",
         className,
       )}
@@ -48,12 +53,7 @@ export function LabeledItem({
         variant="item"
         className={cn(
           cell,
-          box
-            ? " bg-dark2 text-center text-white"
-            : cn(
-                " border border-dark2",
-                empty ? "bg-bg text-dark2 " : "bg-dark2 text-bg ",
-              ),
+          t.tag,
           labelWidth && labelWidths[labelWidth],
           labelClass,
         )}
@@ -65,12 +65,13 @@ export function LabeledItem({
         numberOfLines={1}
         className={cn(
           cell,
-          box ? "flex-1 text-dark1 text-start" : "text-dark1 flex-1 text-right",
-          empty && " text-dark2",
+          "flex-1 text-right",
+          input && !empty ? "bg-accent2 text-dark1" : t.inset,
+          empty && !input && "text-dark3",
           contentClass,
         )}
       >
-        {content || "---"}
+        {content || ""}
       </Text>
     </View>
   );

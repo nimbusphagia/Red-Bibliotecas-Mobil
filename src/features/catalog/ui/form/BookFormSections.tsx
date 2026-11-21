@@ -1,8 +1,4 @@
-import {
-  Divider,
-  FormSection,
-  SplitColumns,
-} from "@/features/shared/components";
+import { Panel, SplitColumns } from "@/features/shared/components";
 import { Fragment } from "react";
 import { View } from "react-native";
 import { BookFormField } from "./fields/BookFormField";
@@ -16,10 +12,9 @@ export function BookFormSections({ form, onEdit }: Props) {
     <SplitColumns>
       {form.columns.map((groups, i) => (
         <View key={i} className="gap-8">
-          {groups.map((g, j) => (
+          {groups.map((g) => (
             <Fragment key={g.title}>
-              {j > 0 && <Divider />}
-              <FormSection title={g.title}>
+              <Panel title={g.title} tone={g.tone}>
                 {g.fields.filter(form.isVisible).map((f) => (
                   <BookFormField
                     key={f.key}
@@ -29,7 +24,7 @@ export function BookFormSections({ form, onEdit }: Props) {
                     onEdit={onEdit}
                   />
                 ))}
-              </FormSection>
+              </Panel>
             </Fragment>
           ))}
         </View>

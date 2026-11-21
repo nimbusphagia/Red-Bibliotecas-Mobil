@@ -27,9 +27,10 @@ export function FieldRow({
       <Pressable
         onPress={onPress}
         disabled={disabled}
-        className={cn(disabled && "opacity-50")}
+        className={cn(disabled && "opacity-80")}
       >
         <LabeledItem
+          variant="input"
           label={label}
           content={value}
           labelWidth="form"

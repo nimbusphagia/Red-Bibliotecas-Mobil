@@ -1,8 +1,8 @@
+import { Dot } from "lucide-react-native";
 import { View } from "react-native";
-import { cn } from "../../theme";
+import { cn, useTone } from "../../theme";
 import { Icon, IconTone } from "./Icon";
 import { Text } from "./Text";
-import { Dot } from "lucide-react-native";
 
 type Variant = "active" | "pending" | "finished";
 type Props = {
@@ -10,17 +10,22 @@ type Props = {
   text: string;
   className?: string;
 };
+
 export function StatusBadge({ text, variant, className }: Props) {
-  const baseClass = "px-3 py-1 rounded-full";
+  const t = useTone();
   const variantClass = {
-    active: "border border-fg1 bg-fg1/50 text-dark2",
-    pending: "bg-dark2 text-bg",
-    finished: "border border-fg1 bg-fg1/50 text-dark2  rounded-full",
+    active: "bg-accent2 text-dark1",
+    pending: t.tag,
+    finished: cn(t.inset, t.text),
   };
   return (
     <Text
       variant="caption"
-      className={cn(baseClass, variantClass[variant], className)}
+      className={cn(
+        "overflow-hidden rounded-lg px-3 py-1",
+        variantClass[variant],
+        className,
+      )}
     >
       {text}
     </Text>
@@ -29,7 +34,7 @@ export function StatusBadge({ text, variant, className }: Props) {
 
 export function StatusIndicator({
   text,
-  tone = "primary",
+  tone,
 }: {
   text: string;
   tone?: IconTone;

@@ -7,7 +7,7 @@ export function ActiveCounter({ count }: { count: number }) {
       style={{ pointerEvents: "none" }}
       className="absolute right-[-6] top-[-3] rounded-full bg-accent2 px-2 py-[1px] 
       text-dark1 text-[7px] 
-      font-sans-bold text-center"
+      font-sans-semibold text-center"
     >
       {count}
     </Text>

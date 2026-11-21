@@ -30,9 +30,9 @@ export default function BookRow({ book }: Props) {
       />
       <Column variant="actions" expand={false}>
         <Link href={`/catalog/${book.id}`} asChild>
-          <Button variant="ghost" icon={Eye} />
+          <Button variant="soft" icon={Eye} />
         </Link>
-        <Button variant="ghost" icon={BookUp} />
+        <Button variant="soft" icon={BookUp} />
       </Column>
     </ListRow>
   );

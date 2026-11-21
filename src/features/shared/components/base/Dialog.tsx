@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { cn } from "../../theme";
 import { Button } from "./Button";
+import { Surface } from "./Surface";
 import { Text } from "./Text";
 
 type DialogSize = "md" | "lg";
@@ -41,15 +42,16 @@ export function Dialog({
           className="bg-black/10"
           onPress={onClose}
         />
-        <View
+        <Surface
+          tone="dark"
           className={cn(
-            "max-h-[80%] max-w-full gap-4 rounded-2xl border border-fg1 bg-dark1 p-6 pt-4",
+            "max-h-[80%] max-w-full gap-4 p-6 pt-4",
             sizeStyles[size],
             className,
           )}
         >
           {children}
-        </View>
+        </Surface>
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -61,11 +63,11 @@ export function DialogHeader({ title, subtitle, actions }: HeaderProps) {
   return (
     <View className="flex-row items-center justify-between gap-4">
       <View className="flex-1 gap-1">
-        <Text variant="section" numberOfLines={1} className="text-white">
+        <Text variant="section" numberOfLines={1}>
           {title}
         </Text>
         {subtitle ? (
-          <Text variant="caption" numberOfLines={1} className="text-white">
+          <Text variant="caption" numberOfLines={1}>
             {subtitle}
           </Text>
         ) : null}
@@ -113,9 +115,10 @@ export function DialogActions({
   return (
     <View className="flex-row items-center justify-end gap-2">
       {onCancel && (
-        <Button title={cancelTitle} variant="secondary" onPress={onCancel} />
+        <Button title={cancelTitle} variant="soft" onPress={onCancel} />
       )}
       <Button
+        variant="accent"
         title={confirmTitle}
         loading={loading}
         disabled={disabled}

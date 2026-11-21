@@ -1,4 +1,13 @@
+// Única fuente de verdad: la consumen tailwind.config.js, cn.ts y colors.ts.
+const fonts = {
+  sans: "Outfit_300Light",
+  "sans-regular": "Outfit_400Regular",
+  "sans-medium": "Outfit_500Medium",
+  "sans-semibold": "Outfit_600SemiBold",
+};
+
 module.exports = {
+  fonts,
   palette: {
     bg: "#F5F7FB",
     white: "#FFFFFF",

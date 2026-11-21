@@ -18,7 +18,7 @@ import { shelfLabel } from "@/features/shared/format/translate";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import ShelfCopyRow from "./shelves/detail/ShelfCopyRow";
 import MoveCopyDialog from "./shelves/form/MoveCopyDialog";
 
@@ -47,7 +47,6 @@ export default function ShelfDetail({ id }: { id: string }) {
   const columns: DetailColumn[] = [
     {
       title: "Detalles",
-      variant: "box",
       rows: [
         { label: "Nombre", content: shelfLabel(shelf) },
         { label: "Descripción", content: shelf.description ?? "---" },

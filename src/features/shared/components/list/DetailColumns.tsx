@@ -1,8 +1,8 @@
 import { Fragment, type ReactNode } from "react";
 import { View } from "react-native";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
-import { cn } from "../../theme";
-import { Section } from "../base/Section";
+import { cn, type Tone } from "../../theme";
+import { Panel } from "../base/Surface";
 import {
   DetailRows,
   type DetailRow,
@@ -13,12 +13,13 @@ export type DetailColumn = {
   title: string;
   rows: DetailRow[];
   lead?: ReactNode;
+  tone?: Tone;
   variant?: DetailRowsVariant;
   columns?: 1 | 2;
   fit?: boolean;
 };
 
-type Props = { columns: DetailColumn[]; divided?: boolean };
+type Props = { columns: DetailColumn[] };
 
 export function DetailColumns({ columns }: Props) {
   const { isExpanded } = useLayoutMode();
@@ -26,18 +27,14 @@ export function DetailColumns({ columns }: Props) {
     <View className={cn("gap-4", isExpanded && "flex-row items-start")}>
       {columns.map((c) => (
         <Fragment key={c.title}>
-          <Section
+          <Panel
             title={c.title}
             lead={c.lead}
-            expand={isExpanded && !c.fit}
-            className={cn(
-              isExpanded && c.fit ? "w-60" : undefined,
-              c.variant === "box" ? "bg-white" : "bg-white",
-              "rounded-xl px-6 py-4",
-            )}
+            tone={c.tone}
+            className={cn(isExpanded && (c.fit ? "w-60" : "flex-1"))}
           >
             <DetailRows rows={c.rows} variant={c.variant} columns={c.columns} />
-          </Section>
+          </Panel>
         </Fragment>
       ))}
     </View>

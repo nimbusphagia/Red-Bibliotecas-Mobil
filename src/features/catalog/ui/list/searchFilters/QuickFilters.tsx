@@ -49,7 +49,7 @@ export default function QuickFilters({ filters, onOpen }: Props) {
     <View className="shrink flex-row items-center gap-4">
       <View>
         <Button
-          variant="primary"
+          variant="solid"
           weight="md"
           iconTone="accent2"
           icon={SlidersHorizontal}
@@ -67,7 +67,7 @@ export default function QuickFilters({ filters, onOpen }: Props) {
           <Button
             key={field}
             title={label}
-            variant={active ? "accent" : "primary"}
+            variant={active ? "accent" : "solid"}
             onPress={() => onOpen(field)}
           />
         ))}

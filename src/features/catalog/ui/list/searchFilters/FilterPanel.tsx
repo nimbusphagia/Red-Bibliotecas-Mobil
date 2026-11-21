@@ -95,11 +95,11 @@ export default function FilterPanel({
                 <>
                   <Button
                     title="Limpiar"
-                    variant="primary"
+                    variant="solid"
                     onPress={() => onChange({})}
                   />
                   <Button
-                    variant="softAccent"
+                    variant="accent"
                     icon={Minimize2}
                     weight="md"
                     onPress={() => setOpen(null)}
