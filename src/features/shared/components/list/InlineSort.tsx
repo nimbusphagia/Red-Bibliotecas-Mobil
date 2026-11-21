@@ -1,6 +1,5 @@
 import { ArrowDown, ArrowUp } from "lucide-react-native";
 import { View } from "react-native";
-import { colors } from "../../theme";
 import type { SortDirection } from "../../types/types";
 import { Button } from "../base/Button";
 
@@ -33,7 +32,8 @@ export function InlineSort<K extends string>({
           <Button
             key={key}
             title={label}
-            variant={selected ? "primary" : "secondary"}
+            variant={selected ? "softAccent" : "primary"}
+            weight={selected ? "md" : "sm"}
             icon={selected ? Arrow : undefined}
             onPress={() =>
               onChange(

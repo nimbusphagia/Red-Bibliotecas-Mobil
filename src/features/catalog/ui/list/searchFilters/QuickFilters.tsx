@@ -1,4 +1,8 @@
-import { ActiveDot, Button, type Option } from "@/features/shared/components";
+import {
+  ActiveCounter,
+  Button,
+  type Option,
+} from "@/features/shared/components";
 import { SlidersHorizontal } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
 import { loadCategories, loadSubcategories, useOptions } from "../../options";
@@ -10,7 +14,9 @@ type Props = {
 };
 
 export default function QuickFilters({ filters, onOpen }: Props) {
-  const active = Object.values(filters).some((v) => v !== undefined);
+  const activeCount = Object.values(filters).filter(
+    (v) => v !== undefined,
+  ).length;
   const categories = useOptions(loadCategories);
   const subcategories = useOptions(loadSubcategories);
   const labelOf = (options: Option[], id?: number) =>
@@ -40,14 +46,16 @@ export default function QuickFilters({ filters, onOpen }: Props) {
   ] as const;
 
   return (
-    <View className="shrink flex-row items-center gap-2">
+    <View className="shrink flex-row items-center gap-4">
       <View>
         <Button
-          variant="highlight"
+          variant="primary"
+          weight="md"
+          iconTone="accent2"
           icon={SlidersHorizontal}
           onPress={() => onOpen("all")}
         />
-        {active && <ActiveDot />}
+        {activeCount > 0 && <ActiveCounter count={activeCount} />}
       </View>
       <ScrollView
         horizontal
@@ -59,7 +67,7 @@ export default function QuickFilters({ filters, onOpen }: Props) {
           <Button
             key={field}
             title={label}
-            variant={active ? "primary" : "secondary"}
+            variant={active ? "accent" : "primary"}
             onPress={() => onOpen(field)}
           />
         ))}

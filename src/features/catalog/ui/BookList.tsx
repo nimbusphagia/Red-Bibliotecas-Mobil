@@ -64,7 +64,13 @@ export default function BookList() {
         title="Libros"
         lead={
           <Link href="/catalog/form" asChild>
-            <Button variant="highlight" icon={Plus} size="md" />
+            <Button
+              icon={Plus}
+              size="md"
+              title="Nuevo"
+              className="bg-dark1"
+              weight="md"
+            />
           </Link>
         }
         search={{

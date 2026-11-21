@@ -26,7 +26,7 @@ export function SidebarItem({ item, active }: Props) {
                     rounded-xl p-2 
                     ${bgColor} ${activeClass}`}
       >
-        <Icon icon={item.icon} size="lg" tone={iconColor} />
+        <Icon icon={item.icon} size="lg" stroke="sm" tone={iconColor} />
       </Pressable>
     </Link>
   );

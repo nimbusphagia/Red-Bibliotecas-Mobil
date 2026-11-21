@@ -4,7 +4,7 @@ export { PageHeader } from "./base/Header";
 export { Icon, type IconSize, type IconTone } from "./base/Icon";
 export { Section } from "./base/Section";
 export { Text, type TextVariant } from "./base/Text";
-export { ActiveDot } from "./base/ActiveDot";
+export { ActiveCounter } from "./base/ActiveCounter";
 export { StatusBadge, StatusIndicator } from "./base/Badge";
 export { Card } from "./cards/Card";
 export { DualCard } from "./cards/DualCard";

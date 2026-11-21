@@ -32,7 +32,7 @@ export default function BookRow({ book }: Props) {
         <Link href={`/catalog/${book.id}`} asChild>
           <Button variant="ghost" icon={Eye} />
         </Link>
-        <Button variant="primary" icon={BookUp} />
+        <Button variant="ghost" icon={BookUp} />
       </Column>
     </ListRow>
   );

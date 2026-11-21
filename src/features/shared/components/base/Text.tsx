@@ -5,10 +5,10 @@ export type TextVariant =
   "display" | "title" | "section" | "item" | "itemSm" | "caption";
 
 const variantStyles: Record<TextVariant, string> = {
-  display: "font-sans-bold text-[28px] text-dark1",
+  display: "font-sans-semibold text-[28px] text-dark1",
   title: "font-sans-medium text-[24px] text-dark1",
   section: "font-sans text-[18px] text-dark1",
-  item: "font-sans-medium text-[14px] text-dark1",
+  item: "font-sans text-[14px] text-dark1",
   itemSm: "font-sans text-[14px] text-dark1",
   caption: "font-sans text-[14px] text-dark3",
 };

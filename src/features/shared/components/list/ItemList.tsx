@@ -27,7 +27,9 @@ export function ItemList<T extends { id: number }>({
   return (
     <View className="flex-1 gap-4">
       {toolbar && (
-        <View className="flex-row items-center justify-between">{toolbar}</View>
+        <View className="flex-row items-center justify-between bg-dark1 rounded-lg py-3 px-3">
+          {toolbar}
+        </View>
       )}
       <FlatList
         key={numColumns}
