@@ -38,12 +38,12 @@ export function Dialog({
       >
         <Pressable
           style={StyleSheet.absoluteFill}
-          className="bg-black/5"
+          className="bg-black/10"
           onPress={onClose}
         />
         <View
           className={cn(
-            "max-h-[80%] max-w-full gap-4 rounded-2xl border border-fg1 bg-white p-6",
+            "max-h-[80%] max-w-full gap-4 rounded-2xl border border-fg1 bg-dark1 p-6 pt-4",
             sizeStyles[size],
             className,
           )}
@@ -61,11 +61,11 @@ export function DialogHeader({ title, subtitle, actions }: HeaderProps) {
   return (
     <View className="flex-row items-center justify-between gap-4">
       <View className="flex-1 gap-1">
-        <Text variant="section" numberOfLines={1}>
+        <Text variant="section" numberOfLines={1} className="text-white">
           {title}
         </Text>
         {subtitle ? (
-          <Text variant="caption" numberOfLines={1}>
+          <Text variant="caption" numberOfLines={1} className="text-white">
             {subtitle}
           </Text>
         ) : null}

@@ -3,7 +3,13 @@ import { Button, Column, ListRow, Text } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { BookDown, BookUp, ShelvingUnit } from "lucide-react-native";
+import {
+  BookDown,
+  BookSearch,
+  BookUp,
+  ScanSearch,
+  ShelvingUnit,
+} from "lucide-react-native";
 import { View } from "react-native";
 
 type Props = {
@@ -50,7 +56,7 @@ export default function CopiesList({ copies }: Props) {
             />
             <Column variant="actions" expand={false}>
               <Link href={`/shelves/${c.shelfId}`} asChild>
-                <Button variant="secondary" icon={ShelvingUnit} />
+                <Button variant="ghost" icon={ScanSearch} />
               </Link>
               {href && (
                 <Link href={href} asChild>

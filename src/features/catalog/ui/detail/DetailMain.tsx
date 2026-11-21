@@ -23,7 +23,6 @@ export default function DetailMain({ book, copies, codes }: Props) {
         columns={[
           {
             title: "Tejuelo",
-            variant: "box",
             fit: true,
             rows: bookLabelRows(book, codes),
           },
@@ -38,7 +37,14 @@ export default function DetailMain({ book, copies, codes }: Props) {
                 }}
                 asChild
               >
-                <Button variant="highlight" size="sm" icon={PencilLine} />
+                <Button
+                  title="Editar"
+                  variant="softAccent"
+                  className="bg-dark1"
+                  iconTone="accent2"
+                  size="md"
+                  icon={PencilLine}
+                />
               </Link>
             ),
             rows: bookDetailRows(book),

@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react-native";
 import { colors } from "../../theme";
 
-const sizes = { sm: 12, md: 14, lg: 22 } as const;
+const sizes = { sm: 12, md: 14, lg: 18 } as const;
 const strokes = { sm: 1.5, md: 2.5, lg: 3 } as const;
 
 export type IconSize = keyof typeof sizes;

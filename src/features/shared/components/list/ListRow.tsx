@@ -11,7 +11,7 @@ export function ListRow({ children, compact, className }: Props) {
   return (
     <View
       className={cn(
-        "flex-row items-center justify-between gap-3 rounded-full px-4",
+        "flex-row items-center justify-between gap-3 rounded-full px-2",
         compact ? "py-1" : "py-2",
         className,
       )}

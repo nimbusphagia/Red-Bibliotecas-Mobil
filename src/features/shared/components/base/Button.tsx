@@ -30,12 +30,12 @@ const variantStyles: Record<
   accent: {
     container: "bg-accent2 active:bg-accent2",
     label: "text-dark1 ",
-    tone: "white",
+    tone: "dark1",
     onDark: true,
   },
   softAccent: {
     container: "bg-dark2 active:bg-accent2",
-    label: "text-accent2 ",
+    label: "text-accent2",
     tone: "accent2",
     onDark: true,
   },
@@ -117,7 +117,7 @@ export function Button({
           className={cn(
             "font-sans",
             v.label,
-            weight === "lg" && "font-sans-medium",
+            weight === "md" && "font-sans-medium",
           )}
         >
           {title}
@@ -126,7 +126,7 @@ export function Button({
       {icon && (
         <Icon
           icon={icon}
-          size={s.icon}
+          size={!title && s.icon === "md" ? "lg" : s.icon}
           tone={iconTone ?? v.tone}
           stroke={weight}
         />

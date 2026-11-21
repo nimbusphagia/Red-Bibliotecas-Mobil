@@ -17,6 +17,7 @@ import {
   searchPublishers,
   useOptions,
 } from "../../options";
+import { Minimize2 } from "lucide-react-native";
 
 export type CatalogFilters = {
   author?: Option;
@@ -94,10 +95,15 @@ export default function FilterPanel({
                 <>
                   <Button
                     title="Limpiar"
-                    variant="ghost"
+                    variant="primary"
                     onPress={() => onChange({})}
                   />
-                  <Button title="Cerrar" onPress={() => setOpen(null)} />
+                  <Button
+                    variant="softAccent"
+                    icon={Minimize2}
+                    weight="md"
+                    onPress={() => setOpen(null)}
+                  />
                 </>
               }
             />

@@ -1,4 +1,9 @@
-import { ArrowDown, ArrowUp } from "lucide-react-native";
+import {
+  ArrowDown,
+  ArrowDownZa,
+  ArrowUp,
+  ArrowUpAz,
+} from "lucide-react-native";
 import { View } from "react-native";
 import type { SortDirection } from "../../types/types";
 import { Button } from "../base/Button";
@@ -22,7 +27,7 @@ export function InlineSort<K extends string>({
   sortDir,
   onChange,
 }: Props<K>) {
-  const Arrow = sortDir === "asc" ? ArrowUp : ArrowDown;
+  const Arrow = sortDir === "asc" ? ArrowUpAz : ArrowDownZa;
 
   return (
     <View className="flex-row gap-2">
@@ -32,7 +37,7 @@ export function InlineSort<K extends string>({
           <Button
             key={key}
             title={label}
-            variant={selected ? "softAccent" : "primary"}
+            variant={"primary"}
             weight={selected ? "md" : "sm"}
             icon={selected ? Arrow : undefined}
             onPress={() =>

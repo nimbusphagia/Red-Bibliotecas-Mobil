@@ -68,21 +68,27 @@ export function SearchSelect({
 
   return (
     <View className="gap-2">
-      {label && <Text variant="item">{label}</Text>}
+      {label && (
+        <Text variant="item" className="text-white">
+          {label}
+        </Text>
+      )}
 
       {empty ? (
-        <View className="h-12 justify-center rounded-xl bg-fg1 px-4">
-          <Text variant="caption">Sin resultados</Text>
+        <View className="h-12 justify-center rounded-xl bg-dark2 px-4">
+          <Text variant="caption" className="text-white">
+            Sin resultados
+          </Text>
         </View>
       ) : isOpen ? (
-        <View className="h-12 flex-row items-center gap-2 rounded-xl bg-bg px-4">
+        <View className="h-12 flex-row items-center gap-2 rounded-xl bg-dark2 px-4">
           <TextInput
             autoFocus
             value={search}
             onChangeText={setSearch}
             placeholder={value?.label ?? "Buscar..."}
-            placeholderTextColor={colors.dark1}
-            className="h-full flex-1 font-sans text-dark2"
+            placeholderTextColor={colors.white}
+            className="h-full flex-1 font-sans text-white"
           />
           <Pressable onPress={close} hitSlop={8}>
             <Icon icon={X} size="md" tone="dark2" />
@@ -91,9 +97,17 @@ export function SearchSelect({
       ) : (
         <Pressable
           onPress={() => setOpen(true)}
-          className={cn("h-12 justify-center rounded-lg bg-bg px-4")}
+          className={cn(
+            "h-12 justify-center rounded-lg bg-dark2 px-4",
+            value && "bg-accent2",
+          )}
         >
-          <Text variant="itemSm">{value?.label ?? placeholder}</Text>
+          <Text
+            variant="itemSm"
+            className={cn(value ? "text-dark1" : "text-white")}
+          >
+            {value?.label ?? placeholder}
+          </Text>
         </Pressable>
       )}
 
@@ -105,22 +119,15 @@ export function SearchSelect({
             showsVerticalScrollIndicator={false}
           >
             {value && (
-              <Pressable
-                onPress={() => pick(undefined)}
-                className="border-b border-white px-4 py-3"
-              >
-                <Text variant="item">Quitar filtro</Text>
+              <Pressable onPress={() => pick(undefined)} className=" px-4 py-3">
+                <Text variant="item" className="text-dark1">
+                  Quitar filtro
+                </Text>
               </Pressable>
             )}
             {canCreate && (
-              <Pressable
-                onPress={create}
-                className="border-b border-fg1 px-4 py-3"
-              >
-                <Text
-                  variant="item"
-                  className="font-sans-semibold text-highlight"
-                >
+              <Pressable onPress={create} className=" px-4 py-3">
+                <Text variant="item" className="font-sans-semibold text-dark1">
                   Crear «{search.trim()}»
                 </Text>
               </Pressable>
@@ -131,15 +138,16 @@ export function SearchSelect({
               </Text>
             )}
             {options.map((o, i) => {
-              const separatorClass =
-                i !== options.length - 1 ? "border-b border-white" : "";
+              const separatorClass = i !== options.length - 1 ? "" : "";
               return (
                 <Pressable
                   key={o.id}
                   onPress={() => pick(o)}
                   className={cn("px-4 py-3", separatorClass)}
                 >
-                  <Text variant="itemSm">{o.label}</Text>
+                  <Text variant="itemSm" className="text-dark1">
+                    {o.label}
+                  </Text>
                 </Pressable>
               );
             })}

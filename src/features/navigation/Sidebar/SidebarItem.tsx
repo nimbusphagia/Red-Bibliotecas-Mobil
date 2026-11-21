@@ -1,14 +1,17 @@
 import type { NavItem } from "@/features/navigation/navigation";
-import { Button, Icon } from "@/features/shared/components";
+import { Icon } from "@/features/shared/components";
+import { cn } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { Pressable } from "react-native";
 
 type Props = {
   item: NavItem;
   active: boolean;
+  standalone?: boolean;
 };
 
-export function SidebarItem({ item, active }: Props) {
+export function SidebarItem({ item, active, standalone = false }: Props) {
+  const specialClass = standalone ? "bg-dark1 text-white" : "";
   const [iconColor, bgColor, activeClass] = active
     ? [
         "dark1" as const,
@@ -22,9 +25,12 @@ export function SidebarItem({ item, active }: Props) {
         accessibilityRole="button"
         accessibilityLabel={item.label}
         accessibilityState={{ selected: active }}
-        className={`flex items-center justify-center 
-                    rounded-xl p-2 
-                    ${bgColor} ${activeClass}`}
+        className={cn(
+          "flex items-center justify-center rounded-xl p-2",
+          bgColor,
+          activeClass,
+          specialClass,
+        )}
       >
         <Icon icon={item.icon} size="lg" stroke="sm" tone={iconColor} />
       </Pressable>

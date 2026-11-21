@@ -20,7 +20,9 @@ export function SimpleSelect<V extends string | number>({
 }: SimpleProps<V>) {
   return (
     <View className={cn("gap-3", disabled && "opacity-50")}>
-      <Text variant="item">{label}</Text>
+      <Text variant="item" className="text-white">
+        {label}
+      </Text>
       <View className="flex-row flex-wrap gap-x-3 gap-y-4">
         {options.map((o) => (
           <Chip

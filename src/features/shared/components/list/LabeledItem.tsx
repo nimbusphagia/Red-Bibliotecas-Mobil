@@ -32,13 +32,14 @@ export function LabeledItem({
 }: Props) {
   const box = variant === "box";
   const empty = !content;
-  const cell = "border px-4 py-1";
+  const cell = "rounded-lg px-4 py-2 bg-bg";
 
   return (
     <View
       className={cn(
-        "flex-row items-center ",
-        box ? "rounded-xl gap-2" : "justify-between rounded-full bg-bg",
+        "flex-row items-center",
+        labelWidth === "narrow" ? "gap-6" : "gap-2",
+        box ? "rounded-xl gap-2" : "justify-between",
         expand && "flex-1",
         className,
       )}
@@ -48,10 +49,10 @@ export function LabeledItem({
         className={cn(
           cell,
           box
-            ? "bg-bg rounded-xl border-transparent text-center text-dark1"
+            ? " bg-dark2 text-center text-white"
             : cn(
-                "rounded-full border-transparent",
-                empty ? "text-dark3" : "bg-dark2 text-white",
+                " border border-dark2",
+                empty ? "bg-bg text-dark2 " : "bg-dark2 text-bg ",
               ),
           labelWidth && labelWidths[labelWidth],
           labelClass,
@@ -64,10 +65,8 @@ export function LabeledItem({
         numberOfLines={1}
         className={cn(
           cell,
-          box
-            ? "flex-1 rounded-xl border-dark1 bg-dark1 text-white text-center"
-            : "rounded-r-full border-transparent",
-          empty && "text-dark3",
+          box ? "flex-1 text-dark1 text-start" : "text-dark1 flex-1 text-right",
+          empty && " text-dark2",
           contentClass,
         )}
       >

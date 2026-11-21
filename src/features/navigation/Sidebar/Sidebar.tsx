@@ -33,6 +33,7 @@ export function Sidebar() {
               key={item.key}
               item={item}
               active={isActive(item.href)}
+              standalone
             />
           );
         })}

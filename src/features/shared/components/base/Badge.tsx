@@ -13,9 +13,9 @@ type Props = {
 export function StatusBadge({ text, variant, className }: Props) {
   const baseClass = "px-3 py-1 rounded-full";
   const variantClass = {
-    active: "border border-fg1 bg-fg1/50 text-primary",
-    pending: "bg-primary text-bg",
-    finished: "border border-fg1 bg-fg1/50 text-secondary  rounded-full",
+    active: "border border-fg1 bg-fg1/50 text-dark2",
+    pending: "bg-dark2 text-bg",
+    finished: "border border-fg1 bg-fg1/50 text-dark2  rounded-full",
   };
   return (
     <Text
