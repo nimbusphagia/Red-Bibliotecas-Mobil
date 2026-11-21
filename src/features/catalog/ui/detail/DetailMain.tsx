@@ -5,7 +5,7 @@ import { LabelCodes } from "@/features/inventory/internal/label/types";
 import { Button, DetailColumns, Section } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";
-import { BookPlus, PencilLine, Tag } from "lucide-react-native";
+import { PencilLine, Tag } from "lucide-react-native";
 import { bookDetailRows, bookLabelRows } from "./bookInfo/bookRows";
 import CopiesList from "./bookInfo/CopiesList";
 
@@ -25,7 +25,6 @@ export default function DetailMain({ book, copies, codes }: Props) {
             title: "Tejuelo",
             variant: "box",
             fit: true,
-            lead: <Button variant="ghost" size="sm" icon={Tag} />,
             rows: bookLabelRows(book, codes),
           },
           {
@@ -39,18 +38,14 @@ export default function DetailMain({ book, copies, codes }: Props) {
                 }}
                 asChild
               >
-                <Button variant="ghost" size="sm" icon={PencilLine} />
+                <Button variant="highlight" size="sm" icon={PencilLine} />
               </Link>
             ),
             rows: bookDetailRows(book),
           },
         ]}
       />
-      <Section
-        title="Ejemplares"
-        expand
-        lead={<Button variant="ghost" size="sm" icon={BookPlus} />}
-      >
+      <Section title="Ejemplares" className="bg-white rounded-2xl p-4" expand>
         <CopiesList copies={copies} />
       </Section>
     </ScreenBody>

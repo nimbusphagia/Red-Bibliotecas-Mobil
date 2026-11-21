@@ -10,6 +10,7 @@ import DetailHeader from "./detail/DetailHeader";
 import DetailMain from "./detail/DetailMain";
 import { getBookLabelCodes } from "@/features/inventory/internal/label/service";
 import { LabelCodes } from "@/features/inventory/internal/label/types";
+import { formatContributors } from "@/features/shared/format/text";
 
 type Props = {
   id: string;
@@ -44,7 +45,11 @@ export default function BookDetail({ id }: Props) {
 
   return (
     <>
-      <DetailHeader id={data.book.id} title={data.book.title} />
+      <DetailHeader
+        id={data.book.id}
+        title={data.book.title}
+        subtitle={formatContributors(data.book.collaborators)}
+      />
       <DetailMain book={data.book} copies={data.copies} codes={data.codes} />
     </>
   );

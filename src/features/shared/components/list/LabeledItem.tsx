@@ -1,4 +1,3 @@
-// shared/components/list/LabeledItem.tsx
 import { View } from "react-native";
 import { cn } from "../../theme";
 import { Text } from "../base/Text";
@@ -6,7 +5,7 @@ import { Text } from "../base/Text";
 export type LabeledItemVariant = "pill" | "box";
 
 const labelWidths = {
-  narrow: "w-[28%]",
+  narrow: "w-[35%]",
   wide: "w-[40%]",
   form: "w-[110px]",
 };
@@ -38,38 +37,37 @@ export function LabeledItem({
   return (
     <View
       className={cn(
-        "flex-row items-center",
-        box ? "gap-2" : "justify-between rounded-full bg-fg1",
+        "flex-row items-center ",
+        box ? "rounded-xl gap-2" : "justify-between rounded-full bg-bg",
         expand && "flex-1",
         className,
       )}
     >
       <Text
-        variant="itemSm"
+        variant="item"
         className={cn(
           cell,
           box
-            ? "rounded-lg border-primary bg-primary text-center text-bg"
+            ? "bg-bg rounded-xl border-transparent text-center text-dark1"
             : cn(
                 "rounded-full border-transparent",
-                empty ? "text-secondary" : "bg-primary text-bg",
+                empty ? "text-dark3" : "bg-dark2 text-white",
               ),
           labelWidth && labelWidths[labelWidth],
-          labelClass,
           labelClass,
         )}
       >
         {label}
       </Text>
       <Text
-        variant="itemSm"
+        variant="item"
         numberOfLines={1}
         className={cn(
           cell,
           box
-            ? "flex-1 rounded-lg border-fg1 bg-fg1/60"
+            ? "flex-1 rounded-xl border-dark1 bg-dark1 text-white text-center"
             : "rounded-r-full border-transparent",
-          empty && "text-secondary",
+          empty && "text-dark3",
           contentClass,
         )}
       >

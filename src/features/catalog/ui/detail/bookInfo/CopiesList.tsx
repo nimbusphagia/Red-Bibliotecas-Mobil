@@ -1,5 +1,5 @@
 import { CopyItem } from "@/features/inventory/internal/copy/types";
-import { Button, Column, ListRow } from "@/features/shared/components";
+import { Button, Column, ListRow, Text } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
@@ -11,7 +11,14 @@ type Props = {
 };
 export default function CopiesList({ copies }: Props) {
   return (
-    <View className="flex-1 gap-4 py-3">
+    <View className="flex-1 gap-4">
+      {copies.length < 1 && (
+        <View className="h-20 justify-end p-4">
+          <Text variant="caption" className="text-center">
+            Este libro aún no tiene ejemplares.
+          </Text>
+        </View>
+      )}
       {copies.map((c) => {
         const isAvailable = ["available", "damaged"].includes(c.status);
         const href = isAvailable

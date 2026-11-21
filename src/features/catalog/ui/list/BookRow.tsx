@@ -1,5 +1,6 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { Button, Column, ListRow } from "@/features/shared/components";
+import { formatContributors } from "@/features/shared/format/text";
 import { Link } from "expo-router";
 import { BookUp, Eye } from "lucide-react-native";
 
@@ -36,10 +37,3 @@ export default function BookRow({ book }: Props) {
     </ListRow>
   );
 }
-
-const formatContributors = (list: BookListItem["collaborators"]) => {
-  const names = list.map((c) =>
-    [c.firstName, c.lastName].filter(Boolean).join(" "),
-  );
-  return [...new Set(names)].join(", ");
-};

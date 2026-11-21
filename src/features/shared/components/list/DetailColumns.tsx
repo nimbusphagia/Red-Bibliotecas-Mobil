@@ -1,4 +1,3 @@
-// shared/components/list/DetailColumns.tsx
 import { Fragment, type ReactNode } from "react";
 import { View } from "react-native";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
@@ -25,21 +24,19 @@ type Props = { columns: DetailColumn[]; divided?: boolean };
 export function DetailColumns({ columns, divided }: Props) {
   const { isExpanded } = useLayoutMode();
   return (
-    <View
-      className={cn(
-        "gap-6",
-        isExpanded && "flex-row items-start",
-        divided && "border-b border-fg1 pb-6",
-      )}
-    >
-      {columns.map((c, i) => (
+    <View className={cn("gap-6", isExpanded && "flex-row items-start")}>
+      {columns.map((c) => (
         <Fragment key={c.title}>
-          {divided && isExpanded && i > 0 && <Divider vertical />}
           <Section
             title={c.title}
             lead={c.lead}
             expand={isExpanded && !c.fit}
-            className={isExpanded && c.fit ? "w-60" : undefined}
+            textClass={c.variant === "box" ? "text-white" : ""}
+            className={cn(
+              isExpanded && c.fit ? "w-60" : undefined,
+              c.variant === "box" ? "bg-dark2" : "bg-white",
+              "rounded-xl p-4",
+            )}
           >
             <DetailRows rows={c.rows} variant={c.variant} columns={c.columns} />
           </Section>

@@ -6,6 +6,7 @@ import { Text } from "./Text";
 
 type Props = {
   title: string;
+  subtitle?: string;
   lead?: ReactNode;
   search?: {
     value: string;
@@ -16,6 +17,7 @@ type Props = {
 
 export function PageHeader({
   title,
+  subtitle,
   lead,
   search,
   children,
@@ -34,7 +36,10 @@ export function PageHeader({
   return (
     <View className="gap-3">
       <View className="flex-row items-center gap-4">
-        <Text variant="title">{title}</Text>
+        <View>
+          <Text variant="title">{title}</Text>
+          {subtitle && <Text variant="caption">{subtitle}</Text>}
+        </View>
         <View className="flex-1 flex-row items-center justify-end gap-4">
           {isExpanded && searchbar}
           {children}
