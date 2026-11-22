@@ -1,4 +1,4 @@
-import { SIDEBAR_WIDTH } from "@/features/navigation/Sidebar/Sidebar";
+import { SIDEBAR_WIDTH } from "@/features/navigation/Sidebar/constants";
 import {
   createContext,
   useContext,

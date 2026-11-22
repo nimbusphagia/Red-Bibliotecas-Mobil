@@ -21,25 +21,31 @@ type Data = {
   codes: LabelCodes | null;
 };
 
+const fetchData = async (bookId: number): Promise<Data> => {
+  const [book, page, codes] = await Promise.all([
+    getBookItem(bookId),
+    listCopiesByBook({ bookId, excludeReleased: true, limit: 100 }),
+    getBookLabelCodes(bookId),
+  ]);
+  return { book, copies: page.items, codes };
+};
+
 export default function BookDetail({ id }: Props) {
   const [data, setData] = useState<Data | null>(null);
 
   useFocusEffect(
     useCallback(() => {
-      const bookId = routeIdSchema.parse(id);
       let cancelled = false;
-      Promise.all([
-        getBookItem(bookId),
-        listCopiesByBook({ bookId, excludeReleased: true, limit: 100 }),
-        getBookLabelCodes(bookId),
-      ]).then(([book, page, codes]) => {
-        if (!cancelled) setData({ book, copies: page.items, codes });
+      fetchData(routeIdSchema.parse(id)).then((d) => {
+        if (!cancelled) setData(d);
       });
       return () => {
         cancelled = true;
       };
     }, [id]),
   );
+
+  const reload = () => fetchData(routeIdSchema.parse(id)).then(setData);
 
   if (!data) return <ActivityIndicator />;
 
@@ -50,7 +56,12 @@ export default function BookDetail({ id }: Props) {
         title={data.book.title}
         subtitle={formatContributors(data.book.collaborators)}
       />
-      <DetailMain book={data.book} copies={data.copies} codes={data.codes} />
+      <DetailMain
+        book={data.book}
+        copies={data.copies}
+        codes={data.codes}
+        onCopiesAdded={reload}
+      />
     </>
   );
 }

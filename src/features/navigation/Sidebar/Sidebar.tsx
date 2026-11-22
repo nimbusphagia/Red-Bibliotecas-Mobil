@@ -1,10 +1,9 @@
 import { NAVBAR } from "@/features/navigation/navigation";
 import { Href, usePathname } from "expo-router";
 import { View } from "react-native";
+import { SIDEBAR_WIDTH } from "./constants";
 import { SidebarItem } from "./SidebarItem";
 import { cn } from "@/features/shared/theme";
-
-export const SIDEBAR_WIDTH = 70;
 
 export function Sidebar() {
   const pathname = usePathname();

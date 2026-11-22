@@ -2,7 +2,7 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { Button, Column, ListRow } from "@/features/shared/components";
 import { formatContributors } from "@/features/shared/format/text";
 import { Link } from "expo-router";
-import { BookUp, Eye, PencilLine } from "lucide-react-native";
+import { Eye, PencilLine } from "lucide-react-native";
 
 type Props = {
   book: BookListItem;
@@ -29,7 +29,12 @@ export default function BookRow({ book }: Props) {
         containerClass="max-w-[150px]"
       />
       <Column variant="actions" expand={false}>
-        <Button variant="soft" icon={PencilLine} />
+        <Link
+          href={{ pathname: "/catalog/form", params: { id: String(book.id) } }}
+          asChild
+        >
+          <Button variant="soft" icon={PencilLine} />
+        </Link>
         <Link href={`/catalog/${book.id}`} asChild>
           <Button variant="soft" icon={Eye} />
         </Link>

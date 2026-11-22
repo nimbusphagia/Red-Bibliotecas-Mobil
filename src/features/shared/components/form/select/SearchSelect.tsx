@@ -1,11 +1,14 @@
 import { X } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useId, useRef, useState } from "react";
 import { Pressable, ScrollView, TextInput, View } from "react-native";
+import Animated from "react-native-reanimated";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { cn, colors, useTone } from "../../../theme";
 import { Text } from "../../base/Text";
 import type { Option } from "./option";
 import { Icon } from "../../base/Icon";
+import { DialogDismissContext } from "../../base/dismiss";
+import { FADE_IN, FADE_OUT, LAYOUT } from "../../base/motion";
 
 export type SearchSelectProps = {
   label?: string;
@@ -58,6 +61,16 @@ export function SearchSelect({
     setOpen(false);
     setSearch("");
   };
+
+  // Toque fuera del select (pero dentro del Dialog): cierra solo el select.
+  const id = useId();
+  const { tick, except, protect } = useContext(DialogDismissContext);
+  const lastTick = useRef(tick);
+  useEffect(() => {
+    if (tick === lastTick.current) return;
+    lastTick.current = tick;
+    if (except !== id) close();
+  }, [tick]);
   const pick = (option?: Option) => {
     onChange(option);
     close();
@@ -68,7 +81,14 @@ export function SearchSelect({
   };
 
   return (
-    <View className="gap-2">
+    <Animated.View
+      layout={LAYOUT}
+      className="gap-2"
+      onStartShouldSetResponderCapture={() => {
+        protect(id);
+        return false;
+      }}
+    >
       {label && (
         <Text variant="item">{label}</Text>
       )}
@@ -106,7 +126,11 @@ export function SearchSelect({
       )}
 
       {isOpen && (
-        <View className={cn("max-h-60 overflow-hidden rounded-lg", t.inset)}>
+        <Animated.View
+          entering={FADE_IN}
+          exiting={FADE_OUT}
+          className={cn("max-h-60 overflow-hidden rounded-lg", t.inset)}
+        >
           <ScrollView
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"
@@ -143,8 +167,8 @@ export function SearchSelect({
               );
             })}
           </ScrollView>
-        </View>
+        </Animated.View>
       )}
-    </View>
+    </Animated.View>
   );
 }

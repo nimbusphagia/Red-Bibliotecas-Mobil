@@ -1,5 +1,7 @@
 import { View } from "react-native";
+import Animated from "react-native-reanimated";
 import { cn } from "../../../theme";
+import { LAYOUT } from "../../base/motion";
 import { Text } from "../../base/Text";
 import { Chip } from "./Chip";
 
@@ -19,7 +21,10 @@ export function SimpleSelect<V extends string | number>({
   disabled,
 }: SimpleProps<V>) {
   return (
-    <View className={cn("gap-3", disabled && "opacity-80")}>
+    <Animated.View
+      layout={LAYOUT}
+      className={cn("gap-3", disabled && "opacity-80")}
+    >
       <Text variant="item">{label}</Text>
       <View className="flex-row flex-wrap gap-x-3 gap-y-4">
         {options.map((o) => (
@@ -32,6 +37,6 @@ export function SimpleSelect<V extends string | number>({
           />
         ))}
       </View>
-    </View>
+    </Animated.View>
   );
 }

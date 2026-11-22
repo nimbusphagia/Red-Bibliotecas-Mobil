@@ -5,17 +5,27 @@ import { LabelCodes } from "@/features/inventory/internal/label/types";
 import { Button, DetailColumns, Panel } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { NotebookPen, PencilLine } from "lucide-react-native";
 import { bookDetailRows, bookLabelRows } from "./bookInfo/bookRows";
+import AddCopiesDialog from "./AddCopiesDialog";
 import CopiesList from "./bookInfo/CopiesList";
 
 type Props = {
   book: BookListItem;
   copies: CopyItem[];
   codes: LabelCodes | null;
+  onCopiesAdded: () => void;
 };
 
-export default function DetailMain({ book, copies, codes }: Props) {
+export default function DetailMain({
+  book,
+  copies,
+  codes,
+  onCopiesAdded,
+}: Props) {
+  const [adding, setAdding] = useState(false);
+
   return (
     <ScreenBody>
       <DetailColumns
@@ -47,19 +57,27 @@ export default function DetailMain({ book, copies, codes }: Props) {
         title="Ejemplares"
         className="flex-1 gap-2"
         lead={
-          <Link
-            href={{
-              pathname: "/catalog/form",
-              params: { id: String(book.id) },
-            }}
-            asChild
-          >
-            <Button title="Agregar" icon={NotebookPen} size="sm" />
-          </Link>
+          <Button
+            title="Agregar"
+            icon={NotebookPen}
+            size="sm"
+            onPress={() => setAdding(true)}
+          />
         }
       >
         <CopiesList copies={copies} />
       </Panel>
+      {adding && (
+        <AddCopiesDialog
+          bookId={book.id}
+          bookTitle={book.title}
+          onClose={() => setAdding(false)}
+          onAdded={() => {
+            setAdding(false);
+            onCopiesAdded();
+          }}
+        />
+      )}
     </ScreenBody>
   );
 }

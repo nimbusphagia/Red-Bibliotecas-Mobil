@@ -1,4 +1,11 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type PropsWithChildren,
+  type ReactNode,
+} from "react";
 import {
   KeyboardAvoidingView,
   Modal,
@@ -7,10 +14,15 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import Animated from "react-native-reanimated";
 import { cn } from "../../theme";
 import { Button } from "./Button";
+import { DialogDismissContext } from "./dismiss";
+import { LAYOUT } from "./motion";
 import { Surface } from "./Surface";
 import { Text } from "./Text";
+
+const AnimatedSurface = Animated.createAnimatedComponent(Surface);
 
 type DialogSize = "md" | "lg";
 
@@ -31,6 +43,28 @@ export function Dialog({
   className,
   children,
 }: PropsWithChildren<DialogProps>) {
+  const [dismiss, setDismiss] = useState<{ tick: number; except: string | null }>(
+    { tick: 0, except: null },
+  );
+  const touched = useRef<string | null>(null);
+  const protect = useCallback((id: string) => {
+    touched.current = id;
+  }, []);
+  const value = useMemo(() => ({ ...dismiss, protect }), [dismiss, protect]);
+
+  // Se ejecuta en la fase de captura (antes que cualquier hijo) y devuelve
+  // false, así que no interfiere con ningún botón. Los controles que están
+  // bajo el toque se anuncian con `protect` durante este mismo evento; cuando
+  // termina (microtask) se avisa a los demás que se cierren.
+  const onTouch = () => {
+    touched.current = null;
+    queueMicrotask(() => {
+      const except = touched.current;
+      setDismiss((p) => ({ tick: p.tick + 1, except }));
+    });
+    return false;
+  };
+
   return (
     <Modal transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
@@ -42,16 +76,20 @@ export function Dialog({
           className="bg-black/10"
           onPress={onClose}
         />
-        <Surface
+        <AnimatedSurface
+          layout={LAYOUT}
           tone="dark"
           className={cn(
             "max-h-[80%] max-w-full gap-4 p-6 pt-4",
             sizeStyles[size],
             className,
           )}
+          onStartShouldSetResponderCapture={onTouch}
         >
-          {children}
-        </Surface>
+          <DialogDismissContext.Provider value={value}>
+            {children}
+          </DialogDismissContext.Provider>
+        </AnimatedSurface>
       </KeyboardAvoidingView>
     </Modal>
   );
