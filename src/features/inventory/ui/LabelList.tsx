@@ -62,6 +62,7 @@ export default function LabelList() {
     <>
       <PageHeader
         title="Tejuelos"
+        subtitle="Etiquetas que identifican cada ejemplar"
         search={{
           value: search,
           onChange: setSearch,

@@ -1,9 +1,4 @@
-import {
-  ArrowDown,
-  ArrowDownZa,
-  ArrowUp,
-  ArrowUpAz,
-} from "lucide-react-native";
+import { ArrowDownZa, ArrowUpAz } from "lucide-react-native";
 import { View } from "react-native";
 import type { SortDirection } from "../../types/types";
 import { Button } from "../base/Button";

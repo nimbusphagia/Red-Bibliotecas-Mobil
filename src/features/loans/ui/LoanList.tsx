@@ -13,7 +13,7 @@ import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import type { SortDirection } from "@/features/shared/types/types";
 import { Link } from "expo-router";
-import { BookUp } from "lucide-react-native";
+import { ArrowUp, BookUp } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import LoanRow from "./loans/list/LoanRow";
 
@@ -35,7 +35,7 @@ const SORTS: SortOption<LoanSort>[] = [
 
 export default function LoanList() {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<Filter>("open");
+  const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<{ by: LoanSort; dir: SortDirection }>({
     by: "createdAt",
     dir: "desc",
@@ -62,9 +62,10 @@ export default function LoanList() {
     <>
       <PageHeader
         title="Préstamos"
+        subtitle="Registra y da seguimiento a los ejemplares prestados"
         lead={
           <Link href="/loans/new" asChild>
-            <Button title="Prestar" icon={BookUp} />
+            <Button title="Prestar" icon={ArrowUp} size="sm" weight="md" />
           </Link>
         }
         search={{

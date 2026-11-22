@@ -14,7 +14,7 @@ export function loanDetailRows(
       : []),
     { label: "Encargado", content: loan.loanedByUsername },
     { label: "Inicio", content: formatDate(loan.createdAt) },
-    { label: "Fecha de devolucion", content: formatISO(loan.expiresBy) },
+    { label: "Fecha de devolución", content: formatISO(loan.expiresBy) },
     { label: "Notas", content: loan.notes ?? "---" },
   ];
 }

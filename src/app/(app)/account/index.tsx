@@ -29,7 +29,7 @@ export default function AccountScreen() {
 
   return (
     <Screen>
-      <PageHeader title="Cuenta" />
+      <PageHeader title="Cuenta" subtitle="Tu sesión y datos de acceso" />
       <View className="gap-1">
         <Text variant="section">{account.username}</Text>
         <Text>{ROLE_LABELS[account.role]}</Text>

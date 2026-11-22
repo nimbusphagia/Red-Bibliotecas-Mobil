@@ -29,7 +29,7 @@ const columnWidths = {
 const columnVariants = {
   id: {
     container: "max-w-[40px] justify-center items-center",
-    text: "font-sans-medium text-center",
+    text: "text-center",
   },
   subtitled: {
     container: "flex-col justify-center items-start ",

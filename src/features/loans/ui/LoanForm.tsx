@@ -10,9 +10,9 @@ import {
   FieldError,
   FieldRow,
   FormHeader,
-  FormSection,
   Icon,
   LabeledItem,
+  Panel,
   SplitColumns,
   Text,
   type Option,
@@ -101,7 +101,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
         <SplitColumns>
-          <FormSection title="Detalles">
+          <Panel title="Detalles">
             <FieldRow
               label="Visitante *"
               value={visitor?.label}
@@ -142,26 +142,26 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
                 ) : (
                   <>
                     <Text variant="caption">
-                      {status.open} prestamos activos
+                      {status.open} préstamos activos
                     </Text>
-                    <Icon icon={Dot} tone="secondary" />
+                    <Icon icon={Dot} tone="dark3" />
                     <Text variant="caption">
                       {status.remaining
                         ? `Puede prestar ${status.remaining} más`
-                        : "Limite alcanzado"}
+                        : "Límite alcanzado"}
                     </Text>
                   </>
                 )}
               </View>
             )}
-          </FormSection>
+          </Panel>
 
-          <FormSection
+          <Panel
             title="Ejemplares"
             lead={
               <Button
-                variant="secondary"
                 title="Agregar"
+                size="sm"
                 onPress={() => setEditing("copies")}
               />
             }
@@ -171,7 +171,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
               error={errors.fields.copyIds}
               onRemove={removeCopy}
             />
-          </FormSection>
+          </Panel>
         </SplitColumns>
       </ScreenBody>
 

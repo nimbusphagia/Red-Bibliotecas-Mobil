@@ -75,12 +75,12 @@ export default function ReturnLineDialog({
         subtitle={`${line.bookTitle}${line.labelText ? ` · ${line.labelText}` : ""}`}
       />
       <View className="gap-2">
-        <Text variant="caption">Estado del ejemplar</Text>
+        <Text variant="item">Estado del ejemplar</Text>
         {choices.map((c) => (
           <Button
             key={c.key}
             title={c.label}
-            variant={c.key === selected ? "primary" : "secondary"}
+            variant={c.key === selected ? "accent" : "soft"}
             onPress={() => setSelected(c.key)}
           />
         ))}

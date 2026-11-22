@@ -1,6 +1,10 @@
 import type { VisitorLine } from "@/features/loans/internal/loan/types";
-import { Button, Column, ListRow } from "@/features/shared/components";
-import { StatusBadge } from "@/features/shared/components/base/Badge";
+import {
+  Button,
+  Column,
+  ListRow,
+  StatusBadge,
+} from "@/features/shared/components";
 import { formatDate } from "@/features/shared/format/dates";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
@@ -27,7 +31,7 @@ export default function VisitorLineRow({ line }: { line: VisitorLine }) {
           variant={line.outcome ? "active" : "pending"}
         />
         <Link href={`/loans/${line.loanId}`} asChild>
-          <Button variant="secondary" icon={Eye} />
+          <Button variant="soft" icon={Eye} />
         </Link>
       </Column>
     </ListRow>

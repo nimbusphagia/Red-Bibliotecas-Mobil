@@ -13,11 +13,7 @@ type Props = {
 export function SidebarItem({ item, active, standalone = false }: Props) {
   const specialClass = standalone ? "bg-dark1 text-white" : "";
   const [iconColor, bgColor, activeClass] = active
-    ? [
-        "dark1" as const,
-        "bg-white",
-        "opacity-100",
-      ]
+    ? ["dark1" as const, "bg-white", "opacity-100"]
     : ["white" as const, "bg-dark2", "opacity-100"];
   return (
     <Link href={item.href} asChild>
@@ -32,7 +28,7 @@ export function SidebarItem({ item, active, standalone = false }: Props) {
           specialClass,
         )}
       >
-        <Icon icon={item.icon} size="lg" stroke="sm" tone={iconColor} />
+        <Icon icon={item.icon} size="xl" stroke="sm" tone={iconColor} />
       </Pressable>
     </Link>
   );

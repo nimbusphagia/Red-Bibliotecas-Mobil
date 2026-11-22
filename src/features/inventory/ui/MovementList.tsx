@@ -61,7 +61,10 @@ export default function MovementList() {
 
   return (
     <>
-      <PageHeader title="Historial de Movimientos" />
+      <PageHeader
+        title="Historial de movimientos"
+        subtitle="Entradas y salidas de ejemplares del inventario"
+      />
       <ItemList
         toolbar={
           <>

@@ -8,12 +8,10 @@ import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
   DetailColumns,
-  DetailRow,
-  Icon,
   PageHeader,
-  Section,
+  Panel,
   StatusIndicator,
-  Text,
+  type DetailRow,
 } from "@/features/shared/components";
 import { formatISO } from "@/features/shared/format/dates";
 import {
@@ -21,12 +19,10 @@ import {
   LOAN_STATE_ES,
   ROLE_ES,
 } from "@/features/shared/format/translate";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
-import { Dot } from "lucide-react-native";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { loanStateOf } from "../internal/loan/rules";
 import LoanLines from "./loans/detail/LoanLines";
 import { loanDetailRows } from "./loans/detail/loanRows";
@@ -37,7 +33,6 @@ type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
 export default function LoanDetail({ id }: { id: string }) {
   const [data, setData] = useState<Data | null>(null);
   const session = useSession();
-  const { isExpanded } = useLayoutMode();
 
   const load = useCallback(async () => {
     const loanId = routeIdSchema.parse(id);
@@ -77,19 +72,19 @@ export default function LoanDetail({ id }: { id: string }) {
   return (
     <>
       <PageHeader
-        title={`Prestamo #${loan.id}`}
+        title={`Préstamo #${loan.id}`}
         lead={<StatusIndicator text={LOAN_STATE_ES[loanStateOf(loan)]} />}
       />
       <ScreenBody>
         <DetailColumns
           columns={[
-            { title: "Prestado a", rows: visitorRows },
             { title: "Detalles", rows: loanDetailRows(loan) },
+            { title: "Prestado a", rows: visitorRows },
           ]}
         />
-        <Section
+        <Panel
           title="Ejemplares"
-          expand
+          className="flex-1"
           lead={
             <StatusIndicator
               text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
@@ -102,7 +97,7 @@ export default function LoanDetail({ id }: { id: string }) {
             actorId={session.account.id}
             onChanged={load}
           />
-        </Section>
+        </Panel>
       </ScreenBody>
     </>
   );

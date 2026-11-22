@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
-import { cn } from "../../theme";
 import { LabeledItem, type LabeledItemVariant } from "./LabeledItem";
 
 export type DetailRow = { label: string; content?: string };
@@ -22,7 +21,7 @@ export function DetailRows({ rows, variant = "pill", columns = 1 }: Props) {
   const labelWidth = variant === "pill" && n === 1 ? "wide" : "narrow";
 
   return (
-    <View className={cn("flex-row items-start gap-6", n === 1 && "max-w-xl")}>
+    <View className="flex-row items-start gap-6">
       {groups.map((group, i) => (
         <View key={i} className="flex-1 gap-4">
           {group.map((r, j) => (

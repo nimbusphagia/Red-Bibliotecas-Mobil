@@ -18,6 +18,7 @@ export function InlineFilter<V extends string>({
         <Button
           key={o.value}
           title={o.label}
+          size="sm"
           variant={o.value === value ? "accent" : "soft"}
           onPress={() => onChange(o.value)}
         />

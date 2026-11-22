@@ -73,21 +73,11 @@ export function NotesDialog({
         onSubmitEditing={confirm}
         autoFocus
       />
-      <Dialog onClose={onClose}>
-        <TextField
-          label="Notas"
-          value={draft}
-          onChangeText={setDraft}
-          maxLength={500}
-          onSubmitEditing={confirm}
-          autoFocus
-        />
-        <DialogActions
-          confirmTitle="Aceptar"
-          onConfirm={confirm}
-          onCancel={onClose}
-        />
-      </Dialog>
+      <DialogActions
+        confirmTitle="Aceptar"
+        onConfirm={confirm}
+        onCancel={onClose}
+      />
     </Dialog>
   );
 }

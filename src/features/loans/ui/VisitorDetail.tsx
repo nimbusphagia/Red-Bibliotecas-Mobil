@@ -12,18 +12,17 @@ import {
   InlineSort,
   ItemList,
   PageHeader,
-  Section,
+  Panel,
   type DetailRow,
   type SortOption,
 } from "@/features/shared/components";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import VisitorLineRow from "./visitors/detail/VisitorLineRow";
 
 const PAGE_SIZE = 20;
@@ -45,7 +44,6 @@ const SORTS: SortOption<"createdAt">[] = [
 
 export default function VisitorDetail({ id }: { id: string }) {
   const visitorId = routeIdSchema.parse(id);
-  const { isExpanded } = useLayoutMode();
   const [data, setData] = useState<Data | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");
@@ -92,7 +90,7 @@ export default function VisitorDetail({ id }: { id: string }) {
   const summaryRows: DetailRow[] = [
     { label: "Activos", content: String(status.open) },
     { label: "Total prestados", content: String(visitor.lineCount) },
-    { label: "Prestamos vencidos", content: String(status.overdue) },
+    { label: "Préstamos vencidos", content: String(status.overdue) },
     { label: "Infracciones", content: String(visitor.problemCount) },
   ];
 
@@ -105,7 +103,7 @@ export default function VisitorDetail({ id }: { id: string }) {
           { title: "Resumen", rows: summaryRows },
         ]}
       />
-      <Section title="Historial de Prestamos" expand>
+      <Panel title="Historial de préstamos" className="flex-1">
         <ItemList
           toolbar={
             <>
@@ -127,7 +125,7 @@ export default function VisitorDetail({ id }: { id: string }) {
           onEndReached={list.loadMore}
           renderItem={(line) => <VisitorLineRow line={line} />}
         />
-      </Section>
+      </Panel>
     </>
   );
 }

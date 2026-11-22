@@ -1,8 +1,12 @@
 import type { LoanLine } from "@/features/loans/internal/loan/types";
-import { Button, Column, ListRow } from "@/features/shared/components";
-import { StatusBadge } from "@/features/shared/components/base/Badge";
+import {
+  Button,
+  Column,
+  ListRow,
+  StatusBadge,
+} from "@/features/shared/components";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
-import { BookDown, Flag } from "lucide-react-native";
+import { ArrowDown, Flag } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
 import ReturnLineDialog from "./ReturnLineDialog";
@@ -44,23 +48,22 @@ export default function LoanLines({
             {!l.outcome ? (
               <>
                 <Button
-                  variant="secondary"
+                  variant="soft"
                   icon={Flag}
                   onPress={() => setActive({ line: l, reportOnly: true })}
                 />
 
                 <Button
                   title="Devolver"
-                  variant="primary"
-                  icon={BookDown}
+                  variant="solid"
+                  size="sm"
+                  weight="md"
+                  icon={ArrowDown}
                   onPress={() => setActive({ line: l, reportOnly: false })}
                 />
               </>
             ) : (
-              <StatusBadge
-                text={l.outcome ? OUTCOME_ES[l.outcome] : "Pendiente"}
-                variant={"active"}
-              />
+              <StatusBadge text={OUTCOME_ES[l.outcome]} variant="active" />
             )}
           </Column>
         </ListRow>

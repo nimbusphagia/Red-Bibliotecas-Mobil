@@ -53,6 +53,7 @@ export default function ShelfList() {
     <>
       <PageHeader
         title="Estantería"
+        subtitle="Organiza dónde se guarda cada ejemplar"
         lead={
           <>
             <Button

@@ -68,9 +68,12 @@ export default function VisitorList() {
     <>
       <PageHeader
         title="Visitantes"
+        subtitle="Estudiantes y profesores"
         lead={
           <Button
             title="Agregar"
+            size="sm"
+            weight="md"
             icon={UserPlus}
             onPress={() => setDialog({})}
           />
