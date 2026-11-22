@@ -26,6 +26,7 @@ const MESSAGES_ES: Record<string, string> = {
   "The copy is lost": "El ejemplar está perdido",
   "The copy is discarded": "El ejemplar está descartado",
   "The copy does not exist": "El ejemplar no existe",
+  "The title needs letters or digits": "El título debe tener letras o números",
 };
 
 const LEND_PROBLEM_ES: Record<LendProblemKind, string> = {

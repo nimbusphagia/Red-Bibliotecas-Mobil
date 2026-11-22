@@ -7,7 +7,8 @@ import {
   toPage,
   type Reference,
 } from "@/db/helpers";
-import { book, copy, label, shelf } from "@/db/schema";
+import { book, copy, shelf } from "@/db/schema";
+import { labelTextSql } from "../copy/sql";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
 import { and, asc, count, eq, getTableColumns, notInArray } from "drizzle-orm";
@@ -123,11 +124,10 @@ export async function listShelfCopies(
         bookTitle: book.title,
         copyNumber: copy.copyNumber,
         status: copy.status,
-        labelText: label.text,
+        labelText: labelTextSql,
       })
       .from(copy)
       .innerJoin(book, eq(book.id, copy.bookId))
-      .leftJoin(label, eq(label.copyId, copy.id))
       .where(where)
       .orderBy(asc(book.titleKey), asc(copy.copyNumber), asc(copy.id))
       .limit(page.limit)

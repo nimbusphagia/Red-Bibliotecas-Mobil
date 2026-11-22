@@ -5,6 +5,14 @@ import type { BookSort } from "./schemas";
 
 export type Book = typeof book.$inferSelect;
 
+/** Los cuatro códigos que forman el tejuelo de un libro. */
+export type LabelCodes = {
+  categoryCode: string;
+  authorCode: string;
+  subcategoryCode: string;
+  titleCode: string;
+};
+
 export type BookCollaborator = { authorId: number; role: CollaboratorRole };
 
 export type BookCollaboratorDetail = BookCollaborator & {
@@ -38,6 +46,8 @@ export type NewBook = {
   subcategoryId: number | null;
   publicationYear: number | null;
   pageCount: number | null;
+  titleCode: string;
+  omitWords: string[];
 };
 
 export type BookPatch = Partial<NewBook>;

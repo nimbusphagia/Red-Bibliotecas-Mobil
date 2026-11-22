@@ -50,6 +50,10 @@ export const toBookInput = (v: BookFormValues): BookInput => ({
   subcategoryId: v.subcategory?.id ?? null,
   publicationYear: toInt(v.year),
   pageCount: toInt(v.pages),
+  omitWords: v.omitWords
+    .split(",")
+    .map((w) => w.trim())
+    .filter(Boolean),
 });
 
 const ref = (id: number | null, label: string | null): Option | undefined =>
@@ -74,5 +78,6 @@ export const fromBook = (b: BookListItem): BookFormValues => {
     subcategory: ref(b.subcategoryId, b.subcategoryName),
     year: b.publicationYear?.toString() ?? "",
     pages: b.pageCount?.toString() ?? "",
+    omitWords: b.omitWords.join(", "),
   };
 };

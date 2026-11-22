@@ -21,9 +21,14 @@ export type CopyLookup = {
 };
 
 export type CopyListFilters = {
-  bookId: number;
+  bookId?: number;
+  tokens: string[];
   status?: CopyStatus;
   shelfId?: number;
+  /** true: ya etiquetados; false: pendientes de etiquetar. */
+  labeled?: boolean;
+  /** true: solo los etiquetados cuyo tejuelo ya no coincide. */
+  outdated?: boolean;
   excludeReleased?: boolean;
   sortBy: CopySort;
   sortDir: SortDirection;
@@ -42,7 +47,9 @@ export type CopyItem = {
   shelfName: string;
   shelfIsDefault: boolean;
   labelText: string | null;
-  labelRevoked: boolean;
+  labeledAt: Date | null;
+  /** Etiquetado, pero el tejuelo de hoy ya no coincide con el pegado. */
+  outdated: boolean;
   loan: CopyLoan | null;
 };
 
@@ -52,6 +59,35 @@ export type CopyLoan = {
   visitorName: string;
   expiresBy: string;
   overdue: boolean;
+};
+
+export type LabelCandidate = {
+  id: number;
+  status: CopyStatus;
+  labeledAt: Date | null;
+  /** Tejuelo derivado hoy; null si al libro le falta algún dato. */
+  derivedText: string | null;
+};
+
+export type LabelFailure<R extends string> = { copyId: number; reason: R };
+
+export type MarkFailureReason =
+  | "not_found"
+  | "released"
+  | "incomplete"
+  | "conflict";
+
+export type MarkLabeledResult = {
+  labeled: number[];
+  alreadyLabeled: number[];
+  failed: LabelFailure<MarkFailureReason>[];
+};
+
+export type RelabelFailureReason = "not_found" | "released" | "not_labeled";
+
+export type RelabelResult = {
+  relabeled: number[];
+  failed: LabelFailure<RelabelFailureReason>[];
 };
 
 export type CopyItemRow = Omit<CopyItem, "loan"> & {

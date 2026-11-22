@@ -15,7 +15,6 @@ export { ENTRY_REASONS, EXIT_REASONS };
 
 export const MAX_COPIES_PER_BOOK = 100;
 export const MAX_LINES = 50;
-export const MAX_OMIT_WORDS = 10;
 export const MAX_EXIT_COPIES = 100;
 
 export type _EntryReasonsAreMovementReasons = Assert<
@@ -35,12 +34,9 @@ const notes = z
   .transform((v) => (v === null ? null : collapse(v) || null))
   .pipe(z.string().max(500).nullable());
 
-const omitWord = z.string().transform(collapse).pipe(z.string().min(1).max(40));
-
 const lineBase = {
   quantity: z.number().int().min(1).max(MAX_COPIES_PER_BOOK),
   shelfId: idSchema.optional(), // overrides the movement's shelf
-  omitWords: z.array(omitWord).max(MAX_OMIT_WORDS).default([]),
 };
 
 export const entryLineSchema = z

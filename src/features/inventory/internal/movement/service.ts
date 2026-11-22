@@ -1,4 +1,3 @@
-import { db } from "@/db/client";
 import { inTransaction } from "@/db/transaction";
 import { NotFoundError } from "@/features/shared/errors/errors";
 import { idSchema } from "@/features/shared/types/schemas";
@@ -24,13 +23,11 @@ import {
 import type {
   EntryResult,
   ExitResult,
-  LabelPreview,
   MovementLine,
   MovementListItem,
 } from "./types";
 import { requireStockRole } from "./utils/auth";
 import { writeExit } from "./utils/exit";
-import { previewLines } from "./utils/plan";
 import { prepareLines } from "./utils/prepare";
 import { writeEntry } from "./utils/write";
 
@@ -63,16 +60,6 @@ export async function createEntryMovement(
 ): Promise<EntryResult> {
   await requireStockRole(actorId, "register stock");
   return run(actorId, parseOrThrow(entryMovementSchema, input));
-}
-
-export async function previewEntryLabels(
-  actorId: number,
-  input: RegisterCopiesInput,
-): Promise<LabelPreview[]> {
-  await requireStockRole(actorId, "register stock");
-  const parsed = parseOrThrow(registerCopiesSchema, input);
-  const lines = await prepareLines(parsed.lines, parsed.shelfId);
-  return previewLines(db, lines);
 }
 
 export async function exitCopies(

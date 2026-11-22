@@ -1,4 +1,3 @@
-import type { PrintStatus } from "@/features/inventory/internal/label/types";
 import { CopyStatus } from "@/features/inventory/internal/copy/types";
 import type { VisitorRole } from "@/features/loans/internal/visitor/types";
 import type { GRADE_LEVELS } from "@/db/schema";
@@ -59,7 +58,4 @@ export const MOVEMENT_REASON_ES: Record<MovementReason, string> = {
 export const shelfLabel = (shelf: { name: string; isDefault: boolean }) =>
   shelf.isDefault ? "Estantería General" : shelf.name;
 
-export const PRINT_STATUS_ES: Record<PrintStatus, string> = {
-  pending_print: "No impreso",
-  printed: "Impreso",
-};
+export const LABELED_ES = { true: "Etiquetado", false: "Sin etiquetar" } as const;

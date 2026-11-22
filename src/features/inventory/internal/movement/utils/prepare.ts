@@ -5,15 +5,11 @@ import type {
   BookCollaborator,
   NewBook,
 } from "@/features/catalog/internal/book/types";
-import { getCategory } from "@/features/catalog/internal/category/service";
-import { getSeries } from "@/features/catalog/internal/series/service";
-import { getSubcategory } from "@/features/catalog/internal/subcategory/service";
 import {
   IncompleteBookError,
   NotFoundError,
   ValidationError,
 } from "@/features/shared/errors/errors";
-import { authorCode } from "../../label/utils/labelText";
 import {
   findDefaultShelfSync,
   findShelfByIdSync,
@@ -28,49 +24,28 @@ export type PreparedLine = {
   lineIndex: number;
   quantity: number;
   shelfId: number;
-  omitWords: string[];
   title: string;
+  titleCode: string;
   source: LineSource;
-  categoryCode: string;
-  subcategoryCode: string;
-  authorCode: string;
-  series: { id: number; name: string } | null;
 };
 
 type BookFacts = {
   title: string;
+  titleCode: string | null;
   categoryId: number | null;
   subcategoryId: number | null;
-  seriesId: number | null;
-  writer: { firstName: string; lastName: string | null } | null;
+  writerCode: string | null;
 };
 
-async function labelCodes(lineIndex: number, f: BookFacts) {
-  const code = f.writer
-    ? authorCode(f.writer.firstName, f.writer.lastName)
-    : null;
-  const { categoryId, subcategoryId } = f;
-
-  if (categoryId === null || subcategoryId === null || code === null) {
-    const missing = [
-      categoryId === null && "a category",
-      subcategoryId === null && "a subcategory",
-      code === null && "a writer with a usable name",
-    ].filter((m): m is string => m !== false);
-    throw new IncompleteBookError(lineIndex, missing);
-  }
-
-  const [category, subcategory, series] = await Promise.all([
-    getCategory(categoryId),
-    getSubcategory(subcategoryId),
-    f.seriesId === null ? null : getSeries(f.seriesId),
-  ]);
-  return {
-    categoryCode: category.code,
-    subcategoryCode: subcategory.code,
-    authorCode: code,
-    series: series ? { id: series.id, name: series.name } : null,
-  };
+/** Un ejemplar sin tejuelo completo no se puede registrar. */
+function assertLabelable(lineIndex: number, f: BookFacts): void {
+  const missing = [
+    f.categoryId === null && "a category",
+    f.subcategoryId === null && "a subcategory",
+    f.writerCode === null && "a writer with a usable name",
+    f.titleCode === null && "a title with letters or digits",
+  ].filter((m): m is string => m !== false);
+  if (missing.length > 0) throw new IncompleteBookError(lineIndex, missing);
 }
 
 async function shelfFor(
@@ -92,13 +67,17 @@ async function factsFor(
     const b = await getBook(line.bookId);
     if (!b.active) {
       throw new ValidationError([
-        { path: `lines.${lineIndex}.bookId`, message: "The book is inactive" },
+        {
+          path: `lines.${lineIndex}.bookId`,
+          message: "The book is inactive",
+        },
       ]);
     }
-    const writer = b.collaborators.find((c) => c.role === "writer") ?? null;
+    const writer = b.collaborators.find((c) => c.role === "writer");
+    const writerCode = writer ? (await getAuthor(writer.authorId)).code : null;
     return {
       source: { kind: "existing", bookId: b.id },
-      facts: { ...b, writer },
+      facts: { ...b, writerCode },
     };
   }
 
@@ -114,7 +93,7 @@ async function factsFor(
   );
   return {
     source: { kind: "new", ...prepared },
-    facts: { ...prepared.values, writer: writers[0] ?? null },
+    facts: { ...prepared.values, writerCode: writers[0]?.code ?? null },
   };
 }
 
@@ -125,14 +104,14 @@ export async function prepareLines(
   const out: PreparedLine[] = [];
   for (const [lineIndex, line] of lines.entries()) {
     const { source, facts } = await factsFor(lineIndex, line);
+    assertLabelable(lineIndex, facts);
     out.push({
       lineIndex,
       quantity: line.quantity,
       shelfId: await shelfFor(line, movementShelfId),
-      omitWords: line.omitWords,
       title: facts.title,
+      titleCode: facts.titleCode!,
       source,
-      ...(await labelCodes(lineIndex, facts)),
     });
   }
   return out;

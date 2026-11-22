@@ -10,6 +10,7 @@ export type NewAuthor = {
   firstName: string;
   lastName: string | null;
   nameKey: string;
+  code: string | null;
 };
 
 export type AuthorListFilters = ListFilters<AuthorSort> & {

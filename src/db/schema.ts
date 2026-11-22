@@ -43,7 +43,6 @@ export const COPY_STATUSES = [
   "discarded",
   "damaged",
 ] as const;
-export const PRINT_STATUSES = ["pending_print", "printed"] as const;
 export const MOVEMENT_TYPES = ["entry", "exit"] as const;
 export const ENTRY_REASONS = ["purchase", "donation", "other"] as const;
 export const EXIT_REASONS = ["loss", "damage", "discard"] as const;
@@ -68,6 +67,9 @@ export const author = sqliteTable(
     firstName: text("first_name").notNull(),
     lastName: text("last_name"),
     nameKey: text("name_key").notNull(),
+    // Código de 3 letras para el tejuelo, calculado por el service al crear o
+    // editar. Null si el nombre no tiene letras ni dígitos.
+    code: text("code"),
     isProtected: integer("is_protected", { mode: "boolean" })
       .notNull()
       .default(false),
@@ -165,6 +167,14 @@ export const book = sqliteTable(
     publicationYear: integer("publication_year"),
     pageCount: integer("page_count"),
     active: integer("active", { mode: "boolean" }).notNull().default(true),
+    // Se calculan al guardar el libro (ver catalog/_shared/codes.ts): el
+    // código del título sale de `title` sin las `omitWords`, que se guardan
+    // para que quien edite sepa qué palabras se evitan.
+    titleCode: text("title_code"),
+    omitWords: text("omit_words", { mode: "json" })
+      .$type<string[]>()
+      .notNull()
+      .default(sql`'[]'`),
   },
   (t) => [
     foreignKey({
@@ -260,6 +270,13 @@ export const copy = sqliteTable(
       .notNull()
       .default("available"),
     notes: text("notes"),
+    // Tejuelo ya pegado en el libro físico. Mientras sea null el tejuelo se
+    // deriva en vivo del libro (ver inventory/copy/sql.ts); al etiquetar, el
+    // sistema guarda el texto impreso y deja de cambiar. Los tres campos
+    // `labeled*` van siempre juntos.
+    labeledText: text("labeled_text"),
+    labeledAt: integer("labeled_at", { mode: "timestamp" }),
+    labeledById: integer("labeled_by_id").references(() => account.id),
   },
   (t) => [
     check("ck_copy_status", oneOf(t.status, COPY_STATUSES)),
@@ -267,64 +284,11 @@ export const copy = sqliteTable(
     uniqueIndex("uq_copy_book_number")
       .on(t.bookId, t.copyNumber)
       .where(sql`status NOT IN ('lost', 'discarded')`),
+    uniqueIndex("uq_copy_labeled_text")
+      .on(t.labeledText)
+      .where(sql`labeled_text IS NOT NULL AND status NOT IN ('lost', 'discarded')`),
     index("idx_copy_book").on(t.bookId),
     index("idx_copy_shelf").on(t.shelfId),
-  ],
-);
-
-export const label = sqliteTable(
-  "label",
-  {
-    id: integer("id").primaryKey({ autoIncrement: true }),
-    ...timestamps,
-    copyId: integer("copy_id")
-      .notNull()
-      .references(() => copy.id),
-    categoryCode: text("category_code").notNull(),
-    authorCode: text("author_code").notNull(),
-    subcategoryCode: text("subcategory_code").notNull(),
-    titleCode: text("title_code").notNull(),
-    copyNumber: integer("copy_number").notNull(),
-    text: text("text").notNull(),
-    printStatus: text("print_status", { enum: PRINT_STATUSES })
-      .notNull()
-      .default("pending_print"),
-    printedAt: integer("printed_at", { mode: "timestamp" }),
-    revision: integer("revision").notNull().default(1),
-    revokedAt: integer("revoked_at", { mode: "timestamp" }),
-  },
-  (t) => [
-    unique("uq_label_copy").on(t.copyId),
-    uniqueIndex("uq_label_text_active")
-      .on(lower(t.text))
-      .where(sql`revoked_at IS NULL`),
-    check("ck_label_print_status", oneOf(t.printStatus, PRINT_STATUSES)),
-    check("ck_label_copy_number_positive", sql`${t.copyNumber} > 0`),
-    check("ck_label_revision_positive", sql`${t.revision} > 0`),
-  ],
-);
-
-export const labelRevision = sqliteTable(
-  "label_revision",
-  {
-    id: integer("id").primaryKey({ autoIncrement: true }),
-    createdAt,
-    labelId: integer("label_id")
-      .notNull()
-      .references(() => label.id, { onDelete: "cascade" }),
-    revisionNumber: integer("revision_number").notNull(),
-    categoryCode: text("category_code").notNull(),
-    authorCode: text("author_code").notNull(),
-    subcategoryCode: text("subcategory_code").notNull(),
-    titleCode: text("title_code").notNull(),
-    copyNumber: integer("copy_number").notNull(),
-    text: text("text").notNull(),
-    changeReason: text("change_reason"),
-  },
-  (t) => [
-    unique("uq_label_revision_number").on(t.labelId, t.revisionNumber),
-    check("ck_label_revision_number_positive", sql`${t.revisionNumber} > 0`),
-    check("ck_label_revision_copy_number_positive", sql`${t.copyNumber} > 0`),
   ],
 );
 

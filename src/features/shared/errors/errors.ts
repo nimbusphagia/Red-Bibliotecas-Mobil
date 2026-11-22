@@ -115,7 +115,8 @@ export class IncompleteBookError extends AppError {
 }
 
 export type LabelConflictDetails = {
-  lineIndex: number;
+  /** Línea de la entrada de stock; ausente si el choque sale al guardar un libro. */
+  lineIndex?: number;
   labelText: string;
   conflictingBook: { id: number | null; title: string };
   sameSeries: boolean;
@@ -124,7 +125,7 @@ export type LabelConflictDetails = {
 
 export class LabelConflictError extends AppError {
   readonly code = "LABEL_CONFLICT";
-  readonly lineIndex: number;
+  readonly lineIndex?: number;
   readonly labelText: string;
   readonly conflictingBook: { id: number | null; title: string };
   readonly sameSeries: boolean;
@@ -134,8 +135,9 @@ export class LabelConflictError extends AppError {
     const hint = d.sameSeries
       ? "Both books are in the same series: omit the series name words from the title code."
       : "If the books are related, omit their common words from the title code.";
+    const where = d.lineIndex === undefined ? "" : `Line ${d.lineIndex + 1}: `;
     super(
-      `Line ${d.lineIndex + 1}: label ${d.labelText} is already used by "${d.conflictingBook.title}". ${hint}`,
+      `${where}label ${d.labelText} is already used by "${d.conflictingBook.title}". ${hint}`,
     );
     this.name = "LabelConflictError";
     this.lineIndex = d.lineIndex;

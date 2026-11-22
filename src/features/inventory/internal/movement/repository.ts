@@ -4,7 +4,6 @@ import {
   account,
   book,
   copy,
-  label,
   loanMovementLine,
   shelf,
   stockMovement,
@@ -12,6 +11,7 @@ import {
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
+import { labelTextSql } from "../copy/sql";
 import { and, asc, count, eq, getTableColumns, gte, lt } from "drizzle-orm";
 import type {
   MovementLine,
@@ -132,14 +132,13 @@ export async function listMovementLines(
         status: copy.status,
         shelfId: copy.shelfId,
         shelfName: shelf.name,
-        labelText: label.text,
+        labelText: labelTextSql,
         loanId: loanMovementLine.movementId,
       })
       .from(stockMovementLine)
       .innerJoin(copy, eq(copy.id, stockMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
       .innerJoin(shelf, eq(shelf.id, copy.shelfId))
-      .leftJoin(label, eq(label.copyId, copy.id))
       .leftJoin(
         loanMovementLine,
         eq(loanMovementLine.id, stockMovementLine.loanLineId),

@@ -1,25 +1,19 @@
-import { db } from "@/db/client";
+import { inTransaction } from "@/db/transaction";
 import { getBook } from "@/features/catalog/internal/book/service";
 import { NotFoundError } from "@/features/shared/errors/errors";
-import { collapse } from "@/features/shared/format/text";
 import { idSchema } from "@/features/shared/types/schemas";
 import type { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
+import { requireStockRole } from "../movement/utils/auth";
+import { findCopyById, listCopies as listCopiesRepo } from "./repository";
 import {
-  findCopyByActiveLabelSync,
-  findCopyById,
-  listCopies,
-} from "./repository";
-import { listCopiesSchema, type CopyListParams } from "./schemas";
-import type { CopyItem, CopyLookup } from "./types";
-
-export async function findCopyByLabel(
-  text: string,
-): Promise<CopyLookup | null> {
-  const clean = collapse(text);
-  if (!clean) return null;
-  return findCopyByActiveLabelSync(db, clean);
-}
+  labelCopiesSchema,
+  listCopiesSchema,
+  type CopyListParams,
+  type LabelCopiesInput,
+} from "./schemas";
+import type { CopyItem, MarkLabeledResult, RelabelResult } from "./types";
+import { markLabeledSync, relabelSync } from "./utils/labeling";
 
 export async function getCopy(id: number): Promise<CopyItem> {
   const validId = parseOrThrow(idSchema, id);
@@ -28,10 +22,35 @@ export async function getCopy(id: number): Promise<CopyItem> {
   return found;
 }
 
-export async function listCopiesByBook(
-  params: CopyListParams,
+/** Ejemplares de todo el inventario, o de un libro si se pasa `bookId`. */
+export async function listCopies(
+  params: CopyListParams = {},
 ): Promise<Page<CopyItem>> {
   const filters = parseOrThrow(listCopiesSchema, params);
-  await getBook(filters.bookId);
-  return listCopies(filters);
+  if (filters.bookId !== undefined) await getBook(filters.bookId);
+  return listCopiesRepo(filters);
+}
+
+/**
+ * Registra que el tejuelo ya se pegó en el libro físico, con el texto que el
+ * sistema deriva ahora. Los ejemplares con problema vuelven en `failed` y
+ * siguen pendientes; el resto queda marcado.
+ */
+export async function markCopiesLabeled(
+  actorId: number,
+  input: LabelCopiesInput,
+): Promise<MarkLabeledResult> {
+  await requireStockRole(actorId, "label copies");
+  const { copyIds } = parseOrThrow(labelCopiesSchema, input);
+  return inTransaction((tx) => markLabeledSync(tx, copyIds, actorId));
+}
+
+/** Los vuelve a pendientes: su tejuelo se imprimirá de nuevo con los datos de hoy. */
+export async function relabelCopies(
+  actorId: number,
+  input: LabelCopiesInput,
+): Promise<RelabelResult> {
+  await requireStockRole(actorId, "relabel copies");
+  const { copyIds } = parseOrThrow(labelCopiesSchema, input);
+  return inTransaction((tx) => relabelSync(tx, copyIds));
 }

@@ -1,9 +1,8 @@
 import { db } from "@/db/client";
-import { direction, toPage } from "@/db/helpers";
+import { direction, likeTokens, toPage } from "@/db/helpers";
 import {
   book,
   copy,
-  label,
   loanMovement,
   loanMovementLine,
   shelf,
@@ -12,13 +11,26 @@ import {
 import type { Executor } from "@/db/transaction";
 import { toISODate } from "@/features/shared/format/dates";
 import type { Page } from "@/features/shared/types/types";
-import { and, count, eq, inArray, isNull, notInArray, sql } from "drizzle-orm";
-import type { CopyItemRow } from "./types";
+import {
+  and,
+  count,
+  eq,
+  inArray,
+  isNotNull,
+  isNull,
+  not,
+  notInArray,
+  or,
+  sql,
+} from "drizzle-orm";
+import { derivedLabelTextSql, labelTextSql, outdatedSql } from "./sql";
 import {
   RELEASED_STATUSES,
   type Copy,
   type CopyItem,
+  type CopyItemRow,
   type CopyListFilters,
+  type LabelCandidate,
   type CopyLookup,
   type CopyStatus,
   type NewCopy,
@@ -51,32 +63,15 @@ function selectLookup(ex: Executor) {
       copyNumber: copy.copyNumber,
       shelfId: copy.shelfId,
       status: copy.status,
-      labelText: label.text,
+      labelText: labelTextSql,
     })
     .from(copy)
-    .innerJoin(book, eq(book.id, copy.bookId))
-    .leftJoin(label, eq(label.copyId, copy.id));
+    .innerJoin(book, eq(book.id, copy.bookId));
 }
 
 export function findCopiesByIdsSync(ex: Executor, ids: number[]): CopyLookup[] {
   if (ids.length === 0) return [];
   return selectLookup(ex).where(inArray(copy.id, ids)).all();
-}
-
-export function findCopyByActiveLabelSync(
-  ex: Executor,
-  text: string,
-): CopyLookup | null {
-  return (
-    selectLookup(ex)
-      .where(
-        and(
-          isNull(label.revokedAt),
-          sql`lower(${label.text}) = ${text.toLowerCase()}`,
-        ),
-      )
-      .get() ?? null
-  );
 }
 
 export function setCopiesStatusSync(
@@ -98,8 +93,9 @@ const itemColumns = {
   shelfId: copy.shelfId,
   shelfName: shelf.name,
   shelfIsDefault: shelf.isDefault,
-  labelText: label.text,
-  labelRevoked: sql<boolean>`${label.revokedAt} is not null`.mapWith(Boolean),
+  labelText: labelTextSql,
+  labeledAt: copy.labeledAt,
+  outdated: outdatedSql,
   loanId: loanMovement.id,
   visitorId: visitor.id,
   visitorName: visitor.name,
@@ -112,7 +108,6 @@ const selectItems = () =>
     .from(copy)
     .innerJoin(book, eq(book.id, copy.bookId))
     .innerJoin(shelf, eq(shelf.id, copy.shelfId))
-    .leftJoin(label, eq(label.copyId, copy.id))
     .leftJoin(
       loanMovementLine,
       and(
@@ -145,13 +140,18 @@ export async function findCopyById(id: number): Promise<CopyItem | null> {
   return row ? toItem(row) : null;
 }
 
+const textKey = sql`lower(${labelTextSql})`;
+
 export async function listCopies(
   filters: CopyListFilters,
 ): Promise<Page<CopyItem>> {
   const {
     bookId,
+    tokens,
     status,
     shelfId,
+    labeled,
+    outdated,
     excludeReleased,
     sortBy,
     sortDir,
@@ -160,27 +160,45 @@ export async function listCopies(
   } = filters;
 
   const where = and(
-    eq(copy.bookId, bookId),
+    bookId === undefined ? undefined : eq(copy.bookId, bookId),
     status === undefined ? undefined : eq(copy.status, status),
     shelfId === undefined ? undefined : eq(copy.shelfId, shelfId),
+    labeled === undefined
+      ? undefined
+      : labeled
+        ? isNotNull(copy.labeledAt)
+        : isNull(copy.labeledAt),
+    outdated === undefined
+      ? undefined
+      : outdated
+        ? outdatedSql
+        : not(outdatedSql),
     excludeReleased
       ? notInArray(copy.status, [...RELEASED_STATUSES])
       : undefined,
+    ...tokens.map((t) =>
+      or(...likeTokens(textKey, [t]), ...likeTokens(book.titleKey, [t])),
+    ),
   );
 
   const sortKey = {
     copyNumber: copy.copyNumber,
     status: copy.status,
     createdAt: copy.createdAt,
+    labeledAt: copy.labeledAt,
   }[sortBy];
 
   const [items, [{ n }]] = await Promise.all([
     selectItems()
       .where(where)
-      .orderBy(direction(sortDir)(sortKey), copy.id)
+      .orderBy(sql`${sortKey} is null`, direction(sortDir)(sortKey), copy.id)
       .limit(limit)
       .offset(offset),
-    db.select({ n: count() }).from(copy).where(where),
+    db
+      .select({ n: count() })
+      .from(copy)
+      .innerJoin(book, eq(book.id, copy.bookId))
+      .where(where),
   ]);
   return toPage(items.map(toItem), n, filters);
 }
@@ -192,4 +210,61 @@ export function setCopiesShelfSync(
 ): void {
   if (ids.length === 0) return;
   ex.update(copy).set({ shelfId }).where(inArray(copy.id, ids)).run();
+}
+
+export function findLabelCandidatesSync(
+  ex: Executor,
+  ids: number[],
+): LabelCandidate[] {
+  if (ids.length === 0) return [];
+  return ex
+    .select({
+      id: copy.id,
+      status: copy.status,
+      labeledAt: copy.labeledAt,
+      derivedText: derivedLabelTextSql,
+    })
+    .from(copy)
+    .innerJoin(book, eq(book.id, copy.bookId))
+    .where(inArray(copy.id, ids))
+    .all();
+}
+
+/** De estos textos, los que ya están pegados en un ejemplar activo. */
+export function findLabeledTextsSync(
+  ex: Executor,
+  texts: string[],
+): Set<string> {
+  if (texts.length === 0) return new Set();
+  const rows = ex
+    .select({ text: copy.labeledText })
+    .from(copy)
+    .where(
+      and(
+        inArray(copy.labeledText, texts),
+        notInArray(copy.status, [...RELEASED_STATUSES]),
+      ),
+    )
+    .all();
+  return new Set(rows.map((r) => r.text!));
+}
+
+export function setCopyLabeledSync(
+  ex: Executor,
+  id: number,
+  text: string,
+  actorId: number,
+): void {
+  ex.update(copy)
+    .set({ labeledText: text, labeledAt: new Date(), labeledById: actorId })
+    .where(eq(copy.id, id))
+    .run();
+}
+
+export function clearCopiesLabeledSync(ex: Executor, ids: number[]): void {
+  if (ids.length === 0) return;
+  ex.update(copy)
+    .set({ labeledText: null, labeledAt: null, labeledById: null })
+    .where(inArray(copy.id, ids))
+    .run();
 }

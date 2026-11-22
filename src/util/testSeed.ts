@@ -508,9 +508,9 @@ export async function seedDev(actorId: number): Promise<string> {
     return {
       quantity: copies,
       shelfId: shelf ? shelves.get(shelf) : undefined,
-      omitWords: x.series ? [x.series] : [], // evita etiquetas repetidas
       book: {
         title,
+        omitWords: x.series ? [x.series] : [], // evita etiquetas repetidas
         publisherId: x.pub ? publishers.get(x.pub) : null,
         collectionId: x.col ? collections.get(x.col) : null,
         seriesId: x.series ? series.get(x.series) : null,

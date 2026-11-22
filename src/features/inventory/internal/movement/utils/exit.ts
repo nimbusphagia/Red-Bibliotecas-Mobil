@@ -9,7 +9,6 @@ import {
   setCopiesStatusSync,
 } from "../../copy/repository";
 import type { CopyLookup } from "../../copy/types";
-import { releaseCopiesSync } from "../../copy/utils/release";
 import { insertExitMovementSync, insertMovementLinesSync } from "../repository";
 import {
   EXIT_STATUS,
@@ -64,8 +63,7 @@ export function writeExit(
   if (problems.length > 0) throw new CopiesNotExitableError(problems);
 
   const movement = insertExitMovementSync(tx, header);
-  if (target === "damaged") setCopiesStatusSync(tx, copyIds, "damaged");
-  else releaseCopiesSync(tx, copyIds, target);
+  setCopiesStatusSync(tx, copyIds, target);
   insertMovementLinesSync(tx, movement.id, copyIds, loanLineByCopy);
 
   return {

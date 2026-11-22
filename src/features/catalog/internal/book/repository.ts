@@ -26,6 +26,7 @@ import {
   asc,
   count,
   eq,
+  ne,
   exists,
   getTableColumns,
   inArray,
@@ -35,6 +36,7 @@ import {
   type AnyColumn,
   type SQL,
 } from "drizzle-orm";
+import { bookLabelPrefixSql } from "./labelSql";
 import type {
   Book,
   BookCollaborator,
@@ -299,33 +301,73 @@ export function insertBookSync(
   return row;
 }
 
-export async function insertBook(
-  values: NewBook,
-  collaborators: BookCollaborator[],
-): Promise<Book> {
-  return db.transaction((tx) => insertBookSync(tx, values, collaborators));
-}
-
-export async function updateBook(
+export function updateBookSync(
+  ex: Executor,
   id: number,
   patch: BookPatch,
   collaborators?: BookCollaborator[],
-): Promise<Book | null> {
-  return db.transaction((tx) => {
-    const row = tx
-      .update(book)
-      .set({ ...patch, updatedAt: new Date() })
-      .where(eq(book.id, id))
-      .returning()
-      .get();
-    if (!row) return null;
+): Book | null {
+  const row = ex
+    .update(book)
+    .set({ ...patch, updatedAt: new Date() })
+    .where(eq(book.id, id))
+    .returning()
+    .get();
+  if (!row) return null;
 
-    if (collaborators) {
-      tx.delete(bookCollaborator).where(eq(bookCollaborator.bookId, id)).run();
-      tx.insert(bookCollaborator)
-        .values(collaboratorRows(id, collaborators))
-        .run();
-    }
-    return row;
-  });
+  if (collaborators) {
+    ex.delete(bookCollaborator).where(eq(bookCollaborator.bookId, id)).run();
+    ex.insert(bookCollaborator)
+      .values(collaboratorRows(id, collaborators))
+      .run();
+  }
+  return row;
+}
+
+// Tejuelo
+/** Prefijo del tejuelo del libro, o null si aún no se puede armar. */
+export function findLabelPrefixSync(
+  ex: Executor,
+  bookId: number,
+): { prefix: string; titleCode: string; seriesId: number | null } | null {
+  const row = ex
+    .select({
+      prefix: bookLabelPrefixSql,
+      titleCode: book.titleCode,
+      seriesId: book.seriesId,
+    })
+    .from(book)
+    .where(eq(book.id, bookId))
+    .get();
+  if (!row || row.prefix === null || row.titleCode === null) return null;
+  return { ...row, prefix: row.prefix, titleCode: row.titleCode };
+}
+
+/** Otro libro que ya usa ese prefijo, si existe. */
+export function findBookByLabelPrefixSync(
+  ex: Executor,
+  prefix: string,
+  titleCode: string,
+  exceptBookId: number,
+): { id: number; title: string; seriesId: number | null } | null {
+  return (
+    ex
+      .select({ id: book.id, title: book.title, seriesId: book.seriesId })
+      .from(book)
+      .where(
+        and(
+          ne(book.id, exceptBookId),
+          eq(book.titleCode, titleCode),
+          sql`${bookLabelPrefixSql} = ${prefix}`,
+        ),
+      )
+      .get() ?? null
+  );
+}
+
+export function findSeriesNameSync(ex: Executor, id: number): string | null {
+  return (
+    ex.select({ name: series.name }).from(series).where(eq(series.id, id)).get()
+      ?.name ?? null
+  );
 }

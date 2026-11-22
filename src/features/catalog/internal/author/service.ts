@@ -21,6 +21,7 @@ import type {
   NewAuthor,
 } from "./types";
 
+import { authorCode } from "../_shared/codes";
 const ENTITY = "author";
 
 const authorKey = (firstName: string, lastName: string | null) =>
@@ -51,6 +52,7 @@ export const createAuthor = makeCreate({
     firstName,
     lastName,
     nameKey: authorKey(firstName, lastName),
+    code: authorCode(firstName, lastName),
   }),
   insert: repo.insertAuthor,
 });
@@ -65,7 +67,12 @@ export const updateAuthor = makeUpdate({
     const firstName = patch.firstName ?? existing.firstName;
     const lastName =
       patch.lastName !== undefined ? patch.lastName : existing.lastName;
-    return { firstName, lastName, nameKey: authorKey(firstName, lastName) };
+    return {
+      firstName,
+      lastName,
+      nameKey: authorKey(firstName, lastName),
+      code: authorCode(firstName, lastName),
+    };
   },
 });
 

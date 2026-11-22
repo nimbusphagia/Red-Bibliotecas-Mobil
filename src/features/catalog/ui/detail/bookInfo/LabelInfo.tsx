@@ -1,4 +1,4 @@
-import { LabelCodes } from "@/features/inventory/internal/label/types";
+import { LabelCodes } from "@/features/catalog/internal/book/types";
 import { LabeledItem } from "@/features/shared/components";
 import { View } from "react-native";
 import { BookListItem } from "../../../internal/book/types";

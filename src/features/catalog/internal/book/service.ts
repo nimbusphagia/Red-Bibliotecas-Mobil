@@ -1,3 +1,4 @@
+import { inTransaction } from "@/db/transaction";
 import {
   NotFoundError,
   ValidationError,
@@ -8,6 +9,7 @@ import {
   mapWriteErrors,
   parseOrThrow,
 } from "@/features/shared/validation/validation";
+import { titleCode } from "../_shared/codes";
 import { makeReads, parseId } from "../_shared/service";
 import { getAuthor } from "../author/service";
 import { getCategory } from "../category/service";
@@ -15,6 +17,7 @@ import { getCollection } from "../collection/service";
 import { getPublisher } from "../publisher/service";
 import { getSeries } from "../series/service";
 import { getSubcategory } from "../subcategory/service";
+import { assertLabelAvailableSync } from "./labels";
 import * as repo from "./repository";
 import {
   createBookSchema,
@@ -31,6 +34,7 @@ import type {
   BookPatch,
   BookUsage,
   BookWithCollaborators,
+  LabelCodes,
   NewBook,
 } from "./types";
 
@@ -57,7 +61,43 @@ export async function getBookItem(id: number): Promise<BookListItem> {
   return found;
 }
 
+/** Los cuatro códigos del tejuelo del libro, o null si aún falta alguno. */
+export async function getBookLabelCodes(id: number): Promise<LabelCodes | null> {
+  const found = await getBook(id);
+  const writer = found.collaborators.find((c) => c.role === "writer");
+  if (
+    found.categoryId === null ||
+    found.subcategoryId === null ||
+    found.titleCode === null ||
+    !writer
+  ) {
+    return null;
+  }
+  const [cat, sub, writerAuthor] = await Promise.all([
+    getCategory(found.categoryId),
+    getSubcategory(found.subcategoryId),
+    getAuthor(writer.authorId),
+  ]);
+  if (writerAuthor.code === null) return null;
+  return {
+    categoryCode: cat.code,
+    authorCode: writerAuthor.code,
+    subcategoryCode: sub.code,
+    titleCode: found.titleCode,
+  };
+}
+
 // Validation
+function requireTitleCode(title: string, omitWords: string[]): string {
+  const code = titleCode(title, omitWords);
+  if (code === null) {
+    throw new ValidationError([
+      { path: "title", message: "The title needs letters or digits" },
+    ]);
+  }
+  return code;
+}
+
 type RefIds = {
   publisherId?: number | null;
   categoryId?: number | null;
@@ -127,14 +167,25 @@ export async function prepareBook(input: BookInput): Promise<PreparedBook> {
   await assertConsistent({ ...rest, collaborators });
 
   return {
-    values: { ...rest, title, titleKey: searchKey(title) },
+    values: {
+      ...rest,
+      title,
+      titleKey: searchKey(title),
+      titleCode: requireTitleCode(title, rest.omitWords),
+    },
     collaborators,
   };
 }
 
 export async function createBook(input: BookInput): Promise<Book> {
   const { values, collaborators } = await prepareBook(input);
-  return mapWriteErrors(ENTITY, () => repo.insertBook(values, collaborators));
+  return mapWriteErrors(ENTITY, async () =>
+    inTransaction((tx) => {
+      const row = repo.insertBookSync(tx, values, collaborators);
+      assertLabelAvailableSync(tx, row.id);
+      return row;
+    }),
+  );
 }
 
 export async function updateBook(
@@ -156,6 +207,12 @@ export async function updateBook(
   if (title !== undefined) {
     patch.title = title;
     patch.titleKey = searchKey(title);
+  }
+  if (title !== undefined || patch.omitWords !== undefined) {
+    patch.titleCode = requireTitleCode(
+      title ?? existing.title,
+      patch.omitWords ?? existing.omitWords,
+    );
   }
 
   const publisherChanged =
@@ -191,8 +248,12 @@ export async function updateBook(
     });
   }
 
-  const updated = await mapWriteErrors(ENTITY, () =>
-    repo.updateBook(validId, patch, collaborators),
+  const updated = await mapWriteErrors(ENTITY, async () =>
+    inTransaction((tx) => {
+      const row = repo.updateBookSync(tx, validId, patch, collaborators);
+      if (row) assertLabelAvailableSync(tx, validId);
+      return row;
+    }),
   );
   if (!updated) throw new NotFoundError(ENTITY, validId);
 

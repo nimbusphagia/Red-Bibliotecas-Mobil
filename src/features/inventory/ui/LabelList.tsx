@@ -1,6 +1,5 @@
-import type { LabelSort } from "@/features/inventory/internal/label/schemas";
-import { listLabels } from "@/features/inventory/internal/label/service";
-import type { PrintStatus } from "@/features/inventory/internal/label/types";
+import type { CopySort } from "@/features/inventory/internal/copy/schemas";
+import { listCopies } from "@/features/inventory/internal/copy/service";
 import {
   InlineFilter,
   InlineSort,
@@ -18,16 +17,16 @@ import ShelfFilter from "./labels/list/ShelfFilter";
 
 const PAGE_SIZE = 20;
 
-type StatusFilter = "all" | PrintStatus;
+type StatusFilter = "all" | "labeled" | "pending";
 
 const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Todos" },
-  { value: "printed", label: "Impresos" },
-  { value: "pending_print", label: "No impresos" },
+  { value: "labeled", label: "Etiquetados" },
+  { value: "pending", label: "Sin etiquetar" },
 ];
 
-const SORTS: SortOption<LabelSort>[] = [
-  { key: "printedAt", label: "Fecha de impresión", defaultDir: "desc" },
+const SORTS: SortOption<CopySort>[] = [
+  { key: "labeledAt", label: "Fecha de etiquetado", defaultDir: "desc" },
   { key: "createdAt", label: "Fecha de creación", defaultDir: "desc" },
 ];
 
@@ -35,8 +34,8 @@ export default function LabelList() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [shelfId, setShelfId] = useState<number>();
-  const [sort, setSort] = useState<{ by: LabelSort; dir: SortDirection }>({
-    by: "printedAt",
+  const [sort, setSort] = useState<{ by: CopySort; dir: SortDirection }>({
+    by: "labeledAt",
     dir: "desc",
   });
 
@@ -44,9 +43,10 @@ export default function LabelList() {
 
   const fetchPage = useCallback(
     (offset: number) =>
-      listLabels({
+      listCopies({
         search: debouncedSearch,
-        printStatus: filter === "all" ? undefined : filter,
+        labeled: filter === "all" ? undefined : filter === "labeled",
+        excludeReleased: true,
         shelfId,
         sortBy: sort.by,
         sortDir: sort.dir,
@@ -91,7 +91,7 @@ export default function LabelList() {
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
-        renderItem={(label) => <LabelRow label={label} />}
+        renderItem={(copy) => <LabelRow copy={copy} />}
       />
     </>
   );

@@ -1,5 +1,5 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import type { LabelCodes } from "@/features/inventory/internal/label/types";
+import type { LabelCodes } from "@/features/catalog/internal/book/types";
 import type { DetailRow } from "@/features/shared/components";
 
 export function bookDetailRows(book: BookListItem): DetailRow[] {

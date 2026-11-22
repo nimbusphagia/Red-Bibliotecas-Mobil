@@ -70,10 +70,6 @@ export function useBookForm(book?: BookListItem) {
             {
               book: toBookInput(values),
               quantity: Number(values.quantity) || 1,
-              omitWords: values.omitWords
-                .split(",")
-                .map((w) => w.trim())
-                .filter(Boolean),
             },
           ],
         });

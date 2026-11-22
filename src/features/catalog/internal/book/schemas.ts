@@ -6,6 +6,7 @@ import {
 } from "@/features/shared/types/schemas";
 import type { Assert } from "@/features/shared/types/types";
 import { z } from "zod";
+import { collapse } from "@/features/shared/format/text";
 import { nameField } from "../_shared/fields";
 import type { BookListFilters } from "./types";
 
@@ -34,6 +35,10 @@ const collaboratorsSchema = z
     { message: "Duplicate collaborator" },
   );
 
+export const MAX_OMIT_WORDS = 10;
+
+const omitWord = z.string().transform(collapse).pipe(z.string().min(1).max(40));
+
 const fkId = idSchema.nullable();
 
 const fields = {
@@ -45,6 +50,7 @@ const fields = {
   subcategoryId: fkId,
   publicationYear: z.number().int().nullable(),
   pageCount: z.number().int().positive().nullable(),
+  omitWords: z.array(omitWord).max(MAX_OMIT_WORDS),
   collaborators: collaboratorsSchema,
 };
 
@@ -67,6 +73,7 @@ export const createBookSchema = z
     subcategoryId: fields.subcategoryId.default(null),
     publicationYear: fields.publicationYear.default(null),
     pageCount: fields.pageCount.default(null),
+    omitWords: fields.omitWords.default([]),
   })
   .refine(collectionNeedsPublisher.check, collectionNeedsPublisher.options);
 

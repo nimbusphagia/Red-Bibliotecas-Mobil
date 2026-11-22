@@ -44,5 +44,10 @@ export function codeFrom(
   return source ? source.slice(0, CODE_LENGTH).toUpperCase() : null;
 }
 
+/** Código del título para el tejuelo, sin las palabras que se quieren evitar. */
 export const titleCode = (title: string, omitWords: readonly string[] = []) =>
   codeFrom(title, omitWords);
+
+/** Código del autor: del apellido, o del nombre si no tiene apellido. */
+export const authorCode = (firstName: string, lastName: string | null) =>
+  codeFrom(lastName ?? firstName);

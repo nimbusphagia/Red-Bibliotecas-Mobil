@@ -12,12 +12,12 @@ import {
   account,
   book,
   copy,
-  label,
   loanMovement,
   loanMovementLine,
   visitor,
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
+import { labelTextSql } from "@/features/inventory/internal/copy/sql";
 import type { Page } from "@/features/shared/types/types";
 import {
   and,
@@ -66,7 +66,7 @@ const lineColumns = {
   bookId: copy.bookId,
   bookTitle: book.title,
   copyNumber: copy.copyNumber,
-  labelText: label.text,
+  labelText: labelTextSql,
   resolvedAt: loanMovementLine.resolvedAt,
   outcome: loanMovementLine.outcome,
   resolvedByUsername: resolver.username,
@@ -241,7 +241,6 @@ export async function listLoanLines(
       .from(loanMovementLine)
       .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
-      .leftJoin(label, eq(label.copyId, copy.id))
       .leftJoin(resolver, eq(resolver.id, loanMovementLine.resolvedById))
       .where(where)
       .orderBy(
@@ -281,7 +280,6 @@ export async function listVisitorLines(
       .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
       .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
-      .leftJoin(label, eq(label.copyId, copy.id))
       .leftJoin(resolver, eq(resolver.id, loanMovementLine.resolvedById))
       .where(where)
       .orderBy(
@@ -337,7 +335,7 @@ export async function listOpenLines(
         bookId: copy.bookId,
         bookTitle: book.title,
         copyNumber: copy.copyNumber,
-        labelText: label.text,
+        labelText: labelTextSql,
         visitorId: visitor.id,
         visitorName: visitor.name,
         loanedAt: loanMovement.createdAt,
@@ -348,7 +346,6 @@ export async function listOpenLines(
       .innerJoin(visitor, eq(visitor.id, loanMovement.loanedToId))
       .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
-      .leftJoin(label, eq(label.copyId, copy.id))
       .where(where)
       .orderBy(direction(sortDir)(sortKey), asc(loanMovementLine.id))
       .limit(filters.limit)

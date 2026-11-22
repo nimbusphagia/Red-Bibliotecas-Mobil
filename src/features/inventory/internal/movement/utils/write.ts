@@ -1,14 +1,17 @@
 import type { Tx } from "@/db/transaction";
 import { insertBookSync } from "@/features/catalog/internal/book/repository";
-import { insertCopiesSync } from "../../copy/repository";
-import { insertLabelsSync } from "../../label/repository";
-import { buildLabelText } from "../../label/utils/labelText";
+import { assertLabelAvailableSync } from "@/features/catalog/internal/book/labels";
+import {
+  activeCopyNumbersSync,
+  findCopiesByIdsSync,
+  insertCopiesSync,
+} from "../../copy/repository";
+import { nextFreeNumbers } from "../../copy/utils/numbering";
 import {
   insertEntryMovementSync,
   insertMovementLinesSync,
 } from "../repository";
 import type { EntryResult, NewEntryMovement, RegisteredLine } from "../types";
-import { claimTexts, planLine, toConflictError, type Claims } from "./plan";
 import type { PreparedLine } from "./prepare";
 
 export function writeEntry(
@@ -17,7 +20,6 @@ export function writeEntry(
   lines: PreparedLine[],
 ): EntryResult {
   const movement = insertEntryMovementSync(tx, header);
-  const claims: Claims = new Map();
   const allCopyIds: number[] = [];
   const registered: RegisteredLine[] = [];
 
@@ -27,49 +29,40 @@ export function writeEntry(
       line.source.kind === "existing"
         ? line.source.bookId
         : insertBookSync(tx, line.source.values, line.source.collaborators).id;
+    // Un libro existente ya pasó esta comprobación al guardarse.
+    if (isNewBook) assertLabelAvailableSync(tx, bookId, line.lineIndex);
 
-    const plan = planLine(tx, line, bookId, claims);
-    if (plan.conflict) throw toConflictError(line, plan.conflict);
-
+    const numbers = nextFreeNumbers(
+      activeCopyNumbersSync(tx, bookId),
+      line.quantity,
+    );
     const copies = insertCopiesSync(
       tx,
-      plan.numbers.map((copyNumber) => ({
+      numbers.map((copyNumber) => ({
         bookId,
         shelfId: line.shelfId,
         copyNumber,
       })),
     );
-    const labelRows = copies.map((c) => ({
-      copyId: c.id,
-      categoryCode: line.categoryCode,
-      authorCode: line.authorCode,
-      subcategoryCode: line.subcategoryCode,
-      titleCode: plan.titleCode,
-      copyNumber: c.copyNumber,
-      text: buildLabelText({
-        categoryCode: line.categoryCode,
-        authorCode: line.authorCode,
-        subcategoryCode: line.subcategoryCode,
-        titleCode: plan.titleCode,
-        copyNumber: c.copyNumber,
-      }),
-    }));
-    insertLabelsSync(tx, labelRows);
+    const texts = new Map(
+      findCopiesByIdsSync(
+        tx,
+        copies.map((c) => c.id),
+      ).map((c) => [c.id, c.labelText]),
+    );
 
-    claimTexts(claims, line, bookId, plan.texts);
     allCopyIds.push(...copies.map((c) => c.id));
     registered.push({
       lineIndex: line.lineIndex,
       bookId,
       title: line.title,
       isNewBook,
-      titleCode: plan.titleCode,
-      titleCodeSource: plan.source,
-      copies: copies.map((c, i) => ({
+      titleCode: line.titleCode,
+      copies: copies.map((c) => ({
         copyId: c.id,
         copyNumber: c.copyNumber,
         shelfId: c.shelfId,
-        labelText: labelRows[i].text,
+        labelText: texts.get(c.id) ?? null,
       })),
     });
   }

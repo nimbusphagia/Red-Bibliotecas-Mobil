@@ -34,8 +34,8 @@ export default function DashboardStats() {
           <DualCard
             title="Tejuelos"
             positiveStat={{
-              name: "Impresos",
-              numberData: stats?.labels.printed ?? LOADING,
+              name: "Etiquetados",
+              numberData: stats?.labels.labeled ?? LOADING,
             }}
             negativeStat={{
               name: "Faltantes",

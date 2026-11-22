@@ -29,13 +29,11 @@ export const EXIT_STATUS: Record<ExitReason, ExitStatus> = {
   discard: "discarded",
 };
 
-export type TitleCodeSource = "existing" | "generated";
-
 export type RegisteredCopy = {
   copyId: number;
   copyNumber: number;
   shelfId: number;
-  labelText: string;
+  labelText: string | null;
 };
 
 export type RegisteredLine = {
@@ -44,7 +42,6 @@ export type RegisteredLine = {
   title: string;
   isNewBook: boolean;
   titleCode: string;
-  titleCodeSource: TitleCodeSource;
   copies: RegisteredCopy[];
 };
 
@@ -66,15 +63,6 @@ export type ExitedCopy = {
 export type ExitResult = {
   movement: StockMovement;
   copies: ExitedCopy[];
-};
-
-export type LabelPreview = {
-  lineIndex: number;
-  title: string;
-  titleCode: string;
-  titleCodeSource: TitleCodeSource;
-  labelTexts: string[];
-  conflict: { labelText: string; bookId: number | null; title: string } | null;
 };
 
 export type MovementListFilters = {

@@ -1,7 +1,7 @@
 // DetailMain.tsx
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
-import { LabelCodes } from "@/features/inventory/internal/label/types";
+import { LabelCodes } from "@/features/catalog/internal/book/types";
 import { Button, DetailColumns, Panel } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";

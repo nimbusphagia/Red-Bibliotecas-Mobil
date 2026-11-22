@@ -1,6 +1,8 @@
-import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { getBookItem } from "@/features/catalog/internal/book/service";
-import { listCopiesByBook } from "@/features/inventory/internal/copy/service";
+import {
+  getBookItem,
+  getBookLabelCodes,
+} from "@/features/catalog/internal/book/service";
+import { listCopies } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
@@ -8,8 +10,10 @@ import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import DetailHeader from "./detail/DetailHeader";
 import DetailMain from "./detail/DetailMain";
-import { getBookLabelCodes } from "@/features/inventory/internal/label/service";
-import { LabelCodes } from "@/features/inventory/internal/label/types";
+import type {
+  BookListItem,
+  LabelCodes,
+} from "@/features/catalog/internal/book/types";
 import { formatContributors } from "@/features/shared/format/text";
 
 type Props = {
@@ -24,7 +28,7 @@ type Data = {
 const fetchData = async (bookId: number): Promise<Data> => {
   const [book, page, codes] = await Promise.all([
     getBookItem(bookId),
-    listCopiesByBook({ bookId, excludeReleased: true, limit: 100 }),
+    listCopies({ bookId, excludeReleased: true, limit: 100 }),
     getBookLabelCodes(bookId),
   ]);
   return { book, copies: page.items, codes };

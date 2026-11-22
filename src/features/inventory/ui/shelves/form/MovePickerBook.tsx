@@ -1,5 +1,5 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { listCopiesByBook } from "@/features/inventory/internal/copy/service";
+import { listCopies } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { writersOf } from "@/features/loans/ui/options";
 import {
@@ -36,7 +36,7 @@ export default function MovePickerBook({
     if (!open) return;
     let stale = false;
     setCopies(undefined);
-    listCopiesByBook({
+    listCopies({
       bookId: book.id,
       shelfId,
       excludeReleased: true,
