@@ -6,7 +6,7 @@ import {
   BootErrorScreen,
   LoadingScreen,
 } from "@/features/shared/layout/LoadingScreen";
-import { colors } from "@/features/shared/theme";
+import { STACK_OPTIONS } from "@/features/navigation/stackOptions";
 import {
   Outfit_300Light,
   Outfit_400Regular,
@@ -51,12 +51,7 @@ function RootNavigator() {
   const { status } = session;
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: colors.bg },
-      }}
-    >
+    <Stack screenOptions={STACK_OPTIONS}>
       <Stack.Screen name="index" />
       <Stack.Protected guard={status === "setup" || status === "signed-out"}>
         <Stack.Screen name="(public)" />

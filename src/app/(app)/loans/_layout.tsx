@@ -1,13 +1,6 @@
-import { colors } from "@/features/shared/theme";
+import { STACK_OPTIONS } from "@/features/navigation/stackOptions";
 import { Stack } from "expo-router";
 
 export default function LoansLayout() {
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: colors.bg },
-      }}
-    />
-  );
+  return <Stack screenOptions={STACK_OPTIONS} />;
 }
