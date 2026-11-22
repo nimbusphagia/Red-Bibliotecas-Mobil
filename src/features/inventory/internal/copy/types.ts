@@ -93,6 +93,16 @@ export type MarkLabeledResult = {
   failed: LabelFailure<MarkFailureReason>[];
 };
 
+/** Tejuelo de hoy de un ejemplar, listo para imprimir. */
+export type PrintLabel = { copyId: number; text: string };
+
+export type PrintSkipReason = "not_found" | "released" | "incomplete";
+
+export type PrintLabelsResult = {
+  labels: PrintLabel[];
+  skipped: { copyId: number; reason: PrintSkipReason }[];
+};
+
 export type CopyItemRow = Omit<CopyItem, "loan"> & {
   loanId: number | null;
   visitorId: number | null;

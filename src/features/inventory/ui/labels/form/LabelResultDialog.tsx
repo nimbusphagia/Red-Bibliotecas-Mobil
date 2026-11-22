@@ -1,7 +1,3 @@
-import type {
-  CopyItem,
-  MarkLabeledResult,
-} from "@/features/inventory/internal/copy/types";
 import {
   Dialog,
   DialogActions,
@@ -9,50 +5,40 @@ import {
   DialogHeader,
   Text,
 } from "@/features/shared/components";
-import { markFailureText } from "@/features/shared/format/translate";
 import { View } from "react-native";
 
+export type Problem = { copyId: number; name: string; reason: string };
+
 type Props = {
-  result: MarkLabeledResult;
-  /** Los ejemplares que se intentaron marcar, para mostrar su tejuelo. */
-  copies: CopyItem[];
+  title: string;
+  subtitle?: string;
+  problems: Problem[];
+  note?: string;
   onClose: () => void;
 };
 
-const plural = (n: number, one: string, many: string) =>
-  `${n} ${n === 1 ? one : many}`;
-
-export default function LabelResultDialog({ result, copies, onClose }: Props) {
-  const byId = new Map(copies.map((c) => [c.id, c]));
-  const { labeled, alreadyLabeled, failed } = result;
-
+/** Resultado de una acción por lote: qué ejemplares no se pudieron y por qué. */
+export default function LabelResultDialog({
+  title,
+  subtitle,
+  problems,
+  note,
+  onClose,
+}: Props) {
   return (
     <Dialog onClose={onClose} size="md">
-      <DialogHeader
-        title={failed.length ? "Algunos ejemplares no se etiquetaron" : "Listo"}
-        subtitle={`${plural(labeled.length, "etiquetado", "etiquetados")}${
-          alreadyLabeled.length
-            ? ` · ${plural(alreadyLabeled.length, "ya estaba al día", "ya estaban al día")}`
-            : ""
-        }`}
-      />
-      {failed.length > 0 && (
+      <DialogHeader title={title} subtitle={subtitle} />
+      {(problems.length > 0 || note) && (
         <DialogBody>
-          {failed.map((f) => {
-            const c = byId.get(f.copyId);
-            return (
-              <View key={f.copyId} className="gap-0.5">
-                <Text variant="item">
-                  #{f.copyId}
-                  {c ? ` · ${c.labelText ?? c.bookTitle}` : ""}
-                </Text>
-                <Text variant="caption">{markFailureText(f)}</Text>
-              </View>
-            );
-          })}
-          <Text variant="caption">
-            Siguen en la lista para que los corrijas y vuelvas a intentarlo.
-          </Text>
+          {problems.map((p) => (
+            <View key={p.copyId} className="gap-0.5">
+              <Text variant="item">
+                #{p.copyId} · {p.name}
+              </Text>
+              <Text variant="caption">{p.reason}</Text>
+            </View>
+          ))}
+          {note && <Text variant="caption">{note}</Text>}
         </DialogBody>
       )}
       <DialogActions confirmTitle="Entendido" onConfirm={onClose} />

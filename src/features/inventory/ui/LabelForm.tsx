@@ -1,12 +1,18 @@
 import { useSession } from "@/features/account/internal/session";
 import {
   getCopy,
+  listPrintLabels,
   markCopiesLabeled,
 } from "@/features/inventory/internal/copy/service";
 import type {
   CopyItem,
   MarkLabeledResult,
 } from "@/features/inventory/internal/copy/types";
+import { toFormErrors } from "@/features/shared/errors/messages";
+import {
+  markFailureText,
+  PRINT_SKIP_ES,
+} from "@/features/shared/format/translate";
 import {
   Button,
   Dialog,
@@ -23,19 +29,27 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import LabelCopyPicker from "./labels/form/LabelCopyPicker";
 import LabelCopyTable from "./labels/form/LabelCopyTable";
-import LabelResultDialog from "./labels/form/LabelResultDialog";
+import LabelResultDialog, {
+  type Problem,
+} from "./labels/form/LabelResultDialog";
+import { shareLabelSheet } from "./labels/form/printLabelSheet";
 import { labelStateOf } from "./labels/labelState";
+
+const plural = (n: number, one: string, many: string) =>
+  `${n} ${n === 1 ? one : many}`;
 
 export default function LabelForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
   const session = useSession();
-  const { errors, submitting, run } = useFormSubmit();
+  const { errors, setErrors, submitting, run } = useFormSubmit();
+  const [printing, setPrinting] = useState(false);
   const [copies, setCopies] = useState<CopyItem[]>([]);
   const [picking, setPicking] = useState(false);
   const [result, setResult] = useState<{
     value: MarkLabeledResult;
     attempted: CopyItem[];
   }>();
+  const [skipped, setSkipped] = useState<Problem[]>();
 
   useEffect(() => {
     if (copyId)
@@ -69,6 +83,33 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
     });
   };
 
+  // Imprimir no cambia nada: sirve para cualquier ejemplar y se puede repetir.
+  const print = async () => {
+    if (printing || copies.length === 0) return;
+    setErrors({ fields: {} });
+    setPrinting(true);
+    try {
+      const { labels, skipped: skippedCopies } = await listPrintLabels({
+        copyIds: copies.map((c) => c.id),
+      });
+      if (labels.length > 0) await shareLabelSheet(labels);
+      if (skippedCopies.length > 0) {
+        const byId = new Map(copies.map((c) => [c.id, c]));
+        setSkipped(
+          skippedCopies.map((s) => ({
+            copyId: s.copyId,
+            name: byId.get(s.copyId)?.bookTitle ?? "",
+            reason: PRINT_SKIP_ES[s.reason],
+          })),
+        );
+      }
+    } catch (e) {
+      setErrors(toFormErrors(e));
+    } finally {
+      setPrinting(false);
+    }
+  };
+
   const closeResult = () => {
     setResult(undefined);
     if (copies.length === 0) leave();
@@ -85,7 +126,15 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
         canSubmit={copies.length > 0}
         onSubmit={submit}
         onCancel={() => router.back()}
-        extra={<Button title="Imprimir etiqueta" variant="soft" disabled />}
+        extra={
+          <Button
+            title="Imprimir etiqueta"
+            variant="soft"
+            loading={printing}
+            disabled={copies.length === 0 || submitting}
+            onPress={print}
+          />
+        }
       />
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
@@ -147,9 +196,37 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
       )}
       {result && (
         <LabelResultDialog
-          result={result.value}
-          copies={result.attempted}
+          title={
+            result.value.failed.length
+              ? "Algunos ejemplares no se etiquetaron"
+              : "Listo"
+          }
+          subtitle={`${plural(result.value.labeled.length, "etiquetado", "etiquetados")}${
+            result.value.alreadyLabeled.length
+              ? ` · ${plural(result.value.alreadyLabeled.length, "ya estaba al día", "ya estaban al día")}`
+              : ""
+          }`}
+          problems={result.value.failed.map((f) => {
+            const c = result.attempted.find((x) => x.id === f.copyId);
+            return {
+              copyId: f.copyId,
+              name: c?.labelText ?? c?.bookTitle ?? "",
+              reason: markFailureText(f),
+            };
+          })}
+          note={
+            result.value.failed.length
+              ? "Siguen en la lista para que los corrijas y vuelvas a intentarlo."
+              : undefined
+          }
           onClose={closeResult}
+        />
+      )}
+      {skipped && (
+        <LabelResultDialog
+          title="Algunos ejemplares no se imprimieron"
+          problems={skipped}
+          onClose={() => setSkipped(undefined)}
         />
       )}
     </>

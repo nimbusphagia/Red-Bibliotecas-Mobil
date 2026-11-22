@@ -1,6 +1,7 @@
 import {
   CopyStatus,
   MarkFailureReason,
+  PrintSkipReason,
 } from "@/features/inventory/internal/copy/types";
 import type { VisitorRole } from "@/features/loans/internal/visitor/types";
 import type { GRADE_LEVELS } from "@/db/schema";
@@ -73,6 +74,13 @@ export const MARK_FAILURE_ES: Record<MarkFailureReason, string> = {
   incomplete:
     "Al libro le falta categoría, subcategoría, escritor o título para armar el tejuelo",
   conflict: "Otro ejemplar ya tiene ese tejuelo",
+};
+
+export const PRINT_SKIP_ES: Record<PrintSkipReason, string> = {
+  not_found: "El ejemplar ya no existe",
+  released: "Está dado de baja (perdido o descartado)",
+  incomplete:
+    "Al libro le falta categoría, subcategoría, escritor o título para armar el tejuelo",
 };
 
 export const markFailureText = (f: {

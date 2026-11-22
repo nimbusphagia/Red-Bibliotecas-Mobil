@@ -35,7 +35,8 @@
         {
           "disableLibdav1d": true
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,
