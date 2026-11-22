@@ -1,6 +1,6 @@
 import type { NavItem } from "@/features/navigation/navigation";
 import { Icon } from "@/features/shared/components";
-import { cn } from "@/features/shared/theme";
+import { cn, tones, useTone } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { Pressable } from "react-native";
 
@@ -10,25 +10,25 @@ type Props = {
   standalone?: boolean;
 };
 
+/** Se dibuja sobre un Surface dark: inactivo = su inset (o su superficie si va solo). El activo invierte con los colores de light. */
 export function SidebarItem({ item, active, standalone = false }: Props) {
-  const specialClass = standalone ? "bg-dark1 text-white" : "";
-  const [iconColor, bgColor, activeClass] = active
-    ? ["dark1" as const, "bg-white", "opacity-100"]
-    : ["white" as const, "bg-dark2", "opacity-100"];
+  const t = useTone();
+  const on = tones.light;
+  const box = active ? on.surface : standalone ? t.surface : t.inset;
   return (
     <Link href={item.href} asChild>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={item.label}
         accessibilityState={{ selected: active }}
-        className={cn(
-          "flex items-center justify-center rounded-xl p-2",
-          bgColor,
-          activeClass,
-          specialClass,
-        )}
+        className={cn("flex items-center justify-center rounded-xl p-2", box)}
       >
-        <Icon icon={item.icon} size="xl" stroke="sm" tone={iconColor} />
+        <Icon
+          icon={item.icon}
+          size="xl"
+          stroke="sm"
+          tone={active ? on.icon : t.icon}
+        />
       </Pressable>
     </Link>
   );

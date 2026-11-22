@@ -7,34 +7,39 @@ type SurfaceProps = PropsWithChildren<
   ViewProps & {
     tone?: Tone;
     /**
-     * Nivel 2 dentro de la superficie actual (dark2 en dark1, bg en white).
+     * Nivel 2 dentro de la superficie actual (darkSolid en dark1, bg en light1).
      * No cambia el tono: el texto y los íconos siguen igual.
      */
     inset?: boolean;
+    /** Fila de ItemList con gap: fondo opcional `t.row`. Tampoco cambia el tono. */
+    row?: boolean;
     className?: string;
   }
 >;
 
 /**
  * Fondo + tono. Todo lo que se dibuje dentro toma sus colores de aquí.
- * Sin `tone` hereda el del padre (útil con `inset`).
+ * Sin `tone` hereda el del padre (útil con `inset`), salvo un contenedor
+ * directo sobre el lienzo canvas, que pasa a light.
  * Contenedores: rounded-2xl. Con `inset`: rounded-lg (es una fila/control).
  */
 export function Surface({
   tone,
   inset,
+  row,
   className,
   children,
   ...rest
 }: SurfaceProps) {
   const current = useContext(ToneContext);
-  const name = tone ?? current;
+  // Un contenedor sobre el lienzo es light (white); inset y row heredan el tono.
+  const name = tone ?? (current === "canvas" && !inset && !row ? "light" : current);
   const t = tones[name];
   return (
     <ToneContext.Provider value={name}>
       <View
         className={cn(
-          inset ? [t.inset, "rounded-lg"] : [t.surface, "rounded-2xl"],
+          inset ? [t.inset, "rounded-lg"] : row ? [t.row, "rounded-lg"] : [t.surface, "rounded-2xl"],
           className,
         )}
         {...rest}

@@ -5,24 +5,44 @@ import {
 } from "@/features/shared/components";
 import { SlidersHorizontal } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
-import { loadCategories, loadSubcategories, useOptions } from "../../options";
-import type { CatalogFilters, FilterDialog } from "./FilterPanel";
+import {
+  loadCategories,
+  loadShelves,
+  loadSubcategories,
+  useOptions,
+} from "../../options";
+import {
+  PANEL_FIELDS,
+  type CatalogFilters,
+  type FilterDialog,
+  type FilterField,
+} from "./FilterPanel";
 
 type Props = {
   filters: CatalogFilters;
   onOpen: (dialog: FilterDialog) => void;
+  /** Filtros en línea a mostrar, en este orden de aparición. */
+  fields?: FilterField[];
+  /** Botón que abre el panel completo. Se oculta con `false`. */
+  showPanel?: boolean;
 };
 
-export default function QuickFilters({ filters, onOpen }: Props) {
+export default function QuickFilters({
+  filters,
+  onOpen,
+  fields = PANEL_FIELDS,
+  showPanel = true,
+}: Props) {
   const activeCount = Object.values(filters).filter(
     (v) => v !== undefined,
   ).length;
   const categories = useOptions(loadCategories);
   const subcategories = useOptions(loadSubcategories);
+  const shelves = useOptions(loadShelves);
   const labelOf = (options: Option[], id?: number) =>
     options.find((o) => o.id === id)?.label;
 
-  const buttons = [
+  const all: { field: FilterField; label: string; active: boolean }[] = [
     {
       field: "author",
       label: filters.author?.label ?? "Autor",
@@ -43,21 +63,29 @@ export default function QuickFilters({ filters, onOpen }: Props) {
       label: labelOf(subcategories, filters.subcategoryId) ?? "Subcategoría",
       active: filters.subcategoryId !== undefined,
     },
-  ] as const;
+    {
+      field: "shelf",
+      label: labelOf(shelves, filters.shelfId) ?? "Estantería",
+      active: filters.shelfId !== undefined,
+    },
+  ];
+  const buttons = all.filter((b) => fields.includes(b.field));
 
   return (
     <View className="shrink flex-row items-center gap-4">
-      <View>
-        <Button
-          variant="solid"
-          weight="lg"
-          size="sm"
-          iconTone="accent2"
-          icon={SlidersHorizontal}
-          onPress={() => onOpen("all")}
-        />
-        {activeCount > 0 && <ActiveCounter count={activeCount} />}
-      </View>
+      {showPanel && (
+        <View>
+          <Button
+            variant="solid"
+            weight="lg"
+            size="sm"
+            iconTone="accent"
+            icon={SlidersHorizontal}
+            onPress={() => onOpen("all")}
+          />
+          {activeCount > 0 && <ActiveCounter count={activeCount} />}
+        </View>
+      )}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -68,7 +96,7 @@ export default function QuickFilters({ filters, onOpen }: Props) {
           <Button
             key={field}
             title={label}
-            variant={active ? "accent" : "solid"}
+            variant={active ? "accent" : "selector"}
             size="sm"
             onPress={() => onOpen(field)}
           />

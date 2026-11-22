@@ -14,7 +14,7 @@ export function StatusBadge({ text, variant, className }: Props) {
   const t = useTone();
   const variantClass = {
     active: "text-success",
-    pending: "text-accent1",
+    pending: "text-warning",
     finished: cn(t.text),
   };
   return (

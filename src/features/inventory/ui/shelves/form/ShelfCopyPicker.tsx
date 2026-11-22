@@ -1,5 +1,10 @@
 import { listBooks } from "@/features/catalog/internal/book/service";
-import ShelfFilter from "@/features/inventory/ui/labels/list/ShelfFilter";
+import FilterPanel, {
+  type CatalogFilters,
+  type FilterDialog,
+  type FilterField,
+} from "@/features/catalog/ui/list/searchFilters/FilterPanel";
+import QuickFilters from "@/features/catalog/ui/list/searchFilters/QuickFilters";
 import { ItemList, Searchbar } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
@@ -10,6 +15,7 @@ import { copyByIdForMove, type MoveCopy } from "../options";
 import MovePickerBook from "./MovePickerBook";
 
 const PAGE_SIZE = 10;
+const PICKER_FIELDS: FilterField[] = ["shelf"];
 
 type Props = {
   selected: MoveCopy[];
@@ -24,7 +30,9 @@ export default function ShelfCopyPicker({
 }: Props) {
   const [search, setSearch] = useState("");
   const [idText, setIdText] = useState("");
-  const [shelfId, setShelfId] = useState<number>();
+  const [filters, setFilters] = useState<CatalogFilters>({});
+  const [dialog, setDialog] = useState<FilterDialog>(null);
+  const shelfId = filters.shelfId;
   const debouncedSearch = useDebounce(search);
   const copyId = useDebounce(idText);
 
@@ -61,9 +69,17 @@ export default function ShelfCopyPicker({
           onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
           placeholder="#ID"
         />
-        <ShelfFilter value={shelfId} onChange={setShelfId} />
       </View>
       <ItemList
+        gap
+        toolbar={
+          <QuickFilters
+            filters={filters}
+            onOpen={setDialog}
+            fields={PICKER_FIELDS}
+            showPanel={false}
+          />
+        }
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
@@ -76,6 +92,13 @@ export default function ShelfCopyPicker({
             defaultOpen={!!copyId}
           />
         )}
+      />
+      <FilterPanel
+        filters={filters}
+        onChange={setFilters}
+        open={dialog}
+        onOpenChange={setDialog}
+        fields={PICKER_FIELDS}
       />
     </View>
   );

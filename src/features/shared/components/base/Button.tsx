@@ -8,14 +8,7 @@ import { cn, colors, useTone } from "../../theme";
 import { Icon, type IconSize, type IconTone } from "./Icon";
 import { Text } from "./Text";
 
-/**
- * Variantes por ROL, no por color. El color real sale de la superficie
- * (ver theme/tone.ts):
- *  - accent: acción principal / seleccionado (accent2)
- *  - solid:  acción neutra con peso (dark1 en blanco, dark2 en dark1)
- *  - soft:   acción secundaria / iconos en filas (bg en blanco, dark2/60 en dark1)
- */
-type Variant = "accent" | "solid" | "soft";
+type Variant = "accent" | "solid" | "soft" | "selector";
 
 type Size = "sm" | "md" | "lg";
 
@@ -62,8 +55,7 @@ export function Button({
       disabled={isDisabled}
       hitSlop={s.hit}
       className={cn(
-        // Presionado por opacidad: no depende de ningún color de la paleta.
-        "flex-row items-center justify-center gap-1 rounded-lg active:opacity-80",
+        "flex-row items-center justify-center gap-2 rounded-lg active:opacity-80",
         title ? s.withTitle : s.iconOnly,
         v.box,
         isDisabled && "opacity-80",
@@ -73,6 +65,14 @@ export function Button({
     >
       {loading && <ActivityIndicator color={colors[v.icon]} />}
 
+      {icon && (
+        <Icon
+          icon={icon}
+          size={!title && s.icon === "md" ? "lg" : s.icon}
+          tone={iconTone ?? v.icon}
+          stroke={weight}
+        />
+      )}
       {title && (
         <Text
           variant={size === "sm" ? "itemSm" : "item"}
@@ -84,14 +84,6 @@ export function Button({
         >
           {title}
         </Text>
-      )}
-      {icon && (
-        <Icon
-          icon={icon}
-          size={!title && s.icon === "md" ? "lg" : s.icon}
-          tone={iconTone ?? v.icon}
-          stroke={weight}
-        />
       )}
     </Pressable>
   );

@@ -5,14 +5,20 @@ import {
   DialogBody,
   SimpleSelect,
 } from "@/features/shared/components";
+import { SlidersHorizontal } from "lucide-react-native";
 import { useState } from "react";
 
 type Props = {
   value?: number;
+  withIcon?: boolean;
   onChange: (shelfId?: number) => void;
 };
 
-export default function ShelfFilter({ value, onChange }: Props) {
+export default function ShelfFilter({
+  value,
+  withIcon = false,
+  onChange,
+}: Props) {
   const [open, setOpen] = useState(false);
   const shelves = useOptions(loadShelves);
   const selected = shelves.find((s) => s.id === value);
@@ -21,6 +27,7 @@ export default function ShelfFilter({ value, onChange }: Props) {
     <>
       <Button
         title={selected?.label ?? "Estantería"}
+        icon={withIcon ? SlidersHorizontal : undefined}
         size="sm"
         variant={value === undefined ? "soft" : "accent"}
         onPress={() => setOpen(true)}

@@ -8,7 +8,7 @@ import {
 import { formatDate } from "@/features/shared/format/dates";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { Eye } from "lucide-react-native";
+import { Eye, ScanSearch } from "lucide-react-native";
 
 export default function VisitorLineRow({ line }: { line: VisitorLine }) {
   return (
@@ -31,7 +31,7 @@ export default function VisitorLineRow({ line }: { line: VisitorLine }) {
           variant={line.outcome ? "active" : "pending"}
         />
         <Link href={`/loans/${line.loanId}`} asChild>
-          <Button variant="soft" icon={Eye} />
+          <Button variant="soft" icon={ScanSearch} />
         </Link>
       </Column>
     </ListRow>

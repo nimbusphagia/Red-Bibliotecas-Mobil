@@ -12,6 +12,7 @@ import { useCallback } from "react";
 import {
   fetchCollections,
   loadCategories,
+  loadShelves,
   loadSubcategories,
   searchAuthors,
   searchPublishers,
@@ -26,6 +27,7 @@ export type CatalogFilters = {
   categoryId?: number;
   subcategoryId?: number;
   collectionId?: number;
+  shelfId?: number;
 };
 
 export const toBookParams = (f: CatalogFilters) => ({
@@ -35,9 +37,23 @@ export const toBookParams = (f: CatalogFilters) => ({
   categoryId: f.categoryId,
   subcategoryId: f.subcategoryId,
   collectionId: f.collectionId,
+  shelfId: f.shelfId,
 });
 
-export type FilterField = "author" | "publisher" | "category" | "subcategory";
+export type FilterField =
+  | "author"
+  | "publisher"
+  | "category"
+  | "subcategory"
+  | "shelf";
+
+/** Campos que el panel completo ("all") muestra por defecto. */
+export const PANEL_FIELDS: FilterField[] = [
+  "author",
+  "publisher",
+  "category",
+  "subcategory",
+];
 export type FilterDialog = FilterField | "all" | null;
 
 const LIMIT = 20;
@@ -50,6 +66,8 @@ type Props = {
   onChange: (filters: CatalogFilters) => void;
   open: FilterDialog;
   onOpenChange: (open: FilterDialog) => void;
+  /** Campos visibles en el panel completo. */
+  fields?: FilterField[];
 };
 
 export default function FilterPanel({
@@ -57,9 +75,11 @@ export default function FilterPanel({
   onChange,
   open,
   onOpenChange: setOpen,
+  fields = PANEL_FIELDS,
 }: Props) {
   const all = open === "all";
-  const shows = (field: FilterField) => all || open === field;
+  const shows = (field: FilterField) =>
+    (all && fields.includes(field)) || open === field;
   const set = (patch: Partial<CatalogFilters>) => {
     onChange({ ...filters, ...patch });
     if (!all) setOpen(null);
@@ -82,6 +102,7 @@ export default function FilterPanel({
 
   const categories = useOptions(loadCategories);
   const subcategories = useOptions(loadSubcategories);
+  const shelves = useOptions(loadShelves);
   const collections = useOptions(publisherId ? loadCollections : null);
 
   return (
@@ -159,6 +180,14 @@ export default function FilterPanel({
                 options={subcategories}
                 value={filters.subcategoryId}
                 onChange={(subcategoryId) => set({ subcategoryId })}
+              />
+            )}
+            {shows("shelf") && (
+              <SimpleSelect
+                label="Estantería"
+                options={shelves}
+                value={filters.shelfId}
+                onChange={(shelfId) => set({ shelfId })}
               />
             )}
           </DialogBody>

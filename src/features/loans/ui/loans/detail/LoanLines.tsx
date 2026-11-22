@@ -6,7 +6,7 @@ import {
   StatusBadge,
 } from "@/features/shared/components";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
-import { ArrowDown, Flag } from "lucide-react-native";
+import { ArrowDown, CircleExclamationPoint } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
 import ReturnLineDialog from "./ReturnLineDialog";
@@ -49,13 +49,11 @@ export default function LoanLines({
               <>
                 <Button
                   variant="soft"
-                  icon={Flag}
+                  icon={CircleExclamationPoint}
                   onPress={() => setActive({ line: l, reportOnly: true })}
                 />
-
                 <Button
-                  title="Devolver"
-                  variant="solid"
+                  variant="accent"
                   size="sm"
                   weight="md"
                   icon={ArrowDown}

@@ -87,7 +87,7 @@ export function Column({
       {variant === "subtitled" && !!(subtitle1 || subtitle2) && (
         <View className="flex-row justify-start items-center">
           <Text variant="caption">{subtitle1}</Text>
-          {subtitle1 && subtitle2 && <Icon icon={Dot} tone="dark3" />}
+          {subtitle1 && subtitle2 && <Icon icon={Dot} tone="faint" />}
           <Text variant="caption">{subtitle2}</Text>
         </View>
       )}

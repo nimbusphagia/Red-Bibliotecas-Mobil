@@ -1,5 +1,5 @@
-import { View } from "react-native";
-import { cn } from "../../theme";
+import { cn, useTone } from "../../theme";
+import { Surface } from "../base/Surface";
 import { Text } from "../base/Text";
 
 export type Stat = {
@@ -10,19 +10,22 @@ export type Stat = {
 type Props = { stat: Stat; highlight?: boolean };
 
 export function StatTile({ stat, highlight }: Props) {
+  const t = useTone();
+  const label = highlight && t.accent.label;
   return (
-    <View
+    <Surface
+      inset
       className={cn(
-        "min-w-[110px] items-start gap-1 rounded-lg border px-4 py-2",
-        highlight ? "border-primary bg-primary" : "border-fg1 bg-fg1/60",
+        "min-w-[110px] items-start gap-1 px-4 py-2",
+        highlight && t.accent.box,
       )}
     >
-      <Text variant="display" className={cn(highlight && "text-bg")}>
+      <Text variant="display" className={cn(label)}>
         {stat.numberData}
       </Text>
-      <Text variant="caption" className={cn(highlight && "text-bg")}>
+      <Text variant="caption" className={cn(label)}>
         {stat.name}
       </Text>
-    </View>
+    </Surface>
   );
 }

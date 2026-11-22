@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import { ActivityIndicator, FlatList, View } from "react-native";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
+import { cn, colors, useTone, type Tone } from "../../theme";
 import { Surface } from "../base/Surface";
 import { Text } from "../base/Text";
 
@@ -10,8 +11,28 @@ type Props<T extends { id: number }> = {
   onEndReached: () => void;
   renderItem: (item: T) => ReactElement;
   toolbar?: ReactNode;
+  /**
+   * Dibujar el toolbar sobre su propia superficie (por defecto sí).
+   * Con `false` queda sin fondo ni padding, sobre lo que haya detrás, y sus
+   * botones toman el tono de ese fondo, no el de `tone`.
+   */
+  toolbarSurface?: boolean;
+  /**
+   * Tono de la lista y de su toolbar (cuando tiene superficie). Todo lo de
+   * adentro (filas, texto, botones, íconos) lo toma por contexto.
+   * Sin `tone`: la lista hereda el del padre (sobre canvas, Surface la pasa
+   * a `light`) y el toolbar es `dark`.
+   */
+  tone?: Tone;
   columns?: number;
+  /** Separación entre filas. Solo los pickers de los diálogos la usan. */
+  gap?: boolean;
 };
+
+function Loader() {
+  const t = useTone();
+  return <ActivityIndicator color={colors[t.icon]} />;
+}
 
 export function ItemList<T extends { id: number }>({
   items,
@@ -19,23 +40,30 @@ export function ItemList<T extends { id: number }>({
   onEndReached,
   renderItem,
   toolbar,
+  toolbarSurface = true,
+  tone,
   columns = 1,
+  gap = false,
 }: Props<T>) {
   const { isExpanded } = useLayoutMode();
   const numColumns = isExpanded ? columns : 1;
   const multi = numColumns > 1;
+  const toolbarRow = "flex-row items-center justify-between";
 
   return (
-    <View className="flex-1 gap-4">
-      {toolbar && (
-        <Surface
-          tone="dark"
-          className="flex-row items-center justify-between rounded-lg p-3"
-        >
-          {toolbar}
-        </Surface>
-      )}
-      <Surface className="flex-1 overflow-hidden">
+    <View className="flex-1 gap-3">
+      {toolbar &&
+        (toolbarSurface ? (
+          <Surface
+            tone={tone ?? "dark"}
+            className={cn(toolbarRow, "rounded-lg p-3")}
+          >
+            {toolbar}
+          </Surface>
+        ) : (
+          <View className={cn(toolbarRow, "px-1")}>{toolbar}</View>
+        ))}
+      <Surface tone={tone} className="flex-1 overflow-hidden">
         <FlatList
           key={numColumns}
           numColumns={numColumns}
@@ -55,12 +83,12 @@ export function ItemList<T extends { id: number }>({
               renderItem(item)
             )
           }
-          contentContainerClassName="p-1.5"
+          contentContainerClassName={cn("p-2.5", gap && "gap-2")}
           columnWrapperStyle={multi ? { gap: 12 } : undefined}
           showsVerticalScrollIndicator={false}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={loading ? <ActivityIndicator /> : undefined}
+          ListFooterComponent={loading ? <Loader /> : undefined}
           ListEmptyComponent={
             loading ? undefined : (
               <Text variant="caption" className="pt-3 text-center">

@@ -73,8 +73,7 @@ export default function LabelList() {
         toolbar={
           <>
             <View className="flex-row items-center gap-4">
-              <ShelfFilter value={shelfId} onChange={setShelfId} />
-
+              <ShelfFilter value={shelfId} onChange={setShelfId} withIcon />
               <InlineFilter
                 options={FILTERS}
                 value={filter}

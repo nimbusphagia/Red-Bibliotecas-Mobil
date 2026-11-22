@@ -76,7 +76,7 @@ export default function MovementList() {
                   variant="solid"
                   weight="lg"
                   size="sm"
-                  iconTone="accent2"
+                  iconTone="accent"
                   icon={SlidersHorizontal}
                   onPress={() => setOpen(true)}
                 />

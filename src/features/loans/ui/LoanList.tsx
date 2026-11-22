@@ -65,7 +65,7 @@ export default function LoanList() {
         subtitle="Registra y da seguimiento a los ejemplares prestados"
         lead={
           <Link href="/loans/new" asChild>
-            <Button title="Prestar" icon={ArrowUp} size="sm" weight="md" />
+            <Button title="Nuevo" icon={ArrowUp} size="sm" weight="md" />
           </Link>
         }
         search={{

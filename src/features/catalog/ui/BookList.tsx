@@ -65,7 +65,7 @@ export default function BookList() {
         subtitle="Cataloga y explora tu biblioteca"
         lead={
           <Link href="/catalog/form" asChild>
-            <Button icon={Plus} size="sm" title="Nuevo Libro" weight="md" />
+            <Button icon={Plus} size="sm" title="Nuevo" weight="md" />
           </Link>
         }
         search={{

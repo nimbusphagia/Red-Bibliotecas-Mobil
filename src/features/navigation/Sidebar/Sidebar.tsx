@@ -3,6 +3,7 @@ import { Href, usePathname } from "expo-router";
 import { View } from "react-native";
 import { SIDEBAR_WIDTH } from "./constants";
 import { SidebarItem } from "./SidebarItem";
+import { Surface } from "@/features/shared/components";
 import { cn } from "@/features/shared/theme";
 
 export function Sidebar() {
@@ -19,13 +20,13 @@ export function Sidebar() {
         "flex-col items-center justify-between p-4",
       )}
     >
-      <View className="gap-6 bg-dark1 p-3 rounded-2xl">
+      <Surface tone="dark" className="gap-6 p-3">
         {NAVBAR.main.map((item) => {
           const active = isActive(item.href);
           return <SidebarItem key={item.key} item={item} active={active} />;
         })}
-      </View>
-      <View className="bg-dark1 rounded-2xl">
+      </Surface>
+      <Surface tone="dark">
         {NAVBAR.footer.map((item) => {
           return (
             <SidebarItem
@@ -36,7 +37,7 @@ export function Sidebar() {
             />
           );
         })}
-      </View>
+      </Surface>
     </View>
   );
 }

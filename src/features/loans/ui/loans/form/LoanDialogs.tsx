@@ -92,7 +92,7 @@ export function CopySearchDialog({
   onClose: () => void;
 }) {
   return (
-    <Dialog onClose={onClose} size="lg">
+    <Dialog onClose={onClose} size="lg" tone="canvas">
       <CopyPicker className="flex-1" selected={selected} onToggle={onToggle} />
     </Dialog>
   );

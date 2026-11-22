@@ -2,7 +2,7 @@ import type { ShelfListItem } from "@/features/inventory/internal/shelf/types";
 import { Button, Column, ListRow } from "@/features/shared/components";
 import { shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { Eye, Pencil } from "lucide-react-native";
+import { PencilLine, ScanSearch } from "lucide-react-native";
 
 type Props = { shelf: ShelfListItem; onEdit: () => void };
 
@@ -22,10 +22,10 @@ export default function ShelfRow({ shelf, onEdit }: Props) {
       />
       <Column variant="actions" width="md">
         {!shelf.isDefault && (
-          <Button variant="soft" icon={Pencil} onPress={onEdit} />
+          <Button variant="soft" icon={PencilLine} onPress={onEdit} />
         )}
         <Link href={`/shelves/${shelf.id}`} asChild>
-          <Button variant="soft" icon={Eye} />
+          <Button variant="soft" icon={ScanSearch} />
         </Link>
       </Column>
     </ListRow>

@@ -20,7 +20,6 @@ import {
 import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { ScreenBody } from "@/features/shared/layout/Screen";
-import { colors } from "@/features/shared/theme";
 import { useRouter } from "expo-router";
 import { Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -144,7 +143,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
                     <Text variant="caption">
                       {status.open} préstamos activos
                     </Text>
-                    <Icon icon={Dot} tone="dark3" />
+                    <Icon icon={Dot} tone="faint" />
                     <Text variant="caption">
                       {status.remaining
                         ? `Puede prestar ${status.remaining} más`

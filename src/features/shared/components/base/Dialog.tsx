@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 import Animated from "react-native-reanimated";
-import { cn } from "../../theme";
+import { cn, type Tone } from "../../theme";
 import { Button } from "./Button";
 import { DialogDismissContext } from "./dismiss";
 import { LAYOUT } from "./motion";
@@ -34,12 +34,15 @@ const sizeStyles: Record<DialogSize, string> = {
 type DialogProps = {
   onClose: () => void;
   size?: DialogSize;
+  /** Tono de la superficie del diálogo. Todo lo de adentro lo hereda. */
+  tone?: Tone;
   className?: string;
 };
 
 export function Dialog({
   onClose,
   size = "md",
+  tone = "dark",
   className,
   children,
 }: PropsWithChildren<DialogProps>) {
@@ -78,7 +81,7 @@ export function Dialog({
         />
         <AnimatedSurface
           layout={LAYOUT}
-          tone="dark"
+          tone={tone}
           className={cn(
             "max-h-[80%] max-w-full gap-4 p-6 pt-4",
             sizeStyles[size],

@@ -3,7 +3,7 @@ import { Button, Column, ListRow, Text } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { BookDown, BookUp, ScanSearch } from "lucide-react-native";
+import { ArrowDown, ArrowUp, ScanSearch } from "lucide-react-native";
 import { View } from "react-native";
 
 type Props = {
@@ -56,7 +56,7 @@ export default function CopiesList({ copies }: Props) {
                 <Link href={href} asChild>
                   <Button
                     variant="soft"
-                    icon={isAvailable ? BookUp : BookDown}
+                    icon={isAvailable ? ArrowUp : ArrowDown}
                   />
                 </Link>
               )}

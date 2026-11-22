@@ -17,10 +17,8 @@ export function Chip({
   disabled?: boolean;
   onPress: () => void;
 }) {
-  const textClass = cn(
-    "font-sans-regular",
-    selected ? "text-dark2" : "text-white",
-  );
+  const c = useTone().chip[selected ? "selected" : "idle"];
+  const textClass = cn("font-sans-regular", c.label);
 
   return (
     <Pressable
@@ -28,13 +26,13 @@ export function Chip({
       onPress={onPress}
       className={cn(
         "flex-row items-center rounded-lg px-4 py-1.5 active:opacity-80",
-        selected ? "bg-accent2" : "bg-dark2",
+        c.box,
       )}
     >
       <Text className={textClass}>{label}</Text>
       {detail && (
         <>
-          <Icon icon={Dot} tone={selected ? "dark1" : "dark3"} />
+          <Icon icon={Dot} tone={c.dot} />
           <Text className={textClass}>{detail}</Text>
         </>
       )}

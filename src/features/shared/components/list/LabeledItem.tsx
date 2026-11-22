@@ -2,11 +2,6 @@ import { View } from "react-native";
 import { cn, useTone } from "../../theme";
 import { Text } from "../base/Text";
 
-/**
- * pill: valor de solo lectura. input: campo editable (FieldRow).
- * Los colores salen de la superficie: etiqueta = t.tag, campo = t.inset,
- * campo con valor = accent2.
- */
 export type LabeledItemVariant = "pill" | "input";
 
 const labelWidths = {
@@ -53,7 +48,7 @@ export function LabeledItem({
         variant="itemSm"
         className={cn(
           cell,
-          t.tag,
+          empty ? t.tag.empty : t.tag.filled,
           input && "text-center",
           labelWidth && labelWidths[labelWidth],
           labelClass,
@@ -67,8 +62,8 @@ export function LabeledItem({
         className={cn(
           cell,
           "flex-1 text-right",
-          input && !empty ? "bg-bg text-dark1 text-left" : t.inset,
-          empty && !input && "text-dark3",
+          input && !empty ? [t.valueFilled, "text-left"] : t.inset,
+          empty && !input && t.faint,
           contentClass,
         )}
       >

@@ -1,4 +1,3 @@
-// Única fuente de verdad: la consumen tailwind.config.js, cn.ts y colors.ts.
 const fonts = {
   sans: "Outfit_300Light",
   "sans-regular": "Outfit_400Regular",
@@ -6,25 +5,31 @@ const fonts = {
   "sans-semibold": "Outfit_600SemiBold",
 };
 
+/**
+ * Los componentes NO eligen estos colores directo: los toman de
+ * theme/tone.ts según la superficie. Aquí solo se definen los valores.
+ */
 module.exports = {
   fonts,
   palette: {
-    bg: "#F5F7FB",
-    white: "#FFFFFF",
+    // Lienzo de la página (tono canvas)
+    bg: "#F0F0F7",
 
-    dark1: "#222026",
-    dark2: "#3F3E43",
-    dark3: "#8D8F93",
+    // light: contenedores claros
+    light1: "#FAFAFA", // superficie / texto sobre dark
+    lightRow: "#F6F6F8", // fondo opcional de filas de ItemList con gap
+    lightSolid: "#E1E1EF",
+    lightAccent: "#CECFF8",
+    // TEXT sobre light: dark1 > darkSolid
 
-    accent1: "#887FC2",
-    accent2: "#EBE3FA",
+    // dark: contenedores oscuros
+    dark1: "#222026", // superficie / texto sobre light
+    darkSolid: "#3F3E43",
+    darkAccent: "#CECFF8",
+    dark2: "#8D8F93", // gris neutro: placeholders y detalles tenues
+    // TEXT sobre dark: light1 > lightSolid
 
-    fg1: "#F2ECE9",
-    fg2: "#F7F3F0",
-
-    primary: "#6996CF",
     secondary: "#8AAAD4",
-
     highlight: "#5789C9",
     error: "#D14343",
     success: "#4E9F6B",

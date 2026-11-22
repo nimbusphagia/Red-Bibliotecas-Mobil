@@ -1,6 +1,6 @@
 import { Search } from "lucide-react-native";
 import { TextInput, View } from "react-native";
-import { cn, colors } from "../../../theme";
+import { cn, colors, useTone } from "../../../theme";
 import { Icon } from "../../base/Icon";
 
 type Props = {
@@ -10,28 +10,31 @@ type Props = {
   className?: string;
 };
 
+/** Campo de nivel 2 de la superficie actual (t.inset): white sobre el lienzo, bg sobre light1, darkSolid sobre dark1. */
 export function Searchbar({
   value,
   onChangeText,
   className,
   placeholder = "Buscar...",
 }: Props) {
+  const t = useTone();
   return (
     <View
       className={cn(
-        "flex flex-row items-center gap-2 w-full max-w-[400px] h-full px-4 rounded-lg bg-white",
+        "flex flex-row items-center gap-2 w-full max-w-[400px] h-full px-4 rounded-lg",
+        t.inset,
         className,
       )}
     >
       <TextInput
-        className="flex-1 h-full text-dark1 font-sans"
+        className={cn("flex-1 h-full font-sans", t.text)}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.dark3}
+        placeholderTextColor={colors[t.placeholder]}
         returnKeyType="search"
       />
-      <Icon icon={Search} tone="dark1" />
+      <Icon icon={Search} />
     </View>
   );
 }

@@ -6,7 +6,7 @@ import { Button, DetailColumns, Panel } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { NotebookPen, PencilLine } from "lucide-react-native";
+import { NotebookPen, PencilLine, Plus, PlusCircle } from "lucide-react-native";
 import { bookDetailRows, bookLabelRows } from "./bookInfo/bookRows";
 import AddCopiesDialog from "./AddCopiesDialog";
 import CopiesList from "./bookInfo/CopiesList";
@@ -58,8 +58,9 @@ export default function DetailMain({
         className="flex-1 gap-2"
         lead={
           <Button
-            title="Agregar"
-            icon={NotebookPen}
+            title="Nuevo"
+            className="gap-3"
+            icon={Plus}
             size="sm"
             onPress={() => setAdding(true)}
           />

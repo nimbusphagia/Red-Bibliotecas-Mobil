@@ -18,6 +18,7 @@ const lendable = (c: CopyItem) =>
 
 type Props = {
   book: BookListItem;
+  shelfId?: number;
   selected: LoanCopy[];
   onToggle: (copy: LoanCopy) => void;
   defaultOpen?: boolean;
@@ -25,6 +26,7 @@ type Props = {
 
 export default function PickerBook({
   book,
+  shelfId,
   selected,
   onToggle,
   defaultOpen,
@@ -33,18 +35,26 @@ export default function PickerBook({
   const [copies, setCopies] = useState<CopyItem[]>();
 
   useEffect(() => {
-    if (!open || copies) return;
+    if (!open) return;
+    let stale = false;
+    setCopies(undefined);
     listCopiesByBook({
       bookId: book.id,
+      shelfId,
       excludeReleased: true,
       limit: 100,
-    }).then((p) => setCopies(p.items.filter(lendable)));
-  }, [open, copies, book.id]);
+    }).then((p) => {
+      if (!stale) setCopies(p.items.filter(lendable));
+    });
+    return () => {
+      stale = true;
+    };
+  }, [open, book.id, shelfId]);
 
   const Chevron = open ? ChevronUp : ChevronDown;
 
   return (
-    <Surface inset className="items-center gap-3 px-4 py-3">
+    <Surface row className="items-center gap-3 px-4 py-3">
       <Pressable
         onPress={() => setOpen((o) => !o)}
         className="flex-row items-center gap-4"
@@ -52,16 +62,14 @@ export default function PickerBook({
         <View className="flex-1">
           <Text variant="item">{book.title}</Text>
           <View className="flex-row items-center">
-            <Text variant="caption">
-              {writersOf(book)}
-            </Text>
+            <Text variant="caption">{writersOf(book)}</Text>
             <Icon icon={Dot} />
-            <Text variant="caption">
-              {book.availableCount}
-            </Text>
+            <Text variant="caption">{book.availableCount}</Text>
           </View>
         </View>
-        <Icon icon={Chevron} />
+        <View className="rounded-full size-6 bg-bg/25 items-center justify-center">
+          <Icon icon={Chevron} tone="darkSolid" />
+        </View>
       </Pressable>
 
       {open && !copies && <ActivityIndicator />}

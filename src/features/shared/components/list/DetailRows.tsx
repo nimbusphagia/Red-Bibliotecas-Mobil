@@ -21,9 +21,9 @@ export function DetailRows({ rows, variant = "pill", columns = 1 }: Props) {
   const labelWidth = variant === "pill" && n === 1 ? "wide" : "narrow";
 
   return (
-    <View className="flex-row items-start gap-6">
+    <View className="flex-row items-start gap-6 ">
       {groups.map((group, i) => (
-        <View key={i} className="flex-1 gap-4">
+        <View key={i} className="flex-1 gap-2.5">
           {group.map((r, j) => (
             <LabeledItem
               key={`${r.label}-${j}`}

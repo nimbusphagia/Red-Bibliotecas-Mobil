@@ -1,5 +1,6 @@
 import { useDashboardStats } from "@/features/dashboard/ui/useDashboardStats";
 import { Card, DualCard, StatTile } from "@/features/shared/components";
+import { cn, useTone } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { Pressable, View } from "react-native";
 
@@ -7,9 +8,12 @@ const LOADING = "–";
 
 export default function DashboardStats() {
   const stats = useDashboardStats();
+  const t = useTone();
 
   return (
-    <View className="flex flex-row flex-wrap gap-4 pb-8 border-b border-fg1">
+    <View
+      className={cn("flex flex-row flex-wrap gap-4 border-b pb-8", t.divider)}
+    >
       <Link href="/loans" asChild>
         <Pressable>
           <DualCard
@@ -42,10 +46,7 @@ export default function DashboardStats() {
       </Link>
       <Link href="/shelves" asChild>
         <Pressable>
-          <Card
-            title="Por ubicar"
-            className="bg-transparent border-transparent"
-          >
+          <Card title="Por ubicar" variant="flat">
             <View className="flex-row">
               <StatTile
                 stat={{

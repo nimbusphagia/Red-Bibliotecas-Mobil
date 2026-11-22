@@ -40,7 +40,7 @@ export function TextField({
             "h-12 rounded-lg border px-4 font-sans",
             t.inset,
             t.text,
-            error ? "border-error" : "border-transparent focus:border-accent2",
+            error ? "border-error" : ["border-transparent", t.accent.focus],
             secureTextEntry && "pr-24",
             className,
           )}
@@ -56,7 +56,7 @@ export function TextField({
             hitSlop={8}
             className="absolute right-4 px-1 py-2"
           >
-            <Text variant="itemSm" className="text-dark3">
+            <Text variant="itemSm" className={t.faint}>
               {visible ? "Ocultar" : "Mostrar"}
             </Text>
           </Pressable>

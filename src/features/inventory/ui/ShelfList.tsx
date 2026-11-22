@@ -15,7 +15,7 @@ import { useCallback, useState } from "react";
 import ShelfDialog from "./shelves/form/ShelfDialog";
 import ShelfRow from "./shelves/list/ShelfRow";
 import { Link } from "expo-router";
-import { ArrowRightLeft, SquarePlus } from "lucide-react-native";
+import { Plus, SendToBack } from "lucide-react-native";
 import { View } from "react-native";
 
 const PAGE_SIZE = 20;
@@ -59,15 +59,15 @@ export default function ShelfList() {
           <View className="flex-row items-center gap-2">
             <Link href="/shelves/reorganize" asChild>
               <Button
-                title="Reasignar"
-                icon={ArrowRightLeft}
+                title="Organizar"
+                icon={SendToBack}
                 size="sm"
                 weight="md"
               />
             </Link>
             <Button
               title="Nuevo"
-              icon={SquarePlus}
+              icon={Plus}
               size="sm"
               weight="md"
               onPress={() => setDialog({})}

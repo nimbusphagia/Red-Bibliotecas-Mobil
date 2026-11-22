@@ -116,10 +116,10 @@ export function SearchSelect({
           onPress={() => setOpen(true)}
           className={cn(
             "h-12 justify-center rounded-lg px-4 active:opacity-80",
-            value ? "bg-accent2" : t.inset,
+            value ? t.accent.box : t.inset,
           )}
         >
-          <Text variant="itemSm" className={cn(value && "text-dark1")}>
+          <Text variant="itemSm" className={cn(value && t.accent.label)}>
             {value?.label ?? placeholder}
           </Text>
         </Pressable>

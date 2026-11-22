@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { cn, useTone } from "../../../theme";
 import { Text } from "../../base/Text";
 import { Chip } from "./Chip";
 import type { Option } from "./option";
@@ -15,6 +16,7 @@ export function MultiSearchSelect({
   onChange,
   ...search
 }: Props) {
+  const t = useTone();
   const add = (option?: Option) => {
     if (option && !values.some((v) => v.id === option.id)) {
       onChange([...values, option]);
@@ -26,7 +28,12 @@ export function MultiSearchSelect({
       {label && <Text variant="item">{label}</Text>}
       <SearchSelect {...search} onChange={add} />
       {values.length > 0 && (
-        <View className="flex-row flex-wrap justify-start gap-3 p-4 bg-dark2 rounded-lg ">
+        <View
+          className={cn(
+            "flex-row flex-wrap justify-start gap-3 rounded-lg p-4",
+            t.inset,
+          )}
+        >
           {values.map((o) => (
             <Chip
               key={o.id}

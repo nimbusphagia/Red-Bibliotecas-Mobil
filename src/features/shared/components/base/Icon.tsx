@@ -6,7 +6,11 @@ const strokes = { sm: 1.5, md: 2.5, lg: 3, xl: 3 } as const;
 
 export type IconSize = keyof typeof sizes;
 export type IconStroke = keyof typeof strokes;
-export type IconTone = ColorName;
+/**
+ * Un color de la paleta, o un rol que sale del tono actual:
+ * "faint" (detalles tenues, separadores) y "accent" (acento como color).
+ */
+export type IconTone = ColorName | "faint" | "accent";
 
 type Props = {
   icon: LucideIcon;
@@ -17,10 +21,12 @@ type Props = {
 
 export function Icon({ icon: Glyph, size = "md", tone, stroke = "md" }: Props) {
   const t = useTone();
+  const color =
+    tone === "faint" ? t.placeholder : tone === "accent" ? t.accentFg : tone ?? t.icon;
   return (
     <Glyph
       size={sizes[size]}
-      color={colors[tone ?? t.icon]}
+      color={colors[color]}
       strokeWidth={strokes[stroke]}
     />
   );
