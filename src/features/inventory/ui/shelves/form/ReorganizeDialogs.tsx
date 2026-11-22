@@ -44,7 +44,7 @@ export function CopySearchDialog({
   onClose: () => void;
 }) {
   return (
-    <Dialog onClose={onClose} size="lg">
+    <Dialog onClose={onClose} size="lg" tone="canvas">
       <ShelfCopyPicker
         className="flex-1"
         selected={selected}

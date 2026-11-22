@@ -11,6 +11,7 @@ type Props = { children: ReactNode; compact?: boolean; className?: string };
 export function ListRow({ children, compact, className }: Props) {
   return (
     <Surface
+      row
       className={cn(
         "flex-row items-center justify-between gap-6 px-3",
         compact ? "py-1" : "py-2",

@@ -62,6 +62,8 @@ export type BookListFilters = ListFilters<BookSort> & {
   subcategoryId?: number;
   shelfId?: number;
   active?: boolean;
+  /** Libros con algún ejemplar activo sin etiquetar o con el tejuelo desactualizado. */
+  labelState?: "pending" | "outdated";
 };
 
 export type BookUsage = { copies: number };

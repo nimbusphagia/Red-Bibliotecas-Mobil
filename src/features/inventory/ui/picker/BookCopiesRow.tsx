@@ -1,5 +1,4 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { listCopies } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   Chip,
@@ -8,48 +7,60 @@ import {
   Surface,
   Text,
 } from "@/features/shared/components";
+import { writersOf } from "@/features/loans/ui/options";
 import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
-import { toLoanCopy, writersOf, type LoanCopy } from "../../options";
 
-const lendable = (c: CopyItem) =>
-  c.status === "available" || c.status === "damaged";
-
-type Props = {
+export type BookCopiesRowProps<T extends { id: number }> = {
   book: BookListItem;
-  shelfId?: number;
-  selected: LoanCopy[];
-  onToggle: (copy: LoanCopy) => void;
+  selected: T[];
+  onToggle: (item: T) => void;
+  /** Ejemplares que se muestran como chips al abrir el libro. */
+  loadCopies: (book: BookListItem) => Promise<CopyItem[]>;
+  /** Cambia cuando los chips deben volver a cargarse (filtros, por ejemplo). */
+  reloadKey?: string;
+  /** Lo que se guarda en la selección al tocar un chip. */
+  toItem: (copy: CopyItem, book: BookListItem) => T;
+  chipDetail?: (copy: CopyItem) => string | undefined;
+  /** Texto junto a los escritores (cantidad de ejemplares, por ejemplo). */
+  subtitle?: string;
+  emptyText?: string;
   defaultOpen?: boolean;
 };
 
-export default function PickerBook({
+/**
+ * Un libro con sus ejemplares agrupados: se abre y se elige por #id. Es la fila
+ * común de los selectores de ejemplares.
+ */
+export default function BookCopiesRow<T extends { id: number }>({
   book,
-  shelfId,
   selected,
   onToggle,
+  loadCopies,
+  reloadKey,
+  toItem,
+  chipDetail,
+  subtitle,
+  emptyText = "Sin ejemplares",
   defaultOpen,
-}: Props) {
+}: BookCopiesRowProps<T>) {
   const [open, setOpen] = useState(!!defaultOpen);
   const [copies, setCopies] = useState<CopyItem[]>();
+  const load = useRef(loadCopies);
+  load.current = loadCopies;
 
   useEffect(() => {
     if (!open) return;
     let stale = false;
     setCopies(undefined);
-    listCopies({
-      bookId: book.id,
-      shelfId,
-      excludeReleased: true,
-      limit: 100,
-    }).then((p) => {
-      if (!stale) setCopies(p.items.filter(lendable));
+    load.current(book).then((items) => {
+      if (!stale) setCopies(items);
     });
     return () => {
       stale = true;
     };
-  }, [open, book.id, shelfId]);
+  }, [open, book, reloadKey]);
 
   const Chevron = open ? ChevronUp : ChevronDown;
 
@@ -63,18 +74,22 @@ export default function PickerBook({
           <Text variant="item">{book.title}</Text>
           <View className="flex-row items-center">
             <Text variant="caption">{writersOf(book)}</Text>
-            <Icon icon={Dot} />
-            <Text variant="caption">{book.availableCount}</Text>
+            {subtitle && (
+              <>
+                <Icon icon={Dot} />
+                <Text variant="caption">{subtitle}</Text>
+              </>
+            )}
           </View>
         </View>
-        <View className="rounded-full size-6 bg-bg/25 items-center justify-center">
+        <View className="size-6 items-center justify-center rounded-full bg-bg/25">
           <Icon icon={Chevron} tone="darkSolid" />
         </View>
       </Pressable>
 
       {open && !copies && <ActivityIndicator />}
       {open && copies?.length === 0 && (
-        <Text variant="caption">Sin ejemplares disponibles</Text>
+        <Text variant="caption">{emptyText}</Text>
       )}
       {open && !!copies?.length && (
         <ChipGroup center>
@@ -82,9 +97,9 @@ export default function PickerBook({
             <Chip
               key={c.id}
               label={`#${c.id}`}
-              detail={undefined}
+              detail={chipDetail?.(c)}
               selected={selected.some((s) => s.id === c.id)}
-              onPress={() => onToggle(toLoanCopy(c.id, c.labelText, book))}
+              onPress={() => onToggle(toItem(c, book))}
             />
           ))}
         </ChipGroup>

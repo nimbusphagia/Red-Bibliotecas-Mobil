@@ -43,7 +43,7 @@ export function ItemList<T extends { id: number }>({
   toolbarSurface = true,
   tone,
   columns = 1,
-  gap = false,
+  gap = true,
 }: Props<T>) {
   const { isExpanded } = useLayoutMode();
   const numColumns = isExpanded ? columns : 1;

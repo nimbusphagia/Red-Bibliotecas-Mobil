@@ -1,21 +1,9 @@
-import { listBooks } from "@/features/catalog/internal/book/service";
-import FilterPanel, {
-  toBookParams,
-  type CatalogFilters,
-  type FilterDialog,
-  type FilterField,
-} from "@/features/catalog/ui/list/searchFilters/FilterPanel";
-import QuickFilters from "@/features/catalog/ui/list/searchFilters/QuickFilters";
-import { ItemList, Searchbar } from "@/features/shared/components";
-import { useDebounce } from "@/features/shared/hooks/useDebounce";
-import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { cn } from "@/features/shared/theme";
-import { useCallback, useState } from "react";
-import { ScrollView, View } from "react-native";
-import { copyById, type LoanCopy } from "../../options";
-import PickerBook from "./PickerBook";
+import { listCopies } from "@/features/inventory/internal/copy/service";
+import type { CopyItem } from "@/features/inventory/internal/copy/types";
+import BookCopyPicker from "@/features/inventory/ui/picker/BookCopyPicker";
+import type { FilterField } from "@/features/catalog/ui/list/searchFilters/FilterPanel";
+import { copyById, toLoanCopy, type LoanCopy } from "../../options";
 
-const PAGE_SIZE = 10;
 const PICKER_FIELDS: FilterField[] = [
   "author",
   "publisher",
@@ -24,6 +12,11 @@ const PICKER_FIELDS: FilterField[] = [
   "shelf",
 ];
 
+const BOOK_PARAMS = { active: true };
+
+const lendable = (c: CopyItem) =>
+  c.status === "available" || c.status === "damaged";
+
 type Props = {
   selected: LoanCopy[];
   onToggle: (copy: LoanCopy) => void;
@@ -31,82 +24,25 @@ type Props = {
 };
 
 export default function CopyPicker({ selected, onToggle, className }: Props) {
-  const [search, setSearch] = useState("");
-  const [idText, setIdText] = useState("");
-  const [filters, setFilters] = useState<CatalogFilters>({});
-  const [dialog, setDialog] = useState<FilterDialog>(null);
-  const debouncedSearch = useDebounce(search);
-  const copyId = useDebounce(idText);
-
-  const fetchPage = useCallback(
-    async (offset: number) => {
-      if (copyId) {
-        const found = await copyById(Number(copyId));
-        const items = found ? [found.book] : [];
-        return { items, total: items.length, limit: PAGE_SIZE, offset };
-      }
-      return listBooks({
-        ...toBookParams(filters),
-        search: debouncedSearch,
-        active: true,
-        limit: PAGE_SIZE,
-        offset,
-      });
-    },
-    [filters, debouncedSearch, copyId],
-  );
-  const list = useInfiniteList(fetchPage);
-
   return (
-    <View className={cn("gap-3", className)}>
-      <View className="h-12 flex-row items-center gap-3">
-        <Searchbar
-          className="w-auto flex-1"
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Buscar por título, autor o editorial..."
-        />
-        <Searchbar
-          className="w-28"
-          value={idText}
-          onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
-          placeholder="#ID"
-        />
-      </View>
-      <ItemList
-        gap
-        toolbarSurface={false}
-        tone="light"
-        toolbar={
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <QuickFilters
-              filters={filters}
-              onOpen={setDialog}
-              fields={PICKER_FIELDS}
-              showPanel={false}
-            />
-          </ScrollView>
-        }
-        items={list.items}
-        loading={list.loading}
-        onEndReached={list.loadMore}
-        renderItem={(book) => (
-          <PickerBook
-            book={book}
-            shelfId={copyId ? undefined : filters.shelfId}
-            selected={selected}
-            onToggle={onToggle}
-            defaultOpen={!!copyId}
-          />
-        )}
-      />
-      <FilterPanel
-        filters={filters}
-        onChange={setFilters}
-        open={dialog}
-        onOpenChange={setDialog}
-        fields={PICKER_FIELDS}
-      />
-    </View>
+    <BookCopyPicker<LoanCopy>
+      className={className}
+      selected={selected}
+      onToggle={onToggle}
+      filterFields={PICKER_FIELDS}
+      bookParams={BOOK_PARAMS}
+      loadCopies={(book, { shelfId }) =>
+        listCopies({
+          bookId: book.id,
+          shelfId,
+          excludeReleased: true,
+          limit: 100,
+        }).then((p) => p.items.filter(lendable))
+      }
+      toItem={(c, book) => toLoanCopy(c.id, c.labelText, book)}
+      bookOfCopy={async (id) => (await copyById(id))?.book ?? null}
+      subtitle={(b) => String(b.availableCount)}
+      emptyText="Sin ejemplares disponibles"
+    />
   );
 }

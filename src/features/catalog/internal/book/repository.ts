@@ -30,12 +30,14 @@ import {
   exists,
   getTableColumns,
   inArray,
+  isNull,
   notInArray,
   or,
   sql,
   type AnyColumn,
   type SQL,
 } from "drizzle-orm";
+import { outdatedSql } from "@/features/inventory/internal/copy/sql";
 import { bookLabelPrefixSql } from "./labelSql";
 import type {
   Book,
@@ -174,6 +176,7 @@ export async function listBooks(
     subcategoryId,
     shelfId,
     active,
+    labelState,
     sortBy,
     sortDir,
     limit,
@@ -222,10 +225,26 @@ export async function listBooks(
           book.id,
         );
 
+  const byLabelState =
+    labelState === undefined
+      ? undefined
+      : hasRows(
+          {
+            table: copy,
+            column: copy.bookId,
+            where: and(
+              notInArray(copy.status, [...RELEASED_STATUSES]),
+              labelState === "pending" ? isNull(copy.labeledAt) : outdatedSql,
+            ),
+          },
+          book.id,
+        );
+
   const where = and(
     ...search,
     byCollaborator,
     byShelf,
+    byLabelState,
     filterBy(book.publisherId, publisherId),
     filterBy(book.collectionId, collectionId),
     filterBy(book.seriesId, seriesId),
