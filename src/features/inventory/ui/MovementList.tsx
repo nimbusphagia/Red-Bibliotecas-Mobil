@@ -2,7 +2,7 @@ import type { MovementSort } from "@/features/inventory/internal/movement/schema
 import { listMovements } from "@/features/inventory/internal/movement/service";
 import type { MovementType } from "@/features/inventory/internal/movement/types";
 import {
-  ActiveDot,
+  ActiveCounter,
   Button,
   InlineFilter,
   InlineSort,
@@ -43,7 +43,9 @@ export default function MovementList() {
     dir: "desc",
   });
 
-  const active = Object.values(filters).some((v) => v !== undefined);
+  const activeCount = Object.values(filters).filter(
+    (v) => v !== undefined,
+  ).length;
 
   const fetchPage = useCallback(
     (offset: number) =>
@@ -68,14 +70,17 @@ export default function MovementList() {
       <ItemList
         toolbar={
           <>
-            <View className="shrink flex-row items-center gap-2">
+            <View className="shrink flex-row items-center gap-4">
               <View>
                 <Button
-                  variant="secondary"
+                  variant="solid"
+                  weight="lg"
+                  size="sm"
+                  iconTone="accent2"
                   icon={SlidersHorizontal}
                   onPress={() => setOpen(true)}
                 />
-                {active && <ActiveDot />}
+                {activeCount > 0 && <ActiveCounter count={activeCount} />}
               </View>
               <InlineFilter
                 options={TYPE_FILTERS}
@@ -85,15 +90,12 @@ export default function MovementList() {
                 }
               />
             </View>
-            <View className="flex-row items-center gap-4">
-              <View className="w-px self-stretch bg-fg1" />
-              <InlineSort
-                options={SORTS}
-                sortBy={sort.by}
-                sortDir={sort.dir}
-                onChange={(by, dir) => setSort({ by, dir })}
-              />
-            </View>
+            <InlineSort
+              options={SORTS}
+              sortBy={sort.by}
+              sortDir={sort.dir}
+              onChange={(by, dir) => setSort({ by, dir })}
+            />
           </>
         }
         items={list.items}

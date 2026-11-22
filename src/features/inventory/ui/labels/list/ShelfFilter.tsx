@@ -21,7 +21,8 @@ export default function ShelfFilter({ value, onChange }: Props) {
     <>
       <Button
         title={selected?.label ?? "Estantería"}
-        variant={value === undefined ? "secondary" : "primary"}
+        size="sm"
+        variant={value === undefined ? "soft" : "accent"}
         onPress={() => setOpen(true)}
       />
       {open && (

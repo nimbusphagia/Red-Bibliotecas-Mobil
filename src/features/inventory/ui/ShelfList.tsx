@@ -16,12 +16,13 @@ import ShelfDialog from "./shelves/form/ShelfDialog";
 import ShelfRow from "./shelves/list/ShelfRow";
 import { Link } from "expo-router";
 import { ArrowRightLeft, SquarePlus } from "lucide-react-native";
+import { View } from "react-native";
 
 const PAGE_SIZE = 20;
 
 const SORTS: SortOption<ShelfSort>[] = [
   { key: "name", label: "Nombre", defaultDir: "asc" },
-  { key: "copyCount", label: "Ejemplares", defaultDir: "desc" },
+  { key: "copyCount", label: "Cantidad", defaultDir: "desc" },
   { key: "createdAt", label: "Fecha de creación", defaultDir: "desc" },
 ];
 
@@ -55,20 +56,23 @@ export default function ShelfList() {
         title="Estantería"
         subtitle="Organiza dónde se guarda cada ejemplar"
         lead={
-          <>
+          <View className="flex-row items-center gap-2">
+            <Link href="/shelves/reorganize" asChild>
+              <Button
+                title="Reasignar"
+                icon={ArrowRightLeft}
+                size="sm"
+                weight="md"
+              />
+            </Link>
             <Button
               title="Nuevo"
               icon={SquarePlus}
+              size="sm"
+              weight="md"
               onPress={() => setDialog({})}
             />
-            <Link href="/shelves/reorganize" asChild>
-              <Button
-                variant="secondary"
-                title="Reorganizar"
-                icon={ArrowRightLeft}
-              />
-            </Link>
-          </>
+          </View>
         }
         search={{
           value: search,
@@ -78,12 +82,14 @@ export default function ShelfList() {
       />
       <ItemList
         toolbar={
-          <InlineSort
-            options={SORTS}
-            sortBy={sort.by}
-            sortDir={sort.dir}
-            onChange={(by, dir) => setSort({ by, dir })}
-          />
+          <View className="items-end flex-1">
+            <InlineSort
+              options={SORTS}
+              sortBy={sort.by}
+              sortDir={sort.dir}
+              onChange={(by, dir) => setSort({ by, dir })}
+            />
+          </View>
         }
         items={list.items}
         loading={list.loading}

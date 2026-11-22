@@ -5,7 +5,7 @@ import {
   FieldError,
   FieldRow,
   FormHeader,
-  FormSection,
+  Panel,
   SplitColumns,
   type Option,
 } from "@/features/shared/components";
@@ -72,21 +72,21 @@ export default function ReorganizeForm() {
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
         <SplitColumns>
-          <FormSection title="Detalles">
+          <Panel title="Detalles">
             <FieldRow
               label="Destino *"
               value={target?.label}
               error={errors.fields.shelfId}
               onPress={() => setEditing("target")}
             />
-          </FormSection>
+          </Panel>
 
-          <FormSection
+          <Panel
             title="Ejemplares"
             lead={
               <Button
-                variant="secondary"
                 title="Agregar"
+                size="sm"
                 onPress={() => setEditing("copies")}
               />
             }
@@ -97,7 +97,7 @@ export default function ReorganizeForm() {
               error={copyError}
               onRemove={removeCopy}
             />
-          </FormSection>
+          </Panel>
         </SplitColumns>
       </ScreenBody>
 

@@ -61,8 +61,8 @@ export default function LabelList() {
   return (
     <>
       <PageHeader
-        title="Tejuelos"
-        subtitle="Etiquetas que identifican cada ejemplar"
+        title="Ejemplares"
+        subtitle="Consulta el estado de las copias físicas"
         search={{
           value: search,
           onChange: setSearch,
@@ -73,13 +73,13 @@ export default function LabelList() {
         toolbar={
           <>
             <View className="flex-row items-center gap-4">
+              <ShelfFilter value={shelfId} onChange={setShelfId} />
+
               <InlineFilter
                 options={FILTERS}
                 value={filter}
                 onChange={setFilter}
               />
-              <View className="w-px self-stretch bg-fg1" />
-              <ShelfFilter value={shelfId} onChange={setShelfId} />
             </View>
             <InlineSort
               options={SORTS}

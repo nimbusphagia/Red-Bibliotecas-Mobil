@@ -22,10 +22,10 @@ export default function ShelfRow({ shelf, onEdit }: Props) {
       />
       <Column variant="actions" width="md">
         {!shelf.isDefault && (
-          <Button variant="secondary" icon={Pencil} onPress={onEdit} />
+          <Button variant="soft" icon={Pencil} onPress={onEdit} />
         )}
         <Link href={`/shelves/${shelf.id}`} asChild>
-          <Button variant="secondary" icon={Eye} />
+          <Button variant="soft" icon={Eye} />
         </Link>
       </Column>
     </ListRow>

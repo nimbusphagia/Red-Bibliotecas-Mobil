@@ -35,7 +35,7 @@ export default function AccountScreen() {
         <Text>{ROLE_LABELS[account.role]}</Text>
       </View>
       <View className="mt-4 w-60">
-        <Button title="Cerrar sesión" variant="secondary" onPress={signOut} />
+        <Button title="Cerrar sesión" variant="soft" onPress={signOut} />
       </View>
       {__DEV__ && (
         <View className="mt-4 w-60 gap-2">

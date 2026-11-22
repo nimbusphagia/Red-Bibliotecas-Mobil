@@ -55,6 +55,7 @@ export function ItemList<T extends { id: number }>({
               renderItem(item)
             )
           }
+          contentContainerClassName="p-1.5"
           columnWrapperStyle={multi ? { gap: 12 } : undefined}
           showsVerticalScrollIndicator={false}
           onEndReached={onEndReached}

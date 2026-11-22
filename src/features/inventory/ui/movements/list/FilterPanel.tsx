@@ -8,13 +8,12 @@ import {
   Dialog,
   DialogHeader,
   SimpleSelect,
-  Text,
 } from "@/features/shared/components";
 import {
   MOVEMENT_REASON_ES,
   MOVEMENT_TYPE_ES,
 } from "@/features/shared/format/translate";
-import { View } from "react-native";
+import { Minimize2 } from "lucide-react-native";
 
 export type MovementFilters = {
   type?: MovementType;
@@ -54,10 +53,15 @@ export default function FilterPanel({
           <>
             <Button
               title="Limpiar"
-              variant="secondary"
+              variant="solid"
               onPress={() => onChange({})}
             />
-            <Button title="Cerrar" onPress={onClose} />
+            <Button
+              variant="accent"
+              icon={Minimize2}
+              weight="md"
+              onPress={onClose}
+            />
           </>
         }
       />

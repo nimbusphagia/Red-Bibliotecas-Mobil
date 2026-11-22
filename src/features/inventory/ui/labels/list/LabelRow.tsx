@@ -1,6 +1,5 @@
 import type { LabelItem } from "@/features/inventory/internal/label/types";
-import { Column, ListRow } from "@/features/shared/components";
-import { StatusBadge } from "@/features/shared/components/base/Badge";
+import { Column, ListRow, StatusBadge } from "@/features/shared/components";
 import {
   PRINT_STATUS_ES,
   shelfLabel,

@@ -35,7 +35,7 @@ export default function ActiveLoans() {
       <View className="flex-row items-center justify-between">
         <Text variant="section">Préstamos pendientes</Text>
         <Link href="/loans" asChild>
-          <Button variant="secondary" title="Ver todos" />
+          <Button variant="soft" title="Ver todos" />
         </Link>
       </View>
 

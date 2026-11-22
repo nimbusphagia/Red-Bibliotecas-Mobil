@@ -9,7 +9,6 @@ type Props = { visitor: VisitorListItem; onEdit: () => void };
 export default function VisitorRow({ visitor, onEdit }: Props) {
   return (
     <ListRow>
-      <Column variant="id" text={`#${visitor.id}`} />
       <Column
         variant="subtitled"
         text={visitor.name}

@@ -10,7 +10,7 @@ import {
   DetailColumns,
   ItemList,
   PageHeader,
-  Text,
+  Panel,
   type DetailColumn,
 } from "@/features/shared/components";
 import { formatDate } from "@/features/shared/format/dates";
@@ -63,16 +63,17 @@ export default function ShelfDetail({ id }: { id: string }) {
     <>
       <PageHeader title={shelfLabel(shelf)} />
       <DetailColumns columns={columns} />
-      <ItemList
-        columns={2}
-        toolbar={<Text variant="section">Ejemplares</Text>}
-        items={list.items}
-        loading={list.loading}
-        onEndReached={list.loadMore}
-        renderItem={(copy) => (
-          <ShelfCopyRow copy={copy} onMove={() => setMoving(copy)} />
-        )}
-      />
+      <Panel title="Ejemplares" className="flex-1">
+        <ItemList
+          columns={2}
+          items={list.items}
+          loading={list.loading}
+          onEndReached={list.loadMore}
+          renderItem={(copy) => (
+            <ShelfCopyRow copy={copy} onMove={() => setMoving(copy)} />
+          )}
+        />
+      </Panel>
       {moving && (
         <MoveCopyDialog
           copy={moving}

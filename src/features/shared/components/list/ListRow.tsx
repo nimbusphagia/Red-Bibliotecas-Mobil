@@ -12,7 +12,7 @@ export function ListRow({ children, compact, className }: Props) {
   return (
     <Surface
       className={cn(
-        "flex-row items-center justify-between gap-3 px-3",
+        "flex-row items-center justify-between gap-6 px-3",
         compact ? "py-1" : "py-2",
         className,
       )}
@@ -28,7 +28,7 @@ const columnWidths = {
 };
 const columnVariants = {
   id: {
-    container: "max-w-[40px] justify-center items-center",
+    container: "min-w-[30px] justify-start items-center",
     text: "text-center",
   },
   subtitled: {
@@ -67,7 +67,7 @@ export function Column({
     <View
       className={cn(
         "flex-row items-center",
-        expand && !width && "flex-1",
+        expand && !width && variant !== "id" && "flex-1",
         variant && columnVariants[variant].container,
         width && ["shrink-0", columnWidths[width]],
         width && variant === "actions" && "justify-end",

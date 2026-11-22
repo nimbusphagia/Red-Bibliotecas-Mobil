@@ -17,24 +17,13 @@ import { Text } from "./Text";
  */
 type Variant = "accent" | "solid" | "soft";
 
-/** @deprecated nombres viejos, migrar a Variant. Se mapean aquí para no romper pantallas pendientes. */
-type LegacyVariant =
-  "softAccent" | "highlight" | "primary" | "secondary" | "ghost";
-const legacy: Record<LegacyVariant, Variant> = {
-  softAccent: "accent",
-  highlight: "solid",
-  primary: "solid",
-  secondary: "soft",
-  ghost: "soft",
-};
-
 type Size = "sm" | "md" | "lg";
 
 type ButtonProps = Omit<PressableProps, "children"> & {
   title?: string;
   icon?: LucideIcon;
   iconTone?: IconTone;
-  variant?: Variant | LegacyVariant;
+  variant?: Variant;
   size?: Size;
   weight?: Size;
   loading?: boolean;
@@ -63,9 +52,7 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-  const name =
-    variant in legacy ? legacy[variant as LegacyVariant] : (variant as Variant);
-  const v = useTone().button[name];
+  const v = useTone().button[variant];
   const s = sizeStyles[size];
 
   return (

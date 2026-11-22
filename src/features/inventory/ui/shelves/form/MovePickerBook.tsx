@@ -2,7 +2,13 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { listCopiesByBook } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { writersOf } from "@/features/loans/ui/options";
-import { Chip, ChipGroup, Icon, Text } from "@/features/shared/components";
+import {
+  Chip,
+  ChipGroup,
+  Icon,
+  Surface,
+  Text,
+} from "@/features/shared/components";
 import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
@@ -46,7 +52,7 @@ export default function MovePickerBook({
   const Chevron = open ? ChevronUp : ChevronDown;
 
   return (
-    <View className="gap-3 rounded-lg border border-fg1 bg-fg2 px-4 py-3 items-center">
+    <Surface inset className="items-center gap-3 px-4 py-3">
       <Pressable
         onPress={() => setOpen((o) => !o)}
         className="flex-row items-center gap-4"
@@ -54,16 +60,16 @@ export default function MovePickerBook({
         <View className="flex-1">
           <Text variant="item">{book.title}</Text>
           <View className="flex-row items-center">
-            <Text variant="caption" className="text-primary">
+            <Text variant="caption">
               {writersOf(book)}
             </Text>
             <Icon icon={Dot} />
-            <Text variant="caption" className="text-primary">
+            <Text variant="caption">
               {book.activeCount}
             </Text>
           </View>
         </View>
-        <Icon icon={Chevron} tone="secondary" />
+        <Icon icon={Chevron} />
       </Pressable>
 
       {open && !copies && <ActivityIndicator />}
@@ -87,6 +93,6 @@ export default function MovePickerBook({
           ))}
         </ChipGroup>
       )}
-    </View>
+    </Surface>
   );
 }

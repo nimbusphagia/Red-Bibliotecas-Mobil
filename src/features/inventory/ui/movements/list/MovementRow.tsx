@@ -26,7 +26,7 @@ export default function MovementRow({ movement }: Props) {
 
       <Column variant="actions" width="sm">
         <Link href={`/stock/${movement.id}`} asChild>
-          <Button variant="secondary" icon={Eye} />
+          <Button variant="soft" icon={Eye} />
         </Link>
       </Column>
     </ListRow>

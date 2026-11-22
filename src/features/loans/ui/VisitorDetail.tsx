@@ -99,8 +99,8 @@ export default function VisitorDetail({ id }: { id: string }) {
       <PageHeader title={`${visitor.name}`} />
       <DetailColumns
         columns={[
-          { title: "Detalles", rows: detailRows },
           { title: "Resumen", rows: summaryRows },
+          { title: "Detalles", rows: detailRows },
         ]}
       />
       <Panel title="Historial de préstamos" className="flex-1">

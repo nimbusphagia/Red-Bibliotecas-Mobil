@@ -11,7 +11,8 @@ import {
   DetailColumns,
   ItemList,
   PageHeader,
-  Text,
+  Panel,
+  StatusIndicator,
   type DetailColumn,
 } from "@/features/shared/components";
 import { formatDate } from "@/features/shared/format/dates";
@@ -77,7 +78,7 @@ export default function MovementDetail({ id }: { id: string }) {
       title: "Préstamo",
       lead: (
         <Link href={`/loans/${loan.id}`} asChild>
-          <Button variant="ghost" size="sm" icon={Eye} />
+          <Button variant="soft" size="sm" icon={Eye} />
         </Link>
       ),
       rows: [
@@ -95,20 +96,21 @@ export default function MovementDetail({ id }: { id: string }) {
     <>
       <PageHeader
         title={`Movimiento #${movement.id}`}
-        lead={<Text variant="item">{MOVEMENT_TYPE_ES[movement.type]}</Text>}
+        lead={<StatusIndicator text={MOVEMENT_TYPE_ES[movement.type]} />}
       />
       <DetailColumns columns={columns} />
       {!loanLine && (
-        <ItemList
-          columns={2}
-          toolbar={<Text variant="section">Ejemplares</Text>}
-          items={list.items}
-          loading={list.loading}
-          onEndReached={list.loadMore}
-          renderItem={(line) => (
-            <MovementLineRow line={line} movementType={movement.type} />
-          )}
-        />
+        <Panel title="Ejemplares" className="flex-1">
+          <ItemList
+            columns={2}
+            items={list.items}
+            loading={list.loading}
+            onEndReached={list.loadMore}
+            renderItem={(line) => (
+              <MovementLineRow line={line} movementType={movement.type} />
+            )}
+          />
+        </Panel>
       )}
     </>
   );

@@ -40,7 +40,7 @@ export default function MoveCopyTable({
           />
           <Column variant="actions" expand={false}>
             <Button
-              variant="secondary"
+              variant="soft"
               icon={Trash}
               onPress={() => onRemove(c.id)}
             />

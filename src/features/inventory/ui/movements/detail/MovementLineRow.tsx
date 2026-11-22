@@ -2,8 +2,12 @@ import type {
   MovementLine,
   MovementType,
 } from "@/features/inventory/internal/movement/types";
-import { Button, Column, ListRow } from "@/features/shared/components";
-import { StatusBadge } from "@/features/shared/components/base/Badge";
+import {
+  Button,
+  Column,
+  ListRow,
+  StatusBadge,
+} from "@/features/shared/components";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
 import { Eye } from "lucide-react-native";
@@ -27,7 +31,7 @@ export default function MovementLineRow({ line, movementType }: Props) {
       <Column variant="actions" width="sm">
         {canOpenBook && (
           <Link href={`/catalog/${line.bookId}`} asChild>
-            <Button variant="secondary" icon={Eye} />
+            <Button variant="soft" icon={Eye} />
           </Link>
         )}
       </Column>
