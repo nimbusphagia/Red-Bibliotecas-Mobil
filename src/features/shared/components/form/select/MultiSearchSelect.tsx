@@ -22,11 +22,11 @@ export function MultiSearchSelect({
   };
 
   return (
-    <View className="gap-2">
+    <View className="gap-4">
       {label && <Text variant="item">{label}</Text>}
       <SearchSelect {...search} onChange={add} />
       {values.length > 0 && (
-        <View className="flex-row flex-wrap justify-center gap-3 pt-3">
+        <View className="flex-row flex-wrap justify-start gap-3 p-4 bg-dark2 rounded-lg ">
           {values.map((o) => (
             <Chip
               key={o.id}

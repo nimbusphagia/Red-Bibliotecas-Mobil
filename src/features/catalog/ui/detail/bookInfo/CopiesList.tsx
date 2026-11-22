@@ -3,13 +3,7 @@ import { Button, Column, ListRow, Text } from "@/features/shared/components";
 import { StatusBadge } from "@/features/shared/components/base/Badge";
 import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import {
-  BookDown,
-  BookSearch,
-  BookUp,
-  ScanSearch,
-  ShelvingUnit,
-} from "lucide-react-native";
+import { BookDown, BookUp, ScanSearch } from "lucide-react-native";
 import { View } from "react-native";
 
 type Props = {
@@ -44,7 +38,7 @@ export default function CopiesList({ copies }: Props) {
             <Column variant="actions" containerClass="justify-start">
               <StatusBadge
                 text={COPY_STATUS_ES[c.status]}
-                variant={isAvailable ? "active" : "pending"}
+                variant={isAvailable ? "finished" : "pending"}
               />
             </Column>
             <Column
@@ -60,7 +54,10 @@ export default function CopiesList({ copies }: Props) {
               </Link>
               {href && (
                 <Link href={href} asChild>
-                  <Button icon={isAvailable ? BookUp : BookDown} />
+                  <Button
+                    variant="soft"
+                    icon={isAvailable ? BookUp : BookDown}
+                  />
                 </Link>
               )}
             </Column>

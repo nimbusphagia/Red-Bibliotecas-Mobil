@@ -118,7 +118,8 @@ export function DialogActions({
         <Button title={cancelTitle} variant="soft" onPress={onCancel} />
       )}
       <Button
-        variant="accent"
+        variant="soft"
+        weight="md"
         title={confirmTitle}
         loading={loading}
         disabled={disabled}

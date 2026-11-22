@@ -1,6 +1,6 @@
 import { getBookItem } from "@/features/catalog/internal/book/service";
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { FieldError, FormHeader, Text } from "@/features/shared/components";
+import { FieldError, FormHeader } from "@/features/shared/components";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";

@@ -5,7 +5,7 @@ import { LabelCodes } from "@/features/inventory/internal/label/types";
 import { Button, DetailColumns, Panel } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";
-import { NotebookPen, PencilLine, Plus, Tag } from "lucide-react-native";
+import { NotebookPen, PencilLine } from "lucide-react-native";
 import { bookDetailRows, bookLabelRows } from "./bookInfo/bookRows";
 import CopiesList from "./bookInfo/CopiesList";
 
@@ -36,12 +36,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
                 }}
                 asChild
               >
-                <Button
-                  title="Editar"
-                  size="md"
-                  weight="md"
-                  icon={PencilLine}
-                />
+                <Button title="Editar" icon={PencilLine} size="sm" />
               </Link>
             ),
             rows: bookDetailRows(book),
@@ -50,7 +45,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
       />
       <Panel
         title="Ejemplares"
-        className="flex-1"
+        className="flex-1 gap-2"
         lead={
           <Link
             href={{
@@ -59,13 +54,7 @@ export default function DetailMain({ book, copies, codes }: Props) {
             }}
             asChild
           >
-            <Button
-              title="Nuevo"
-              size="md"
-              variant="accent"
-              icon={NotebookPen}
-              weight="md"
-            />
+            <Button title="Agregar" icon={NotebookPen} size="sm" />
           </Link>
         }
       >

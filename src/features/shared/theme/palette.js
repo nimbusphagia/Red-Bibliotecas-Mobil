@@ -17,7 +17,7 @@ module.exports = {
     dark3: "#8D8F93",
 
     accent1: "#887FC2",
-    accent2: "#DBD3F5",
+    accent2: "#E7DEFF",
 
     fg1: "#F2ECE9",
     fg2: "#F7F3F0",

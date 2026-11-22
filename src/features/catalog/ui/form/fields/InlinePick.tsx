@@ -27,7 +27,7 @@ export default function InlinePick({
   const options = useOptions(field.load ?? null);
 
   return (
-    <View className="pb-2 gap-1">
+    <View className="my-2 gap-1">
       <SimpleSelect
         label={label}
         options={options}

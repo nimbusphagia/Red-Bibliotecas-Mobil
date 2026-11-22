@@ -18,7 +18,7 @@ export function Chip({
   onPress: () => void;
 }) {
   const textClass = cn(
-    "font-sans-medium",
+    "font-sans-regular",
     selected ? "text-dark2" : "text-white",
   );
 

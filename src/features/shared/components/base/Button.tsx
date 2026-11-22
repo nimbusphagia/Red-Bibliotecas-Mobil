@@ -45,7 +45,7 @@ const sizeStyles: Record<
   Size,
   { withTitle: string; iconOnly: string; icon: IconSize; hit: number }
 > = {
-  sm: { withTitle: "min-h-8 px-3", iconOnly: "size-8", icon: "sm", hit: 6 },
+  sm: { withTitle: "min-h-9 px-4", iconOnly: "size-9", icon: "sm", hit: 6 },
   md: { withTitle: "min-h-9 px-4", iconOnly: "size-9", icon: "md", hit: 0 },
   lg: { withTitle: "min-h-12 px-6", iconOnly: "size-12", icon: "md", hit: 0 },
 };
@@ -90,9 +90,9 @@ export function Button({
         <Text
           variant={size === "sm" ? "itemSm" : "item"}
           className={cn(
-            "font-sans",
             v.label,
             weight === "md" && "font-sans-regular",
+            weight === "lg" && "font-sans-medium",
           )}
         >
           {title}

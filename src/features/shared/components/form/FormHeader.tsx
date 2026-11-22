@@ -1,6 +1,5 @@
 import { Button } from "../base/Button";
 import { PageHeader } from "../base/Header";
-import { Surface } from "../base/Surface";
 
 type Props = {
   title: string;
@@ -23,16 +22,14 @@ export function FormHeader({
 }: Props) {
   return (
     <PageHeader title={title} subtitle={subtitle}>
-      <Surface tone="dark" className="flex-row gap-4 rounded-lg p-2">
-        <Button title="Cancelar" variant="soft" onPress={onCancel} />
-        <Button
-          variant="accent"
-          title={submitTitle}
-          loading={submitting}
-          disabled={!canSubmit}
-          onPress={onSubmit}
-        />
-      </Surface>
+      <Button title="Cancelar" variant="soft" onPress={onCancel} />
+      <Button
+        variant="soft"
+        title={submitTitle}
+        loading={submitting}
+        disabled={!canSubmit}
+        onPress={onSubmit}
+      />
     </PageHeader>
   );
 }

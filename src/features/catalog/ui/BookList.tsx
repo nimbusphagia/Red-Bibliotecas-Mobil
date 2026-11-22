@@ -62,14 +62,10 @@ export default function BookList() {
     <>
       <PageHeader
         title="Libros"
+        subtitle="Cataloga y explora tu biblioteca"
         lead={
           <Link href="/catalog/form" asChild>
-            <Button
-              icon={Plus}
-              size="md"
-              title="Nuevo"
-              weight="md"
-            />
+            <Button icon={Plus} size="sm" title="Nuevo Libro" weight="md" />
           </Link>
         }
         search={{

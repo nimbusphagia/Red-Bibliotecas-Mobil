@@ -38,7 +38,7 @@ export function LabeledItem({
   const t = useTone();
   const input = variant === "input";
   const empty = !content;
-  const cell = `rounded-lg px-2 py-2 ${input && "font-sans-medium"}`;
+  const cell = "rounded-lg px-2 py-2 font-sans-regular";
 
   return (
     <View
@@ -50,10 +50,11 @@ export function LabeledItem({
       )}
     >
       <Text
-        variant="item"
+        variant="itemSm"
         className={cn(
           cell,
           t.tag,
+          input && "text-center",
           labelWidth && labelWidths[labelWidth],
           labelClass,
         )}
@@ -61,17 +62,17 @@ export function LabeledItem({
         {label}
       </Text>
       <Text
-        variant="item"
+        variant="itemSm"
         numberOfLines={1}
         className={cn(
           cell,
           "flex-1 text-right",
-          input && !empty ? "bg-accent2 text-dark1" : t.inset,
+          input && !empty ? "bg-bg text-dark1 text-left" : t.inset,
           empty && !input && "text-dark3",
           contentClass,
         )}
       >
-        {content || ""}
+        {content || (!input && "---")}
       </Text>
     </View>
   );

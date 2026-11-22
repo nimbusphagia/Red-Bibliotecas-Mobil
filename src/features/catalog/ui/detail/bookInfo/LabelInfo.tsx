@@ -28,6 +28,7 @@ export default function LabelInfo({ book, codes }: Props) {
           label={label ?? "---"}
           content={content ?? "---"}
           labelWidth="narrow"
+          labelClass="font-sans-medium"
         />
       ))}
     </View>

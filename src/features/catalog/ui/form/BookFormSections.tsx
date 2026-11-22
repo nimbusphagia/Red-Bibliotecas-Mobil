@@ -11,7 +11,7 @@ export function BookFormSections({ form, onEdit }: Props) {
   return (
     <SplitColumns>
       {form.columns.map((groups, i) => (
-        <View key={i} className="gap-8">
+        <View key={i} className="gap-6">
           {groups.map((g) => (
             <Fragment key={g.title}>
               <Panel title={g.title} tone={g.tone}>

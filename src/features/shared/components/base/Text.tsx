@@ -8,8 +8,8 @@ export type TextVariant =
 const sizes: Record<TextVariant, string> = {
   display: "font-sans-semibold text-[28px]",
   title: "font-sans-medium text-[24px]",
-  section: "font-sans text-[18px]",
-  item: "font-sans text-[14px]",
+  section: "font-sans-regular text-[18px]",
+  item: "font-sans-regular text-[16px]",
   itemSm: "font-sans text-[14px]",
   caption: "font-sans text-[14px]",
 };

@@ -14,13 +14,13 @@ type Props = {
 export function StatusBadge({ text, variant, className }: Props) {
   const t = useTone();
   const variantClass = {
-    active: "bg-accent2 text-dark1",
-    pending: t.tag,
-    finished: cn(t.inset, t.text),
+    active: "text-success",
+    pending: "text-accent1",
+    finished: cn(t.text),
   };
   return (
     <Text
-      variant="caption"
+      variant="itemSm"
       className={cn(
         "overflow-hidden rounded-lg px-3 py-1",
         variantClass[variant],

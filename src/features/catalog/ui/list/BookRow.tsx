@@ -2,7 +2,7 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { Button, Column, ListRow } from "@/features/shared/components";
 import { formatContributors } from "@/features/shared/format/text";
 import { Link } from "expo-router";
-import { BookUp, Eye } from "lucide-react-native";
+import { BookUp, Eye, PencilLine } from "lucide-react-native";
 
 type Props = {
   book: BookListItem;
@@ -12,14 +12,14 @@ export default function BookRow({ book }: Props) {
     <ListRow>
       <Column
         text={book.title}
-        subtitle1={book.publisherName ?? undefined}
-        subtitle2={book.collectionName ?? undefined}
+        subtitle1={book.seriesName ? `"${book.seriesName}"` : undefined}
         variant="subtitled"
-        containerClass="max-w-[300]"
+        containerClass="max-w-[350]"
       />
       <Column
         text={formatContributors(book.collaborators)}
-        subtitle1={book.seriesName ? `"${book.seriesName}"` : undefined}
+        subtitle1={book.publisherName ?? undefined}
+        subtitle2={book.collectionName ?? undefined}
         variant="subtitled"
       />
       <Column
@@ -29,10 +29,10 @@ export default function BookRow({ book }: Props) {
         containerClass="max-w-[150px]"
       />
       <Column variant="actions" expand={false}>
+        <Button variant="soft" icon={PencilLine} />
         <Link href={`/catalog/${book.id}`} asChild>
           <Button variant="soft" icon={Eye} />
         </Link>
-        <Button variant="soft" icon={BookUp} />
       </Column>
     </ListRow>
   );

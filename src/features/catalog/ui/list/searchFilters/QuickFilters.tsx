@@ -50,7 +50,8 @@ export default function QuickFilters({ filters, onOpen }: Props) {
       <View>
         <Button
           variant="solid"
-          weight="md"
+          weight="lg"
+          size="sm"
           iconTone="accent2"
           icon={SlidersHorizontal}
           onPress={() => onOpen("all")}
@@ -68,6 +69,7 @@ export default function QuickFilters({ filters, onOpen }: Props) {
             key={field}
             title={label}
             variant={active ? "accent" : "solid"}
+            size="sm"
             onPress={() => onOpen(field)}
           />
         ))}

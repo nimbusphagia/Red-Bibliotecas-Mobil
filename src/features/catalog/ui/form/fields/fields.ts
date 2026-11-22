@@ -118,7 +118,6 @@ export const COLUMNS: Group[][] = [
     {
       title: "Ejemplares",
       createOnly: true,
-      compact: true,
       fields: [
         {
           key: "quantity",

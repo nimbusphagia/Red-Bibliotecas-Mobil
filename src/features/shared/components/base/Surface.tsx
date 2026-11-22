@@ -20,14 +20,23 @@ type SurfaceProps = PropsWithChildren<
  * Sin `tone` hereda el del padre (útil con `inset`).
  * Contenedores: rounded-2xl. Con `inset`: rounded-lg (es una fila/control).
  */
-export function Surface({ tone, inset, className, children, ...rest }: SurfaceProps) {
+export function Surface({
+  tone,
+  inset,
+  className,
+  children,
+  ...rest
+}: SurfaceProps) {
   const current = useContext(ToneContext);
   const name = tone ?? current;
   const t = tones[name];
   return (
     <ToneContext.Provider value={name}>
       <View
-        className={cn(inset ? [t.inset, "rounded-lg"] : [t.surface, "rounded-2xl"], className)}
+        className={cn(
+          inset ? [t.inset, "rounded-lg"] : [t.surface, "rounded-2xl"],
+          className,
+        )}
         {...rest}
       >
         {children}
@@ -46,7 +55,7 @@ type PanelProps = PropsWithChildren<{
 /** Surface + encabezado. Reemplaza FormSection, Card y el wrapper de DetailColumns. */
 export function Panel({ title, lead, tone, className, children }: PanelProps) {
   return (
-    <Surface tone={tone} className={cn("gap-4 p-5", className)}>
+    <Surface tone={tone} className={cn("gap-2 p-5", className)}>
       {(title || lead) && (
         <View className="min-h-10 flex-row items-center justify-between gap-2">
           {title ? <Text variant="section">{title}</Text> : <View />}
