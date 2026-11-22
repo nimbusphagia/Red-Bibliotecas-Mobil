@@ -2,6 +2,7 @@ import type { Executor } from "@/db/transaction";
 import { LabelConflictError } from "@/features/shared/errors/errors";
 import {
   findBookByLabelPrefixSync,
+  findLabeledCopySync,
   findLabelPrefixSync,
   findSeriesNameSync,
 } from "./repository";
@@ -34,6 +35,7 @@ export function assertLabelAvailableSync(
     lineIndex,
     labelText: mine.prefix,
     conflictingBook: { id: other.id, title: other.title },
+    conflictingCopy: findLabeledCopySync(ex, other.id, mine.prefix) ?? undefined,
     sameSeries,
     suggestedOmitWords: seriesName ? [seriesName] : undefined,
   });

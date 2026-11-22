@@ -1,4 +1,7 @@
-import { CopyStatus } from "@/features/inventory/internal/copy/types";
+import {
+  CopyStatus,
+  MarkFailureReason,
+} from "@/features/inventory/internal/copy/types";
 import type { VisitorRole } from "@/features/loans/internal/visitor/types";
 import type { GRADE_LEVELS } from "@/db/schema";
 import { LineOutcome, LoanState } from "@/features/loans/internal/loan/types";
@@ -58,4 +61,24 @@ export const MOVEMENT_REASON_ES: Record<MovementReason, string> = {
 export const shelfLabel = (shelf: { name: string; isDefault: boolean }) =>
   shelf.isDefault ? "Estantería General" : shelf.name;
 
-export const LABELED_ES = { true: "Etiquetado", false: "Sin etiquetar" } as const;
+export const LABEL_STATE_ES = {
+  pending: "Sin etiquetar",
+  labeled: "Etiquetado",
+  outdated: "Desactualizado",
+} as const;
+
+export const MARK_FAILURE_ES: Record<MarkFailureReason, string> = {
+  not_found: "El ejemplar ya no existe",
+  released: "Está dado de baja (perdido o descartado)",
+  incomplete:
+    "Al libro le falta categoría, subcategoría, escritor o título para armar el tejuelo",
+  conflict: "Otro ejemplar ya tiene ese tejuelo",
+};
+
+export const markFailureText = (f: {
+  reason: MarkFailureReason;
+  conflictingCopyId?: number;
+}) =>
+  f.reason === "conflict" && f.conflictingCopyId !== undefined
+    ? `${MARK_FAILURE_ES.conflict} (#${f.conflictingCopyId})`
+    : MARK_FAILURE_ES[f.reason];

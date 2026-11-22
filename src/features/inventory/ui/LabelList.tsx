@@ -1,6 +1,7 @@
 import type { CopySort } from "@/features/inventory/internal/copy/schemas";
 import { listCopies } from "@/features/inventory/internal/copy/service";
 import {
+  Button,
   InlineFilter,
   InlineSort,
   ItemList,
@@ -12,17 +13,20 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import LabelRow from "./labels/list/LabelRow";
+import { Link } from "expo-router";
+import { Tag } from "lucide-react-native";
 import { View } from "react-native";
 import ShelfFilter from "./labels/list/ShelfFilter";
 
 const PAGE_SIZE = 20;
 
-type StatusFilter = "all" | "labeled" | "pending";
+type StatusFilter = "all" | "labeled" | "pending" | "outdated";
 
 const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Todos" },
   { value: "labeled", label: "Etiquetados" },
   { value: "pending", label: "Sin etiquetar" },
+  { value: "outdated", label: "Desactualizados" },
 ];
 
 const SORTS: SortOption<CopySort>[] = [
@@ -45,7 +49,9 @@ export default function LabelList() {
     (offset: number) =>
       listCopies({
         search: debouncedSearch,
-        labeled: filter === "all" ? undefined : filter === "labeled",
+        labeled:
+          filter === "labeled" ? true : filter === "pending" ? false : undefined,
+        outdated: filter === "outdated" ? true : undefined,
         excludeReleased: true,
         shelfId,
         sortBy: sort.by,
@@ -62,7 +68,12 @@ export default function LabelList() {
     <>
       <PageHeader
         title="Ejemplares"
-        subtitle="Consulta el estado de las copias físicas"
+        subtitle="Controla qué ejemplares ya tienen su tejuelo"
+        lead={
+          <Link href="/labels/mark" asChild>
+            <Button title="Etiquetar" icon={Tag} size="sm" weight="md" />
+          </Link>
+        }
         search={{
           value: search,
           onChange: setSearch,

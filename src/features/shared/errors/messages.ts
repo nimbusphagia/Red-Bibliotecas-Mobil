@@ -69,7 +69,11 @@ export function toFormErrors(error: unknown): FormErrors {
   if (error instanceof LabelConflictError) {
     return {
       fields: {
-        omitWords: `El tejuelo ${error.labelText} ya lo usa «${error.conflictingBook.title}». Omite palabras en común para diferenciarlo.`,
+        omitWords: `El tejuelo ${error.labelText} ya lo usa «${error.conflictingBook.title}»${
+          error.conflictingCopy
+            ? ` (ejemplar #${error.conflictingCopy.id}, ${error.conflictingCopy.labelText})`
+            : ""
+        }. Omite palabras en común para diferenciarlo.`,
       },
       suggestedOmitWords: error.suggestedOmitWords,
     };

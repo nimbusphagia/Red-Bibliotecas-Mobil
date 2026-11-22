@@ -119,6 +119,8 @@ export type LabelConflictDetails = {
   lineIndex?: number;
   labelText: string;
   conflictingBook: { id: number | null; title: string };
+  /** Un ejemplar activo del otro libro, con su tejuelo completo (con número). */
+  conflictingCopy?: { id: number; labelText: string };
   sameSeries: boolean;
   suggestedOmitWords?: string[];
 };
@@ -128,6 +130,7 @@ export class LabelConflictError extends AppError {
   readonly lineIndex?: number;
   readonly labelText: string;
   readonly conflictingBook: { id: number | null; title: string };
+  readonly conflictingCopy?: { id: number; labelText: string };
   readonly sameSeries: boolean;
   readonly suggestedOmitWords?: string[];
 
@@ -136,13 +139,17 @@ export class LabelConflictError extends AppError {
       ? "Both books are in the same series: omit the series name words from the title code."
       : "If the books are related, omit their common words from the title code.";
     const where = d.lineIndex === undefined ? "" : `Line ${d.lineIndex + 1}: `;
+    const copyRef = d.conflictingCopy
+      ? ` (copy #${d.conflictingCopy.id}, ${d.conflictingCopy.labelText})`
+      : "";
     super(
-      `${where}label ${d.labelText} is already used by "${d.conflictingBook.title}". ${hint}`,
+      `${where}label ${d.labelText} is already used by "${d.conflictingBook.title}"${copyRef}. ${hint}`,
     );
     this.name = "LabelConflictError";
     this.lineIndex = d.lineIndex;
     this.labelText = d.labelText;
     this.conflictingBook = d.conflictingBook;
+    this.conflictingCopy = d.conflictingCopy;
     this.sameSeries = d.sameSeries;
     this.suggestedOmitWords = d.suggestedOmitWords;
   }

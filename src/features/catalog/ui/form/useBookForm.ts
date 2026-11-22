@@ -36,11 +36,7 @@ export function useBookForm(book?: BookListItem) {
     .filter(isRequired)
     .every((f) => display(values[f.key]) !== null);
 
-  const isVisible = (f: Field) =>
-    !(f.createOnly && isEdit) &&
-    (f.key !== "omitWords" ||
-      errors.fields.omitWords !== undefined ||
-      values.omitWords !== "");
+  const isVisible = (f: Field) => !(f.createOnly && isEdit);
 
   const set = (patch: Partial<BookFormValues>) =>
     setValues((p) => ({

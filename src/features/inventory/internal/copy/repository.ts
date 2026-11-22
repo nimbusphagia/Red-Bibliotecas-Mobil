@@ -23,7 +23,12 @@ import {
   or,
   sql,
 } from "drizzle-orm";
-import { derivedLabelTextSql, labelTextSql, outdatedSql } from "./sql";
+import {
+  derivedLabelTextSql,
+  labelTextSql,
+  outdatedSql,
+  writersSql,
+} from "./sql";
 import {
   RELEASED_STATUSES,
   type Copy,
@@ -87,6 +92,7 @@ const itemColumns = {
   id: copy.id,
   bookId: copy.bookId,
   bookTitle: book.title,
+  authors: writersSql,
   copyNumber: copy.copyNumber,
   status: copy.status,
   notes: copy.notes,
@@ -222,6 +228,7 @@ export function findLabelCandidatesSync(
       id: copy.id,
       status: copy.status,
       labeledAt: copy.labeledAt,
+      labeledText: copy.labeledText,
       derivedText: derivedLabelTextSql,
     })
     .from(copy)
@@ -230,14 +237,14 @@ export function findLabelCandidatesSync(
     .all();
 }
 
-/** De estos textos, los que ya están pegados en un ejemplar activo. */
+/** De estos textos, los que ya están pegados en un ejemplar activo (y en cuál). */
 export function findLabeledTextsSync(
   ex: Executor,
   texts: string[],
-): Set<string> {
-  if (texts.length === 0) return new Set();
+): Map<string, number> {
+  if (texts.length === 0) return new Map();
   const rows = ex
-    .select({ text: copy.labeledText })
+    .select({ id: copy.id, text: copy.labeledText })
     .from(copy)
     .where(
       and(
@@ -246,7 +253,7 @@ export function findLabeledTextsSync(
       ),
     )
     .all();
-  return new Set(rows.map((r) => r.text!));
+  return new Map(rows.map((r) => [r.text!, r.id]));
 }
 
 export function setCopyLabeledSync(
@@ -258,13 +265,5 @@ export function setCopyLabeledSync(
   ex.update(copy)
     .set({ labeledText: text, labeledAt: new Date(), labeledById: actorId })
     .where(eq(copy.id, id))
-    .run();
-}
-
-export function clearCopiesLabeledSync(ex: Executor, ids: number[]): void {
-  if (ids.length === 0) return;
-  ex.update(copy)
-    .set({ labeledText: null, labeledAt: null, labeledById: null })
-    .where(inArray(copy.id, ids))
     .run();
 }

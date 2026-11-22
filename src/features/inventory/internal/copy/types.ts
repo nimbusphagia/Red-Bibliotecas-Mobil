@@ -40,6 +40,8 @@ export type CopyItem = {
   id: number;
   bookId: number;
   bookTitle: string;
+  /** Escritores del libro; null si no tiene. */
+  authors: string | null;
   copyNumber: number;
   status: CopyStatus;
   notes: string | null;
@@ -65,11 +67,18 @@ export type LabelCandidate = {
   id: number;
   status: CopyStatus;
   labeledAt: Date | null;
+  /** Texto pegado al etiquetar; null si está pendiente. */
+  labeledText: string | null;
   /** Tejuelo derivado hoy; null si al libro le falta algún dato. */
   derivedText: string | null;
 };
 
-export type LabelFailure<R extends string> = { copyId: number; reason: R };
+export type LabelFailure<R extends string> = {
+  copyId: number;
+  reason: R;
+  /** Solo en `conflict`: el ejemplar que ya tiene ese tejuelo. */
+  conflictingCopyId?: number;
+};
 
 export type MarkFailureReason =
   | "not_found"
@@ -78,16 +87,10 @@ export type MarkFailureReason =
   | "conflict";
 
 export type MarkLabeledResult = {
+  /** Etiquetados ahora, incluidos los desactualizados que se volvieron a guardar. */
   labeled: number[];
   alreadyLabeled: number[];
   failed: LabelFailure<MarkFailureReason>[];
-};
-
-export type RelabelFailureReason = "not_found" | "released" | "not_labeled";
-
-export type RelabelResult = {
-  relabeled: number[];
-  failed: LabelFailure<RelabelFailureReason>[];
 };
 
 export type CopyItemRow = Omit<CopyItem, "loan"> & {

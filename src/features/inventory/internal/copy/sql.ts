@@ -1,4 +1,4 @@
-import { copy } from "@/db/schema";
+import { author, book, bookCollaborator, copy } from "@/db/schema";
 import { bookLabelPrefixSql } from "@/features/catalog/internal/book/labelSql";
 import { and, isNotNull, notInArray, sql } from "drizzle-orm";
 import { RELEASED_STATUSES } from "./types";
@@ -24,3 +24,8 @@ export const outdatedSql = sql<boolean>`(${and(
   notInArray(copy.status, [...RELEASED_STATUSES]),
   sql`${copy.labeledText} is not ${derivedLabelTextSql}`,
 )})`.mapWith(Boolean);
+
+/** Escritores del libro, por orden alfabético, separados por coma. */
+export const writersSql = sql<
+  string | null
+>`(select group_concat(w.name, ', ') from (select trim(${author.firstName} || ' ' || coalesce(${author.lastName}, '')) as name from ${bookCollaborator} inner join ${author} on ${author.id} = ${bookCollaborator.collaboratorId} where ${bookCollaborator.bookId} = ${book.id} and ${bookCollaborator.role} = 'writer' order by ${author.nameKey}) w)`;

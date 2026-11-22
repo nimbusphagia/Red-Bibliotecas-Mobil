@@ -12,8 +12,8 @@ import {
   type CopyListParams,
   type LabelCopiesInput,
 } from "./schemas";
-import type { CopyItem, MarkLabeledResult, RelabelResult } from "./types";
-import { markLabeledSync, relabelSync } from "./utils/labeling";
+import type { CopyItem, MarkLabeledResult } from "./types";
+import { markLabeledSync } from "./utils/labeling";
 
 export async function getCopy(id: number): Promise<CopyItem> {
   const validId = parseOrThrow(idSchema, id);
@@ -43,14 +43,4 @@ export async function markCopiesLabeled(
   await requireStockRole(actorId, "label copies");
   const { copyIds } = parseOrThrow(labelCopiesSchema, input);
   return inTransaction((tx) => markLabeledSync(tx, copyIds, actorId));
-}
-
-/** Los vuelve a pendientes: su tejuelo se imprimirá de nuevo con los datos de hoy. */
-export async function relabelCopies(
-  actorId: number,
-  input: LabelCopiesInput,
-): Promise<RelabelResult> {
-  await requireStockRole(actorId, "relabel copies");
-  const { copyIds } = parseOrThrow(labelCopiesSchema, input);
-  return inTransaction((tx) => relabelSync(tx, copyIds));
 }

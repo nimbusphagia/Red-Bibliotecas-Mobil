@@ -104,6 +104,7 @@ export const COLUMNS: Group[][] = [
           error: "subcategoryId",
           load: loadSubcategories,
         },
+        { key: "omitWords", label: "Omitir en tejuelo", kind: "text" },
         {
           key: "shelf",
           required: true,
@@ -127,7 +128,6 @@ export const COLUMNS: Group[][] = [
           min: 1,
           max: 100,
         },
-        { key: "omitWords", label: "Omitir", kind: "text" },
       ],
     },
   ],

@@ -365,6 +365,38 @@ export function findBookByLabelPrefixSync(
   );
 }
 
+/**
+ * Un ejemplar activo del libro (el de menor número) con su tejuelo completo:
+ * el pegado, o el prefijo dado más su número si aún está pendiente.
+ */
+export function findLabeledCopySync(
+  ex: Executor,
+  bookId: number,
+  prefix: string,
+): { id: number; labelText: string } | null {
+  const row = ex
+    .select({
+      id: copy.id,
+      copyNumber: copy.copyNumber,
+      labeledText: copy.labeledText,
+    })
+    .from(copy)
+    .where(
+      and(
+        eq(copy.bookId, bookId),
+        notInArray(copy.status, [...RELEASED_STATUSES]),
+      ),
+    )
+    .orderBy(copy.copyNumber)
+    .limit(1)
+    .get();
+  if (!row) return null;
+  return {
+    id: row.id,
+    labelText: row.labeledText ?? `${prefix}-${row.copyNumber}`,
+  };
+}
+
 export function findSeriesNameSync(ex: Executor, id: number): string | null {
   return (
     ex.select({ name: series.name }).from(series).where(eq(series.id, id)).get()
