@@ -1,6 +1,7 @@
+import type { LucideIcon } from "lucide-react-native";
 import { View } from "react-native";
-import { cn, useTone } from "../../theme";
-import { IconTone } from "./Icon";
+import { cn, status, useTone } from "../../theme";
+import { Icon } from "./Icon";
 import { Text } from "./Text";
 
 type Variant = "active" | "pending" | "finished";
@@ -13,9 +14,9 @@ type Props = {
 export function StatusBadge({ text, variant, className }: Props) {
   const t = useTone();
   const variantClass = {
-    active: "text-success",
-    pending: "text-warning",
-    finished: cn(t.text),
+    active: status.success.text,
+    pending: status.warning.text,
+    finished: t.text,
   };
   return (
     <Text
@@ -31,9 +32,12 @@ export function StatusBadge({ text, variant, className }: Props) {
   );
 }
 
-export function StatusIndicator({ text }: { text: string; tone?: IconTone }) {
+type IndicatorProps = { text: string; icon?: LucideIcon };
+
+export function StatusIndicator({ text, icon }: IndicatorProps) {
   return (
     <View className="flex-row items-center gap-2">
+      {icon && <Icon icon={icon} size="lg" />}
       <Text variant="item">{text}</Text>
     </View>
   );

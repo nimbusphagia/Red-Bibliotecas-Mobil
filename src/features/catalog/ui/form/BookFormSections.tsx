@@ -1,4 +1,5 @@
-import { Panel, SplitColumns } from "@/features/shared/components";
+import { Icon, Panel, SplitColumns, Text } from "@/features/shared/components";
+import { Info } from "lucide-react-native";
 import { Fragment } from "react";
 import { View } from "react-native";
 import { BookFormField } from "./fields/BookFormField";
@@ -24,6 +25,14 @@ export function BookFormSections({ form, onEdit }: Props) {
                     onEdit={onEdit}
                   />
                 ))}
+                {g.description && (
+                  <View className="mt-2 flex-row items-center gap-2">
+                    <Icon icon={Info} size="md" tone="faint" />
+                    <Text variant="captionXs" className="flex-1">
+                      {g.description}
+                    </Text>
+                  </View>
+                )}
               </Panel>
             </Fragment>
           ))}

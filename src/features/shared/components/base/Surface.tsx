@@ -75,7 +75,7 @@ export function Panel({
   return (
     <Surface tone={tone} className={cn("gap-2 p-5", className)}>
       {(title || lead) && (
-        <View className="min-h-10 flex-row items-center justify-between gap-4">
+        <View className="mb-2 flex-row items-center justify-between gap-4">
           {title ? (
             <Text variant="section" className={titleClassName}>
               {title}
@@ -83,7 +83,11 @@ export function Panel({
           ) : (
             <View />
           )}
-          {lead}
+          {/* Margen negativo: el lead (p. ej. un botón) no agranda el encabezado,
+              así el título queda igual con o sin acción. */}
+          {lead && (
+            <View className="-my-2 flex-1 flex-row justify-end">{lead}</View>
+          )}
         </View>
       )}
       {children}

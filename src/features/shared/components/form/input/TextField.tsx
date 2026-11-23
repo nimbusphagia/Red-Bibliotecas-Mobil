@@ -2,7 +2,7 @@ import type { Ref } from "react";
 import { useState } from "react";
 import type { TextInputInstance, TextInputProps } from "react-native";
 import { Pressable, TextInput, View } from "react-native";
-import { cn, colors, useTone } from "../../../theme";
+import { cn, colors, status, useTone } from "../../../theme";
 import { Text } from "../../base/Text";
 import { FieldError } from "../FieldError";
 
@@ -40,7 +40,7 @@ export function TextField({
             "h-12 rounded-lg border px-4 font-sans",
             t.inset,
             t.text,
-            error ? "border-error" : ["border-transparent", t.accent.focus],
+            error ? status.error.border : ["border-transparent", t.accent.focus],
             secureTextEntry && "pr-24",
             className,
           )}

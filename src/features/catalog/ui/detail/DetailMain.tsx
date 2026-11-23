@@ -45,7 +45,12 @@ export default function DetailMain({
                 }}
                 asChild
               >
-                <Button title="Editar" icon={PencilLine} size="sm" />
+                <Button
+                  title="Editar"
+                  icon={PencilLine}
+                  size="sm"
+                  weight="md"
+                />
               </Link>
             ),
             rows: bookDetailRows(book),
@@ -61,6 +66,7 @@ export default function DetailMain({
             className="gap-3"
             icon={Plus}
             size="sm"
+            weight="md"
             onPress={() => setAdding(true)}
           />
         }

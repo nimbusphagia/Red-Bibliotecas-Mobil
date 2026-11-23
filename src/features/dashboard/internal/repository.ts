@@ -4,6 +4,7 @@ import { RELEASED_STATUSES } from "@/features/inventory/internal/copy/types";
 import {
   and,
   asc,
+  between,
   count,
   countDistinct,
   eq,
@@ -38,7 +39,7 @@ export async function countOpenLoans(today: string, soon: string) {
   return row;
 }
 
-export function listOldestOverdue(today: string, limit: number) {
+function listOpenLoansByExpiry(where: SQL | undefined, limit: number) {
   return db
     .select({
       id: loanMovement.id,
@@ -48,11 +49,17 @@ export function listOldestOverdue(today: string, limit: number) {
     .from(loanMovement)
     .innerJoin(visitor, eq(visitor.id, loanMovement.loanedToId))
     .innerJoin(loanMovementLine, openLineOfLoan)
-    .where(lt(loanMovement.expiresBy, today))
+    .where(where)
     .groupBy(loanMovement.id)
     .orderBy(asc(loanMovement.expiresBy), asc(loanMovement.id))
     .limit(limit);
 }
+
+export const listOldestOverdue = (today: string, limit: number) =>
+  listOpenLoansByExpiry(lt(loanMovement.expiresBy, today), limit);
+
+export const listDueSoon = (today: string, soon: string, limit: number) =>
+  listOpenLoansByExpiry(between(loanMovement.expiresBy, today, soon), limit);
 
 export function countHeldCopies() {
   return db

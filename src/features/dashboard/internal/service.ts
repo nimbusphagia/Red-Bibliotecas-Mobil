@@ -4,15 +4,17 @@ import * as repo from "./repository";
 import type { DashboardSummary, HeldStatus } from "./types";
 
 const DUE_SOON_DAYS = 7;
-const OVERDUE_PREVIEW = 3;
+const PREVIEW = 3;
 
 export async function getDashboardSummary(): Promise<DashboardSummary> {
   const today = toISODate();
+  const soon = addDays(today, DUE_SOON_DAYS);
   const yearStart = startOfYear(new Date());
 
-  const [loans, oldestOverdue, held, months] = await Promise.all([
-    repo.countOpenLoans(today, addDays(today, DUE_SOON_DAYS)),
-    repo.listOldestOverdue(today, OVERDUE_PREVIEW),
+  const [loans, oldestOverdue, nextDue, held, months] = await Promise.all([
+    repo.countOpenLoans(today, soon),
+    repo.listOldestOverdue(today, PREVIEW),
+    repo.listDueSoon(today, soon, PREVIEW),
     repo.countHeldCopies(),
     repo.countLoanLinesByMonth(yearStart, addYears(yearStart, 1)),
   ]);
@@ -22,9 +24,11 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     on_loan: 0,
     damaged: 0,
   };
+  let total = 0;
   let unlabeled = 0;
   for (const row of held) {
     copies[row.status as HeldStatus] = row.n;
+    total += row.n;
     unlabeled += row.unlabeled;
   }
 
@@ -37,7 +41,9 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
   return {
     ...loans,
     oldestOverdue,
+    nextDue,
     unlabeled,
+    labeled: total - unlabeled,
     copies,
     monthlyLoans,
   };

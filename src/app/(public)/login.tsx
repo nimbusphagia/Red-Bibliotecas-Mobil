@@ -4,7 +4,7 @@ import {
   TextField,
   Button,
   FieldError,
-} from "@/features/shared/components/";
+} from "@/features/shared/components";
 
 import { Image } from "expo-image";
 import { useRef, useState } from "react";

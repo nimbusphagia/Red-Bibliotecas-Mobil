@@ -44,6 +44,7 @@ export function BookFormField({ field: f, form, compact, onEdit }: Props) {
         (f.key === "series" && !hasAuthors)
       }
       onPress={() => onEdit(f)}
+      labelWidth={f.labelWidth}
       className={compact ? "w-[50%]" : undefined}
       contentClass={compact ? "flex-1 text-center" : undefined}
     />

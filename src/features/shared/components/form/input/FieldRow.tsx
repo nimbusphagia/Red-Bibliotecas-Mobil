@@ -1,6 +1,6 @@
 import { Pressable, View } from "react-native";
-import { cn } from "../../../theme";
-import { LabeledItem } from "../../list/LabeledItem";
+import { cn, status } from "../../../theme";
+import { LabeledItem, type LabelWidth } from "../../list/LabeledItem";
 import { FieldError } from "../FieldError";
 
 type Props = {
@@ -11,6 +11,7 @@ type Props = {
   error?: string;
   className?: string;
   contentClass?: string;
+  labelWidth?: LabelWidth;
 };
 
 export function FieldRow({
@@ -21,6 +22,7 @@ export function FieldRow({
   error,
   className,
   contentClass,
+  labelWidth = "form",
 }: Props) {
   return (
     <View className="gap-1">
@@ -33,8 +35,8 @@ export function FieldRow({
           variant="input"
           label={label}
           content={value}
-          labelWidth="form"
-          className={cn(error && "border border-error", className)}
+          labelWidth={labelWidth}
+          className={cn(error && ["border", status.error.border], className)}
           contentClass={contentClass}
         />
       </Pressable>

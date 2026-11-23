@@ -5,12 +5,14 @@ import { ArrowUpRight, type LucideIcon } from "lucide-react-native";
 import type { PropsWithChildren } from "react";
 import { Pressable, View } from "react-native";
 
+const HEADER = "font-sans text-[15px]";
+
 type Props = PropsWithChildren<{
   title: string;
   icon: LucideIcon;
-  value: number;
+  /** Total junto al título. */
+  value?: number;
   href: Href;
-  dark?: boolean;
   className?: string;
 }>;
 
@@ -19,29 +21,28 @@ export default function MetricCard({
   icon,
   value,
   href,
-  dark,
   className,
   children,
 }: Props) {
   return (
     <Link href={href} asChild>
       <Pressable className={cn("active:opacity-80", className)}>
-        <Surface tone={dark ? "dark" : undefined} className="grow gap-3 p-4">
+        <Surface className="grow gap-3 p-4">
           <View className="flex-row items-center justify-between">
             <View className="flex-row gap-2 items-center">
               <Icon icon={icon} size="sm" stroke="md" />
-              <Text variant="item" className="font-sans text-[15px]">
+              <Text variant="item" className={HEADER}>
                 {title}
               </Text>
+              {value !== undefined && (
+                <Text variant="item" className={HEADER}>
+                  {value}
+                </Text>
+              )}
             </View>
             <Icon icon={ArrowUpRight} size="md" stroke="sm" />
           </View>
-          <View className="flex-row items-center justify-between gap-4">
-            <Text variant="display" className="min-w-[30]">
-              {value}
-            </Text>
-            <View className="flex-1 gap-0.5">{children}</View>
-          </View>
+          <View className="gap-1.5">{children}</View>
         </Surface>
       </Pressable>
     </Link>

@@ -29,7 +29,6 @@ export function FormHeader({
       <Button title="Cancelar" variant="soft" onPress={onCancel} />
       {extra}
       <Button
-        variant="soft"
         title={submitTitle}
         loading={submitting}
         disabled={!canSubmit}

@@ -24,9 +24,10 @@ import { Text } from "./Text";
 
 const AnimatedSurface = Animated.createAnimatedComponent(Surface);
 
-type DialogSize = "md" | "lg";
+type DialogSize = "sm" | "md" | "lg";
 
 const sizeStyles: Record<DialogSize, string> = {
+  sm: "w-[400px]",
   md: "w-[480px]",
   lg: "h-[70%] w-[560px]",
 };
@@ -143,6 +144,7 @@ type ActionsProps = {
   cancelTitle?: string;
   loading?: boolean;
   disabled?: boolean;
+  className?: string;
 };
 
 export function DialogActions({
@@ -152,9 +154,12 @@ export function DialogActions({
   cancelTitle = "Cancelar",
   loading,
   disabled,
+  className,
 }: ActionsProps) {
   return (
-    <View className="flex-row items-center justify-end gap-2">
+    <View
+      className={cn("flex-row items-center justify-end gap-2", className)}
+    >
       {onCancel && (
         <Button title={cancelTitle} variant="soft" onPress={onCancel} />
       )}

@@ -57,14 +57,18 @@ export default function AddCopiesDialog({
 
   return (
     <Dialog onClose={onClose}>
-      <DialogHeader title="Agregar ejemplares" subtitle={bookTitle} />
+      <DialogHeader title={bookTitle} />
       <DialogBody className="max-h-72">
         <TextField
           label="Cantidad"
           value={quantity}
           onChangeText={(t) => setQuantity(t.replace(/\D/g, ""))}
           keyboardType="number-pad"
-          helperText={`Entre 1 y ${MAX_COPIES_PER_BOOK}`}
+          error={
+            amount > MAX_COPIES_PER_BOOK
+              ? `Entre 1 y ${MAX_COPIES_PER_BOOK}`
+              : undefined
+          }
           onSubmitEditing={confirm}
           autoFocus
         />

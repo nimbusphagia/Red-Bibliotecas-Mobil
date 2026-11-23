@@ -3,26 +3,36 @@ import { getLoan, listLoanLines } from "@/features/loans/internal/loan/service";
 import type {
   LoanLine,
   LoanListItem,
+  LoanState,
 } from "@/features/loans/internal/loan/types";
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
+  Button,
   DetailColumns,
   PageHeader,
   Panel,
   StatusIndicator,
   type DetailRow,
 } from "@/features/shared/components";
-import { formatISO } from "@/features/shared/format/dates";
+import { formatDateES } from "@/features/shared/format/dates";
 import {
   gradeLabel,
   LOAN_STATE_ES,
   ROLE_ES,
 } from "@/features/shared/format/translate";
 import { routeIdSchema } from "@/features/shared/types/schemas";
-import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
-import { ActivityIndicator } from "react-native";
+import { useFocusData } from "@/features/shared/hooks/useFocusData";
+import { Link } from "expo-router";
+import {
+  CalendarClock,
+  CircleCheck,
+  CircleDashedCheck,
+  UserRoundSearch,
+  type LucideIcon,
+} from "lucide-react-native";
+import { useCallback } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { loanStateOf } from "../internal/loan/rules";
 import LoanLines from "./loans/detail/LoanLines";
 import { loanDetailRows } from "./loans/detail/loanRows";
@@ -30,24 +40,24 @@ import { ScreenBody } from "@/features/shared/layout/Screen";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
 
+const STATE_ICON: Record<LoanState, LucideIcon> = {
+  open: CircleDashedCheck,
+  overdue: CalendarClock,
+  closed: CircleCheck,
+};
+
 export default function LoanDetail({ id }: { id: string }) {
-  const [data, setData] = useState<Data | null>(null);
   const session = useSession();
-
-  const load = useCallback(async () => {
-    const loanId = routeIdSchema.parse(id);
-    const loan = await getLoan(loanId);
-    const [page, visitor] = await Promise.all([
-      listLoanLines({ loanId, limit: 100 }),
-      getVisitorItem(loan.loanedToId),
-    ]);
-    setData({ loan, lines: page.items, visitor });
-  }, [id]);
-
-  useFocusEffect(
-    useCallback(() => {
-      load();
-    }, [load]),
+  const { data, reload } = useFocusData(
+    useCallback(async (): Promise<Data> => {
+      const loanId = routeIdSchema.parse(id);
+      const loan = await getLoan(loanId);
+      const [page, visitor] = await Promise.all([
+        listLoanLines({ loanId, limit: 100 }),
+        getVisitorItem(loan.loanedToId),
+      ]);
+      return { loan, lines: page.items, visitor };
+    }, [id]),
   );
 
   if (!data) return <ActivityIndicator />;
@@ -55,6 +65,7 @@ export default function LoanDetail({ id }: { id: string }) {
   if (session.status !== "signed-in") return null;
 
   const { loan, lines, visitor } = data;
+  const state = loanStateOf(loan);
 
   const visitorRows: DetailRow[] = [
     { label: "Nombre", content: visitor.name },
@@ -71,31 +82,51 @@ export default function LoanDetail({ id }: { id: string }) {
 
   return (
     <>
-      <PageHeader
-        title={`Préstamo #${loan.id}`}
-        lead={<StatusIndicator text={LOAN_STATE_ES[loanStateOf(loan)]} />}
-      />
+      <PageHeader title={`Préstamo #${loan.id}`}>
+        <View className="flex-1 flex-row">
+          <StatusIndicator
+            text={LOAN_STATE_ES[state]}
+            icon={STATE_ICON[state]}
+          />
+        </View>
+      </PageHeader>
       <ScreenBody>
         <DetailColumns
           columns={[
             { title: "Detalles", rows: loanDetailRows(loan) },
-            { title: "Prestado a", rows: visitorRows },
+            {
+              title: "Prestado a",
+              lead: (
+                <Link href={`/visitors/${visitor.id}`} asChild>
+                  <Button
+                    title="Ver detalles"
+                    icon={UserRoundSearch}
+                    size="sm"
+                    weight="md"
+                  />
+                </Link>
+              ),
+              rows: visitorRows,
+            },
           ]}
         />
         <Panel
           title="Ejemplares"
           className="flex-1"
           lead={
-            <StatusIndicator
-              text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
-            />
+            <View className="flex-1 flex-row">
+              <StatusIndicator
+                text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
+              />
+            </View>
           }
         >
           <LoanLines
             lines={lines}
-            expiresBy={formatISO(loan.expiresBy)}
+            expiresBy={formatDateES(loan.expiresBy)}
+            overdue={loan.overdue}
             actorId={session.account.id}
-            onChanged={load}
+            onChanged={reload}
           />
         </Panel>
       </ScreenBody>

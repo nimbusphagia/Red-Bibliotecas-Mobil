@@ -1,20 +1,40 @@
-import type { DashboardSummary } from "@/features/dashboard/internal/types";
-import { Text } from "@/features/shared/components";
+import type {
+  DashboardSummary,
+  LoanPreview,
+} from "@/features/dashboard/internal/types";
+import { Surface, Text } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { cn } from "@/features/shared/theme";
-import { CalendarClock, Flag, Stamp, Tag } from "lucide-react-native";
+import { CalendarClock, Flag, Stamp } from "lucide-react-native";
 import { View } from "react-native";
 import MetricCard from "./MetricCard";
 
 const UP_TO_DATE = "Al día";
 
-function Caption({ n, text }: { n: number; text: string }) {
+function StatRow({ label, value }: { label: string; value: string | number }) {
   return (
-    <Text variant="caption" className="text-[13px]">
-      {n > 0 ? text : UP_TO_DATE}
-    </Text>
+    <Surface
+      row
+      className="flex-row items-center justify-between gap-2 px-3 py-1.5"
+    >
+      <Text variant="itemSm" numberOfLines={1} className="shrink">
+        {label}
+      </Text>
+      <Text variant="caption">{value}</Text>
+    </Surface>
   );
+}
+
+function LoanPreviews({ loans }: { loans: LoanPreview[] }) {
+  if (loans.length === 0) return <Text variant="caption">{UP_TO_DATE}</Text>;
+  return loans.map((l) => (
+    <StatRow
+      key={l.id}
+      label={l.visitorName}
+      value={formatDateES(l.expiresBy)}
+    />
+  ));
 }
 
 export default function Metrics({ summary: s }: { summary: DashboardSummary }) {
@@ -27,39 +47,28 @@ export default function Metrics({ summary: s }: { summary: DashboardSummary }) {
         title="Vencidos"
         icon={Flag}
         value={s.overdue}
-        href="/loans"
+        href="/loans?state=overdue"
         className={card}
       >
-        {s.oldestOverdue.length === 0 ? (
-          <Text variant="caption">{UP_TO_DATE}</Text>
-        ) : (
-          s.oldestOverdue.map((l) => (
-            <View key={l.id} className="flex-row gap-2">
-              <Text variant="itemSm" numberOfLines={1} className="flex-1">
-                {l.visitorName}
-              </Text>
-              <Text variant="caption">{formatDateES(l.expiresBy)}</Text>
-            </View>
-          ))
-        )}
+        <LoanPreviews loans={s.oldestOverdue} />
       </MetricCard>
       <MetricCard
         title="Vencen pronto"
         icon={CalendarClock}
         value={s.dueSoon}
-        href="/loans"
+        href="/loans?state=open"
         className={card}
       >
-        <Caption n={s.dueSoon} text="En los próximos 7 días" />
+        <LoanPreviews loans={s.nextDue} />
       </MetricCard>
       <MetricCard
-        title="Sin tejuelo"
+        title="Tejuelos"
         icon={Stamp}
-        value={s.unlabeled}
         href="/copies/mark"
         className={card}
       >
-        <Caption n={s.unlabeled} text="Ejemplares por etiquetar" />
+        <StatRow label="Sin etiquetar" value={s.unlabeled} />
+        <StatRow label="Ejemplares etiquetados" value={s.labeled} />
       </MetricCard>
     </View>
   );

@@ -59,7 +59,7 @@ export default function Account() {
                 { label: "Rol", content: ACCOUNT_ROLE_ES[account.role] },
                 {
                   label: "Miembro desde",
-                  content: formatDateES(account.createdAt, true),
+                  content: formatDateES(account.createdAt),
                 },
               ],
             },

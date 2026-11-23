@@ -1,4 +1,4 @@
-import type { Option } from "@/features/shared/components";
+import type { LabelWidth, Option } from "@/features/shared/components";
 import type { Tone } from "@/features/shared/theme";
 import {
   loadCategories,
@@ -15,6 +15,7 @@ export type Field = {
   required?: true | "create";
   lockable?: boolean;
   inline?: boolean;
+  labelWidth?: LabelWidth;
   error?: string;
   createOnly?: true;
   min?: number;
@@ -25,6 +26,7 @@ export type Field = {
 
 export type Group = {
   title: string;
+  description?: string;
   /** "dark" para una sección de fondo dark1; el contenido se adapta solo. */
   tone?: Tone;
   createOnly?: boolean;
@@ -77,6 +79,20 @@ export const COLUMNS: Group[][] = [
         },
       ],
     },
+    {
+      title: "Tejuelo",
+      createOnly: true,
+      description:
+        'En "Harry Potter y la piedra filosofal", omitir "Harry Potter" cambia el código de HAR a PIE.',
+      fields: [
+        {
+          key: "omitWords",
+          label: "Palabras a omitir",
+          kind: "text",
+          labelWidth: "fit",
+        },
+      ],
+    },
   ],
   [
     {
@@ -102,7 +118,6 @@ export const COLUMNS: Group[][] = [
           error: "subcategoryId",
           load: loadSubcategories,
         },
-        { key: "omitWords", label: "Omitir en tejuelo", kind: "text" },
         {
           key: "shelf",
           required: true,

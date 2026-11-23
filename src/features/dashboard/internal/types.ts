@@ -7,7 +7,7 @@ export type HeldStatus = Exclude<CopyStatus, ReleasedStatus>;
 
 export type MonthCount = { month: Date; count: number };
 
-export type OverdueLoan = {
+export type LoanPreview = {
   id: number;
   visitorName: string;
   expiresBy: string;
@@ -16,8 +16,10 @@ export type OverdueLoan = {
 export type DashboardSummary = {
   overdue: number;
   dueSoon: number;
-  oldestOverdue: OverdueLoan[];
+  oldestOverdue: LoanPreview[];
+  nextDue: LoanPreview[];
   unlabeled: number;
+  labeled: number;
   copies: Record<HeldStatus, number>;
   monthlyLoans: MonthCount[];
 };

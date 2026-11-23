@@ -39,11 +39,11 @@ export function useBookFields(
   const isRequired = (f: Field) =>
     f.required === true || (f.required === "create" && !isEdit);
 
-  const canSubmit = fields
-    .filter(isRequired)
-    .every((f) => display(values[f.key]) !== null);
-
   const isVisible = (f: Field) => !(f.createOnly && isEdit);
+
+  const canSubmit = fields
+    .filter((f) => isVisible(f) && isRequired(f))
+    .every((f) => display(values[f.key]) !== null);
 
   const set = (patch: Partial<BookFormValues>) =>
     setValues((p) => ({

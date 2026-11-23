@@ -107,7 +107,7 @@ export const tones: Record<Tone, ToneStyle> = {
     accentFg: "darkSolid",
     button: {
       accent: accentLight,
-      solid: { box: "bg-bg", label: "text-darkSolid", icon: "darkSolid" },
+      solid: { box: "bg-darkSolid", label: "text-light1", icon: "light1" },
       soft: { box: "bg-bg", label: "text-dark1", icon: "dark1" },
       selector: selectorLight,
     },
@@ -138,6 +138,25 @@ export const tones: Record<Tone, ToneStyle> = {
     },
   },
 };
+
+type Status = { text: string; bg: string; border?: string; icon: ColorName };
+
+/**
+ * Colores con significado (estado). No dependen del tono: se ven igual sobre
+ * cualquier superficie.
+ */
+export const status: Record<"success" | "info" | "warning" | "error", Status> =
+  {
+    success: { text: "text-success", bg: "bg-success", icon: "success" },
+    info: { text: "text-secondary", bg: "bg-secondary", icon: "secondary" },
+    warning: { text: "text-warning", bg: "bg-warning", icon: "warning" },
+    error: {
+      text: "text-error",
+      bg: "bg-error",
+      border: "border-error",
+      icon: "error",
+    },
+  };
 
 // Sin Surface arriba, lo que se dibuja está sobre el lienzo de la página.
 export const ToneContext = createContext<Tone>("canvas");

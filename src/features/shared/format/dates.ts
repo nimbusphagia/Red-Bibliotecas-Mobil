@@ -23,12 +23,22 @@ export const formatISO = (iso: string) => iso.split("-").reverse().join("/");
 export const formatDate = (d: Date) =>
   `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 
-export const formatDateES = (input: string | Date, full?: boolean) => {
+// "2025-03-12" con new Date() se lee como medianoche UTC: en Perú da el día anterior.
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * "12 de marzo". El año se agrega solo si no es el actual; `year` lo fuerza
+ * (true) o lo quita (false).
+ */
+export const formatDateES = (input: string | Date, year?: boolean) => {
   const date =
-    input instanceof Date && !Number.isNaN(input.getTime())
+    typeof input !== "string"
       ? input
-      : new Date(input);
-  return format(date, `d 'de' MMMM ${full ? "yyyy" : ""}`, {
+      : ISO_DATE.test(input)
+        ? parseISODate(input)
+        : new Date(input);
+  const withYear = year ?? date.getFullYear() !== new Date().getFullYear();
+  return format(date, withYear ? "d 'de' MMMM yyyy" : "d 'de' MMMM", {
     locale: es,
   });
 };

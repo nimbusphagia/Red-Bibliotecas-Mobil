@@ -18,10 +18,10 @@ import {
 } from "@/features/shared/components";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
 import { PAGE_SIZE } from "@/features/shared/hooks/useListControls";
+import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import type { SortDirection } from "@/features/shared/types/types";
-import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import VisitorLineRow from "./visitors/detail/VisitorLineRow";
@@ -43,16 +43,16 @@ const SORTS: SortOption<"createdAt">[] = [
 
 export default function VisitorDetail({ id }: { id: string }) {
   const visitorId = routeIdSchema.parse(id);
-  const [data, setData] = useState<Data | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");
 
-  useFocusEffect(
-    useCallback(() => {
-      Promise.all([
+  const { data } = useFocusData(
+    useCallback(async (): Promise<Data> => {
+      const [visitor, status] = await Promise.all([
         getVisitorItem(visitorId),
         getVisitorLoanStatus(visitorId),
-      ]).then(([visitor, status]) => setData({ visitor, status }));
+      ]);
+      return { visitor, status };
     }, [visitorId]),
   );
 

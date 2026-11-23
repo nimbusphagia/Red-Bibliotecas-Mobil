@@ -1,13 +1,13 @@
 import type { HeldStatus } from "@/features/dashboard/internal/types";
 import { Panel, Surface, Text } from "@/features/shared/components";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
-import { cn } from "@/features/shared/theme";
+import { cn, status } from "@/features/shared/theme";
 import { View } from "react-native";
 
 const SEGMENTS: { status: HeldStatus; color: string }[] = [
-  { status: "available", color: "bg-success" },
-  { status: "on_loan", color: "bg-secondary" },
-  { status: "damaged", color: "bg-warning" },
+  { status: "available", color: status.success.bg },
+  { status: "on_loan", color: status.info.bg },
+  { status: "damaged", color: status.warning.bg },
 ];
 
 export default function CollectionStatus({
@@ -38,7 +38,7 @@ export default function CollectionStatus({
         {SEGMENTS.map((s) => (
           <View key={s.status} className="flex-row items-center gap-2">
             <View className={cn("size-2.5 rounded-full", s.color)} />
-            <Text variant="itemSm" className="flex-1 text-[13px]">
+            <Text variant="itemXs" className="flex-1">
               {COPY_STATUS_ES[s.status]}
             </Text>
             <Text variant="itemSm" className="text-[12px]">

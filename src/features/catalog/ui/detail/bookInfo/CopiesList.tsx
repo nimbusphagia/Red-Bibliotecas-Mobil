@@ -1,6 +1,6 @@
 import { CopyItem } from "@/features/inventory/internal/copy/types";
 import { Button, Column, ListRow, Text } from "@/features/shared/components";
-import { StatusBadge } from "@/features/shared/components/base/Badge";
+import { StatusBadge } from "@/features/shared/components";
 import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
 import { ArrowDown, ArrowUp, ScanSearch } from "lucide-react-native";

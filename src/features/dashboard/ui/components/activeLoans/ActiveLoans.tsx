@@ -1,8 +1,5 @@
 import { listLoans } from "@/features/loans/internal/loan/service";
-import type {
-  LoanListItem,
-  LoanState,
-} from "@/features/loans/internal/loan/types";
+import type { LoanState } from "@/features/loans/internal/loan/types";
 import LoanRow from "@/features/loans/ui/loans/list/LoanRow";
 import {
   Button,
@@ -10,7 +7,8 @@ import {
   Panel,
   Text,
 } from "@/features/shared/components";
-import { Link, useFocusEffect } from "expo-router";
+import { useFocusData } from "@/features/shared/hooks/useFocusData";
+import { Link } from "expo-router";
 import { ArrowUpRight } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
@@ -25,26 +23,18 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 export default function ActiveLoans() {
-  const [loans, setLoans] = useState<LoanListItem[]>();
   const [filter, setFilter] = useState<Filter>("open");
-
-  useFocusEffect(
-    useCallback(() => {
-      let stale = false;
-      listLoans({
-        state: filter,
-        sortBy: "expiresBy",
-        sortDir: "asc",
-        limit: LIMIT,
-      })
-        .then((p) => {
-          if (!stale) setLoans(p.items);
-        })
-        .catch(() => {});
-      return () => {
-        stale = true;
-      };
-    }, [filter]),
+  const { data: loans } = useFocusData(
+    useCallback(
+      () =>
+        listLoans({
+          state: filter,
+          sortBy: "expiresBy",
+          sortDir: "asc",
+          limit: LIMIT,
+        }).then((p) => p.items),
+      [filter],
+    ),
   );
 
   return (
@@ -55,7 +45,11 @@ export default function ActiveLoans() {
         <View className="flex-1 flex-row items-center justify-between">
           <InlineFilter options={FILTERS} value={filter} onChange={setFilter} />
           <Link href="/loans" asChild>
-            <Button icon={ArrowUpRight} className="bg-transparent" />
+            <Button
+              icon={ArrowUpRight}
+              variant="soft"
+              className="bg-transparent"
+            />
           </Link>
         </View>
       }

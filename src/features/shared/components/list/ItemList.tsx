@@ -83,7 +83,7 @@ export function ItemList<T extends { id: number }>({
               renderItem(item)
             )
           }
-          contentContainerClassName={cn("p-2.5", gap && "gap-2")}
+          contentContainerClassName={cn("p-3", gap && "gap-3")}
           columnWrapperStyle={multi ? { gap: 12 } : undefined}
           showsVerticalScrollIndicator={false}
           onEndReached={onEndReached}

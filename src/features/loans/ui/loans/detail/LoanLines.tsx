@@ -6,7 +6,7 @@ import {
   StatusBadge,
 } from "@/features/shared/components";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
-import { ArrowDown, CircleExclamationPoint } from "lucide-react-native";
+import { ArrowDown, TriangleExclamationPoint } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
 import ReturnLineDialog from "./ReturnLineDialog";
@@ -14,6 +14,7 @@ import ReturnLineDialog from "./ReturnLineDialog";
 type Props = {
   lines: LoanLine[];
   expiresBy: string;
+  overdue: boolean;
   actorId: number;
   onChanged: () => void;
 };
@@ -21,6 +22,7 @@ type Props = {
 export default function LoanLines({
   lines,
   expiresBy,
+  overdue,
   actorId,
   onChanged,
 }: Props) {
@@ -42,14 +44,14 @@ export default function LoanLines({
           <Column
             variant="subtitled"
             text={expiresBy}
-            subtitle1={l.outcome ? "Finalizado" : "Vence"}
+            subtitle1={l.outcome ? "Finalizado" : overdue ? "Vencido" : "Vence"}
           />
           <Column variant="actions" width="lg">
             {!l.outcome ? (
               <>
                 <Button
                   variant="soft"
-                  icon={CircleExclamationPoint}
+                  icon={TriangleExclamationPoint}
                   onPress={() => setActive({ line: l, reportOnly: true })}
                 />
                 <Button

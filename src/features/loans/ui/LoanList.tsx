@@ -13,7 +13,7 @@ import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListCo
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { Link } from "expo-router";
 import { ArrowUp } from "lucide-react-native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LoanRow from "./loans/list/LoanRow";
 
 type Filter = "all" | LoanState;
@@ -30,11 +30,19 @@ const SORTS: SortOption<LoanSort>[] = [
   { key: "expiresBy", label: "Vencimiento", defaultDir: "asc" },
 ];
 
-export default function LoanList() {
-  const { search, setSearch, debouncedSearch } = useSearch();
-  const [filter, setFilter] = useState<Filter>("all");
-  const [sort, setSort] = useSort<LoanSort>({ by: "createdAt", dir: "desc" });
+const toFilter = (s?: string) => FILTERS.find((f) => f.value === s)?.value;
 
+export default function LoanList({ state }: { state?: string }) {
+  const { search, setSearch, debouncedSearch } = useSearch();
+  const [filter, setFilter] = useState<Filter>(toFilter(state) ?? "all");
+
+  // La pantalla puede seguir montada en el stack: aplicar el filtro de cada navegación.
+  useEffect(() => {
+    const next = toFilter(state);
+    if (next) setFilter(next);
+  }, [state]);
+
+  const [sort, setSort] = useSort<LoanSort>({ by: "createdAt", dir: "desc" });
 
   const fetchPage = useCallback(
     (offset: number) =>

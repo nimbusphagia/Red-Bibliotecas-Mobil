@@ -2,7 +2,14 @@ import { Text as RNText, type TextProps } from "react-native";
 import { cn, useTone } from "../../theme";
 
 export type TextVariant =
-  "display" | "title" | "section" | "item" | "itemSm" | "caption";
+  | "display"
+  | "title"
+  | "section"
+  | "item"
+  | "itemSm"
+  | "itemXs"
+  | "caption"
+  | "captionXs";
 
 // Solo tamaño y peso. El color sale de la superficie (useTone).
 const sizes: Record<TextVariant, string> = {
@@ -11,7 +18,9 @@ const sizes: Record<TextVariant, string> = {
   section: "font-sans-regular text-[18px]",
   item: "font-sans-regular text-[16px]",
   itemSm: "font-sans text-[14px]",
+  itemXs: "font-sans text-[13px]",
   caption: "font-sans text-[14px]",
+  captionXs: "font-sans text-[13px]",
 };
 
 type Props = TextProps & { variant?: TextVariant; className?: string };
@@ -23,7 +32,7 @@ export function Text({ variant, className, ...props }: Props) {
       className={cn(
         "font-sans",
         variant && sizes[variant],
-        variant === "caption" ? t.muted : t.text,
+        variant === "caption" || variant === "captionXs" ? t.muted : t.text,
         className,
       )}
       {...props}

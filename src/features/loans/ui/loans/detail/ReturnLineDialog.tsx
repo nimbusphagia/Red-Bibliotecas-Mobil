@@ -34,7 +34,8 @@ const CHOICES: Choice[] = [
   },
 ];
 
-const REPORT_KEYS = ["irreparable", "lost"];
+// En este orden: el primero es el elegido por defecto.
+const REPORT_KEYS = ["lost", "irreparable"];
 
 type Props = {
   line: LoanLine;
@@ -52,7 +53,7 @@ export default function ReturnLineDialog({
   onDone,
 }: Props) {
   const choices = reportOnly
-    ? CHOICES.filter((c) => REPORT_KEYS.includes(c.key))
+    ? REPORT_KEYS.map((k) => CHOICES.find((c) => c.key === k)!)
     : CHOICES;
   const [selected, setSelected] = useState(choices[0].key);
   const { errors, submitting, run } = useFormSubmit();
@@ -69,13 +70,15 @@ export default function ReturnLineDialog({
   const error = errors.form ?? Object.values(errors.fields)[0];
 
   return (
-    <Dialog onClose={onClose}>
+    <Dialog size="sm" onClose={onClose}>
       <DialogHeader
-        title={reportOnly ? "Reportar ejemplar" : "Devolver ejemplar"}
-        subtitle={`${line.bookTitle}${line.labelText ? ` · ${line.labelText}` : ""}`}
+        title={`#${line.copyId} ${line.bookTitle}`}
+        subtitle={line.labelText ?? undefined}
       />
-      <View className="gap-2">
-        <Text variant="item">Estado del ejemplar</Text>
+      <View className="mb-2 gap-4">
+        <Text variant="section" className="mb-1 font-sans">
+          {reportOnly ? "Reportar incidencia" : "Estado del ejemplar"}
+        </Text>
         {choices.map((c) => (
           <Button
             key={c.key}
@@ -87,6 +90,7 @@ export default function ReturnLineDialog({
       </View>
       <FieldError>{error}</FieldError>
       <DialogActions
+        className="justify-between"
         confirmTitle="Confirmar"
         loading={submitting}
         onConfirm={confirm}
