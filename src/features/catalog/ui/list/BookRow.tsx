@@ -16,17 +16,11 @@ export default function BookRow({ book }: Props) {
         variant="subtitled"
         containerClass="max-w-[350]"
       />
+      <Column text={formatContributors(book.collaborators)} />
       <Column
-        text={formatContributors(book.collaborators)}
-        subtitle1={book.publisherName ?? undefined}
-        subtitle2={book.collectionName ?? undefined}
         variant="subtitled"
-      />
-      <Column
-        text={`${book.availableCount} / ${book.activeCount}`}
-        subtitle1={book.availableCount === 0 ? "No disponibles" : "Disponibles"}
-        variant="subtitled"
-        containerClass="max-w-[150px]"
+        text={book.publisherName ?? undefined}
+        subtitle1={book.collectionName ?? undefined}
       />
       <Column variant="actions" expand={false}>
         <Link

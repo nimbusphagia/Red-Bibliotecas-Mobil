@@ -1,9 +1,11 @@
-import type { LineStatus } from "@/features/loans/internal/loan/schemas";
 import {
   getVisitorLoanStatus,
-  listVisitorLines,
+  listLoans,
 } from "@/features/loans/internal/loan/service";
-import type { VisitorLoanStatus } from "@/features/loans/internal/loan/types";
+import type {
+  LoanState,
+  VisitorLoanStatus,
+} from "@/features/loans/internal/loan/types";
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
@@ -24,17 +26,16 @@ import { routeIdSchema } from "@/features/shared/types/schemas";
 import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import VisitorLineRow from "./visitors/detail/VisitorLineRow";
+import LoanRow from "./loans/list/LoanRow";
 
-type Filter = "all" | LineStatus;
+type Filter = "all" | LoanState;
 type Data = { visitor: VisitorListItem; status: VisitorLoanStatus };
 
 const FILTERS: { value: Filter; label: string }[] = [
   { value: "all", label: "Todos" },
-  { value: "pending", label: "Pendientes" },
-  { value: "returned", label: "Devueltos" },
-  { value: "returned_damaged", label: "Dañados" },
-  { value: "lost", label: "Perdidos" },
+  { value: "open", label: "Activos" },
+  { value: "overdue", label: "Vencidos" },
+  { value: "closed", label: "Finalizados" },
 ];
 
 const SORTS: SortOption<"createdAt">[] = [
@@ -58,9 +59,10 @@ export default function VisitorDetail({ id }: { id: string }) {
 
   const fetchPage = useCallback(
     (offset: number) =>
-      listVisitorLines({
+      listLoans({
         visitorId,
-        status: filter === "all" ? undefined : filter,
+        state: filter === "all" ? undefined : filter,
+        sortBy: "createdAt",
         sortDir,
         limit: PAGE_SIZE,
         offset,
@@ -104,6 +106,7 @@ export default function VisitorDetail({ id }: { id: string }) {
       />
       <Panel title="Historial de préstamos" className="flex-1">
         <ItemList
+          toolbarSurface={false}
           toolbar={
             <>
               <InlineFilter
@@ -122,7 +125,7 @@ export default function VisitorDetail({ id }: { id: string }) {
           items={list.items}
           loading={list.loading}
           onEndReached={list.loadMore}
-          renderItem={(line) => <VisitorLineRow line={line} />}
+          renderItem={(loan) => <LoanRow loan={loan} />}
         />
       </Panel>
     </>

@@ -14,6 +14,7 @@ import {
   copy,
   loanMovement,
   loanMovementLine,
+  schoolGrade,
   visitor,
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
@@ -154,12 +155,16 @@ const selectLoans = () =>
     .select({
       ...getTableColumns(loanMovement),
       visitorName: visitor.name,
+      visitorRole: visitor.role,
+      visitorGrade: schoolGrade.grade,
+      visitorLevel: schoolGrade.level,
       loanedByUsername: account.username,
       lineCount,
       openCount,
     })
     .from(loanMovement)
     .innerJoin(visitor, eq(visitor.id, loanMovement.loanedToId))
+    .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id))
     .innerJoin(account, eq(account.id, loanMovement.loanedById));
 
 const withOverdue = <R extends { openCount: number; expiresBy: string }>(

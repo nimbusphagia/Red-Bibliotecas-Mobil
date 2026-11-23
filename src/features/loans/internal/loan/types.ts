@@ -1,7 +1,8 @@
-import type { LINE_OUTCOMES, loanMovement } from "@/db/schema";
+import type { GRADE_LEVELS, LINE_OUTCOMES, loanMovement } from "@/db/schema";
 import type { ExitResult } from "@/features/inventory/internal/movement/types";
 import type { ListFilters } from "@/features/shared/types/types";
 import type { LineStatus, LoanSort } from "./schemas";
+import type { VisitorRole } from "../visitor/types";
 
 export type LoanMovement = typeof loanMovement.$inferSelect;
 export type LineOutcome = (typeof LINE_OUTCOMES)[number];
@@ -31,6 +32,9 @@ export type LoanListFilters = ListFilters<LoanSort> & {
 
 export type LoanListItem = LoanMovement & {
   visitorName: string;
+  visitorRole: VisitorRole;
+  visitorGrade: number | null;
+  visitorLevel: (typeof GRADE_LEVELS)[number] | null;
   loanedByUsername: string;
   lineCount: number;
   openCount: number;
