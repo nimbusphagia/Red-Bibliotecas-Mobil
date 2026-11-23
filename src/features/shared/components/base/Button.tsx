@@ -8,7 +8,8 @@ import { cn, colors, useTone } from "../../theme";
 import { Icon, type IconSize, type IconTone } from "./Icon";
 import { Text } from "./Text";
 
-type Variant = "accent" | "solid" | "soft" | "selector";
+/** `ghost`: sin fondo, solo el texto del tono actual. */
+type Variant = "accent" | "solid" | "soft" | "selector" | "ghost";
 
 type Size = "sm" | "md" | "lg";
 
@@ -45,7 +46,11 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
-  const v = useTone().button[variant];
+  const t = useTone();
+  const v =
+    variant === "ghost"
+      ? { box: "bg-transparent", label: t.text, icon: t.icon }
+      : t.button[variant];
   const s = sizeStyles[size];
 
   return (
@@ -76,7 +81,9 @@ export function Button({
       {title && (
         <Text
           variant={size === "sm" ? "itemSm" : "item"}
+          numberOfLines={1}
           className={cn(
+            "shrink",
             v.label,
             weight === "md" && "font-sans-regular",
             weight === "lg" && "font-sans-medium",

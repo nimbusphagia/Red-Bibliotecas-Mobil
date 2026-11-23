@@ -35,12 +35,12 @@ export default function ExitForm() {
   const router = useRouter();
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
-  const [reason, setReason] = useState<ExitReason>();
+  const [reason, setReason] = useState<ExitReason>("loss");
   const [notes, setNotes] = useState("");
   const [copies, setCopies] = useState<CopyItem[]>([]);
   const [editing, setEditing] = useState<"notes" | "copies" | null>(null);
 
-  const blocked = reason ? copies.filter((c) => !canExit(c, reason)).length : 0;
+  const blocked = copies.filter((c) => !canExit(c, reason)).length;
 
   const toggle = (c: CopyItem) =>
     setCopies((p) =>
@@ -48,7 +48,7 @@ export default function ExitForm() {
     );
 
   const submit = () => {
-    if (session.status !== "signed-in" || !reason) return;
+    if (session.status !== "signed-in") return;
     run(async () => {
       const { movement } = await exitCopies(session.account.id, {
         reason,
@@ -65,7 +65,7 @@ export default function ExitForm() {
         title="Registrar salida"
         submitTitle="Registrar"
         submitting={submitting}
-        canSubmit={!!reason && copies.length > 0 && blocked === 0}
+        canSubmit={copies.length > 0 && blocked === 0}
         onSubmit={submit}
         onCancel={() => router.back()}
       />
@@ -73,15 +73,6 @@ export default function ExitForm() {
         <FieldError>{errors.form}</FieldError>
         <SplitColumns>
           <Panel title="Detalles">
-            <View className="my-2 gap-1">
-              <SimpleSelect
-                label="Motivo *"
-                options={REASON_OPTIONS}
-                value={reason}
-                onChange={setReason}
-              />
-              <FieldError>{errors.fields.reason}</FieldError>
-            </View>
             <LabeledItem
               label="Encargado"
               content={
@@ -90,12 +81,6 @@ export default function ExitForm() {
                   : undefined
               }
               labelWidth="form"
-            />
-            <FieldRow
-              label="Notas"
-              value={notes || undefined}
-              error={errors.fields.notes}
-              onPress={() => setEditing("notes")}
             />
             <LabeledItem
               label="Seleccionados"
@@ -107,6 +92,21 @@ export default function ExitForm() {
               content={formatDate(new Date())}
               labelWidth="form"
             />
+            <FieldRow
+              label="Notas"
+              value={notes || undefined}
+              error={errors.fields.notes}
+              onPress={() => setEditing("notes")}
+            />
+            <View className="mt-4 mb-2 gap-1">
+              <SimpleSelect
+                label="Motivo *"
+                options={REASON_OPTIONS}
+                value={reason}
+                onChange={(r) => r && setReason(r)}
+              />
+              <FieldError>{errors.fields.reason}</FieldError>
+            </View>
           </Panel>
 
           <Panel
@@ -115,7 +115,6 @@ export default function ExitForm() {
               <Button
                 title="Agregar"
                 size="sm"
-                disabled={!reason}
                 onPress={() => setEditing("copies")}
               />
             }
@@ -142,7 +141,7 @@ export default function ExitForm() {
           onClose={() => setEditing(null)}
         />
       )}
-      {editing === "copies" && reason && (
+      {editing === "copies" && (
         <Dialog onClose={() => setEditing(null)} size="lg" tone="canvas">
           <ExitCopyPicker
             className="flex-1"

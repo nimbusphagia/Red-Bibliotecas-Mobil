@@ -103,29 +103,29 @@ export const markFailureText = (f: {
     ? `${MARK_FAILURE_ES.conflict} (#${f.conflictingCopyId})`
     : MARK_FAILURE_ES[f.reason];
 
-const IMPORT_PROBLEM_ES: Record<ProblemCode, (detail: string) => string> = {
-  missing: () => "es obligatorio",
-  too_long: () => "es demasiado largo",
-  bad_number: (d) => `«${d}» no es un número válido`,
-  out_of_range: (d) => `«${d}» está fuera del rango permitido`,
-  bad_person: (d) => `«${d}» debe escribirse «Apellido, Nombre»`,
-  title_unusable: () => "debe tener letras o números",
-  writer_unusable: (d) => `no se puede generar el código de «${d}»`,
-  too_many_words: () => "tiene demasiadas palabras",
-  unknown_category: (d) => `«${d}» no es un código ni un nombre de categoría`,
-  unknown_subcategory: (d) =>
-    `«${d}» no es un código ni un nombre de subcategoría`,
-  unknown_shelf: (d) => `«${d}» no existe`,
-  collection_without_publisher: () => "requiere indicar la editorial",
-  book_exists: (d) => `«${d}» ya existe: agrégale ejemplares desde «Existente»`,
-  duplicate_in_file: (d) => `es el mismo libro de la fila ${d}`,
-  label_conflict: (d) => `el tejuelo ya lo usa «${d}»; omite palabras en común`,
-  label_conflict_in_file: (d) =>
-    `el tejuelo coincide con el de la fila ${d}; omite palabras en común`,
-};
+const IMPORT_PROBLEM_LABEL_ES: Record<ProblemCode, (header: string) => string> =
+  {
+    missing: (h) => `${h} obligatorio`,
+    too_long: (h) => `${h} demasiado largo`,
+    bad_number: (h) => `${h} inválido`,
+    out_of_range: (h) => `${h} fuera de rango`,
+    bad_person: (h) => `${h} con formato inválido`,
+    title_unusable: () => "Título inválido",
+    writer_unusable: () => "Autor inválido",
+    too_many_words: (h) => `${h} con demasiadas palabras`,
+    unknown_category: () => "Categoría inexistente",
+    unknown_subcategory: () => "Subcategoría inexistente",
+    unknown_shelf: () => "Estantería inexistente",
+    collection_without_publisher: () => "Colección sin editorial",
+    book_exists: () => "Título ya existe",
+    duplicate_in_file: () => "Libro repetido",
+    label_conflict: () => "Tejuelo en uso",
+    label_conflict_in_file: () => "Tejuelo repetido",
+  };
 
-export const importProblemText = (p: RowProblem) =>
-  `${headerOf(p.column)}: ${IMPORT_PROBLEM_ES[p.code](p.detail ?? "")}`;
+/** Tipo de problema, sin el detalle de la fila. */
+export const importProblemLabel = (p: RowProblem) =>
+  IMPORT_PROBLEM_LABEL_ES[p.code](headerOf(p.column));
 
 export const sheetProblemText = (p: SheetProblem) =>
   p.code === "empty"

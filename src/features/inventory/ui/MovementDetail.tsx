@@ -101,7 +101,6 @@ export default function MovementDetail({ id }: { id: string }) {
       {!loanLine && (
         <Panel title="Ejemplares" className="flex-1">
           <ItemList
-            columns={2}
             items={list.items}
             loading={list.loading}
             onEndReached={list.loadMore}

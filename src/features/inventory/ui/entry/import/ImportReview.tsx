@@ -2,9 +2,22 @@ import type {
   ImportPlan,
   ToCreate,
 } from "@/features/inventory/internal/entryImport/types";
-import { Text } from "@/features/shared/components";
-import { importProblemText } from "@/features/shared/format/translate";
-import { View } from "react-native";
+import {
+  Chip,
+  ChipGroup,
+  Icon,
+  Surface,
+  Text,
+} from "@/features/shared/components";
+import { importProblemLabel } from "@/features/shared/format/translate";
+import {
+  ChevronDown,
+  ChevronUp,
+  TriangleExclamationPoint,
+  type LucideIcon,
+} from "lucide-react-native";
+import { useState, type PropsWithChildren, type ReactNode } from "react";
+import { Pressable, View } from "react-native";
 import { isReady } from "./toLines";
 
 const MAX_NAMES = 8;
@@ -29,6 +42,32 @@ const CREATE_LABELS: {
   { key: "series", one: "serie", many: "series" },
 ];
 
+function Section({
+  icon,
+  title,
+  defaultOpen = true,
+  children,
+}: PropsWithChildren<{
+  icon?: LucideIcon;
+  title: ReactNode;
+  defaultOpen?: boolean;
+}>) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <Surface inset className="gap-4 p-4">
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        className="flex-row items-center gap-2"
+      >
+        {icon && <Icon icon={icon} size="lg" stroke="sm" />}
+        <View className="flex-1">{title}</View>
+        <Icon icon={open ? ChevronUp : ChevronDown} />
+      </Pressable>
+      {open && children}
+    </Surface>
+  );
+}
+
 /** Resumen de un archivo ya revisado: qué se carga, qué se crea y qué falla. */
 export default function ImportReview({ plan }: { plan: ImportPlan }) {
   const ready = plan.rows.filter(isReady);
@@ -36,24 +75,12 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
   const copies = ready.reduce((n, r) => n + r.quantity, 0);
 
   return (
-    <View className="gap-4">
-      <View className="gap-1">
-        <Text variant="item">
-          {plural(ready.length, "libro listo", "libros listos")} ·{" "}
-          {plural(copies, "ejemplar", "ejemplares")}
+    <View className="gap-6">
+      {plan.ignoredColumns.length > 0 && (
+        <Text variant="caption">
+          Columnas ignoradas: {plan.ignoredColumns.join(", ")}
         </Text>
-        {failed.length > 0 && (
-          <Text variant="caption">
-            {plural(failed.length, "fila con problemas", "filas con problemas")}{" "}
-            (no se cargan)
-          </Text>
-        )}
-        {plan.ignoredColumns.length > 0 && (
-          <Text variant="caption">
-            Columnas ignoradas: {plan.ignoredColumns.join(", ")}
-          </Text>
-        )}
-      </View>
+      )}
 
       {CREATE_LABELS.map(({ key, one, many }) => {
         const list = plan.toCreate[key];
@@ -68,22 +95,59 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
         );
       })}
 
-      {failed.length > 0 && (
-        <View className="gap-3">
-          <Text variant="item">Filas con problemas</Text>
-          {failed.map((r) => (
-            <View key={r.row} className="gap-1">
-              <Text variant="itemSm" numberOfLines={1}>
-                Fila {r.row} · {r.title || "Sin título"}
+      {ready.length > 0 && (
+        <Section
+          title={
+            <Text variant="item">
+              Resumen{" "}
+              <Text variant="caption">
+                ({plural(ready.length, "libro", "libros")} ·{" "}
+                {plural(copies, "ejemplar", "ejemplares")})
               </Text>
-              {r.problems.map((p, i) => (
-                <Text key={i} variant="caption">
-                  {importProblemText(p)}
-                </Text>
-              ))}
-            </View>
-          ))}
-        </View>
+            </Text>
+          }
+        >
+          <ChipGroup>
+            {ready.map((r) => (
+              <Chip
+                key={r.row}
+                label={r.title}
+                detail={[
+                  ...r.writers.map((w) => w.name),
+                  plural(r.quantity, "ejemplar", "ejemplares"),
+                ].join(" · ")}
+              />
+            ))}
+          </ChipGroup>
+        </Section>
+      )}
+
+      {failed.length > 0 && (
+        <Section
+          icon={TriangleExclamationPoint}
+          defaultOpen={false}
+          title={
+            <Text variant="item">
+              Problemas{" "}
+              <Text variant="caption">
+                ({plural(failed.length, "libro", "libros")} · No serán
+                importados)
+              </Text>
+            </Text>
+          }
+        >
+          <ChipGroup>
+            {failed.map((r) => (
+              <Chip
+                key={r.row}
+                label={`#${r.row}`}
+                detail={[...new Set(r.problems.map(importProblemLabel))].join(
+                  ", ",
+                )}
+              />
+            ))}
+          </ChipGroup>
+        </Section>
       )}
     </View>
   );

@@ -4,18 +4,20 @@ import {
   Button,
   Column,
   FieldError,
+  Icon,
   ListRow,
-  StatusBadge,
   Text,
 } from "@/features/shared/components";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
-import { Trash } from "lucide-react-native";
+import { status } from "@/features/shared/theme";
+import { Minus } from "lucide-react-native";
 import { View } from "react-native";
+import { COPY_STATUS_ICON } from "../copies/statusIcon";
 import { canExit } from "./canExit";
 
 type Props = {
   copies: CopyItem[];
-  reason?: ExitReason;
+  reason: ExitReason;
   error?: string;
   onRemove: (id: number) => void;
 };
@@ -28,30 +30,37 @@ export default function ExitCopyTable({
 }: Props) {
   return (
     <View className="gap-2">
-      {copies.length === 0 && (
-        <Text variant="caption">
-          {reason ? "Sin ejemplares" : "Elige primero el motivo"}
-        </Text>
-      )}
+      {copies.length === 0 && <Text variant="caption">Sin ejemplares</Text>}
       {copies.map((c) => {
-        const blocked = !!reason && !canExit(c, reason);
+        const blocked = !canExit(c, reason);
         return (
           <ListRow key={c.id} compact>
             <Column variant="id" text={`#${c.id}`} />
             <Column
               variant="subtitled"
               text={c.bookTitle}
-              subtitle1={c.labelText ?? undefined}
-              subtitle2={c.authors ?? undefined}
+              subtitle1={c.authors ?? undefined}
             />
-            <Column variant="actions" expand={false}>
-              <StatusBadge
-                text={COPY_STATUS_ES[c.status]}
-                variant={blocked ? "pending" : "active"}
+            <Column expand={false} containerClass="w-32 shrink-0 gap-2">
+              <Icon
+                icon={COPY_STATUS_ICON[c.status]}
+                size="lg"
+                stroke="sm"
+                tone={blocked ? status.warning.icon : undefined}
               />
+              <Text
+                variant="itemSm"
+                className={blocked ? status.warning.text : undefined}
+              >
+                {COPY_STATUS_ES[c.status]}
+              </Text>
+            </Column>
+            <Column variant="actions" expand={false}>
               <Button
                 variant="soft"
-                icon={Trash}
+                icon={Minus}
+                size="sm"
+                className="size-7"
                 onPress={() => onRemove(c.id)}
               />
             </Column>

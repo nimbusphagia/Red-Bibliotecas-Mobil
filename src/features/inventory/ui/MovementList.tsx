@@ -68,7 +68,7 @@ export default function MovementList() {
     <>
       <PageHeader
         title="Historial de movimientos"
-        subtitle="Entradas y salidas de ejemplares del inventario"
+        subtitle="Entradas y salidas de ejemplares"
         lead={
           <View className="flex-row items-center gap-2">
             <Link href="/stock/exit" asChild>

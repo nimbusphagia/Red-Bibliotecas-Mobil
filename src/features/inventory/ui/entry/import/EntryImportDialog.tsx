@@ -18,10 +18,12 @@ import {
   DialogBody,
   DialogHeader,
   FieldError,
+  Surface,
   Text,
 } from "@/features/shared/components";
 import { toFormErrors } from "@/features/shared/errors/messages";
 import { sheetProblemText } from "@/features/shared/format/translate";
+import { File } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
 import ImportReview from "./ImportReview";
@@ -32,6 +34,14 @@ import {
   shareTemplate,
 } from "./sheetFile";
 import { isReady, toFormValues } from "./toLines";
+
+const SHOW_SHARE = false;
+
+const HINTS = [
+  "Si un libro ya está en el catálogo, agrégalo con «Existente».",
+  "Los autores, editoriales, colecciones y series que no existan se crearán al confirmar.",
+  "Completa la plantilla con los libros que quieras ingresar.",
+];
 
 type Props = {
   /** Cuántos libros más caben en la entrada. */
@@ -109,44 +119,61 @@ export default function EntryImportDialog({ room, onLoad, onClose }: Props) {
   const problem = review?.plan.problem;
 
   return (
-    <Dialog onClose={onClose} size="lg">
+    <Dialog
+      tone="light"
+      onClose={onClose}
+      size="lg"
+      className="gap-6"
+    >
       <DialogHeader
-        title="Importar libros"
-        subtitle={review?.name ?? "Libros nuevos desde un archivo .xlsx o .csv"}
+        title="Importar"
+        subtitle="Ingresa libros nuevos desde un archivo .xlsx o .csv"
         actions={
-          review && (
+          review ? (
             <Button
-              title="Otro archivo"
+              title={review.name}
+              className="max-w-[240px]"
               variant="soft"
               size="sm"
               loading={busy}
               onPress={choose}
             />
+          ) : (
+            <>
+              {SHOW_SHARE && (
+                <Button
+                  title="Compartir"
+                  variant="soft"
+                  size="sm"
+                  loading={busy}
+                  onPress={share}
+                />
+              )}
+              <Button
+                title="Plantilla"
+                icon={File}
+                variant="soft"
+                size="sm"
+                loading={busy}
+                onPress={save}
+              />
+            </>
           )
         }
       />
       <DialogBody className="flex-1">
         {!review && (
           <>
-            <Text variant="caption">
-              Solo para libros nuevos: para agregar ejemplares a un libro que ya
-              existe usa «Existente». Los autores, editoriales, colecciones y
-              series que falten se crearán al confirmar.
-            </Text>
-            <View className="flex-row gap-3">
-              <Button
-                title="Guardar plantilla"
-                variant="soft"
-                loading={busy}
-                onPress={save}
-              />
-              <Button
-                title="Compartir"
-                variant="soft"
-                loading={busy}
-                onPress={share}
-              />
-            </View>
+            <Surface inset className="gap-1 p-3">
+              {HINTS.map((hint) => (
+                <View key={hint} className="flex-row gap-2">
+                  <Text variant="itemSm">•</Text>
+                  <Text variant="itemSm" className="flex-1">
+                    {hint}
+                  </Text>
+                </View>
+              ))}
+            </Surface>
             {notice && <Text variant="caption">{notice}</Text>}
           </>
         )}
@@ -163,7 +190,9 @@ export default function EntryImportDialog({ room, onLoad, onClose }: Props) {
       </DialogBody>
       {review ? (
         <DialogActions
-          confirmTitle={`Cargar ${ready.length} ${ready.length === 1 ? "libro" : "libros"}`}
+          className="justify-between"
+          cancelVariant="ghost"
+          confirmTitle="Importar"
           loading={busy}
           disabled={ready.length === 0 || tooMany}
           onConfirm={load}
@@ -171,6 +200,8 @@ export default function EntryImportDialog({ room, onLoad, onClose }: Props) {
         />
       ) : (
         <DialogActions
+          className="justify-between"
+          cancelVariant="ghost"
           confirmTitle="Elegir archivo"
           loading={busy}
           onConfirm={choose}

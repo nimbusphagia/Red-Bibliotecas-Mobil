@@ -11,7 +11,7 @@ import {
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
-import { labelTextSql } from "../copy/sql";
+import { labelTextSql, writersSql } from "../copy/sql";
 import { and, asc, count, eq, getTableColumns, gte, lt } from "drizzle-orm";
 import type {
   MovementLine,
@@ -128,6 +128,7 @@ export async function listMovementLines(
         copyId: copy.id,
         bookId: copy.bookId,
         bookTitle: book.title,
+        authors: writersSql,
         copyNumber: copy.copyNumber,
         status: copy.status,
         shelfId: copy.shelfId,

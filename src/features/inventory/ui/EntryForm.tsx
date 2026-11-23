@@ -34,6 +34,7 @@ import EntryLineTable from "./entry/EntryLineTable";
 import ExistingBookDialog from "./entry/ExistingBookDialog";
 import { lineQuantity, toLineInput, type EntryLine } from "./entry/lines";
 import NewBookLineForm from "./entry/NewBookLineForm";
+import { Plus, Search, Upload } from "lucide-react-native";
 
 const REASON_OPTIONS = ENTRY_REASONS.map((r) => ({
   id: r,
@@ -162,15 +163,6 @@ export default function EntryForm() {
         <FieldError>{errors.form}</FieldError>
         <SplitColumns>
           <Panel title="Detalles">
-            <View className="my-2 gap-1">
-              <SimpleSelect
-                label="Motivo *"
-                options={REASON_OPTIONS}
-                value={reason}
-                onChange={(r) => r && setReason(r)}
-              />
-              <FieldError>{errors.fields.reason}</FieldError>
-            </View>
             <LabeledItem
               label="Encargado"
               content={
@@ -179,12 +171,6 @@ export default function EntryForm() {
                   : undefined
               }
               labelWidth="form"
-            />
-            <FieldRow
-              label="Notas"
-              value={notes || undefined}
-              error={errors.fields.notes}
-              onPress={() => setEditing({ type: "notes" })}
             />
             <LabeledItem
               label="Libros"
@@ -201,29 +187,49 @@ export default function EntryForm() {
               content={formatDate(new Date())}
               labelWidth="form"
             />
+            <FieldRow
+              label="Notas"
+              value={notes || undefined}
+              error={errors.fields.notes}
+              onPress={() => setEditing({ type: "notes" })}
+            />
+            <View className="mt-4 mb-2 gap-1">
+              <SimpleSelect
+                label="Motivo *"
+                options={REASON_OPTIONS}
+                value={reason}
+                onChange={(r) => r && setReason(r)}
+              />
+              <FieldError>{errors.fields.reason}</FieldError>
+            </View>
           </Panel>
 
           <Panel
             title="Libros"
             lead={
-              <View className="flex-row gap-2">
-                <Button
-                  title="Importar"
-                  variant="soft"
-                  size="sm"
-                  onPress={() => setEditing({ type: "import" })}
-                />
+              <View className="flex-1 flex-row justify-between">
                 <Button
                   title="Existente"
                   variant="soft"
+                  icon={Search}
                   size="sm"
                   onPress={() => setEditing({ type: "existing" })}
                 />
-                <Button
-                  title="Nuevo"
-                  size="sm"
-                  onPress={() => setEditing({ type: "new" })}
-                />
+                <View className="flex-row gap-2">
+                  <Button
+                    title="Importar"
+                    variant="soft"
+                    icon={Upload}
+                    size="sm"
+                    onPress={() => setEditing({ type: "import" })}
+                  />
+                  <Button
+                    title="Nuevo"
+                    icon={Plus}
+                    size="sm"
+                    onPress={() => setEditing({ type: "new" })}
+                  />
+                </View>
               </View>
             }
           >

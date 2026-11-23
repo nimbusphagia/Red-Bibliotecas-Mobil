@@ -47,9 +47,10 @@ export function Dialog({
   className,
   children,
 }: PropsWithChildren<DialogProps>) {
-  const [dismiss, setDismiss] = useState<{ tick: number; except: string | null }>(
-    { tick: 0, except: null },
-  );
+  const [dismiss, setDismiss] = useState<{
+    tick: number;
+    except: string | null;
+  }>({ tick: 0, except: null });
   const touched = useRef<string | null>(null);
   const protect = useCallback((id: string) => {
     touched.current = id;
@@ -142,6 +143,7 @@ type ActionsProps = {
   onConfirm: () => void;
   onCancel?: () => void;
   cancelTitle?: string;
+  cancelVariant?: "soft" | "ghost";
   loading?: boolean;
   disabled?: boolean;
   className?: string;
@@ -152,16 +154,19 @@ export function DialogActions({
   onConfirm,
   onCancel,
   cancelTitle = "Cancelar",
+  cancelVariant = "soft",
   loading,
   disabled,
   className,
 }: ActionsProps) {
   return (
-    <View
-      className={cn("flex-row items-center justify-end gap-2", className)}
-    >
+    <View className={cn("flex-row items-center justify-end gap-2", className)}>
       {onCancel && (
-        <Button title={cancelTitle} variant="soft" onPress={onCancel} />
+        <Button
+          title={cancelTitle}
+          variant={cancelVariant}
+          onPress={onCancel}
+        />
       )}
       <Button
         variant="soft"

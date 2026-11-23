@@ -106,23 +106,6 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
       <ScreenBody form>
         <FieldError>{errors.form ?? printer.error}</FieldError>
         <SplitColumns>
-          <Panel
-            title="Ejemplares"
-            lead={
-              <Button
-                title="Agregar"
-                size="sm"
-                onPress={() => setPicking(true)}
-              />
-            }
-          >
-            <LabelCopyTable
-              copies={copies}
-              error={errors.fields.copyIds}
-              onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
-            />
-          </Panel>
-
           <Panel title="Detalles">
             <LabeledItem
               label="Encargado"
@@ -147,6 +130,23 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
               label="Fecha"
               content={formatDateES(new Date())}
               labelWidth="formWide"
+            />
+          </Panel>
+
+          <Panel
+            title="Ejemplares"
+            lead={
+              <Button
+                title="Agregar"
+                size="sm"
+                onPress={() => setPicking(true)}
+              />
+            }
+          >
+            <LabelCopyTable
+              copies={copies}
+              error={errors.fields.copyIds}
+              onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
             />
           </Panel>
         </SplitColumns>

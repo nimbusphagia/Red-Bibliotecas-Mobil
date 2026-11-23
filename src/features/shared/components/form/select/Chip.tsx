@@ -17,14 +17,15 @@ export function Chip({
   detailIcon?: LucideIcon;
   selected?: boolean;
   disabled?: boolean;
-  onPress: () => void;
+  /** Sin `onPress` el chip es solo informativo. */
+  onPress?: () => void;
 }) {
   const c = useTone().chip[selected ? "selected" : "idle"];
   const textClass = cn("font-sans-regular", c.label);
 
   return (
     <Pressable
-      disabled={disabled}
+      disabled={disabled || !onPress}
       onPress={onPress}
       className={cn(
         "flex-row items-center rounded-lg px-4 py-1.5 active:opacity-80",

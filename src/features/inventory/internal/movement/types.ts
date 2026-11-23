@@ -87,6 +87,7 @@ export type MovementLine = {
   copyId: number;
   bookId: number;
   bookTitle: string;
+  authors: string | null;
   copyNumber: number;
   status: CopyStatus;
   shelfId: number;
