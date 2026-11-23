@@ -3,14 +3,14 @@ import {
   Button,
   Column,
   FieldError,
+  Icon,
   ListRow,
-  StatusBadge,
   Text,
 } from "@/features/shared/components";
 import { LABEL_STATE_ES } from "@/features/shared/format/translate";
-import { Trash } from "lucide-react-native";
+import { Minus } from "lucide-react-native";
 import { View } from "react-native";
-import { BADGE_VARIANT, labelStateOf } from "../labelState";
+import { LABEL_STATE_ICON, labelStateOf } from "../labelState";
 
 type Props = {
   copies: CopyItem[];
@@ -30,17 +30,18 @@ export default function LabelCopyTable({ copies, error, onRemove }: Props) {
             <Column
               variant="subtitled"
               text={c.bookTitle}
-              subtitle1={c.labelText ?? undefined}
-              subtitle2={c.authors ?? undefined}
+              subtitle1={c.authors ?? undefined}
             />
+            <Column expand={false} containerClass="w-44 shrink-0 gap-2">
+              <Icon icon={LABEL_STATE_ICON[state]} size="lg" />
+              <Text variant="itemSm">{LABEL_STATE_ES[state]}</Text>
+            </Column>
             <Column variant="actions" expand={false}>
-              <StatusBadge
-                text={LABEL_STATE_ES[state]}
-                variant={BADGE_VARIANT[state]}
-              />
               <Button
                 variant="soft"
-                icon={Trash}
+                icon={Minus}
+                size="sm"
+                className="size-7"
                 onPress={() => onRemove(c.id)}
               />
             </Column>

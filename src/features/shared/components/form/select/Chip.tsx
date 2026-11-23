@@ -1,4 +1,4 @@
-import { Dot } from "lucide-react-native";
+import { Dot, type LucideIcon } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { cn, useTone } from "../../../theme";
 import { Icon } from "../../base/Icon";
@@ -7,12 +7,14 @@ import { Text } from "../../base/Text";
 export function Chip({
   label,
   detail,
+  detailIcon,
   selected,
   disabled,
   onPress,
 }: {
   label: string;
   detail?: string;
+  detailIcon?: LucideIcon;
   selected?: boolean;
   disabled?: boolean;
   onPress: () => void;
@@ -30,12 +32,9 @@ export function Chip({
       )}
     >
       <Text className={textClass}>{label}</Text>
-      {detail && (
-        <>
-          <Icon icon={Dot} tone={c.dot} />
-          <Text className={textClass}>{detail}</Text>
-        </>
-      )}
+      {(detail || detailIcon) && <Icon icon={Dot} tone={c.dot} />}
+      {detailIcon && <Icon icon={detailIcon} tone={c.icon} />}
+      {detail && <Text className={textClass}>{detail}</Text>}
     </Pressable>
   );
 }

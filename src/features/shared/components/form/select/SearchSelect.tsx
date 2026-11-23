@@ -1,4 +1,4 @@
-import { X } from "lucide-react-native";
+import { Dot, X } from "lucide-react-native";
 import { useContext, useEffect, useId, useRef, useState } from "react";
 import { Pressable, ScrollView, TextInput, View } from "react-native";
 import Animated from "react-native-reanimated";
@@ -89,16 +89,19 @@ export function SearchSelect({
         return false;
       }}
     >
-      {label && (
-        <Text variant="item">{label}</Text>
-      )}
+      {label && <Text variant="item">{label}</Text>}
 
       {empty ? (
         <View className={cn("h-12 justify-center rounded-lg px-4", t.inset)}>
           <Text variant="caption">Sin resultados</Text>
         </View>
       ) : isOpen ? (
-        <View className={cn("h-12 flex-row items-center gap-2 rounded-lg px-4", t.inset)}>
+        <View
+          className={cn(
+            "h-12 flex-row items-center gap-2 rounded-lg px-4",
+            t.inset,
+          )}
+        >
           <TextInput
             autoFocus
             value={search}
@@ -137,14 +140,18 @@ export function SearchSelect({
             showsVerticalScrollIndicator={false}
           >
             {value && (
-              <Pressable onPress={() => pick(undefined)} className="px-4 py-3 active:opacity-80">
-                <Text variant="item">
-                  Quitar filtro
-                </Text>
+              <Pressable
+                onPress={() => pick(undefined)}
+                className="px-4 py-3 active:opacity-80"
+              >
+                <Text variant="item">Quitar filtro</Text>
               </Pressable>
             )}
             {canCreate && (
-              <Pressable onPress={create} className="px-4 py-3 active:opacity-80">
+              <Pressable
+                onPress={create}
+                className="px-4 py-3 active:opacity-80"
+              >
                 <Text variant="item" className="font-sans-semibold">
                   Crear «{search.trim()}»
                 </Text>
@@ -160,9 +167,32 @@ export function SearchSelect({
                 <Pressable
                   key={o.id}
                   onPress={() => pick(o)}
-                  className="px-4 py-3 active:opacity-80"
+                  className="flex-row items-center gap-2 px-4 py-3 active:opacity-80"
                 >
-                  <Text variant="itemSm">{o.label}</Text>
+                  <View className="shrink flex-row items-center">
+                    <Text variant="itemSm">{o.label}</Text>
+                    {o.detail && (
+                      <>
+                        <Icon icon={Dot} tone="faint" />
+                        <Text
+                          variant="itemSm"
+                          numberOfLines={1}
+                          className="shrink"
+                        >
+                          {o.detail}
+                        </Text>
+                      </>
+                    )}
+                  </View>
+                  {o.caption && (
+                    <Text
+                      variant="caption"
+                      numberOfLines={1}
+                      className="ml-auto shrink"
+                    >
+                      {o.caption}
+                    </Text>
+                  )}
                 </Pressable>
               );
             })}

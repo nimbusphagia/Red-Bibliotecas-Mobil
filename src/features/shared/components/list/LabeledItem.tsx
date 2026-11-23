@@ -8,6 +8,7 @@ const labelWidths = {
   narrow: "w-[28%]",
   wide: "w-[30%]",
   form: "w-[110px]",
+  formWide: "w-[140px]",
   fit: "shrink-0 px-4",
 };
 export type LabelWidth = keyof typeof labelWidths;

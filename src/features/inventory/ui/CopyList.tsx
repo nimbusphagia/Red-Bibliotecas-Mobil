@@ -27,15 +27,15 @@ type StatusFilter = "all" | "labeled" | "pending" | "outdated";
 const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Todos" },
   { value: "labeled", label: "Etiquetados" },
-  { value: "pending", label: "Sin etiquetar" },
+  { value: "pending", label: "Faltantes" },
   { value: "outdated", label: "Desactualizados" },
 ];
 
 const FILTER_FIELDS: FilterField[] = ["shelf"];
 
 const SORTS: SortOption<CopySort>[] = [
-  { key: "labeledAt", label: "Fecha de etiquetado", defaultDir: "desc" },
-  { key: "createdAt", label: "Fecha de creación", defaultDir: "desc" },
+  { key: "createdAt", label: "Fecha de registro", defaultDir: "desc" },
+  { key: "labeledAt", label: "Etiquetado", defaultDir: "desc" },
 ];
 
 export default function CopyList() {
@@ -43,7 +43,7 @@ export default function CopyList() {
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [filters, setFilters] = useState<CatalogFilters>({});
   const [dialog, setDialog] = useState<FilterDialog>(null);
-  const [sort, setSort] = useSort<CopySort>({ by: "labeledAt", dir: "desc" });
+  const [sort, setSort] = useSort<CopySort>({ by: "createdAt", dir: "desc" });
 
 
   const fetchPage = useCallback(
@@ -92,8 +92,7 @@ export default function CopyList() {
               <QuickFilters
                 filters={filters}
                 onOpen={setDialog}
-                fields={FILTER_FIELDS}
-                showPanel={false}
+                fields={[]}
               />
               <InlineFilter
                 options={FILTERS}

@@ -1,18 +1,13 @@
 import { useSession } from "@/features/account/internal/session";
 import {
   getCopy,
-  listPrintLabels,
   markCopiesLabeled,
 } from "@/features/inventory/internal/copy/service";
 import type {
   CopyItem,
   MarkLabeledResult,
 } from "@/features/inventory/internal/copy/types";
-import { toFormErrors } from "@/features/shared/errors/messages";
-import {
-  markFailureText,
-  PRINT_SKIP_ES,
-} from "@/features/shared/format/translate";
+import { markFailureText } from "@/features/shared/format/translate";
 import {
   Button,
   Dialog,
@@ -22,17 +17,16 @@ import {
   Panel,
   SplitColumns,
 } from "@/features/shared/components";
-import { formatDate } from "@/features/shared/format/dates";
+import { formatDateES } from "@/features/shared/format/dates";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
+import { Printer } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import LabelCopyPicker from "./labels/form/LabelCopyPicker";
 import LabelCopyTable from "./labels/form/LabelCopyTable";
-import LabelResultDialog, {
-  type Problem,
-} from "./labels/form/LabelResultDialog";
-import { shareLabelSheet } from "./labels/form/printLabelSheet";
+import LabelResultDialog from "./labels/form/LabelResultDialog";
+import { usePrintLabels } from "./labels/form/usePrintLabels";
 import { labelStateOf } from "./labels/labelState";
 
 const plural = (n: number, one: string, many: string) =>
@@ -41,15 +35,14 @@ const plural = (n: number, one: string, many: string) =>
 export default function LabelForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
   const session = useSession();
-  const { errors, setErrors, submitting, run } = useFormSubmit();
-  const [printing, setPrinting] = useState(false);
+  const { errors, submitting, run } = useFormSubmit();
   const [copies, setCopies] = useState<CopyItem[]>([]);
   const [picking, setPicking] = useState(false);
   const [result, setResult] = useState<{
     value: MarkLabeledResult;
     attempted: CopyItem[];
   }>();
-  const [skipped, setSkipped] = useState<Problem[]>();
+  const printer = usePrintLabels();
 
   useEffect(() => {
     if (copyId)
@@ -83,33 +76,6 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
     });
   };
 
-  // Imprimir no cambia nada: sirve para cualquier ejemplar y se puede repetir.
-  const print = async () => {
-    if (printing || copies.length === 0) return;
-    setErrors({ fields: {} });
-    setPrinting(true);
-    try {
-      const { labels, skipped: skippedCopies } = await listPrintLabels({
-        copyIds: copies.map((c) => c.id),
-      });
-      if (labels.length > 0) await shareLabelSheet(labels);
-      if (skippedCopies.length > 0) {
-        const byId = new Map(copies.map((c) => [c.id, c]));
-        setSkipped(
-          skippedCopies.map((s) => ({
-            copyId: s.copyId,
-            name: byId.get(s.copyId)?.bookTitle ?? "",
-            reason: PRINT_SKIP_ES[s.reason],
-          })),
-        );
-      }
-    } catch (e) {
-      setErrors(toFormErrors(e));
-    } finally {
-      setPrinting(false);
-    }
-  };
-
   const closeResult = () => {
     setResult(undefined);
     if (copies.length === 0) leave();
@@ -120,7 +86,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
   return (
     <>
       <FormHeader
-        title="Etiquetar tejuelos"
+        title="Etiquetar ejemplares"
         submitTitle="Marcar como etiquetado"
         submitting={submitting}
         canSubmit={copies.length > 0}
@@ -128,44 +94,18 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
         onCancel={() => router.back()}
         extra={
           <Button
-            title="Imprimir etiqueta"
+            icon={Printer}
+            accessibilityLabel="Imprimir etiqueta"
             variant="soft"
-            loading={printing}
+            loading={printer.printing}
             disabled={copies.length === 0 || submitting}
-            onPress={print}
+            onPress={() => printer.print(copies)}
           />
         }
       />
       <ScreenBody form>
-        <FieldError>{errors.form}</FieldError>
+        <FieldError>{errors.form ?? printer.error}</FieldError>
         <SplitColumns>
-          <Panel title="Detalles">
-            <LabeledItem
-              label="Encargado"
-              content={
-                session.status === "signed-in"
-                  ? session.account.username
-                  : undefined
-              }
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Seleccionados"
-              content={String(copies.length)}
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Desactualizados"
-              content={String(outdated)}
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Registro"
-              content={formatDate(new Date())}
-              labelWidth="form"
-            />
-          </Panel>
-
           <Panel
             title="Ejemplares"
             lead={
@@ -180,6 +120,33 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
               copies={copies}
               error={errors.fields.copyIds}
               onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
+            />
+          </Panel>
+
+          <Panel title="Detalles">
+            <LabeledItem
+              label="Encargado"
+              content={
+                session.status === "signed-in"
+                  ? session.account.username
+                  : undefined
+              }
+              labelWidth="formWide"
+            />
+            <LabeledItem
+              label="Seleccionados"
+              content={String(copies.length)}
+              labelWidth="formWide"
+            />
+            <LabeledItem
+              label="Desactualizados"
+              content={String(outdated)}
+              labelWidth="formWide"
+            />
+            <LabeledItem
+              label="Fecha"
+              content={formatDateES(new Date())}
+              labelWidth="formWide"
             />
           </Panel>
         </SplitColumns>
@@ -222,13 +189,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
           onClose={closeResult}
         />
       )}
-      {skipped && (
-        <LabelResultDialog
-          title="Algunos ejemplares no se imprimieron"
-          problems={skipped}
-          onClose={() => setSkipped(undefined)}
-        />
-      )}
+      {printer.dialog}
     </>
   );
 }

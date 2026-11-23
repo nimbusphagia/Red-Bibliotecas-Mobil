@@ -8,7 +8,12 @@ import {
   Text,
 } from "@/features/shared/components";
 import { writersOf } from "@/features/catalog/ui/options";
-import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
+import {
+  ChevronDown,
+  ChevronUp,
+  Dot,
+  type LucideIcon,
+} from "lucide-react-native";
 import { useEffect, useEffectEvent, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 
@@ -23,6 +28,7 @@ export type BookCopiesRowProps<T extends { id: number }> = {
   /** Lo que se guarda en la selección al tocar un chip. */
   toItem: (copy: CopyItem, book: BookListItem) => T;
   chipDetail?: (copy: CopyItem) => string | undefined;
+  chipIcon?: (copy: CopyItem) => LucideIcon | undefined;
   /** Texto junto a los escritores (cantidad de ejemplares, por ejemplo). */
   subtitle?: string;
   emptyText?: string;
@@ -41,6 +47,7 @@ export default function BookCopiesRow<T extends { id: number }>({
   reloadKey,
   toItem,
   chipDetail,
+  chipIcon,
   subtitle,
   emptyText = "Sin ejemplares",
   defaultOpen,
@@ -97,6 +104,7 @@ export default function BookCopiesRow<T extends { id: number }>({
               key={c.id}
               label={`#${c.id}`}
               detail={chipDetail?.(c)}
+              detailIcon={chipIcon?.(c)}
               selected={selected.some((s) => s.id === c.id)}
               onPress={() => onToggle(toItem(c, book))}
             />

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { View } from "react-native";
 import { Button } from "../base/Button";
 import { PageHeader } from "../base/Header";
 
@@ -10,7 +11,7 @@ type Props = {
   canSubmit: boolean;
   onSubmit: () => void;
   onCancel: () => void;
-  /** Botones adicionales entre Cancelar y el principal. */
+  /** Acción extra junto al título. */
   extra?: ReactNode;
 };
 
@@ -26,14 +27,18 @@ export function FormHeader({
 }: Props) {
   return (
     <PageHeader title={title} subtitle={subtitle}>
-      <Button title="Cancelar" variant="soft" onPress={onCancel} />
-      {extra}
-      <Button
-        title={submitTitle}
-        loading={submitting}
-        disabled={!canSubmit}
-        onPress={onSubmit}
-      />
+      <View className="flex-1 flex-row items-center gap-4">
+        {extra}
+        <View className="ml-auto flex-row items-center gap-4">
+          <Button title="Cancelar" variant="soft" onPress={onCancel} />
+          <Button
+            title={submitTitle}
+            loading={submitting}
+            disabled={!canSubmit}
+            onPress={onSubmit}
+          />
+        </View>
+      </View>
     </PageHeader>
   );
 }

@@ -38,6 +38,7 @@ export function MultiSearchSelect({
             <Chip
               key={o.id}
               label={o.label}
+              detail={o.detail}
               selected
               onPress={() => onChange(values.filter((v) => v.id !== o.id))}
             />

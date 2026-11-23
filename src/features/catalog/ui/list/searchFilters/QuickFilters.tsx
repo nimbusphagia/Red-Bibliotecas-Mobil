@@ -84,22 +84,24 @@ export default function QuickFilters({
           {activeCount > 0 && <ActiveCounter count={activeCount} />}
         </View>
       )}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="shrink grow-0"
-        contentContainerStyle={{ gap: 8 }}
-      >
-        {buttons.map(({ field, label, active }) => (
-          <Button
-            key={field}
-            title={label}
-            variant={active ? "accent" : "selector"}
-            size="sm"
-            onPress={() => onOpen(field)}
-          />
-        ))}
-      </ScrollView>
+      {buttons.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="shrink grow-0"
+          contentContainerStyle={{ gap: 8 }}
+        >
+          {buttons.map(({ field, label, active }) => (
+            <Button
+              key={field}
+              title={label}
+              variant={active ? "accent" : "selector"}
+              size="sm"
+              onPress={() => onOpen(field)}
+            />
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }

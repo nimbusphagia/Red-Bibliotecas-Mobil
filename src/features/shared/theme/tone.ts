@@ -17,7 +17,12 @@ export type Tone = "canvas" | "light" | "dark";
 
 type Box = { box: string; label: string; icon: ColorName };
 type Accent = Box & { focus: string };
-type ChipStyle = { box: string; label: string; dot: ColorName };
+type ChipStyle = {
+  box: string;
+  label: string;
+  icon: ColorName;
+  dot: ColorName;
+};
 
 export type ToneStyle = {
   surface: string; // fondo del contenedor
@@ -51,13 +56,33 @@ const accentLight: Accent = {
 };
 
 const chipDark = {
-  idle: { box: "bg-darkSolid", label: "text-light1", dot: "dark2" },
-  selected: { box: "bg-darkAccent", label: "text-darkSolid", dot: "dark1" },
+  idle: {
+    box: "bg-darkSolid",
+    label: "text-light1",
+    icon: "light1",
+    dot: "dark2",
+  },
+  selected: {
+    box: "bg-darkAccent",
+    label: "text-darkSolid",
+    icon: "darkSolid",
+    dot: "dark1",
+  },
 } as const;
 // No es simétrico con dark a propósito: en light el chip es lightSolid.
 const chipLight = {
-  idle: { box: "bg-lightSolid", label: "text-darkSolid", dot: "dark2" },
-  selected: { box: "bg-lightAccent", label: "text-dark1", dot: "dark1" },
+  idle: {
+    box: "bg-lightSolid",
+    label: "text-darkSolid",
+    icon: "darkSolid",
+    dot: "dark2",
+  },
+  selected: {
+    box: "bg-lightAccent",
+    label: "text-dark1",
+    icon: "dark1",
+    dot: "dark1",
+  },
 } as const;
 
 // Botones que funcionan como selectores/filtros: mismo look que un Chip sin seleccionar.

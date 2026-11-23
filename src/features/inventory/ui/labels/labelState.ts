@@ -1,4 +1,10 @@
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
+import {
+  CircleCheck,
+  CircleDashedCheck,
+  TriangleExclamationPoint,
+  type LucideIcon,
+} from "lucide-react-native";
 
 export type LabelState = "pending" | "labeled" | "outdated";
 
@@ -7,8 +13,8 @@ export const labelStateOf = (
 ): LabelState =>
   c.labeledAt === null ? "pending" : c.outdated ? "outdated" : "labeled";
 
-export const BADGE_VARIANT = {
-  pending: "pending",
-  outdated: "pending",
-  labeled: "active",
-} as const;
+export const LABEL_STATE_ICON: Record<LabelState, LucideIcon> = {
+  labeled: CircleCheck,
+  pending: CircleDashedCheck,
+  outdated: TriangleExclamationPoint,
+};

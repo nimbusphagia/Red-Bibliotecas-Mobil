@@ -9,10 +9,10 @@ import {
 } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { LOAN_STATE_ES } from "@/features/shared/format/translate";
-import { status } from "@/features/shared/theme";
 import { Link } from "expo-router";
-import { Eye, Flag, ScanSearch } from "lucide-react-native";
+import { Eye, ScanSearch } from "lucide-react-native";
 import { View } from "react-native";
+import { LOAN_STATE_ICON } from "../stateIcon";
 
 type Props = { loan: LoanListItem; inset?: boolean; external?: boolean };
 
@@ -35,11 +35,9 @@ export default function LoanRow({ loan, inset, external }: Props) {
       />
 
       <Column variant="subtitled" subtitle1={formatDateES(loan.expiresBy)}>
-        <View className="flex-row items-center gap-1">
+        <View className="flex-row items-center gap-2">
+          <Icon icon={LOAN_STATE_ICON[state]} size="lg" />
           <Text variant="itemSm">{LOAN_STATE_ES[state]}</Text>
-          {loan.overdue && (
-            <Icon icon={Flag} size="sm" tone={status.error.icon} />
-          )}
         </View>
       </Column>
       <Column variant="actions" expand={false}>

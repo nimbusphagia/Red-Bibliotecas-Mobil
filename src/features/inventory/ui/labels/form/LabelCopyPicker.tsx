@@ -4,10 +4,9 @@ import {
   type CopyItem,
 } from "@/features/inventory/internal/copy/types";
 import { InlineFilter } from "@/features/shared/components";
-import { LABEL_STATE_ES } from "@/features/shared/format/translate";
 import { useMemo, useState } from "react";
 import BookCopyPicker from "../../picker/BookCopyPicker";
-import { labelStateOf } from "../labelState";
+import { LABEL_STATE_ICON, labelStateOf } from "../labelState";
 
 type StateFilter = "pending" | "outdated";
 
@@ -40,6 +39,7 @@ export default function LabelCopyPicker({
       selected={selected}
       onToggle={onToggle}
       filterFields={["shelf"]}
+      panelOnly
       bookParams={bookParams}
       reloadKey={state}
       toolbarExtra={
@@ -58,7 +58,7 @@ export default function LabelCopyPicker({
         }).then((p) => p.items)
       }
       toItem={(copy) => copy}
-      chipDetail={(c) => LABEL_STATE_ES[labelStateOf(c)]}
+      chipIcon={(c) => LABEL_STATE_ICON[labelStateOf(c)]}
       acceptCopy={notReleased}
       subtitle={(b) => `${b.activeCount} ejemplares`}
       emptyText="Sin ejemplares por etiquetar"

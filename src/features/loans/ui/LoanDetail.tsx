@@ -3,7 +3,6 @@ import { getLoan, listLoanLines } from "@/features/loans/internal/loan/service";
 import type {
   LoanLine,
   LoanListItem,
-  LoanState,
 } from "@/features/loans/internal/loan/types";
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
@@ -24,27 +23,16 @@ import {
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { Link } from "expo-router";
-import {
-  CalendarClock,
-  CircleCheck,
-  CircleDashedCheck,
-  UserRoundSearch,
-  type LucideIcon,
-} from "lucide-react-native";
+import { UserRoundSearch } from "lucide-react-native";
 import { useCallback } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { loanStateOf } from "../internal/loan/rules";
 import LoanLines from "./loans/detail/LoanLines";
+import { LOAN_STATE_ICON } from "./loans/stateIcon";
 import { loanDetailRows } from "./loans/detail/loanRows";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
-
-const STATE_ICON: Record<LoanState, LucideIcon> = {
-  open: CircleDashedCheck,
-  overdue: CalendarClock,
-  closed: CircleCheck,
-};
 
 export default function LoanDetail({ id }: { id: string }) {
   const session = useSession();
@@ -86,7 +74,7 @@ export default function LoanDetail({ id }: { id: string }) {
         <View className="flex-1 flex-row">
           <StatusIndicator
             text={LOAN_STATE_ES[state]}
-            icon={STATE_ICON[state]}
+            icon={LOAN_STATE_ICON[state]}
           />
         </View>
       </PageHeader>

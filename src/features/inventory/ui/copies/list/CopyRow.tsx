@@ -2,48 +2,70 @@ import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   Button,
   Column,
+  Icon,
   ListRow,
-  StatusBadge,
+  Text,
 } from "@/features/shared/components";
 import { LABEL_STATE_ES, shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { BADGE_VARIANT, labelStateOf } from "../../labels/labelState";
+import { Printer, ScanSearch, Stamp } from "lucide-react-native";
+import { useState } from "react";
+import PrintLabelsDialog from "../../labels/form/PrintLabelsDialog";
+import { LABEL_STATE_ICON, labelStateOf } from "../../labels/labelState";
 
 type Props = { copy: CopyItem };
 
 export default function CopyRow({ copy }: Props) {
   const state = labelStateOf(copy);
-  const action = state === "outdated" ? "Re-etiquetar" : "Etiquetar";
+  const [printing, setPrinting] = useState(false);
 
   return (
-    <ListRow>
-      <Column variant="id" text={`#${copy.id}`} />
-      <Column
-        variant="subtitled"
-        text={copy.bookTitle}
-        subtitle1={copy.labelText ?? undefined}
-        subtitle2={copy.authors ?? undefined}
-      />
-      <Column
-        text={shelfLabel({
-          name: copy.shelfName,
-          isDefault: copy.shelfIsDefault,
-        })}
-      />
-      <Column variant="actions" width="lg">
-        <StatusBadge
-          text={LABEL_STATE_ES[state]}
-          variant={BADGE_VARIANT[state]}
+    <>
+      <ListRow>
+        <Column variant="id" text={`#${copy.id}`} />
+        <Column
+          variant="subtitled"
+          text={copy.bookTitle}
+          subtitle1={copy.authors ?? undefined}
         />
-        {state !== "labeled" && (
-          <Link
-            href={{ pathname: "/copies/mark", params: { copyId: copy.id } }}
-            asChild
-          >
-            <Button title={action} size="sm" variant="soft" />
+        <Column text={copy.labelText ?? "---"} />
+        <Column containerClass="gap-2">
+          <Icon icon={LABEL_STATE_ICON[state]} size="lg" />
+          <Text variant="itemSm">{LABEL_STATE_ES[state]}</Text>
+        </Column>
+        <Column
+          width="lg"
+          text={shelfLabel({
+            name: copy.shelfName,
+            isDefault: copy.shelfIsDefault,
+          })}
+        />
+        <Column variant="actions" width="md">
+          {state === "labeled" ? (
+            <Button
+              variant="soft"
+              icon={Printer}
+              onPress={() => setPrinting(true)}
+            />
+          ) : (
+            <Link
+              href={{ pathname: "/copies/mark", params: { copyId: copy.id } }}
+              asChild
+            >
+              <Button variant="soft" icon={Stamp} />
+            </Link>
+          )}
+          <Link href={`/catalog/${copy.bookId}`} asChild>
+            <Button variant="soft" icon={ScanSearch} />
           </Link>
-        )}
-      </Column>
-    </ListRow>
+        </Column>
+      </ListRow>
+      {printing && (
+        <PrintLabelsDialog
+          initial={[copy]}
+          onClose={() => setPrinting(false)}
+        />
+      )}
+    </>
   );
 }

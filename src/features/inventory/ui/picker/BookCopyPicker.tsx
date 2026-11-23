@@ -14,6 +14,7 @@ import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useSearch } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { cn } from "@/features/shared/theme";
+import type { LucideIcon } from "lucide-react-native";
 import { useCallback, useState, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import BookCopiesRow from "./BookCopiesRow";
@@ -27,6 +28,8 @@ type Props<T extends { id: number }> = {
   className?: string;
   /** Filtros del catálogo que se ofrecen (estantería, autor, etc.). */
   filterFields: FilterField[];
+  /** Solo el botón del panel de filtros, sin los botones rápidos. */
+  panelOnly?: boolean;
   /** Filtros fijos de la lista de libros. Debe ser un valor estable (constante o memoizado). */
   bookParams?: BookListParams;
   /** Controles extra junto a los filtros, que condicionan `bookParams`/`loadCopies`. */
@@ -40,6 +43,7 @@ type Props<T extends { id: number }> = {
   ) => Promise<CopyItem[]>;
   toItem: (copy: CopyItem, book: BookListItem) => T;
   chipDetail?: (copy: CopyItem) => string | undefined;
+  chipIcon?: (copy: CopyItem) => LucideIcon | undefined;
   /** Descarta ejemplares al buscar por #id (por defecto se aceptan todos). Debe ser estable. */
   acceptCopy?: (copy: CopyItem) => boolean;
   subtitle?: (book: BookListItem) => string | undefined;
@@ -56,12 +60,14 @@ export default function BookCopyPicker<T extends { id: number }>({
   onToggle,
   className,
   filterFields,
+  panelOnly = false,
   bookParams,
   toolbarExtra,
   reloadKey,
   loadCopies,
   toItem,
   chipDetail,
+  chipIcon,
   acceptCopy,
   subtitle,
   emptyText,
@@ -119,8 +125,8 @@ export default function BookCopyPicker<T extends { id: number }>({
               <QuickFilters
                 filters={filters}
                 onOpen={setDialog}
-                fields={filterFields}
-                showPanel={false}
+                fields={panelOnly ? [] : filterFields}
+                showPanel={panelOnly}
               />
               {toolbarExtra}
             </View>
@@ -140,6 +146,7 @@ export default function BookCopyPicker<T extends { id: number }>({
             reloadKey={`${String(reloadKey)}|${filters.shelfId}|${byId}`}
             toItem={toItem}
             chipDetail={chipDetail}
+            chipIcon={chipIcon}
             subtitle={subtitle?.(book)}
             emptyText={
               typeof emptyText === "function"
