@@ -1,7 +1,6 @@
-import { getBookItem } from "@/features/catalog/internal/book/service";
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { fullName } from "@/features/catalog/ui/options";
-import { getCopy } from "@/features/inventory/internal/copy/service";
+import { findCopyWithBook } from "@/features/inventory/ui/picker/copyWithBook";
 import { listVisitors } from "@/features/loans/internal/visitor/service";
 import type { Option } from "@/features/shared/components";
 
@@ -32,8 +31,8 @@ export const toLoanCopy = (
 ): LoanCopy => ({ id, labelText, title: book.title, author: writersOf(book) });
 
 export async function copyById(id: number) {
-  const copy = await getCopy(id).catch(() => null);
-  if (!copy) return null;
-  const book = await getBookItem(copy.bookId);
+  const found = await findCopyWithBook(id);
+  if (!found) return null;
+  const { copy, book } = found;
   return { book, copy: toLoanCopy(copy.id, copy.labelText, book) };
 }

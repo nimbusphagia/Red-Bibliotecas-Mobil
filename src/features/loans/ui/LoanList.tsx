@@ -9,15 +9,12 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import type { SortDirection } from "@/features/shared/types/types";
 import { Link } from "expo-router";
-import { ArrowUp, BookUp } from "lucide-react-native";
+import { ArrowUp } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import LoanRow from "./loans/list/LoanRow";
-
-const PAGE_SIZE = 20;
 
 type Filter = "all" | LoanState;
 
@@ -34,14 +31,10 @@ const SORTS: SortOption<LoanSort>[] = [
 ];
 
 export default function LoanList() {
-  const [search, setSearch] = useState("");
+  const { search, setSearch, debouncedSearch } = useSearch();
   const [filter, setFilter] = useState<Filter>("all");
-  const [sort, setSort] = useState<{ by: LoanSort; dir: SortDirection }>({
-    by: "createdAt",
-    dir: "desc",
-  });
+  const [sort, setSort] = useSort<LoanSort>({ by: "createdAt", dir: "desc" });
 
-  const debouncedSearch = useDebounce(search);
 
   const fetchPage = useCallback(
     (offset: number) =>
@@ -86,7 +79,7 @@ export default function LoanList() {
               options={SORTS}
               sortBy={sort.by}
               sortDir={sort.dir}
-              onChange={(by, dir) => setSort({ by, dir })}
+              onChange={setSort}
             />
           </>
         }

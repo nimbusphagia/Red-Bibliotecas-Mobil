@@ -51,7 +51,6 @@ import type {
   NewBook,
 } from "./types";
 
-// References
 const copies: Reference = { table: copy, column: copy.bookId };
 const copyCount = rowCount(copies, book.id);
 const activeCount = rowCount(
@@ -67,7 +66,6 @@ const onLoanCount = rowCount(
   book.id,
 );
 
-// Helpers
 const matches = (column: AnyColumn | SQL, token: string) =>
   likeTokens(column, [token])[0];
 
@@ -147,7 +145,6 @@ const selectItems = () =>
     .leftJoin(category, eq(book.categoryId, category.id))
     .leftJoin(subcategory, eq(book.subcategoryId, subcategory.id));
 
-// Queries
 export async function findBookById(id: number): Promise<Book | null> {
   const [row] = await db.select().from(book).where(eq(book.id, id));
   return row ?? null;
@@ -300,7 +297,6 @@ export async function countBookUsage(id: number): Promise<BookUsage | null> {
   return row ?? null;
 }
 
-// Actions
 const collaboratorRows = (bookId: number, list: BookCollaborator[]) =>
   list.map((c) => ({
     bookId,
@@ -343,7 +339,6 @@ export function updateBookSync(
   return row;
 }
 
-// Tejuelo
 /** Prefijo del tejuelo del libro, o null si aún no se puede armar. */
 export function findLabelPrefixSync(
   ex: Executor,

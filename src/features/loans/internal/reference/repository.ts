@@ -3,9 +3,6 @@ import { db } from "@/db/client";
 import { loanRule, schoolGrade } from "@/db/schema";
 import type { LoanRule, SchoolGrade } from "./types";
 
-export const listLoanRules = (): Promise<LoanRule[]> =>
-  db.select().from(loanRule).orderBy(asc(loanRule.role));
-
 export async function findLoanRuleByRole(
   role: LoanRule["role"],
 ): Promise<LoanRule | null> {

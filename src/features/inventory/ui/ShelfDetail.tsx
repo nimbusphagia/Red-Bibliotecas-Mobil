@@ -15,14 +15,13 @@ import {
 } from "@/features/shared/components";
 import { formatDate } from "@/features/shared/format/dates";
 import { shelfLabel } from "@/features/shared/format/translate";
+import { PAGE_SIZE } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import ShelfCopyRow from "./shelves/detail/ShelfCopyRow";
 import MoveCopyDialog from "./shelves/form/MoveCopyDialog";
-
-const PAGE_SIZE = 20;
 
 export default function ShelfDetail({ id }: { id: string }) {
   const shelfId = routeIdSchema.parse(id);

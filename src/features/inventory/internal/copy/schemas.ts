@@ -14,7 +14,7 @@ export const COPY_SORT_KEYS = [
 ] as const;
 export type CopySort = (typeof COPY_SORT_KEYS)[number];
 
-export const MAX_LABEL_COPIES = 500;
+const MAX_LABEL_COPIES = 500;
 
 export const listCopiesSchema = z
   .object({

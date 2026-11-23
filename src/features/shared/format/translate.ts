@@ -68,20 +68,19 @@ export const LABEL_STATE_ES = {
   outdated: "Desactualizado",
 } as const;
 
-export const MARK_FAILURE_ES: Record<MarkFailureReason, string> = {
+const NOT_LABELABLE_ES = {
   not_found: "El ejemplar ya no existe",
   released: "Está dado de baja (perdido o descartado)",
   incomplete:
     "Al libro le falta categoría, subcategoría, escritor o título para armar el tejuelo",
+} as const;
+
+const MARK_FAILURE_ES: Record<MarkFailureReason, string> = {
+  ...NOT_LABELABLE_ES,
   conflict: "Otro ejemplar ya tiene ese tejuelo",
 };
 
-export const PRINT_SKIP_ES: Record<PrintSkipReason, string> = {
-  not_found: "El ejemplar ya no existe",
-  released: "Está dado de baja (perdido o descartado)",
-  incomplete:
-    "Al libro le falta categoría, subcategoría, escritor o título para armar el tejuelo",
-};
+export const PRINT_SKIP_ES: Record<PrintSkipReason, string> = NOT_LABELABLE_ES;
 
 export const markFailureText = (f: {
   reason: MarkFailureReason;

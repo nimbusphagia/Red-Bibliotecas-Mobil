@@ -1,5 +1,3 @@
-import { getBookItem } from "@/features/catalog/internal/book/service";
-import { getCopy } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { listShelves } from "@/features/inventory/internal/shelf/service";
 import type { Option } from "@/features/shared/components";
@@ -27,9 +25,3 @@ export const toMoveCopy = (c: CopyItem): MoveCopy => ({
   shelfName: shelfLabel({ name: c.shelfName, isDefault: c.shelfIsDefault }),
 });
 
-export async function copyByIdForMove(id: number) {
-  const copy = await getCopy(id).catch(() => null);
-  if (!copy) return null;
-  const book = await getBookItem(copy.bookId);
-  return { book, copy: toMoveCopy(copy) };
-}

@@ -10,7 +10,6 @@ module.exports = {
         Object.entries(fonts).map(([k, v]) => [k, [v]]),
       ),
       colors: palette,
-      // Escala de espaciado: xs=1 (4) · sm=2 (8) · md=3 (12) · lg=4 (16) · xl=6 (24) · 2xl=8 (32)
     },
   },
   plugins: [],

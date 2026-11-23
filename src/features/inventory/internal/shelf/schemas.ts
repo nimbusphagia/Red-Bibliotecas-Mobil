@@ -10,7 +10,7 @@ import { z } from "zod";
 export const SHELF_SORT_KEYS = ["name", "copyCount", "createdAt"] as const;
 export type ShelfSort = (typeof SHELF_SORT_KEYS)[number];
 
-export const MAX_MOVE_COPIES = 100;
+const MAX_MOVE_COPIES = 100;
 
 const description = z
   .string()

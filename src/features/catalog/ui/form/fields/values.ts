@@ -3,7 +3,7 @@ import type { BookListItem } from "@/features/catalog/internal/book/types";
 import type { Option } from "@/features/shared/components";
 import { fullName } from "../../options";
 
-export const ROLES = [
+const ROLES = [
   { key: "writers", role: "writer" },
   { key: "illustrators", role: "illustrator" },
   { key: "translators", role: "translator" },

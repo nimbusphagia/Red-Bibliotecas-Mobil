@@ -9,7 +9,7 @@ import {
 } from "@/features/shared/components";
 import { writersOf } from "@/features/loans/ui/options";
 import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 
 export type BookCopiesRowProps<T extends { id: number }> = {
@@ -47,14 +47,13 @@ export default function BookCopiesRow<T extends { id: number }>({
 }: BookCopiesRowProps<T>) {
   const [open, setOpen] = useState(!!defaultOpen);
   const [copies, setCopies] = useState<CopyItem[]>();
-  const load = useRef(loadCopies);
-  load.current = loadCopies;
+  const load = useEffectEvent(loadCopies);
 
   useEffect(() => {
     if (!open) return;
     let stale = false;
     setCopies(undefined);
-    load.current(book).then((items) => {
+    load(book).then((items) => {
       if (!stale) setCopies(items);
     });
     return () => {

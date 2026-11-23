@@ -15,7 +15,7 @@ import {
 import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { db } from "./client";
 
-export const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
+const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
 
 export const likeTokens = (column: AnyColumn | SQL, tokens: string[]) =>
   tokens.map((t) => sql`${column} like ${`%${escapeLike(t)}%`} escape '\\'`);

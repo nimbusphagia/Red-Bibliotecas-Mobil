@@ -1,8 +1,8 @@
 import { searchKey } from "@/features/shared/format/text";
 
-export const CODE_LENGTH = 3;
+const CODE_LENGTH = 3;
 
-export const STOPWORDS: ReadonlySet<string> = new Set([
+const STOPWORDS: ReadonlySet<string> = new Set([
   "el",
   "la",
   "los",
@@ -23,12 +23,12 @@ export const STOPWORDS: ReadonlySet<string> = new Set([
   "a",
 ]);
 
-export const wordsOf = (text: string): string[] =>
+const wordsOf = (text: string): string[] =>
   searchKey(text)
     .split(/[^a-z0-9]+/)
     .filter(Boolean);
 
-export function codeFrom(
+function codeFrom(
   text: string,
   omit: readonly string[] = [],
 ): string | null {

@@ -12,15 +12,12 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import type { SortDirection } from "@/features/shared/types/types";
-import { UserPlus } from "lucide-react-native";
+import { UserRoundPlus } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import VisitorDialog from "./visitors/form/VisitorDialog";
 import VisitorRow from "./visitors/list/VisitorRow";
-
-const PAGE_SIZE = 20;
 
 type Filter = "all" | VisitorRole;
 
@@ -36,17 +33,13 @@ const SORTS: SortOption<VisitorSort>[] = [
 ];
 
 export default function VisitorList() {
-  const [search, setSearch] = useState("");
+  const { search, setSearch, debouncedSearch } = useSearch();
   const [filter, setFilter] = useState<Filter>("all");
-  const [sort, setSort] = useState<{ by: VisitorSort; dir: SortDirection }>({
-    by: "name",
-    dir: "asc",
-  });
+  const [sort, setSort] = useSort<VisitorSort>({ by: "name", dir: "asc" });
   const [dialog, setDialog] = useState<{ visitor?: VisitorListItem } | null>(
     null,
   );
 
-  const debouncedSearch = useDebounce(search);
 
   const fetchPage = useCallback(
     (offset: number) =>
@@ -74,7 +67,7 @@ export default function VisitorList() {
             title="Agregar"
             size="sm"
             weight="md"
-            icon={UserPlus}
+            icon={UserRoundPlus}
             onPress={() => setDialog({})}
           />
         }
@@ -96,7 +89,7 @@ export default function VisitorList() {
               options={SORTS}
               sortBy={sort.by}
               sortDir={sort.dir}
-              onChange={(by, dir) => setSort({ by, dir })}
+              onChange={setSort}
             />
           </>
         }

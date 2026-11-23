@@ -12,10 +12,7 @@ import { MAX_OPEN_COPIES } from "./rules";
 export const LOAN_SORT_KEYS = ["createdAt", "expiresBy", "visitor"] as const;
 export type LoanSort = (typeof LOAN_SORT_KEYS)[number];
 
-export const OPEN_LINE_SORT_KEYS = ["expiresBy", "visitor", "title"] as const;
-export type OpenLineSort = (typeof OPEN_LINE_SORT_KEYS)[number];
-
-export const MAX_RETURN_ITEMS = 50;
+const MAX_RETURN_ITEMS = 50;
 
 export const LINE_STATUSES = ["pending", ...LINE_OUTCOMES] as const;
 export type LineStatus = (typeof LINE_STATUSES)[number];
@@ -72,14 +69,6 @@ export const listLoansSchema = z
     until: to ? parseISODate(addDays(to, 1)) : undefined,
   }));
 
-export const listOpenLinesSchema = z
-  .object({
-    ...listShape(OPEN_LINE_SORT_KEYS, "expiresBy"),
-    visitorId: idSchema.optional(),
-    overdue: z.boolean().optional(),
-  })
-  .transform(withTokens);
-
 export const listLinesSchema = z.object({
   loanId: idSchema,
   limit: listShape(LOAN_SORT_KEYS, "createdAt").limit,
@@ -99,6 +88,5 @@ export const listVisitorLinesSchema = z.object({
 export type LendInput = z.input<typeof lendSchema>;
 export type ReturnInput = z.input<typeof returnSchema>;
 export type LoanListParams = z.input<typeof listLoansSchema>;
-export type OpenLinesParams = z.input<typeof listOpenLinesSchema>;
 export type LoanLinesParams = z.input<typeof listLinesSchema>;
 export type VisitorLinesParams = z.input<typeof listVisitorLinesSchema>;

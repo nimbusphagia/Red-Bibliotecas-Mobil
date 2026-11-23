@@ -5,8 +5,6 @@ import { z } from "zod";
 import * as repo from "./repository";
 import type { LoanRule, SchoolGrade } from "./types";
 
-export const listLoanRules = (): Promise<LoanRule[]> => repo.listLoanRules();
-
 export const listSchoolGrades = (): Promise<SchoolGrade[]> =>
   repo.listSchoolGrades();
 

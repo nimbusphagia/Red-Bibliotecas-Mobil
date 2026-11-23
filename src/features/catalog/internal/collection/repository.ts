@@ -24,7 +24,6 @@ import type {
 const books: Reference = { table: book, column: book.collectionId };
 const bookCount = rowCount(books, collection.id);
 
-// Queries
 export async function findCollectionById(
   id: number,
 ): Promise<Collection | null> {
@@ -94,7 +93,6 @@ export async function countCollectionUsage(
   return row ?? null;
 }
 
-// Actions
 export async function insertCollection(
   values: NewCollection,
 ): Promise<Collection> {

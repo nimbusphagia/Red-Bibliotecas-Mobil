@@ -1,8 +1,5 @@
 import { loanStateOf } from "@/features/loans/internal/loan/rules";
-import type {
-  LoanListItem,
-  LoanState,
-} from "@/features/loans/internal/loan/types";
+import type { LoanListItem } from "@/features/loans/internal/loan/types";
 import {
   Button,
   Column,

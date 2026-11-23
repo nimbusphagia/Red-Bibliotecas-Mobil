@@ -7,11 +7,11 @@ import {
 } from "@/features/shared/components";
 import { LABEL_STATE_ES, shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { BADGE_VARIANT, labelStateOf } from "../labelState";
+import { BADGE_VARIANT, labelStateOf } from "../../labels/labelState";
 
 type Props = { copy: CopyItem };
 
-export default function LabelRow({ copy }: Props) {
+export default function CopyRow({ copy }: Props) {
   const state = labelStateOf(copy);
   const action = state === "outdated" ? "Re-etiquetar" : "Etiquetar";
 
@@ -37,7 +37,7 @@ export default function LabelRow({ copy }: Props) {
         />
         {state !== "labeled" && (
           <Link
-            href={{ pathname: "/labels/mark", params: { copyId: copy.id } }}
+            href={{ pathname: "/copies/mark", params: { copyId: copy.id } }}
             asChild
           >
             <Button title={action} size="sm" variant="soft" />

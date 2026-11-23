@@ -57,7 +57,7 @@ type PanelProps = PropsWithChildren<{
   className?: string;
 }>;
 
-/** Surface + encabezado. Reemplaza FormSection, Card y el wrapper de DetailColumns. */
+/** Surface con encabezado (título y acción opcional). */
 export function Panel({ title, lead, tone, className, children }: PanelProps) {
   return (
     <Surface tone={tone} className={cn("gap-2 p-5", className)}>

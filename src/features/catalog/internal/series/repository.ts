@@ -24,7 +24,6 @@ import type {
 const books: Reference = { table: book, column: book.seriesId };
 const bookCount = rowCount(books, series.id);
 
-// Queries
 export async function findSeriesById(id: number): Promise<Series | null> {
   const [row] = await db.select().from(series).where(eq(series.id, id));
   return row ?? null;
@@ -87,7 +86,6 @@ export async function countSeriesUsage(
   return row ?? null;
 }
 
-// Actions
 export async function insertSeries(values: NewSeries): Promise<Series> {
   const [row] = await db.insert(series).values(values).returning();
   return row;

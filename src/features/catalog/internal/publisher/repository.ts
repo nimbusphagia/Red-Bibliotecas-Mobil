@@ -20,7 +20,6 @@ import type {
   PublisherWithBookCount,
 } from "./types";
 
-// References
 const books: Reference = { table: book, column: book.publisherId };
 const collections: Reference = {
   table: collection,
@@ -30,7 +29,6 @@ const collections: Reference = {
 const bookCount = rowCount(books, publisher.id);
 const collectionCount = rowCount(collections, publisher.id);
 
-// Queries
 export async function findPublisherById(id: number): Promise<Publisher | null> {
   const [row] = await db.select().from(publisher).where(eq(publisher.id, id));
   return row ?? null;
@@ -83,7 +81,6 @@ export async function countPublisherUsage(
   return row ?? null;
 }
 
-// Actions
 export async function insertPublisher(
   values: NewPublisher,
 ): Promise<Publisher> {

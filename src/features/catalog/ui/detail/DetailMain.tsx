@@ -1,4 +1,3 @@
-// DetailMain.tsx
 import type { BookListItem } from "@/features/catalog/internal/book/types";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { LabelCodes } from "@/features/catalog/internal/book/types";
@@ -6,7 +5,7 @@ import { Button, DetailColumns, Panel } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { NotebookPen, PencilLine, Plus, PlusCircle } from "lucide-react-native";
+import { PencilLine, Plus } from "lucide-react-native";
 import { bookDetailRows, bookLabelRows } from "./bookInfo/bookRows";
 import AddCopiesDialog from "./AddCopiesDialog";
 import CopiesList from "./bookInfo/CopiesList";

@@ -13,7 +13,7 @@ const password = z
   .min(6, "Mínimo 6 caracteres")
   .max(128, "Máximo 128 caracteres");
 
-export const CREATABLE_ROLES = ["admin", "staff"] as const;
+const CREATABLE_ROLES = ["admin", "staff"] as const;
 
 export const createAccountSchema = z.object({
   username,
@@ -35,7 +35,7 @@ export const changeOwnPasswordSchema = z.object({
   newPassword: password,
 });
 
-export const registerOwnerSchema = z.object({ username, password });
+const registerOwnerSchema = z.object({ username, password });
 
 export const completeSetupSchema = registerOwnerSchema.refine(
   (d) => !RESERVED_USERNAMES.has(d.username.toLowerCase()),

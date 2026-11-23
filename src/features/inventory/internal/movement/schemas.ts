@@ -14,8 +14,8 @@ import { z } from "zod";
 export { ENTRY_REASONS, EXIT_REASONS };
 
 export const MAX_COPIES_PER_BOOK = 100;
-export const MAX_LINES = 50;
-export const MAX_EXIT_COPIES = 100;
+const MAX_LINES = 50;
+const MAX_EXIT_COPIES = 100;
 
 export type _EntryReasonsAreMovementReasons = Assert<
   (typeof ENTRY_REASONS)[number] extends (typeof MOVEMENT_REASONS)[number]
@@ -39,7 +39,7 @@ const lineBase = {
   shelfId: idSchema.optional(), // overrides the movement's shelf
 };
 
-export const entryLineSchema = z
+const entryLineSchema = z
   .strictObject({
     bookId: idSchema.optional(),
     book: createBookSchema.optional(),
@@ -74,20 +74,14 @@ const movementShape = {
   lines: linesSchema,
 };
 
-export const entryMovementSchema = z.object({
-  reason: z.enum(ENTRY_REASONS),
-  ...movementShape,
-});
-
 export const registerCopiesSchema = z.object({
   reason: z.enum(ENTRY_REASONS).default("purchase"),
   ...movementShape,
 });
 
-export type EntryMovementInput = z.input<typeof entryMovementSchema>;
 export type RegisterCopiesInput = z.input<typeof registerCopiesSchema>;
-export type EntryMovementParsed = z.output<typeof entryMovementSchema>;
-export type EntryLineParsed = EntryMovementParsed["lines"][number];
+export type RegisterCopiesParsed = z.output<typeof registerCopiesSchema>;
+export type EntryLineParsed = RegisterCopiesParsed["lines"][number];
 
 export const exitMovementSchema = z.object({
   reason: z.enum(EXIT_REASONS),

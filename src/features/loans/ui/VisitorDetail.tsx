@@ -17,6 +17,7 @@ import {
   type SortOption,
 } from "@/features/shared/components";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
+import { PAGE_SIZE } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import type { SortDirection } from "@/features/shared/types/types";
@@ -24,8 +25,6 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import VisitorLineRow from "./visitors/detail/VisitorLineRow";
-
-const PAGE_SIZE = 20;
 
 type Filter = "all" | LineStatus;
 type Data = { visitor: VisitorListItem; status: VisitorLoanStatus };

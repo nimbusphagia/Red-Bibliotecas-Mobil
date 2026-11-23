@@ -26,7 +26,6 @@ export type Field = {
 
 export type Group = {
   title: string;
-  /** "dark" para una sección de fondo dark1; el contenido se adapta solo. */
   tone?: Tone;
   createOnly?: boolean;
   fields: Field[];

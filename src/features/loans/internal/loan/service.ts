@@ -31,14 +31,12 @@ import {
   lendSchema,
   listLinesSchema,
   listLoansSchema,
-  listOpenLinesSchema,
   listVisitorLinesSchema,
   returnSchema,
   VisitorLinesParams,
   type LendInput,
   type LoanLinesParams,
   type LoanListParams,
-  type OpenLinesParams,
   type ReturnInput,
 } from "./schemas";
 import type {
@@ -46,7 +44,6 @@ import type {
   LineOutcome,
   LoanLine,
   LoanListItem,
-  OpenLoanLine,
   ReturnResult,
   VisitorLine,
   VisitorLoanStatus,
@@ -94,13 +91,6 @@ export async function listVisitorLines(
   return repo.listVisitorLines(parsed);
 }
 
-export async function listOpenLoanLines(
-  params: OpenLinesParams = {},
-): Promise<Page<OpenLoanLine>> {
-  const parsed = parseOrThrow(listOpenLinesSchema, params);
-  return repo.listOpenLines({ ...parsed, today: toISODate() });
-}
-
 export async function getVisitorLoanStatus(
   visitorId: number,
 ): Promise<VisitorLoanStatus> {
@@ -108,7 +98,6 @@ export async function getVisitorLoanStatus(
   return statusOf(repo.countOpenLinesSync(db, visitor.id, toISODate()));
 }
 
-// Loans
 const expiresOn = async (role: VisitorRole, today: string) =>
   addDays(today, (await getLoanRule(role)).maxDays);
 

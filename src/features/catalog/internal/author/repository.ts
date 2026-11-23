@@ -21,7 +21,6 @@ import type {
   NewAuthor,
 } from "./types";
 
-// References
 const collab: Reference = {
   table: bookCollaborator,
   column: bookCollaborator.collaboratorId,
@@ -35,7 +34,6 @@ const authoredSeries: Reference = { table: series, column: series.authorId };
 const bookCount = rowCount(collab, author.id, bookCollaborator.bookId);
 const seriesCount = rowCount(authoredSeries, author.id);
 
-// Queries
 export async function findAuthorById(id: number): Promise<Author | null> {
   const [row] = await db.select().from(author).where(eq(author.id, id));
   return row ?? null;
@@ -90,7 +88,6 @@ export async function countAuthorUsage(
   return row ?? null;
 }
 
-// Actions
 export async function insertAuthor(values: NewAuthor): Promise<Author> {
   const [row] = await db.insert(author).values(values).returning();
   return row;

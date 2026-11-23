@@ -29,7 +29,7 @@ export default function DashboardStats() {
           />
         </Pressable>
       </Link>
-      <Link href="/labels" asChild>
+      <Link href="/copies" asChild>
         <Pressable>
           <DualCard
             title="Tejuelos"

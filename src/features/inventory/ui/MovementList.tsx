@@ -10,8 +10,8 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
+import { PAGE_SIZE, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import type { SortDirection } from "@/features/shared/types/types";
 import { SlidersHorizontal } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
@@ -19,8 +19,6 @@ import FilterPanel, {
   type MovementFilters,
 } from "./movements/list/FilterPanel";
 import MovementRow from "./movements/list/MovementRow";
-
-const PAGE_SIZE = 20;
 
 type TypeFilter = "all" | MovementType;
 
@@ -38,10 +36,7 @@ const SORTS: SortOption<MovementSort>[] = [
 export default function MovementList() {
   const [filters, setFilters] = useState<MovementFilters>({});
   const [open, setOpen] = useState(false);
-  const [sort, setSort] = useState<{ by: MovementSort; dir: SortDirection }>({
-    by: "createdAt",
-    dir: "desc",
-  });
+  const [sort, setSort] = useSort<MovementSort>({ by: "createdAt", dir: "desc" });
 
   const activeCount = Object.values(filters).filter(
     (v) => v !== undefined,
@@ -94,7 +89,7 @@ export default function MovementList() {
               options={SORTS}
               sortBy={sort.by}
               sortDir={sort.dir}
-              onChange={(by, dir) => setSort({ by, dir })}
+              onChange={setSort}
             />
           </>
         }

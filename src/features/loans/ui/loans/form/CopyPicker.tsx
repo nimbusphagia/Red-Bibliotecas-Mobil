@@ -2,7 +2,7 @@ import { listCopies } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import BookCopyPicker from "@/features/inventory/ui/picker/BookCopyPicker";
 import type { FilterField } from "@/features/catalog/ui/list/searchFilters/FilterPanel";
-import { copyById, toLoanCopy, type LoanCopy } from "../../options";
+import { toLoanCopy, type LoanCopy } from "../../options";
 
 const PICKER_FIELDS: FilterField[] = [
   "author",
@@ -40,7 +40,6 @@ export default function CopyPicker({ selected, onToggle, className }: Props) {
         }).then((p) => p.items.filter(lendable))
       }
       toItem={(c, book) => toLoanCopy(c.id, c.labelText, book)}
-      bookOfCopy={async (id) => (await copyById(id))?.book ?? null}
       subtitle={(b) => String(b.availableCount)}
       emptyText="Sin ejemplares disponibles"
     />

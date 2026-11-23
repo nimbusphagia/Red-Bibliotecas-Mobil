@@ -12,7 +12,6 @@ import {
   type AnySQLiteColumn,
 } from "drizzle-orm/sqlite-core";
 
-// Helpers
 const lower = (col: AnySQLiteColumn): SQL => sql`lower(${col})`;
 
 const oneOf = (col: AnySQLiteColumn, values: readonly string[]): SQL =>
@@ -331,8 +330,6 @@ export const stockMovementLine = sqliteTable(
     index("idx_stock_movement_line_copy").on(t.copyId),
   ],
 );
-
-// Loans
 
 export const loanRule = sqliteTable(
   "loan_rule",

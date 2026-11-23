@@ -4,11 +4,11 @@ import {
 } from "@/features/catalog/internal/book/service";
 import { listCopies } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
+import { PageHeader } from "@/features/shared/components";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import DetailHeader from "./detail/DetailHeader";
 import DetailMain from "./detail/DetailMain";
 import type {
   BookListItem,
@@ -55,8 +55,7 @@ export default function BookDetail({ id }: Props) {
 
   return (
     <>
-      <DetailHeader
-        id={data.book.id}
+      <PageHeader
         title={data.book.title}
         subtitle={formatContributors(data.book.collaborators)}
       />

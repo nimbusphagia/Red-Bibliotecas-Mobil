@@ -8,7 +8,7 @@ import {
 import { formatDate } from "@/features/shared/format/dates";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { Eye, ScanSearch } from "lucide-react-native";
+import { ScanSearch } from "lucide-react-native";
 
 export default function VisitorLineRow({ line }: { line: VisitorLine }) {
   return (

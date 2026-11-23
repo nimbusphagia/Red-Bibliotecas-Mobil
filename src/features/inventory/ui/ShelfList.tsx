@@ -8,17 +8,14 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import ShelfDialog from "./shelves/form/ShelfDialog";
 import ShelfRow from "./shelves/list/ShelfRow";
 import { Link } from "expo-router";
 import { Plus, SendToBack } from "lucide-react-native";
 import { View } from "react-native";
-
-const PAGE_SIZE = 20;
 
 const SORTS: SortOption<ShelfSort>[] = [
   { key: "name", label: "Nombre", defaultDir: "asc" },
@@ -27,14 +24,10 @@ const SORTS: SortOption<ShelfSort>[] = [
 ];
 
 export default function ShelfList() {
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<{ by: ShelfSort; dir: SortDirection }>({
-    by: "name",
-    dir: "asc",
-  });
+  const { search, setSearch, debouncedSearch } = useSearch();
+  const [sort, setSort] = useSort<ShelfSort>({ by: "name", dir: "asc" });
   const [dialog, setDialog] = useState<{ shelf?: ShelfListItem } | null>(null);
 
-  const debouncedSearch = useDebounce(search);
 
   const fetchPage = useCallback(
     (offset: number) =>
@@ -87,7 +80,7 @@ export default function ShelfList() {
               options={SORTS}
               sortBy={sort.by}
               sortDir={sort.dir}
-              onChange={(by, dir) => setSort({ by, dir })}
+              onChange={setSort}
             />
           </View>
         }

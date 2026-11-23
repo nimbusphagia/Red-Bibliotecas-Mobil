@@ -8,13 +8,10 @@ import {
 } from "@/features/shared/validation/validation";
 import * as repo from "./repository";
 import {
-  entryMovementSchema,
   exitMovementSchema,
   listLinesSchema,
   listMovementsSchema,
   registerCopiesSchema,
-  type EntryMovementInput,
-  type EntryMovementParsed,
   type ExitMovementInput,
   type MovementLinesParams,
   type MovementListParams,
@@ -31,35 +28,21 @@ import { writeExit } from "./utils/exit";
 import { prepareLines } from "./utils/prepare";
 import { writeEntry } from "./utils/write";
 
-async function run(
-  actorId: number,
-  input: EntryMovementParsed,
-): Promise<EntryResult> {
-  const lines = await prepareLines(input.lines, input.shelfId);
-  const header = {
-    reason: input.reason,
-    signedById: actorId,
-    notes: input.notes,
-  };
-  return mapWriteErrors("stock movement", async () =>
-    inTransaction((tx) => writeEntry(tx, header, lines)),
-  );
-}
-
 export async function registerCopies(
   actorId: number,
   input: RegisterCopiesInput,
 ): Promise<EntryResult> {
   await requireStockRole(actorId, "register stock");
-  return run(actorId, parseOrThrow(registerCopiesSchema, input));
-}
-
-export async function createEntryMovement(
-  actorId: number,
-  input: EntryMovementInput,
-): Promise<EntryResult> {
-  await requireStockRole(actorId, "register stock");
-  return run(actorId, parseOrThrow(entryMovementSchema, input));
+  const parsed = parseOrThrow(registerCopiesSchema, input);
+  const lines = await prepareLines(parsed.lines, parsed.shelfId);
+  const header = {
+    reason: parsed.reason,
+    signedById: actorId,
+    notes: parsed.notes,
+  };
+  return mapWriteErrors("stock movement", async () =>
+    inTransaction((tx) => writeEntry(tx, header, lines)),
+  );
 }
 
 export async function exitCopies(

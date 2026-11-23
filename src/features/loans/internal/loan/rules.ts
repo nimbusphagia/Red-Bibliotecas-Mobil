@@ -5,7 +5,7 @@ import {
 import type { OpenCounts, VisitorLoanStatus } from "./types";
 
 export const MAX_OPEN_COPIES = 5;
-export const BLOCK_AT_OVERDUE = 3;
+const BLOCK_AT_OVERDUE = 3;
 
 export function assertCanBorrow(counts: OpenCounts, requested: number): void {
   if (counts.overdue >= BLOCK_AT_OVERDUE) {

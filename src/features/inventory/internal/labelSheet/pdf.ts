@@ -21,7 +21,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const stamp = (d: Date) => `${formatDate(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
 /** `863-GAR-N-CIE-3` => una línea por código, sin guiones. */
-export const linesOf = (text: string) => text.split("-").filter(Boolean);
+const linesOf = (text: string) => text.split("-").filter(Boolean);
 
 /**
  * Hoja A4 con un par por ejemplar: celda con el #id y, al lado, el rectángulo

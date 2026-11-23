@@ -7,9 +7,8 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import BookRow from "./list/BookRow";
@@ -22,8 +21,6 @@ import QuickFilters from "./list/searchFilters/QuickFilters";
 import { Link } from "expo-router";
 import { Plus } from "lucide-react-native";
 
-const PAGE_SIZE = 20;
-
 const SORTS: SortOption<BookSort>[] = [
   { key: "title", label: "Título", defaultDir: "asc" },
   { key: "author", label: "Autor", defaultDir: "asc" },
@@ -31,15 +28,11 @@ const SORTS: SortOption<BookSort>[] = [
 ];
 
 export default function BookList() {
-  const [search, setSearch] = useState("");
+  const { search, setSearch, debouncedSearch } = useSearch();
   const [filters, setFilters] = useState<CatalogFilters>({});
   const [dialog, setDialog] = useState<FilterDialog>(null);
-  const [sort, setSort] = useState<{ by: BookSort; dir: SortDirection }>({
-    by: "title",
-    dir: "asc",
-  });
+  const [sort, setSort] = useSort<BookSort>({ by: "title", dir: "asc" });
 
-  const debouncedSearch = useDebounce(search);
 
   const fetchPage = useCallback(
     (offset: number) => {
@@ -83,7 +76,7 @@ export default function BookList() {
                 options={SORTS}
                 sortBy={sort.by}
                 sortDir={sort.dir}
-                onChange={(by, dir) => setSort({ by, dir })}
+                onChange={setSort}
               />
             </View>
           </>

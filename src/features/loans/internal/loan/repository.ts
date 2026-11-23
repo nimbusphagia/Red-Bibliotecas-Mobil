@@ -29,7 +29,6 @@ import {
   inArray,
   isNull,
   lt,
-  or,
   sql,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
@@ -41,8 +40,6 @@ import type {
   LoanMovement,
   NewLoanMovement,
   OpenCounts,
-  OpenLineFilters,
-  OpenLoanLine,
   VisitorLine,
   VisitorLineFilters,
 } from "./types";
@@ -297,71 +294,3 @@ export async function listVisitorLines(
   return toPage(items, n, filters);
 }
 
-export async function listOpenLines(
-  filters: OpenLineFilters,
-): Promise<Page<OpenLoanLine>> {
-  const { tokens, visitorId, overdue, today, sortBy, sortDir } = filters;
-
-  const where = and(
-    isNull(loanMovementLine.resolvedAt),
-    visitorId === undefined
-      ? undefined
-      : eq(loanMovement.loanedToId, visitorId),
-    overdue === undefined
-      ? undefined
-      : overdue
-        ? lt(loanMovement.expiresBy, today)
-        : gte(loanMovement.expiresBy, today),
-    ...tokens.map((t) =>
-      or(
-        ...likeTokens(visitor.nameKey, [t]),
-        ...likeTokens(book.titleKey, [t]),
-      ),
-    ),
-  );
-
-  const sortKey = {
-    expiresBy: loanMovement.expiresBy,
-    visitor: visitor.nameKey,
-    title: book.titleKey,
-  }[sortBy];
-
-  const [rows, [{ n }]] = await Promise.all([
-    db
-      .select({
-        lineId: loanMovementLine.id,
-        loanId: loanMovement.id,
-        copyId: copy.id,
-        bookId: copy.bookId,
-        bookTitle: book.title,
-        copyNumber: copy.copyNumber,
-        labelText: labelTextSql,
-        visitorId: visitor.id,
-        visitorName: visitor.name,
-        loanedAt: loanMovement.createdAt,
-        expiresBy: loanMovement.expiresBy,
-      })
-      .from(loanMovementLine)
-      .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
-      .innerJoin(visitor, eq(visitor.id, loanMovement.loanedToId))
-      .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
-      .innerJoin(book, eq(book.id, copy.bookId))
-      .where(where)
-      .orderBy(direction(sortDir)(sortKey), asc(loanMovementLine.id))
-      .limit(filters.limit)
-      .offset(filters.offset),
-    db
-      .select({ n: count() })
-      .from(loanMovementLine)
-      .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
-      .innerJoin(visitor, eq(visitor.id, loanMovement.loanedToId))
-      .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
-      .innerJoin(book, eq(book.id, copy.bookId))
-      .where(where),
-  ]);
-  return toPage(
-    rows.map((r) => ({ ...r, overdue: r.expiresBy < today })),
-    n,
-    filters,
-  );
-}

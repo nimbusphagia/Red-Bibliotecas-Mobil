@@ -1,14 +1,14 @@
 import type { Href } from "expo-router";
 import {
+  BookSearch,
+  ClipboardClock,
   House,
   LibraryBig,
   LucideIcon,
-  PackageSearch,
+  NotebookPen,
   ShelvingUnit,
-  Tags,
-  Tickets,
   UserRound,
-  UserRoundGroup,
+  Users,
 } from "lucide-react-native";
 
 export type NavItem = {
@@ -40,33 +40,32 @@ export const NAVBAR: Navbar = {
       key: "loans",
       label: "Préstamos",
       href: "/loans",
-      icon: Tickets,
+      icon: NotebookPen,
     },
     {
-      key: "labels",
-      label: "Tejuelos",
-      href: "/labels",
-      icon: Tags,
+      key: "copies",
+      label: "Ejemplares",
+      href: "/copies",
+      icon: BookSearch,
     },
     {
       key: "visitors",
       label: "Visitantes",
       href: "/visitors",
-      icon: UserRoundGroup,
+      icon: Users,
+    },
+    {
+      key: "shelves",
+      label: "Organización",
+      href: "/shelves",
+      icon: ShelvingUnit,
     },
 
     {
       key: "stock",
       label: "Inventario",
       href: "/stock",
-      icon: PackageSearch,
-    },
-
-    {
-      key: "shelves",
-      label: "Organización",
-      href: "/shelves",
-      icon: ShelvingUnit,
+      icon: ClipboardClock,
     },
   ],
   footer: [

@@ -30,7 +30,6 @@ module.exports = {
     // TEXT sobre dark: light1 > lightSolid
 
     secondary: "#8AAAD4",
-    highlight: "#5789C9",
     error: "#D14343",
     success: "#4E9F6B",
     warning: "#D99A2B",

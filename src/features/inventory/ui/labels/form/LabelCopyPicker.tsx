@@ -1,15 +1,11 @@
-import { getBookItem } from "@/features/catalog/internal/book/service";
-import {
-  getCopy,
-  listCopies,
-} from "@/features/inventory/internal/copy/service";
+import { listCopies } from "@/features/inventory/internal/copy/service";
 import {
   RELEASED_STATUSES,
   type CopyItem,
 } from "@/features/inventory/internal/copy/types";
 import { InlineFilter } from "@/features/shared/components";
 import { LABEL_STATE_ES } from "@/features/shared/format/translate";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BookCopyPicker from "../../picker/BookCopyPicker";
 import { labelStateOf } from "../labelState";
 
@@ -20,17 +16,14 @@ const FILTERS: { value: StateFilter; label: string }[] = [
   { value: "outdated", label: "Desactualizados" },
 ];
 
+const notReleased = (c: CopyItem) =>
+  !RELEASED_STATUSES.some((s) => s === c.status);
+
 type Props = {
   selected: CopyItem[];
   onToggle: (copy: CopyItem) => void;
   className?: string;
 };
-
-async function bookOfCopy(id: number) {
-  const copy = await getCopy(id).catch(() => null);
-  if (!copy || RELEASED_STATUSES.some((s) => s === copy.status)) return null;
-  return getBookItem(copy.bookId);
-}
 
 /** Libros con ejemplares por etiquetar; se elige cada ejemplar por su #id. */
 export default function LabelCopyPicker({
@@ -39,6 +32,7 @@ export default function LabelCopyPicker({
   className,
 }: Props) {
   const [state, setState] = useState<StateFilter>("pending");
+  const bookParams = useMemo(() => ({ labelState: state }), [state]);
 
   return (
     <BookCopyPicker<CopyItem>
@@ -46,7 +40,7 @@ export default function LabelCopyPicker({
       selected={selected}
       onToggle={onToggle}
       filterFields={["shelf"]}
-      bookParams={{ labelState: state }}
+      bookParams={bookParams}
       reloadKey={state}
       toolbarExtra={
         <InlineFilter options={FILTERS} value={state} onChange={setState} />
@@ -65,7 +59,7 @@ export default function LabelCopyPicker({
       }
       toItem={(copy) => copy}
       chipDetail={(c) => LABEL_STATE_ES[labelStateOf(c)]}
-      bookOfCopy={bookOfCopy}
+      acceptCopy={notReleased}
       subtitle={(b) => `${b.activeCount} ejemplares`}
       emptyText="Sin ejemplares por etiquetar"
     />

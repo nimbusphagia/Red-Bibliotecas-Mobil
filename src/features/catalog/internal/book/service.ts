@@ -151,7 +151,6 @@ async function assertConsistent(final: {
   }
 }
 
-// Actions
 export type PreparedBook = {
   values: NewBook;
   collaborators: BookCollaborator[];

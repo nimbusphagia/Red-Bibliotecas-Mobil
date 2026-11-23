@@ -11,11 +11,13 @@ import FilterPanel, {
 import QuickFilters from "@/features/catalog/ui/list/searchFilters/QuickFilters";
 import { ItemList, Searchbar } from "@/features/shared/components";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { useSearch } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { cn } from "@/features/shared/theme";
 import { useCallback, useState, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import BookCopiesRow from "./BookCopiesRow";
+import { findCopyWithBook } from "./copyWithBook";
 
 const PAGE_SIZE = 10;
 
@@ -25,7 +27,7 @@ type Props<T extends { id: number }> = {
   className?: string;
   /** Filtros del catálogo que se ofrecen (estantería, autor, etc.). */
   filterFields: FilterField[];
-  /** Filtros fijos de la lista de libros (activos, con pendientes...). */
+  /** Filtros fijos de la lista de libros. Debe ser un valor estable (constante o memoizado). */
   bookParams?: BookListParams;
   /** Controles extra junto a los filtros, que condicionan `bookParams`/`loadCopies`. */
   toolbarExtra?: ReactNode;
@@ -38,8 +40,8 @@ type Props<T extends { id: number }> = {
   ) => Promise<CopyItem[]>;
   toItem: (copy: CopyItem, book: BookListItem) => T;
   chipDetail?: (copy: CopyItem) => string | undefined;
-  /** El libro que contiene al ejemplar con ese #id, si existe y sirve. */
-  bookOfCopy: (copyId: number) => Promise<BookListItem | null>;
+  /** Descarta ejemplares al buscar por #id (por defecto se aceptan todos). Debe ser estable. */
+  acceptCopy?: (copy: CopyItem) => boolean;
   subtitle?: (book: BookListItem) => string | undefined;
   /** Texto sin ejemplares; puede depender de la estantería filtrada. */
   emptyText?: string | ((shelfId?: number) => string);
@@ -60,35 +62,33 @@ export default function BookCopyPicker<T extends { id: number }>({
   loadCopies,
   toItem,
   chipDetail,
-  bookOfCopy,
+  acceptCopy,
   subtitle,
   emptyText,
 }: Props<T>) {
-  const [search, setSearch] = useState("");
+  const { search, setSearch, debouncedSearch } = useSearch();
   const [idText, setIdText] = useState("");
   const [filters, setFilters] = useState<CatalogFilters>({});
   const [dialog, setDialog] = useState<FilterDialog>(null);
-  const debouncedSearch = useDebounce(search);
   const copyId = useDebounce(idText);
-  const fixed = JSON.stringify(bookParams ?? {});
 
   const fetchPage = useCallback(
     async (offset: number) => {
       if (copyId) {
-        const found = await bookOfCopy(Number(copyId));
-        const items = found ? [found] : [];
+        const found = await findCopyWithBook(Number(copyId));
+        const items =
+          found && (acceptCopy?.(found.copy) ?? true) ? [found.book] : [];
         return { items, total: items.length, limit: PAGE_SIZE, offset };
       }
       return listBooks({
         ...toBookParams(filters),
-        ...(JSON.parse(fixed) as BookListParams),
+        ...bookParams,
         search: debouncedSearch,
         limit: PAGE_SIZE,
         offset,
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters, debouncedSearch, copyId, fixed],
+    [filters, debouncedSearch, copyId, bookParams, acceptCopy],
   );
   const list = useInfiniteList(fetchPage);
   const byId = !!copyId;

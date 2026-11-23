@@ -20,6 +20,7 @@ import {
   MOVEMENT_REASON_ES,
   MOVEMENT_TYPE_ES,
 } from "@/features/shared/format/translate";
+import { PAGE_SIZE } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { Link } from "expo-router";
@@ -27,8 +28,6 @@ import { Eye } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import MovementLineRow from "./movements/detail/MovementLineRow";
-
-const PAGE_SIZE = 20;
 
 export default function MovementDetail({ id }: { id: string }) {
   const movementId = routeIdSchema.parse(id);

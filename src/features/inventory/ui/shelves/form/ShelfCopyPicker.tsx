@@ -1,7 +1,7 @@
 import type { FilterField } from "@/features/catalog/ui/list/searchFilters/FilterPanel";
 import { listCopies } from "@/features/inventory/internal/copy/service";
 import BookCopyPicker from "../../picker/BookCopyPicker";
-import { copyByIdForMove, toMoveCopy, type MoveCopy } from "../options";
+import { toMoveCopy, type MoveCopy } from "../options";
 
 const PICKER_FIELDS: FilterField[] = ["shelf"];
 
@@ -32,7 +32,6 @@ export default function ShelfCopyPicker({
       }
       toItem={(c) => toMoveCopy(c)}
       chipDetail={(c) => (c.status === "on_loan" ? "Prestado" : undefined)}
-      bookOfCopy={async (id) => (await copyByIdForMove(id))?.book ?? null}
       subtitle={(b) => String(b.activeCount)}
       emptyText={(shelfId) =>
         shelfId === undefined

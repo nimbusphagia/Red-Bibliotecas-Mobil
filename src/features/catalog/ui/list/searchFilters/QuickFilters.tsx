@@ -21,9 +21,7 @@ import {
 type Props = {
   filters: CatalogFilters;
   onOpen: (dialog: FilterDialog) => void;
-  /** Filtros en línea a mostrar, en este orden de aparición. */
   fields?: FilterField[];
-  /** Botón que abre el panel completo. Se oculta con `false`. */
   showPanel?: boolean;
 };
 

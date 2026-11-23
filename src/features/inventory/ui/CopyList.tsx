@@ -8,17 +8,19 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
-import LabelRow from "./labels/list/LabelRow";
+import FilterPanel, {
+  type CatalogFilters,
+  type FilterDialog,
+  type FilterField,
+} from "@/features/catalog/ui/list/searchFilters/FilterPanel";
+import QuickFilters from "@/features/catalog/ui/list/searchFilters/QuickFilters";
+import CopyRow from "./copies/list/CopyRow";
 import { Link } from "expo-router";
-import { Tag } from "lucide-react-native";
+import { Stamp } from "lucide-react-native";
 import { View } from "react-native";
-import ShelfFilter from "./labels/list/ShelfFilter";
-
-const PAGE_SIZE = 20;
 
 type StatusFilter = "all" | "labeled" | "pending" | "outdated";
 
@@ -29,37 +31,40 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "outdated", label: "Desactualizados" },
 ];
 
+const FILTER_FIELDS: FilterField[] = ["shelf"];
+
 const SORTS: SortOption<CopySort>[] = [
   { key: "labeledAt", label: "Fecha de etiquetado", defaultDir: "desc" },
   { key: "createdAt", label: "Fecha de creación", defaultDir: "desc" },
 ];
 
-export default function LabelList() {
-  const [search, setSearch] = useState("");
+export default function CopyList() {
+  const { search, setSearch, debouncedSearch } = useSearch();
   const [filter, setFilter] = useState<StatusFilter>("all");
-  const [shelfId, setShelfId] = useState<number>();
-  const [sort, setSort] = useState<{ by: CopySort; dir: SortDirection }>({
-    by: "labeledAt",
-    dir: "desc",
-  });
+  const [filters, setFilters] = useState<CatalogFilters>({});
+  const [dialog, setDialog] = useState<FilterDialog>(null);
+  const [sort, setSort] = useSort<CopySort>({ by: "labeledAt", dir: "desc" });
 
-  const debouncedSearch = useDebounce(search);
 
   const fetchPage = useCallback(
     (offset: number) =>
       listCopies({
         search: debouncedSearch,
         labeled:
-          filter === "labeled" ? true : filter === "pending" ? false : undefined,
+          filter === "labeled"
+            ? true
+            : filter === "pending"
+              ? false
+              : undefined,
         outdated: filter === "outdated" ? true : undefined,
         excludeReleased: true,
-        shelfId,
+        shelfId: filters.shelfId,
         sortBy: sort.by,
         sortDir: sort.dir,
         limit: PAGE_SIZE,
         offset,
       }),
-    [debouncedSearch, filter, shelfId, sort],
+    [debouncedSearch, filter, filters.shelfId, sort],
   );
 
   const list = useInfiniteList(fetchPage);
@@ -68,10 +73,10 @@ export default function LabelList() {
     <>
       <PageHeader
         title="Ejemplares"
-        subtitle="Controla qué ejemplares ya tienen su tejuelo"
+        subtitle="Seguimiento de ejemplares y tejuelos"
         lead={
-          <Link href="/labels/mark" asChild>
-            <Button title="Etiquetar" icon={Tag} size="sm" weight="md" />
+          <Link href="/copies/mark" asChild>
+            <Button title="Tejuelos" icon={Stamp} size="sm" weight="md" />
           </Link>
         }
         search={{
@@ -84,7 +89,12 @@ export default function LabelList() {
         toolbar={
           <>
             <View className="flex-row items-center gap-4">
-              <ShelfFilter value={shelfId} onChange={setShelfId} withIcon />
+              <QuickFilters
+                filters={filters}
+                onOpen={setDialog}
+                fields={FILTER_FIELDS}
+                showPanel={false}
+              />
               <InlineFilter
                 options={FILTERS}
                 value={filter}
@@ -95,14 +105,21 @@ export default function LabelList() {
               options={SORTS}
               sortBy={sort.by}
               sortDir={sort.dir}
-              onChange={(by, dir) => setSort({ by, dir })}
+              onChange={setSort}
             />
           </>
         }
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
-        renderItem={(copy) => <LabelRow copy={copy} />}
+        renderItem={(copy) => <CopyRow copy={copy} />}
+      />
+      <FilterPanel
+        filters={filters}
+        onChange={setFilters}
+        open={dialog}
+        onOpenChange={setDialog}
+        fields={FILTER_FIELDS}
       />
     </>
   );
