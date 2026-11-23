@@ -6,12 +6,17 @@ import { Icon } from "../base/Icon";
 import { Surface } from "../base/Surface";
 import { Text } from "../base/Text";
 
-type Props = { children: ReactNode; compact?: boolean; className?: string };
+type Props = {
+  children: ReactNode;
+  compact?: boolean;
+  inset?: boolean;
+  className?: string;
+};
 
-export function ListRow({ children, compact, className }: Props) {
+export function ListRow({ children, compact, inset = true, className }: Props) {
   return (
     <Surface
-      row
+      row={inset}
       className={cn(
         "flex-row items-center justify-between gap-6 px-3",
         compact ? "py-1" : "py-2",

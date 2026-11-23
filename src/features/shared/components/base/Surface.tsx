@@ -33,13 +33,18 @@ export function Surface({
 }: SurfaceProps) {
   const current = useContext(ToneContext);
   // Un contenedor sobre el lienzo es light (white); inset y row heredan el tono.
-  const name = tone ?? (current === "canvas" && !inset && !row ? "light" : current);
+  const name =
+    tone ?? (current === "canvas" && !inset && !row ? "light" : current);
   const t = tones[name];
   return (
     <ToneContext.Provider value={name}>
       <View
         className={cn(
-          inset ? [t.inset, "rounded-lg"] : row ? [t.row, "rounded-lg"] : [t.surface, "rounded-2xl"],
+          inset
+            ? [t.inset, "rounded-lg"]
+            : row
+              ? [t.row, "rounded-lg"]
+              : [t.surface, "rounded-2xl"],
           className,
         )}
         {...rest}
@@ -52,18 +57,32 @@ export function Surface({
 
 type PanelProps = PropsWithChildren<{
   title?: string;
+  titleClassName?: string;
   lead?: ReactNode;
   tone?: Tone;
   className?: string;
 }>;
 
 /** Surface con encabezado (título y acción opcional). */
-export function Panel({ title, lead, tone, className, children }: PanelProps) {
+export function Panel({
+  title,
+  titleClassName,
+  lead,
+  tone,
+  className,
+  children,
+}: PanelProps) {
   return (
     <Surface tone={tone} className={cn("gap-2 p-5", className)}>
       {(title || lead) && (
-        <View className="min-h-10 flex-row items-center justify-between gap-2">
-          {title ? <Text variant="section">{title}</Text> : <View />}
+        <View className="min-h-10 flex-row items-center justify-between gap-4">
+          {title ? (
+            <Text variant="section" className={titleClassName}>
+              {title}
+            </Text>
+          ) : (
+            <View />
+          )}
           {lead}
         </View>
       )}

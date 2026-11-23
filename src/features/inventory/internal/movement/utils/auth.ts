@@ -7,9 +7,12 @@ const STOCK_ROLES: readonly (typeof ACCOUNT_ROLES)[number][] = [
   "admin",
 ];
 
+export const canManageStock = (role: (typeof ACCOUNT_ROLES)[number]) =>
+  STOCK_ROLES.includes(role);
+
 export async function requireStockRole(actorId: number, action: string) {
   const actor = await requireActive(actorId);
-  if (!STOCK_ROLES.includes(actor.role)) {
+  if (!canManageStock(actor.role)) {
     throw new ForbiddenError(action);
   }
   return actor;

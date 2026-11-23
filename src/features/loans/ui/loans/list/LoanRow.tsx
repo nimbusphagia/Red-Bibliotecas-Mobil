@@ -10,16 +10,16 @@ import {
 import { formatDateES } from "@/features/shared/format/dates";
 import { LOAN_STATE_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { Eye, Flag } from "lucide-react-native";
+import { Eye, Flag, ScanSearch } from "lucide-react-native";
 import { View } from "react-native";
 
-type Props = { loan: LoanListItem };
+type Props = { loan: LoanListItem; inset?: boolean; external?: boolean };
 
-export default function LoanRow({ loan }: Props) {
+export default function LoanRow({ loan, inset, external }: Props) {
   const state = loanStateOf(loan);
 
   return (
-    <ListRow>
+    <ListRow inset={inset}>
       <Column text={`#${loan.id}`} variant="id" />
       <Column
         variant="subtitled"
@@ -41,7 +41,7 @@ export default function LoanRow({ loan }: Props) {
       </Column>
       <Column variant="actions" expand={false}>
         <Link href={`/loans/${loan.id}`} asChild>
-          <Button variant="soft" icon={Eye} size="md" />
+          <Button variant="soft" icon={external ? ScanSearch : Eye} size="md" />
         </Link>
       </Column>
     </ListRow>
