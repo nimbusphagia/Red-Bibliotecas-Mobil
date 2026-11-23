@@ -7,7 +7,7 @@ import {
   Surface,
   Text,
 } from "@/features/shared/components";
-import { writersOf } from "@/features/loans/ui/options";
+import { writersOf } from "@/features/catalog/ui/options";
 import { ChevronDown, ChevronUp, Dot } from "lucide-react-native";
 import { useEffect, useEffectEvent, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";

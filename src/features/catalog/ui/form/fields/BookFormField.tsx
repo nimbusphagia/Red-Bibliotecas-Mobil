@@ -16,6 +16,7 @@ export function BookFormField({ field: f, form, compact, onEdit }: Props) {
   const label = isRequired(f) ? `${f.label} *` : f.label;
   const error = errors.fields[f.error ?? f.key];
   const disabled = locked && f.lockable;
+  const hasAuthors = values.writers.length + values.illustrators.length > 0;
 
   if (f.inline) {
     return (
@@ -37,7 +38,11 @@ export function BookFormField({ field: f, form, compact, onEdit }: Props) {
       label={label}
       value={display(values[f.key]) ?? undefined}
       error={error}
-      disabled={disabled || (f.key === "collection" && !values.publisher)}
+      disabled={
+        disabled ||
+        (f.key === "collection" && !values.publisher) ||
+        (f.key === "series" && !hasAuthors)
+      }
       onPress={() => onEdit(f)}
       className={compact ? "w-[50%]" : undefined}
       contentClass={compact ? "flex-1 text-center" : undefined}

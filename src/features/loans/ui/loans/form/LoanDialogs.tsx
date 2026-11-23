@@ -1,8 +1,6 @@
 import {
   Dialog,
-  DialogActions,
   SearchSelect,
-  TextField,
   type Option,
 } from "@/features/shared/components";
 import { useState } from "react";
@@ -44,40 +42,6 @@ export function PickVisitorDialog({
           onSaved={(v) => pick({ id: v.id, label: v.name })}
         />
       )}
-    </Dialog>
-  );
-}
-
-export function NotesDialog({
-  value,
-  onChange,
-  onClose,
-}: {
-  value: string;
-  onChange: (notes: string) => void;
-  onClose: () => void;
-}) {
-  const [draft, setDraft] = useState(value);
-  const confirm = () => {
-    onChange(draft.trim());
-    onClose();
-  };
-
-  return (
-    <Dialog onClose={onClose}>
-      <TextField
-        label="Notas"
-        value={draft}
-        onChangeText={setDraft}
-        maxLength={500}
-        onSubmitEditing={confirm}
-        autoFocus
-      />
-      <DialogActions
-        confirmTitle="Aceptar"
-        onConfirm={confirm}
-        onCancel={onClose}
-      />
     </Dialog>
   );
 }

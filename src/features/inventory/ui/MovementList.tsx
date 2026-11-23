@@ -12,7 +12,12 @@ import {
 } from "@/features/shared/components";
 import { PAGE_SIZE, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { SlidersHorizontal } from "lucide-react-native";
+import { Link } from "expo-router";
+import {
+  PackageMinus,
+  PackagePlus,
+  SlidersHorizontal,
+} from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import FilterPanel, {
@@ -36,7 +41,10 @@ const SORTS: SortOption<MovementSort>[] = [
 export default function MovementList() {
   const [filters, setFilters] = useState<MovementFilters>({});
   const [open, setOpen] = useState(false);
-  const [sort, setSort] = useSort<MovementSort>({ by: "createdAt", dir: "desc" });
+  const [sort, setSort] = useSort<MovementSort>({
+    by: "createdAt",
+    dir: "desc",
+  });
 
   const activeCount = Object.values(filters).filter(
     (v) => v !== undefined,
@@ -61,6 +69,27 @@ export default function MovementList() {
       <PageHeader
         title="Historial de movimientos"
         subtitle="Entradas y salidas de ejemplares del inventario"
+        lead={
+          <View className="flex-row items-center gap-2">
+            <Link href="/stock/exit" asChild>
+              <Button
+                title="Salida"
+                variant="soft"
+                icon={PackageMinus}
+                size="sm"
+                weight="md"
+              />
+            </Link>
+            <Link href="/stock/entry" asChild>
+              <Button
+                title="Entrada"
+                icon={PackagePlus}
+                size="sm"
+                weight="md"
+              />
+            </Link>
+          </View>
+        }
       />
       <ItemList
         toolbar={

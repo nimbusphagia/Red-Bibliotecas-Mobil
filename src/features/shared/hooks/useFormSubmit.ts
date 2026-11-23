@@ -7,7 +7,7 @@ export function useFormSubmit() {
 
   async function run(
     action: () => Promise<unknown>,
-    onError?: (errors: FormErrors) => void,
+    onError?: (errors: FormErrors, error: unknown) => void,
   ) {
     if (submitting) return;
     setErrors({ fields: {} });
@@ -18,7 +18,7 @@ export function useFormSubmit() {
       const e = toFormErrors(error);
       setErrors(e);
       setSubmitting(false);
-      onError?.(e);
+      onError?.(e, error);
     }
   }
 

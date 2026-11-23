@@ -5,7 +5,6 @@ import {
   loadShelves,
   loadSubcategories,
   searchPublishers,
-  searchSeries,
 } from "../../options";
 import type { BookFormValues } from "./values";
 
@@ -26,6 +25,7 @@ export type Field = {
 
 export type Group = {
   title: string;
+  /** "dark" para una sección de fondo dark1; el contenido se adapta solo. */
   tone?: Tone;
   createOnly?: boolean;
   fields: Field[];
@@ -74,7 +74,6 @@ export const COLUMNS: Group[][] = [
           label: "Serie",
           kind: "search",
           error: "seriesId",
-          fetch: searchSeries,
         },
       ],
     },

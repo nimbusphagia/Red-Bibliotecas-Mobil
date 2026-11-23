@@ -14,7 +14,12 @@ import {
 } from "@/features/shared/components";
 import { toFormErrors } from "@/features/shared/errors/messages";
 import { useCallback, useState } from "react";
-import { searchAuthors, searchCollections, useOptions } from "../../options";
+import {
+  searchAuthors,
+  searchCollections,
+  searchSeries,
+  useOptions,
+} from "../../options";
 import { display, type Field } from "./fields";
 import NewAuthorForm from "./NewAuthorForm";
 import type { BookFormValues } from "./values";
@@ -42,6 +47,16 @@ export default function FieldModal({
   const fetchCollections = useCallback(
     (search: string) => searchCollections(search, publisherId),
     [publisherId],
+  );
+
+  // Una serie debe ser de un escritor o ilustrador del libro.
+  const authorKey = [...values.writers, ...values.illustrators]
+    .map((a) => a.id)
+    .join(",");
+  const fetchSeries = useCallback(
+    (search: string) =>
+      searchSeries(search, authorKey ? authorKey.split(",").map(Number) : []),
+    [authorKey],
   );
 
   const commit = (value: BookFormValues[keyof BookFormValues]) =>
@@ -136,7 +151,11 @@ export default function FieldModal({
                 value={values[key] as Option | undefined}
                 onChange={pick}
                 fetchOptions={
-                  key === "collection" ? fetchCollections : field.fetch!
+                  key === "collection"
+                    ? fetchCollections
+                    : key === "series"
+                      ? fetchSeries
+                      : field.fetch!
                 }
                 placeholder="Ninguna"
                 onCreate={create}

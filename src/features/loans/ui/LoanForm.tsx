@@ -12,6 +12,7 @@ import {
   FormHeader,
   Icon,
   LabeledItem,
+  NotesDialog,
   Panel,
   SplitColumns,
   Text,
@@ -25,11 +26,7 @@ import { Dot } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import CopyTable from "./loans/form/CopyTable";
-import {
-  CopySearchDialog,
-  NotesDialog,
-  PickVisitorDialog,
-} from "./loans/form/LoanDialogs";
+import { CopySearchDialog, PickVisitorDialog } from "./loans/form/LoanDialogs";
 import { copyById, type LoanCopy } from "./options";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {

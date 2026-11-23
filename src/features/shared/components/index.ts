@@ -12,6 +12,7 @@ export { StatTile } from "./cards/StatTile";
 export { FieldError } from "./form/FieldError";
 export { FormHeader } from "./form/FormHeader";
 export { FormScreen } from "./form/FormScreen";
+export { NotesDialog } from "./form/NotesDialog";
 export { FieldRow } from "./form/input/FieldRow";
 export { TextField } from "./form/input/TextField";
 export { Searchbar } from "./form/search/Searchbar";

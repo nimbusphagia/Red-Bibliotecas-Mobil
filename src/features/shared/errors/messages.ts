@@ -7,7 +7,9 @@ import {
   IncompleteBookError,
   LabelConflictError,
   LendProblemKind,
+  CopiesNotExitableError,
   CopiesNotLendableError,
+  CopyProblemKind,
   LoanLimitError,
   VisitorBlockedError,
 } from "./errors";
@@ -36,6 +38,47 @@ const LEND_PROBLEM_ES: Record<LendProblemKind, string> = {
   lost: "está perdido",
   discarded: "está descartado",
 };
+
+const EXIT_PROBLEM_ES: Record<CopyProblemKind, string> = {
+  not_found: "no existe",
+  on_loan: "está prestado",
+  lost: "ya está perdido",
+  discarded: "ya está descartado",
+  already_damaged: "ya está dañado",
+};
+
+const LINE_INDEX = /^lines\.(\d+)(\.|$)/;
+
+/**
+ * Como `toFormErrors`, pero indica a qué línea de una entrada pertenece el
+ * error cuando se puede saber, para marcarla en la lista.
+ */
+export function toLineErrors(error: unknown): {
+  lineIndex?: number;
+  errors: FormErrors;
+} {
+  if (
+    error instanceof IncompleteBookError ||
+    error instanceof LabelConflictError
+  ) {
+    return { lineIndex: error.lineIndex, errors: toFormErrors(error) };
+  }
+  if (error instanceof ValidationError) {
+    const first = error.issues
+      .map((i) => LINE_INDEX.exec(i.path)?.[1])
+      .find((i) => i !== undefined);
+    if (first !== undefined) {
+      const issues = error.issues.filter(
+        (i) => LINE_INDEX.exec(i.path)?.[1] === first,
+      );
+      return {
+        lineIndex: Number(first),
+        errors: toFormErrors(new ValidationError(issues)),
+      };
+    }
+  }
+  return { errors: toFormErrors(error) };
+}
 
 export function toFormErrors(error: unknown): FormErrors {
   if (error instanceof ValidationError) {
@@ -81,6 +124,12 @@ export function toFormErrors(error: unknown): FormErrors {
   if (error instanceof CopiesNotLendableError) {
     const lines = error.problems.map(
       (p) => `${p.labelText ?? `#${p.copyId}`} ${LEND_PROBLEM_ES[p.problem]}`,
+    );
+    return { fields: { copyIds: lines.join("\n") } };
+  }
+  if (error instanceof CopiesNotExitableError) {
+    const lines = error.problems.map(
+      (p) => `${p.labelText ?? `#${p.copyId}`} ${EXIT_PROBLEM_ES[p.problem]}`,
     );
     return { fields: { copyIds: lines.join("\n") } };
   }

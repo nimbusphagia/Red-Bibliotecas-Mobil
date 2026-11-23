@@ -1,5 +1,5 @@
 import type { BookListItem } from "@/features/catalog/internal/book/types";
-import { fullName } from "@/features/catalog/ui/options";
+import { writersOf } from "@/features/catalog/ui/options";
 import { findCopyWithBook } from "@/features/inventory/ui/picker/copyWithBook";
 import { listVisitors } from "@/features/loans/internal/visitor/service";
 import type { Option } from "@/features/shared/components";
@@ -16,13 +16,6 @@ export const searchVisitors = async (search: string): Promise<Option[]> =>
     id: v.id,
     label: v.name,
   }));
-
-export const writersOf = (book: BookListItem) =>
-  [
-    ...new Set(
-      book.collaborators.filter((c) => c.role === "writer").map(fullName),
-    ),
-  ].join(", ");
 
 export const toLoanCopy = (
   id: number,

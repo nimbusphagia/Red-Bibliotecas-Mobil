@@ -1,3 +1,4 @@
+import type { BookListItem } from "@/features/catalog/internal/book/types";
 import { listAuthors } from "@/features/catalog/internal/author/service";
 import { listCategories } from "@/features/catalog/internal/category/service";
 import { listCollections } from "@/features/catalog/internal/collection/service";
@@ -15,6 +16,14 @@ const LIMIT = 20;
 
 export const fullName = (p: { firstName: string; lastName: string | null }) =>
   [p.firstName, p.lastName].filter(Boolean).join(" ");
+
+/** Escritores del libro, sin repetir, separados por coma. */
+export const writersOf = (book: BookListItem) =>
+  [
+    ...new Set(
+      book.collaborators.filter((c) => c.role === "writer").map(fullName),
+    ),
+  ].join(", ");
 
 export const searchAuthors = async (
   search: string,
@@ -61,11 +70,23 @@ export const searchCollections = async (
     (c) => ({ id: c.id, label: c.name }),
   );
 
-export const searchSeries = async (search: string): Promise<Option[]> =>
-  (await listSeries({ search, limit: LIMIT })).items.map((s) => ({
-    id: s.id,
-    label: `${s.name} · ${fullName({ firstName: s.authorFirstName, lastName: s.authorLastName })}`,
-  }));
+/** Series de los autores dados (escritores o ilustradores del libro). */
+export const searchSeries = async (
+  search: string,
+  authorIds: number[],
+): Promise<Option[]> => {
+  const pages = await Promise.all(
+    authorIds.map((authorId) => listSeries({ search, authorId, limit: LIMIT })),
+  );
+  return pages
+    .flatMap((p) => p.items)
+    .map((s) => ({
+      id: s.id,
+      label: `${s.name} · ${fullName({ firstName: s.authorFirstName, lastName: s.authorLastName })}`,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+    .slice(0, LIMIT);
+};
 
 export const loadShelves = async (): Promise<Option[]> => {
   const { items } = await listShelves({ limit: 100 });
