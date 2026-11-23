@@ -2,11 +2,16 @@ import type { LoanLine } from "@/features/loans/internal/loan/types";
 import {
   Button,
   Column,
+  Icon,
   ListRow,
   StatusBadge,
 } from "@/features/shared/components";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
-import { ArrowDown, TriangleExclamationPoint } from "lucide-react-native";
+import {
+  ArrowDown,
+  CircleCheck,
+  TriangleExclamationPoint,
+} from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
 import ReturnLineDialog from "./ReturnLineDialog";
@@ -62,6 +67,8 @@ export default function LoanLines({
                   onPress={() => setActive({ line: l, reportOnly: false })}
                 />
               </>
+            ) : l.outcome === "returned" ? (
+              <Icon icon={CircleCheck} size="lg" stroke="sm" />
             ) : (
               <StatusBadge text={OUTCOME_ES[l.outcome]} variant="active" />
             )}

@@ -72,15 +72,6 @@ export default function ReorganizeForm() {
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
         <SplitColumns>
-          <Panel title="Detalles">
-            <FieldRow
-              label="Destino *"
-              value={target?.label}
-              error={errors.fields.shelfId}
-              onPress={() => setEditing("target")}
-            />
-          </Panel>
-
           <Panel
             title="Ejemplares"
             lead={
@@ -96,6 +87,15 @@ export default function ReorganizeForm() {
               targetId={target?.id}
               error={copyError}
               onRemove={removeCopy}
+            />
+          </Panel>
+
+          <Panel title="Estantería">
+            <FieldRow
+              label="Destino *"
+              value={target?.label}
+              error={errors.fields.shelfId}
+              onPress={() => setEditing("target")}
             />
           </Panel>
         </SplitColumns>

@@ -22,6 +22,8 @@ export default function ShelfCopyPicker({
       selected={selected}
       onToggle={onToggle}
       filterFields={PICKER_FIELDS}
+      panelOnly
+      filterInSearchRow
       loadCopies={(book, { shelfId }) =>
         listCopies({
           bookId: book.id,

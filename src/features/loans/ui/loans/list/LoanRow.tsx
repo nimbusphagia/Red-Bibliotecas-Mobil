@@ -55,7 +55,7 @@ export default function LoanRow({ loan, inset, external, compact }: Props) {
       {!compact && (
         <Column variant="subtitled" subtitle1={formatDateES(loan.expiresBy)}>
           <View className="flex-row items-center gap-2">
-            <Icon icon={LOAN_STATE_ICON[state]} size="lg" />
+            <Icon icon={LOAN_STATE_ICON[state]} size="lg" stroke="sm" />
             <Text variant="itemSm">{LOAN_STATE_ES[state]}</Text>
           </View>
         </Column>

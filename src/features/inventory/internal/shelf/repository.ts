@@ -8,10 +8,19 @@ import {
   type Reference,
 } from "@/db/helpers";
 import { book, copy, shelf } from "@/db/schema";
-import { labelTextSql } from "../copy/sql";
+import { labelTextSql, writersSql } from "../copy/sql";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
-import { and, asc, count, eq, getTableColumns, notInArray } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  eq,
+  getTableColumns,
+  notInArray,
+  or,
+  sql,
+} from "drizzle-orm";
 import { RELEASED_STATUSES } from "../copy/types";
 import type {
   NewShelf,
@@ -109,11 +118,17 @@ export async function deleteShelfIfUnused(id: number): Promise<boolean> {
 }
 export async function listShelfCopies(
   shelfId: number,
-  page: { limit: number; offset: number },
+  filters: { tokens: string[]; copyId?: number; limit: number; offset: number },
 ): Promise<Page<ShelfCopy>> {
+  const { tokens, copyId, ...page } = filters;
+  const labelKey = sql`lower(${labelTextSql})`;
   const where = and(
     eq(copy.shelfId, shelfId),
     notInArray(copy.status, [...RELEASED_STATUSES]),
+    copyId === undefined ? undefined : eq(copy.id, copyId),
+    ...tokens.map((t) =>
+      or(...likeTokens(labelKey, [t]), ...likeTokens(book.titleKey, [t])),
+    ),
   );
 
   const [items, [{ n }]] = await Promise.all([
@@ -122,6 +137,7 @@ export async function listShelfCopies(
         id: copy.id,
         bookId: copy.bookId,
         bookTitle: book.title,
+        authors: writersSql,
         copyNumber: copy.copyNumber,
         status: copy.status,
         labelText: labelTextSql,
@@ -132,7 +148,11 @@ export async function listShelfCopies(
       .orderBy(asc(book.titleKey), asc(copy.copyNumber), asc(copy.id))
       .limit(page.limit)
       .offset(page.offset),
-    db.select({ n: count() }).from(copy).where(where),
+    db
+      .select({ n: count() })
+      .from(copy)
+      .innerJoin(book, eq(book.id, copy.bookId))
+      .where(where),
   ]);
-  return toPage(items, n, page);
+  return toPage(items as ShelfCopy[], n, page);
 }

@@ -33,7 +33,7 @@ export default function LabelCopyTable({ copies, error, onRemove }: Props) {
               subtitle1={c.authors ?? undefined}
             />
             <Column expand={false} containerClass="w-44 shrink-0 gap-2">
-              <Icon icon={LABEL_STATE_ICON[state]} size="lg" />
+              <Icon icon={LABEL_STATE_ICON[state]} size="lg" stroke="sm" />
               <Text variant="itemSm">{LABEL_STATE_ES[state]}</Text>
             </Column>
             <Column variant="actions" expand={false}>

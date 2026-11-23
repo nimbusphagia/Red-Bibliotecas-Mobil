@@ -54,9 +54,9 @@ export async function listShelves(
 export async function listShelfCopies(
   params: ShelfCopiesParams,
 ): Promise<Page<ShelfCopy>> {
-  const { shelfId, ...page } = parseOrThrow(listShelfCopiesSchema, params);
+  const { shelfId, ...filters } = parseOrThrow(listShelfCopiesSchema, params);
   await getShelf(shelfId);
-  return repo.listShelfCopies(shelfId, page);
+  return repo.listShelfCopies(shelfId, filters);
 }
 
 export const createShelf = makeCreate({

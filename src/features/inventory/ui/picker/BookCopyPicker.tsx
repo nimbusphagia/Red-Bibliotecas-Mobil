@@ -30,6 +30,8 @@ type Props<T extends { id: number }> = {
   filterFields: FilterField[];
   /** Solo el botón del panel de filtros, sin los botones rápidos. */
   panelOnly?: boolean;
+  /** Con `panelOnly`, el botón de filtros va antes de los buscadores. */
+  filterInSearchRow?: boolean;
   /** Filtros fijos de la lista de libros. Debe ser un valor estable (constante o memoizado). */
   bookParams?: BookListParams;
   /** Controles extra junto a los filtros, que condicionan `bookParams`/`loadCopies`. */
@@ -61,6 +63,7 @@ export default function BookCopyPicker<T extends { id: number }>({
   className,
   filterFields,
   panelOnly = false,
+  filterInSearchRow = false,
   bookParams,
   toolbarExtra,
   reloadKey,
@@ -98,10 +101,20 @@ export default function BookCopyPicker<T extends { id: number }>({
   );
   const list = useInfiniteList(fetchPage);
   const byId = !!copyId;
+  const quickFilters = (
+    <QuickFilters
+      filters={filters}
+      onOpen={setDialog}
+      fields={panelOnly ? [] : filterFields}
+      showPanel={panelOnly}
+    />
+  );
+  const inSearchRow = panelOnly && filterInSearchRow;
 
   return (
     <View className={cn("gap-3", className)}>
       <View className="h-12 flex-row items-center gap-3">
+        {inSearchRow && quickFilters}
         <Searchbar
           className="w-auto flex-1"
           value={search}
@@ -120,17 +133,14 @@ export default function BookCopyPicker<T extends { id: number }>({
         toolbarSurface={false}
         tone="light"
         toolbar={
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row items-center gap-4">
-              <QuickFilters
-                filters={filters}
-                onOpen={setDialog}
-                fields={panelOnly ? [] : filterFields}
-                showPanel={panelOnly}
-              />
-              {toolbarExtra}
-            </View>
-          </ScrollView>
+          (!inSearchRow || toolbarExtra) && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View className="flex-row items-center gap-4">
+                {!inSearchRow && quickFilters}
+                {toolbarExtra}
+              </View>
+            </ScrollView>
+          )
         }
         items={list.items}
         loading={list.loading}

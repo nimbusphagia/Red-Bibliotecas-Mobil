@@ -1,6 +1,6 @@
 import type { shelf } from "@/db/schema";
 import type { ListFilters } from "@/features/shared/types/types";
-import type { CopyStatus } from "../copy/types";
+import type { CopyStatus, ReleasedStatus } from "../copy/types";
 import type { ShelfSort } from "./schemas";
 
 export type Shelf = typeof shelf.$inferSelect;
@@ -18,7 +18,9 @@ export type ShelfCopy = {
   id: number;
   bookId: number;
   bookTitle: string;
+  authors: string | null;
   copyNumber: number;
-  status: CopyStatus;
+  /** Los dados de baja no se listan. */
+  status: Exclude<CopyStatus, ReleasedStatus>;
   labelText: string | null;
 };

@@ -25,7 +25,7 @@ const SORTS: SortOption<ShelfSort>[] = [
 
 export default function ShelfList() {
   const { search, setSearch, debouncedSearch } = useSearch();
-  const [sort, setSort] = useSort<ShelfSort>({ by: "name", dir: "asc" });
+  const [sort, setSort] = useSort<ShelfSort>({ by: "createdAt", dir: "desc" });
   const [dialog, setDialog] = useState<{ shelf?: ShelfListItem } | null>(null);
 
 
@@ -75,14 +75,12 @@ export default function ShelfList() {
       />
       <ItemList
         toolbar={
-          <View className="items-end flex-1">
-            <InlineSort
-              options={SORTS}
-              sortBy={sort.by}
-              sortDir={sort.dir}
-              onChange={setSort}
-            />
-          </View>
+          <InlineSort
+            options={SORTS}
+            sortBy={sort.by}
+            sortDir={sort.dir}
+            onChange={setSort}
+          />
         }
         items={list.items}
         loading={list.loading}

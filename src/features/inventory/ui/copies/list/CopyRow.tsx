@@ -30,7 +30,7 @@ export default function CopyRow({ copy }: Props) {
         />
         <Column text={copy.labelText ?? "---"} />
         <Column containerClass="gap-2">
-          <Icon icon={LABEL_STATE_ICON[state]} size="lg" />
+          <Icon icon={LABEL_STATE_ICON[state]} size="lg" stroke="sm" />
           <Text variant="itemSm">{LABEL_STATE_ES[state]}</Text>
         </Column>
         <Column
