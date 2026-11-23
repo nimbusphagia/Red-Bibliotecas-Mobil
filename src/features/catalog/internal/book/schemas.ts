@@ -35,9 +35,10 @@ const collaboratorsSchema = z
     { message: "Duplicate collaborator" },
   );
 
-const MAX_OMIT_WORDS = 10;
+export const MAX_OMIT_WORDS = 10;
+export const OMIT_WORD_MAX = 40;
 
-const omitWord = z.string().transform(collapse).pipe(z.string().min(1).max(40));
+const omitWord = z.string().transform(collapse).pipe(z.string().min(1).max(OMIT_WORD_MAX));
 
 const fkId = idSchema.nullable();
 

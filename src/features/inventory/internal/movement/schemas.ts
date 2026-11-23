@@ -14,7 +14,7 @@ import { z } from "zod";
 export { ENTRY_REASONS, EXIT_REASONS };
 
 export const MAX_COPIES_PER_BOOK = 100;
-const MAX_LINES = 50;
+export const MAX_LINES = 100;
 const MAX_EXIT_COPIES = 100;
 
 export type _EntryReasonsAreMovementReasons = Assert<

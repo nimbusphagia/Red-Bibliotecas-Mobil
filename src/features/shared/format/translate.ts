@@ -1,3 +1,9 @@
+import { headerOf } from "@/features/inventory/internal/entryImport/columns";
+import type { SheetProblem } from "@/features/inventory/internal/entryImport/sheet";
+import type {
+  ProblemCode,
+  RowProblem,
+} from "@/features/inventory/internal/entryImport/types";
 import {
   CopyStatus,
   MarkFailureReason,
@@ -89,3 +95,34 @@ export const markFailureText = (f: {
   f.reason === "conflict" && f.conflictingCopyId !== undefined
     ? `${MARK_FAILURE_ES.conflict} (#${f.conflictingCopyId})`
     : MARK_FAILURE_ES[f.reason];
+
+const IMPORT_PROBLEM_ES: Record<ProblemCode, (detail: string) => string> = {
+  missing: () => "es obligatorio",
+  too_long: () => "es demasiado largo",
+  bad_number: (d) => `«${d}» no es un número válido`,
+  out_of_range: (d) => `«${d}» está fuera del rango permitido`,
+  bad_person: (d) => `«${d}» debe escribirse «Apellido, Nombre»`,
+  title_unusable: () => "debe tener letras o números",
+  writer_unusable: (d) => `no se puede generar el código de «${d}»`,
+  too_many_words: () => "tiene demasiadas palabras",
+  unknown_category: (d) => `«${d}» no es un código ni un nombre de categoría`,
+  unknown_subcategory: (d) =>
+    `«${d}» no es un código ni un nombre de subcategoría`,
+  unknown_shelf: (d) => `«${d}» no existe`,
+  collection_without_publisher: () => "requiere indicar la editorial",
+  book_exists: (d) => `«${d}» ya existe: agrégale ejemplares desde «Existente»`,
+  duplicate_in_file: (d) => `es el mismo libro de la fila ${d}`,
+  label_conflict: (d) => `el tejuelo ya lo usa «${d}»; omite palabras en común`,
+  label_conflict_in_file: (d) =>
+    `el tejuelo coincide con el de la fila ${d}; omite palabras en común`,
+};
+
+export const importProblemText = (p: RowProblem) =>
+  `${headerOf(p.column)}: ${IMPORT_PROBLEM_ES[p.code](p.detail ?? "")}`;
+
+export const sheetProblemText = (p: SheetProblem) =>
+  p.code === "empty"
+    ? "El archivo no tiene libros"
+    : p.code === "missing_columns"
+      ? `Faltan columnas: ${p.columns.join(", ")}`
+      : `El archivo tiene ${p.count} filas; el máximo es ${p.max}`;

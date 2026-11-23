@@ -24,7 +24,7 @@ import type {
 import { authorCode } from "../_shared/codes";
 const ENTITY = "author";
 
-const authorKey = (firstName: string, lastName: string | null) =>
+export const authorKey = (firstName: string, lastName: string | null) =>
   lastName
     ? `${searchKey(lastName)},${searchKey(firstName)}`
     : searchKey(firstName);

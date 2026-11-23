@@ -4,7 +4,10 @@ import {
   type BookFormValues,
 } from "@/features/catalog/ui/form/fields/values";
 import { loadShelves, useOptions } from "@/features/catalog/ui/options";
-import { ENTRY_REASONS } from "@/features/inventory/internal/movement/schemas";
+import {
+  ENTRY_REASONS,
+  MAX_LINES,
+} from "@/features/inventory/internal/movement/schemas";
 import { registerCopies } from "@/features/inventory/internal/movement/service";
 import type { EntryReason } from "@/features/inventory/internal/movement/types";
 import {
@@ -26,6 +29,7 @@ import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { View } from "react-native";
+import EntryImportDialog from "./entry/import/EntryImportDialog";
 import EntryLineTable from "./entry/EntryLineTable";
 import ExistingBookDialog from "./entry/ExistingBookDialog";
 import { lineQuantity, toLineInput, type EntryLine } from "./entry/lines";
@@ -40,6 +44,7 @@ type Editing =
   | { type: "notes" }
   | { type: "existing"; index?: number }
   | { type: "new"; index?: number }
+  | { type: "import" }
   | null;
 
 export default function EntryForm() {
@@ -64,6 +69,17 @@ export default function EntryForm() {
         : p.map((l, i) => (i === index ? line : l)),
     );
   const nextLineKey = () => nextKey.current++;
+  const addImported = (books: BookFormValues[]) => {
+    setLines((p) => [
+      ...p,
+      ...books.map((values) => ({
+        key: nextLineKey(),
+        kind: "new" as const,
+        values,
+      })),
+    ]);
+    close();
+  };
 
   const submit = () => {
     if (session.status !== "signed-in" || !reason) return;
@@ -192,6 +208,12 @@ export default function EntryForm() {
             lead={
               <View className="flex-row gap-2">
                 <Button
+                  title="Importar"
+                  variant="soft"
+                  size="sm"
+                  onPress={() => setEditing({ type: "import" })}
+                />
+                <Button
                   title="Existente"
                   variant="soft"
                   size="sm"
@@ -217,6 +239,13 @@ export default function EntryForm() {
 
       {editing?.type === "notes" && (
         <NotesDialog value={notes} onChange={setNotes} onClose={close} />
+      )}
+      {editing?.type === "import" && (
+        <EntryImportDialog
+          room={MAX_LINES - lines.length}
+          onLoad={addImported}
+          onClose={close}
+        />
       )}
       {editing?.type === "existing" && (
         <ExistingBookDialog
