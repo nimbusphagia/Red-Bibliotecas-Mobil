@@ -6,34 +6,36 @@ import type {
   LoanState,
   VisitorLoanStatus,
 } from "@/features/loans/internal/loan/types";
-import { getVisitorItem } from "@/features/loans/internal/visitor/service";
+import type { LineHistory } from "@/features/loans/internal/visitor/reputation";
+import {
+  getVisitorHistory,
+  getVisitorItem,
+} from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
   DetailColumns,
   InlineFilter,
-  InlineSort,
   ItemList,
   PageHeader,
   Panel,
   type DetailRow,
-  type SortOption,
 } from "@/features/shared/components";
-import {
-  gradeLabel,
-  REPUTATION_ES,
-  ROLE_ES,
-} from "@/features/shared/format/translate";
+import { REPUTATION_ES } from "@/features/shared/format/translate";
 import { PAGE_SIZE } from "@/features/shared/hooks/useListControls";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { routeIdSchema } from "@/features/shared/types/schemas";
-import type { SortDirection } from "@/features/shared/types/types";
 import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native";
 import LoanRow from "./loans/list/LoanRow";
+import { visitorRoleLabel } from "./visitors/visitorRows";
 
 type Filter = "all" | LoanState;
-type Data = { visitor: VisitorListItem; status: VisitorLoanStatus };
+type Data = {
+  visitor: VisitorListItem;
+  status: VisitorLoanStatus;
+  history: LineHistory;
+};
 
 const FILTERS: { value: Filter; label: string }[] = [
   { value: "all", label: "Todos" },
@@ -42,22 +44,24 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: "closed", label: "Finalizados" },
 ];
 
-const SORTS: SortOption<"createdAt">[] = [
-  { key: "createdAt", label: "Fecha de creación", defaultDir: "desc" },
-];
+const countRow = (label: string, n: number): DetailRow => ({
+  label,
+  content: String(n),
+  muted: n === 0,
+});
 
 export default function VisitorDetail({ id }: { id: string }) {
   const visitorId = routeIdSchema.parse(id);
   const [filter, setFilter] = useState<Filter>("all");
-  const [sortDir, setSortDir] = useState<SortDirection>("desc");
 
   const { data } = useFocusData(
     useCallback(async (): Promise<Data> => {
-      const [visitor, status] = await Promise.all([
+      const [visitor, status, history] = await Promise.all([
         getVisitorItem(visitorId),
         getVisitorLoanStatus(visitorId),
+        getVisitorHistory(visitorId),
       ]);
-      return { visitor, status };
+      return { visitor, status, history };
     }, [visitorId]),
   );
 
@@ -67,72 +71,46 @@ export default function VisitorDetail({ id }: { id: string }) {
         visitorId,
         state: filter === "all" ? undefined : filter,
         sortBy: "createdAt",
-        sortDir,
+        sortDir: "desc",
         limit: PAGE_SIZE,
         offset,
       }),
-    [visitorId, filter, sortDir],
+    [visitorId, filter],
   );
 
   const list = useInfiniteList(fetchPage);
 
   if (!data) return <ActivityIndicator />;
 
-  const { visitor, status } = data;
+  const { visitor, status, history } = data;
 
-  const detailRows: DetailRow[] = [
-    { label: "Nombre", content: visitor.name },
-    { label: "Rol", content: ROLE_ES[visitor.role] },
-    ...(visitor.role === "student"
-      ? [
-          {
-            label: "Grado",
-            content: gradeLabel(visitor.grade!, visitor.level!),
-          },
-        ]
-      : []),
-  ];
   const summaryRows: DetailRow[] = [
-    { label: "Activos", content: String(status.open) },
-    { label: "Total prestados", content: String(visitor.lineCount) },
-    { label: "Préstamos vencidos", content: String(status.overdue) },
-  ];
-  const { history } = visitor;
-  const reputationRows: DetailRow[] = [
     { label: "Reputación", content: REPUTATION_ES[visitor.reputation] },
-    { label: "Devueltos tarde", content: String(history.late) },
-    { label: "Devueltos deteriorados", content: String(history.damaged) },
-    { label: "Descartados", content: String(history.discarded) },
-    { label: "Perdidos", content: String(history.lost) },
+    countRow("Total prestados", visitor.lineCount),
+    countRow("Préstamos activos", status.open),
+    {
+      ...countRow("Vencidos", status.overdue),
+      accent: status.overdue > 0 ? "neg" : undefined,
+    },
+    countRow("Devueltos tarde", history.late),
+    countRow("Perdidos", history.lost),
   ];
 
   return (
     <>
-      <PageHeader title={`${visitor.name}`} />
+      <PageHeader title={visitor.name} subtitle={visitorRoleLabel(visitor)} />
       <DetailColumns
-        columns={[
-          { title: "Resumen", rows: summaryRows },
-          { title: "Últimos 12 meses", rows: reputationRows },
-          { title: "Detalles", rows: detailRows },
-        ]}
+        columns={[{ title: "Resumen", rows: summaryRows, columns: 2 }]}
       />
       <Panel title="Historial de préstamos" className="flex-1">
         <ItemList
           toolbarSurface={false}
           toolbar={
-            <>
-              <InlineFilter
-                options={FILTERS}
-                value={filter}
-                onChange={setFilter}
-              />
-              <InlineSort
-                options={SORTS}
-                sortBy="createdAt"
-                sortDir={sortDir}
-                onChange={(_, dir) => setSortDir(dir)}
-              />
-            </>
+            <InlineFilter
+              options={FILTERS}
+              value={filter}
+              onChange={setFilter}
+            />
           }
           items={list.items}
           loading={list.loading}

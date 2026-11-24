@@ -1,8 +1,14 @@
 import { View } from "react-native";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
+import type { AccentLevel } from "../../theme";
 import { LabeledItem, type LabeledItemVariant } from "./LabeledItem";
 
-export type DetailRow = { label: string; content?: string };
+export type DetailRow = {
+  label: string;
+  content?: string;
+  accent?: AccentLevel;
+  muted?: boolean;
+};
 export type DetailRowsVariant = LabeledItemVariant;
 
 type Props = {

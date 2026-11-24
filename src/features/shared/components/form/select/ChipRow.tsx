@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, type LayoutChangeEvent } from "react-native";
 import Animated from "react-native-reanimated";
-import type { AccentLevel } from "../../../theme";
+import { cn, type AccentLevel } from "../../../theme";
 import { FADE_IN } from "../../base/motion";
 import { Chip } from "./Chip";
 
@@ -10,7 +10,7 @@ const GAP = 8;
 export type ChipItem = { label: string; accent?: AccentLevel };
 
 /** Fila de chips (pill) en una sola línea; los que no entran se resumen en "+N". */
-export function ChipRow({ chips }: { chips: ChipItem[] }) {
+export function ChipRow({ chips, end }: { chips: ChipItem[]; end?: boolean }) {
   const [width, setWidth] = useState(0);
   const [widths, setWidths] = useState<number[]>([]);
   const [moreWidth, setMoreWidth] = useState(0);
@@ -45,7 +45,7 @@ export function ChipRow({ chips }: { chips: ChipItem[] }) {
 
   return (
     <View
-      className="flex-row overflow-hidden"
+      className={cn("flex-row overflow-hidden", end && "justify-end")}
       style={{ gap: GAP }}
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
     >

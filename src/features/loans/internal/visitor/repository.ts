@@ -29,7 +29,11 @@ import {
 import { alias } from "drizzle-orm/sqlite-core";
 import type { Page } from "@/features/shared/types/types";
 import type { LineOutcome } from "../loan/types";
-import { HISTORY_MONTHS, LATE_GRACE_DAYS } from "./reputation";
+import {
+  HISTORY_MONTHS,
+  LATE_GRACE_DAYS,
+  type LineHistory,
+} from "./reputation";
 import type {
   NewVisitor,
   Visitor,
@@ -77,7 +81,7 @@ const outcomeIs = (outcome: LineOutcome) =>
 const returnedLate = sql`date(${loanMovementLine.resolvedAt}, 'unixepoch', 'localtime') > date(${loanMovement.expiresBy}, ${`+${LATE_GRACE_DAYS} days`})`;
 
 // Una pérdida recuperada cuenta como devolución normal.
-const historySince = (since: Date) =>
+const lineHistory = (where: SQL) =>
   db
     .select({
       visitorId: loanMovement.loanedToId,
@@ -93,15 +97,17 @@ const historySince = (since: Date) =>
     .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
     .leftJoin(exitLine, eq(exitLine.loanLineId, loanMovementLine.id))
     .leftJoin(recoveryLine, eq(recoveryLine.recoveredLineId, exitLine.id))
-    .where(gte(loanMovementLine.resolvedAt, since))
-    .groupBy(loanMovement.loanedToId)
-    .as("history");
+    .where(where)
+    .groupBy(loanMovement.loanedToId);
 
 const orZero = (column: SQL.Aliased<number>) =>
   sql<number>`coalesce(${column}, 0)`.mapWith(Number);
 
 const selectVisitors = () => {
-  const history = historySince(subMonths(new Date(), HISTORY_MONTHS));
+  const since = subMonths(new Date(), HISTORY_MONTHS);
+  const history = lineHistory(gte(loanMovementLine.resolvedAt, since)).as(
+    "history",
+  );
   return db
     .select({
       ...getTableColumns(visitor),
@@ -127,6 +133,15 @@ export async function findVisitorItemById(
 ): Promise<VisitorRow | null> {
   const [row] = await selectVisitors().where(eq(visitor.id, id));
   return row ?? null;
+}
+
+export async function findVisitorHistory(
+  id: number,
+): Promise<LineHistory | null> {
+  const [row] = await lineHistory(eq(loanMovement.loanedToId, id));
+  if (!row) return null;
+  const { visitorId: _, ...history } = row;
+  return history;
 }
 
 export async function listVisitors(

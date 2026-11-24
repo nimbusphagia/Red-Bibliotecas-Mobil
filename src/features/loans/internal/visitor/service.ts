@@ -13,7 +13,7 @@ import { idSchema } from "@/features/shared/types/schemas";
 import type { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
 import * as repo from "./repository";
-import { reputationOf } from "./reputation";
+import { reputationOf, type LineHistory } from "./reputation";
 import {
   createVisitorSchema,
   listVisitorsSchema,
@@ -51,6 +51,20 @@ export async function listVisitors(
     parseOrThrow(listVisitorsSchema, params),
   );
   return { ...page, items: page.items.map(withReputation) };
+}
+
+const EMPTY_HISTORY: LineHistory = {
+  resolved: 0,
+  late: 0,
+  damaged: 0,
+  discarded: 0,
+  lost: 0,
+};
+
+/** Historial completo, sin la ventana de la reputación. */
+export async function getVisitorHistory(id: number): Promise<LineHistory> {
+  const found = await repo.findVisitorHistory(parseOrThrow(idSchema, id));
+  return found ?? EMPTY_HISTORY;
 }
 
 export async function getVisitorItem(id: number): Promise<VisitorListItem> {

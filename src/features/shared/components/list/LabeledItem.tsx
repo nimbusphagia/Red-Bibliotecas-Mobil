@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { cn, useTone } from "../../theme";
+import { accents, cn, useTone, type AccentLevel } from "../../theme";
 import { Text } from "../base/Text";
 
 export type LabeledItemVariant = "pill" | "input";
@@ -15,6 +15,8 @@ export type LabelWidth = keyof typeof labelWidths;
 type Props = {
   label: string;
   content?: string;
+  accent?: AccentLevel;
+  muted?: boolean;
   variant?: LabeledItemVariant;
   expand?: boolean;
   className?: string;
@@ -26,6 +28,8 @@ type Props = {
 export function LabeledItem({
   label,
   content,
+  accent,
+  muted,
   variant = "pill",
   expand,
   className,
@@ -51,8 +55,9 @@ export function LabeledItem({
         variant="itemSm"
         className={cn(
           cell,
-          empty ? t.tag.empty : t.tag.filled,
+          empty || muted ? t.tag.empty : t.tag.filled,
           labelWidth && labelWidths[labelWidth],
+          accent && cn(accents[accent].box, accents[accent].label),
           labelClass,
         )}
       >

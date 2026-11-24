@@ -59,7 +59,7 @@ export const REPUTATION_ES: Record<Reputation, string> = {
   new: "Nuevo",
   reliable: "Confiable",
   regular: "Regular",
-  at_risk: "En riesgo",
+  at_risk: "Con incidencias",
 };
 
 export const LOAN_STATE_ES: Record<LoanState, string> = {

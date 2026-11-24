@@ -37,7 +37,7 @@ export default function LoanRow({ loan, inset, hideVisitor }: Props) {
         />
       )}
       <Column text={formatDateRangeES(loan.createdAt, loan.expiresBy)} />
-      <Column width="md">
+      <Column width={hideVisitor ? undefined : "md"}>
         <StatusChip
           text={`${loan.lineCount - loan.openCount}/${loan.lineCount}`}
           icon={LOAN_STATE_ICON[state]}

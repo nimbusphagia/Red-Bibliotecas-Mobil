@@ -13,9 +13,17 @@ type Props = {
   detail?: string | null;
   href: Href;
   chips?: ChipItem[];
+  lead?: string;
 };
 
-export function ItemCard({ title, subtitle, detail, href, chips }: Props) {
+export function ItemCard({
+  title,
+  subtitle,
+  detail,
+  href,
+  chips,
+  lead,
+}: Props) {
   const t = useTone();
   return (
     <Surface
@@ -46,7 +54,14 @@ export function ItemCard({ title, subtitle, detail, href, chips }: Props) {
           />
         </Link>
       </View>
-      {!!chips?.length && <ChipRow chips={chips} />}
+      {!!chips?.length && (
+        <View className="flex-row items-center gap-2">
+          {!!lead && <Text variant="itemSm">{lead}</Text>}
+          <View className="flex-1">
+            <ChipRow chips={chips} end={!!lead} />
+          </View>
+        </View>
+      )}
     </Surface>
   );
 }

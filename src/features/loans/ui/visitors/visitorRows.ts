@@ -6,6 +6,11 @@ import {
   ROLE_ES,
 } from "@/features/shared/format/translate";
 
+export const visitorRoleLabel = (visitor: VisitorListItem) =>
+  visitor.role === "student"
+    ? `${ROLE_ES.student} · ${gradeLabel(visitor.grade!, visitor.level!)}`
+    : ROLE_ES[visitor.role];
+
 /** Sin el nombre: el formulario de préstamo lo muestra como campo editable. */
 export const visitorInfoRows = (visitor: VisitorListItem): DetailRow[] => [
   { label: "Rol", content: ROLE_ES[visitor.role] },
