@@ -15,5 +15,5 @@ export const LOAN_STATE_ICON: Record<LoanState, LucideIcon> = {
 
 export const LOAN_STATE_ACCENT: Partial<Record<LoanState, AccentLevel>> = {
   open: "sm",
-  overdue: "md",
+  overdue: "neg",
 };

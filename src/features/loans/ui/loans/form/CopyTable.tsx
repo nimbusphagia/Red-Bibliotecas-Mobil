@@ -5,7 +5,7 @@ import {
   ListRow,
   Text,
 } from "@/features/shared/components";
-import { Trash } from "lucide-react-native";
+import { Minus } from "lucide-react-native";
 import { View } from "react-native";
 import type { LoanCopy } from "../../options";
 
@@ -31,7 +31,7 @@ export default function CopyTable({ copies, error, onRemove }: Props) {
           <Column variant="actions" expand={false}>
             <Button
               variant="soft"
-              icon={Trash}
+              icon={Minus}
               onPress={() => onRemove(c.id)}
             />
           </Column>

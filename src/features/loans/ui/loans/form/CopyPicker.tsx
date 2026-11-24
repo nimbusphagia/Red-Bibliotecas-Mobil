@@ -42,6 +42,7 @@ export default function CopyPicker({ selected, onToggle, className }: Props) {
       toItem={(c, book) => toLoanCopy(c.id, c.labelText, book)}
       subtitle={(b) => String(b.availableCount)}
       emptyText="Sin ejemplares disponibles"
+      autoFocus={false}
     />
   );
 }

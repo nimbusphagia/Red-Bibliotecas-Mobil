@@ -7,11 +7,13 @@ type Props = {
   book: BookListItem;
 };
 
-const chip = (label: string | null, accent?: AccentLevel): ChipItem[] =>
+const chip = (label: string | false | null, accent?: AccentLevel): ChipItem[] =>
   label ? [{ label, accent }] : [];
 
 export default function BookCard({ book }: Props) {
   const chips = [
+    ...chip(book.damagedCount > 0 && "Ejemplares dañados", "neg"),
+    ...chip(book.outdatedCount > 0 && "Tejuelos desactualizados", "neg"),
     ...chip(book.seriesName && `"${book.seriesName}"`, "md"),
     ...chip(book.collectionName, "sm"),
     ...chip(book.categoryName),

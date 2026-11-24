@@ -1,10 +1,7 @@
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
-import {
-  Button,
-  Column,
-  ListRow,
-} from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { shelfLabel } from "@/features/shared/format/translate";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { Link } from "expo-router";
 import {
   ArrowDown,
@@ -14,6 +11,7 @@ import {
   ShelvingUnit,
 } from "lucide-react-native";
 import { useState } from "react";
+import { View } from "react-native";
 import PrintLabelsDialog from "../../labels/form/PrintLabelsDialog";
 import { LABEL_STATE_ICON, labelStateOf } from "../../labels/labelState";
 import MoveCopyDialog from "../../shelves/form/MoveCopyDialog";
@@ -32,6 +30,13 @@ type Props = {
 export default function CopyRow({ copy, actorId, onChanged }: Props) {
   const state = labelStateOf(copy);
   const [dialog, setDialog] = useState<Dialog>(null);
+  const { isExpanded } = useLayoutMode();
+  // Ancho fijo por acción para que los botones queden alineados entre filas.
+  const slot = {
+    move: isExpanded ? "w-28" : "size-9",
+    loan: isExpanded ? "w-32" : "size-9",
+    label: "w-32",
+  };
   const isAvailable = ["available", "damaged"].includes(copy.status);
   const loanHref = isAvailable
     ? {
@@ -69,27 +74,47 @@ export default function CopyRow({ copy, actorId, onChanged }: Props) {
           expand={false}
           containerClass="shrink-0 items-center justify-end gap-2"
         >
-          {actorId !== null && canRecover(copy.status) && (
-            <Button
-              variant="soft"
-              icon={RotateCcwClock}
-              onPress={() => setDialog("recover")}
-            />
-          )}
+          {actorId !== null &&
+            (canRecover(copy.status) ? (
+              <Button
+                variant="soft"
+                icon={RotateCcwClock}
+                onPress={() => setDialog("recover")}
+              />
+            ) : (
+              <View className="size-9" />
+            ))}
           {actorId !== null && (
             <Button
               variant="soft"
+              size={isExpanded ? "sm" : "md"}
+              weight={isExpanded ? "md" : "sm"}
               icon={SendToBack}
+              title={isExpanded ? "Mover" : undefined}
+              className={slot.move}
               onPress={() => setDialog("move")}
             />
           )}
-          {loanHref && (
+          {loanHref ? (
             <Link href={loanHref} asChild>
               <Button
                 variant="soft"
+                accent={isAvailable ? undefined : "sm"}
+                size={isExpanded ? "sm" : "md"}
+                weight={isExpanded ? "md" : "sm"}
                 icon={isAvailable ? ArrowUp : ArrowDown}
+                title={
+                  isExpanded
+                    ? isAvailable
+                      ? "Prestar"
+                      : "Devolver"
+                    : undefined
+                }
+                className={slot.loan}
               />
             </Link>
+          ) : (
+            <View className={slot.loan} />
           )}
           {state === "labeled" ? (
             <Button
@@ -97,6 +122,7 @@ export default function CopyRow({ copy, actorId, onChanged }: Props) {
               size="sm"
               icon={LABEL_STATE_ICON[state]}
               title="Imprimir"
+              className={slot.label}
               onPress={() => setDialog("print")}
             />
           ) : (
@@ -106,19 +132,18 @@ export default function CopyRow({ copy, actorId, onChanged }: Props) {
             >
               <Button
                 variant="soft"
+                accent={state === "outdated" ? "neg" : undefined}
                 size="sm"
                 icon={LABEL_STATE_ICON[state]}
                 title={state === "outdated" ? "Actualizar" : "Etiquetar"}
+                className={slot.label}
               />
             </Link>
           )}
         </Column>
       </ListRow>
       {dialog === "print" && (
-        <PrintLabelsDialog
-          initial={[copy]}
-          onClose={() => setDialog(null)}
-        />
+        <PrintLabelsDialog initial={[copy]} onClose={() => setDialog(null)} />
       )}
       {dialog === "move" && (
         <MoveCopyDialog

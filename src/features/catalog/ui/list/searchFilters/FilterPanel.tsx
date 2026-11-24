@@ -18,7 +18,6 @@ import {
   searchPublishers,
   useOptions,
 } from "../../options";
-import { Minimize2 } from "lucide-react-native";
 
 export type CatalogFilters = {
   author?: Option;
@@ -41,11 +40,7 @@ export const toBookParams = (f: CatalogFilters) => ({
 });
 
 export type FilterField =
-  | "author"
-  | "publisher"
-  | "category"
-  | "subcategory"
-  | "shelf";
+  "author" | "publisher" | "category" | "subcategory" | "shelf";
 
 /** Campos que el panel completo ("all") muestra por defecto. */
 export const PANEL_FIELDS: FilterField[] = [
@@ -119,22 +114,14 @@ export default function FilterPanel({
             <DialogHeader
               title="Filtros"
               actions={
-                <>
-                  <Button
-                    title="Limpiar"
-                    variant="solid"
-                    onPress={() => {
-                      onChange({});
-                      onClear?.();
-                    }}
-                  />
-                  <Button
-                    variant="accent"
-                    icon={Minimize2}
-                    weight="md"
-                    onPress={() => setOpen(null)}
-                  />
-                </>
+                <Button
+                  title="Limpiar"
+                  variant="soft"
+                  onPress={() => {
+                    onChange({});
+                    onClear?.();
+                  }}
+                />
               }
             />
           )}

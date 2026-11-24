@@ -36,7 +36,7 @@ export function LabeledItem({
   const t = useTone();
   const input = variant === "input";
   const empty = !content;
-  const cell = "rounded-lg px-2 py-2 font-sans-regular";
+  const cell = "rounded-lg px-3 py-2 font-sans-regular";
 
   return (
     <View
@@ -52,7 +52,6 @@ export function LabeledItem({
         className={cn(
           cell,
           empty ? t.tag.empty : t.tag.filled,
-          input && "text-center",
           labelWidth && labelWidths[labelWidth],
           labelClass,
         )}
@@ -64,9 +63,9 @@ export function LabeledItem({
         numberOfLines={1}
         className={cn(
           cell,
-          "flex-1 text-right",
-          input && "px-3",
-          input && !empty ? [t.valueFilled, "text-left"] : t.inset,
+          "flex-1 text-left",
+          input && "px-4",
+          input && !empty ? t.valueFilled : t.inset,
           empty && !input && t.faint,
           contentClass,
         )}

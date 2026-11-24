@@ -4,8 +4,7 @@ import {
   Button,
   Column,
   ListRow,
-  StatusIcon,
-  Text,
+  StatusChip,
 } from "@/features/shared/components";
 import { formatDateRangeES } from "@/features/shared/format/dates";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
@@ -38,14 +37,12 @@ export default function LoanRow({ loan, inset, hideVisitor }: Props) {
         />
       )}
       <Column text={formatDateRangeES(loan.createdAt, loan.expiresBy)} />
-      <Column width="md" containerClass="gap-2">
-        <StatusIcon
+      <Column width="md">
+        <StatusChip
+          text={`${loan.lineCount - loan.openCount}/${loan.lineCount}`}
           icon={LOAN_STATE_ICON[state]}
           accent={LOAN_STATE_ACCENT[state]}
         />
-        <Text variant="itemSm">
-          {loan.lineCount - loan.openCount}/{loan.lineCount}
-        </Text>
       </Column>
       <Column variant="actions" width="sm">
         <Link href={`/loans/${loan.id}`} asChild>

@@ -10,6 +10,8 @@ type Props = {
   onChangeText: (text: string) => void;
   placeholder?: string;
   className?: string;
+  /** En un Dialog, enfoca este campo al abrir (por defecto sí). */
+  autoFocus?: boolean;
 };
 
 /** Campo de nivel 2 de la superficie actual (t.inset): white sobre el lienzo, bg sobre light1, darkSolid sobre dark1. */
@@ -18,10 +20,11 @@ export function Searchbar({
   onChangeText,
   className,
   placeholder = "Buscar...",
+  autoFocus = true,
 }: Props) {
   const t = useTone();
   const input = useRef<TextInputInstance>(null);
-  useDialogAutoFocus(() => input.current?.focus());
+  useDialogAutoFocus(() => input.current?.focus(), autoFocus);
   return (
     <View
       className={cn(

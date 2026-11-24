@@ -51,6 +51,8 @@ type Props<T extends { id: number }> = {
   subtitle?: (book: BookListItem) => string | undefined;
   /** Texto sin ejemplares; puede depender de la estantería filtrada. */
   emptyText?: string | ((shelfId?: number) => string);
+  /** En un Dialog, enfoca el buscador al abrir (por defecto sí). */
+  autoFocus?: boolean;
 };
 
 /**
@@ -73,6 +75,7 @@ export default function BookCopyPicker<T extends { id: number }>({
   chipIcon,
   acceptCopy,
   subtitle,
+  autoFocus,
   emptyText,
 }: Props<T>) {
   const { search, setSearch, debouncedSearch } = useSearch();
@@ -119,12 +122,14 @@ export default function BookCopyPicker<T extends { id: number }>({
           className="w-auto flex-1"
           value={search}
           onChangeText={setSearch}
+          autoFocus={autoFocus}
           placeholder="Buscar por título, autor o editorial..."
         />
         <Searchbar
           className="w-28"
           value={idText}
           onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
+          autoFocus={autoFocus}
           placeholder="#ID"
         />
       </View>

@@ -34,6 +34,8 @@ export type BookListItem = BookWithCollaborators & {
   activeCount: number;
   availableCount: number;
   onLoanCount: number;
+  damagedCount: number;
+  outdatedCount: number;
 };
 
 export type NewBook = {

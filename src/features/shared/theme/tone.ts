@@ -126,7 +126,7 @@ export const tones: Record<Tone, ToneStyle> = {
     ...onLight,
     surface: "bg-light1",
     inset: "bg-bg",
-    row: "bg-lightRow",
+    row: "bg-lightCard",
     card: "bg-lightCard",
     valueFilled: "bg-bg text-dark1",
     button: {

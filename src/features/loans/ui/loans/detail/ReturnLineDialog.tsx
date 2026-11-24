@@ -19,12 +19,12 @@ const CHOICES: Choice[] = [
   { key: "ok", label: "Bien", item: { outcome: "returned" } },
   {
     key: "damaged",
-    label: "Deteriorado pero prestable",
+    label: "Medio",
     item: { outcome: "returned_damaged" },
   },
   {
     key: "irreparable",
-    label: "Irreparablemente dañado",
+    label: "Mal",
     item: { outcome: "discarded" },
   },
   {
@@ -84,6 +84,11 @@ export default function ReturnLineDialog({
             key={c.key}
             title={c.label}
             variant={c.key === selected ? "accent" : "soft"}
+            accent={
+              c.key === selected && REPORT_KEYS.includes(c.key)
+                ? "neg"
+                : undefined
+            }
             onPress={() => setSelected(c.key)}
           />
         ))}

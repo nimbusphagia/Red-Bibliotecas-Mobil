@@ -5,6 +5,8 @@ import {
   lendCopies,
 } from "@/features/loans/internal/loan/service";
 import type { VisitorLoanStatus } from "@/features/loans/internal/loan/types";
+import { getVisitorItem } from "@/features/loans/internal/visitor/service";
+import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
   Button,
   FieldError,
@@ -22,18 +24,20 @@ import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
-import { Dot } from "lucide-react-native";
+import { Info } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import CopyTable from "./loans/form/CopyTable";
 import { CopySearchDialog, PickVisitorDialog } from "./loans/form/LoanDialogs";
 import { copyById, type LoanCopy } from "./options";
+import { visitorInfoRows } from "./visitors/visitorRows";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
   const [visitor, setVisitor] = useState<Option>();
+  const [visitorItem, setVisitorItem] = useState<VisitorListItem>();
   const [status, setStatus] = useState<VisitorLoanStatus>();
   const [expiresBy, setExpiresBy] = useState<string>();
   const [copies, setCopies] = useState<LoanCopy[]>([]);
@@ -47,15 +51,18 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
   }, [copyId]);
 
   useEffect(() => {
+    setVisitorItem(undefined);
     setStatus(undefined);
     setExpiresBy(undefined);
     if (!visitor) return;
     let stale = false;
     Promise.all([
+      getVisitorItem(visitor.id),
       getVisitorLoanStatus(visitor.id),
       getLoanExpiry(visitor.id),
-    ]).then(([s, e]) => {
+    ]).then(([v, s, e]) => {
       if (stale) return;
+      setVisitorItem(v);
       setStatus(s);
       setExpiresBy(e);
     });
@@ -97,13 +104,43 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
         <SplitColumns>
-          <Panel title="Detalles">
+          <Panel
+            title="Visitante"
+            className="grow"
+            lead={
+              status && (
+                <View className="flex-row items-center gap-1.5">
+                  <Icon icon={Info} size="sm" />
+                  {status.blocked ? (
+                    <Text variant="caption">
+                      Bloqueado: {status.overdue} ejemplares vencidos
+                    </Text>
+                  ) : (
+                    <Text variant="caption">
+                      {status.open === 1
+                        ? "1 ejemplar prestado"
+                        : `${status.open} ejemplares prestados`}
+                      {status.remaining
+                        ? `, puede prestar ${status.remaining} más`
+                        : ", límite alcanzado"}
+                    </Text>
+                  )}
+                </View>
+              )
+            }
+          >
             <FieldRow
-              label="Visitante *"
+              label="Nombre *"
               value={visitor?.label}
               error={errors.fields.visitorId}
               onPress={() => setEditing("visitor")}
             />
+            {visitorItem &&
+              visitorInfoRows(visitorItem).map((r) => (
+                <LabeledItem key={r.label} {...r} labelWidth="form" />
+              ))}
+          </Panel>
+          <Panel title="Detalles" className="grow">
             <LabeledItem
               label="Encargado"
               content={
@@ -112,12 +149,6 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
                   : undefined
               }
               labelWidth="form"
-            />
-            <FieldRow
-              label="Notas"
-              value={notes || undefined}
-              error={errors.fields.notes}
-              onPress={() => setEditing("notes")}
             />
             <LabeledItem
               label="Vencimiento"
@@ -129,46 +160,30 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
               content={formatDate(new Date())}
               labelWidth="form"
             />
-            {status && (
-              <View className="flex-row items-center justify-end">
-                {status.blocked ? (
-                  <Text variant="caption">
-                    Bloqueado: {status.overdue} ejemplares vencidos
-                  </Text>
-                ) : (
-                  <>
-                    <Text variant="caption">
-                      {status.open} préstamos activos
-                    </Text>
-                    <Icon icon={Dot} tone="faint" />
-                    <Text variant="caption">
-                      {status.remaining
-                        ? `Puede prestar ${status.remaining} más`
-                        : "Límite alcanzado"}
-                    </Text>
-                  </>
-                )}
-              </View>
-            )}
-          </Panel>
-
-          <Panel
-            title="Ejemplares"
-            lead={
-              <Button
-                title="Agregar"
-                size="sm"
-                onPress={() => setEditing("copies")}
-              />
-            }
-          >
-            <CopyTable
-              copies={copies}
-              error={errors.fields.copyIds}
-              onRemove={removeCopy}
+            <FieldRow
+              label="Notas"
+              value={notes || undefined}
+              error={errors.fields.notes}
+              onPress={() => setEditing("notes")}
             />
           </Panel>
         </SplitColumns>
+        <Panel
+          title="Ejemplares"
+          lead={
+            <Button
+              title="Agregar"
+              size="sm"
+              onPress={() => setEditing("copies")}
+            />
+          }
+        >
+          <CopyTable
+            copies={copies}
+            error={errors.fields.copyIds}
+            onRemove={removeCopy}
+          />
+        </Panel>
       </ScreenBody>
 
       {editing === "visitor" && (

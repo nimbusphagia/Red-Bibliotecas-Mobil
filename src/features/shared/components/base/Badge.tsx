@@ -50,6 +50,28 @@ export function StatusIcon({ icon, accent, tone }: StatusIconProps) {
   );
 }
 
+type StatusChipProps = {
+  text: string;
+  icon: LucideIcon;
+  accent?: AccentLevel;
+};
+
+/** Ícono + texto en una píldora del acento; sin `accent`, como un chip sin seleccionar. */
+export function StatusChip({ text, icon, accent }: StatusChipProps) {
+  const t = useTone();
+  const c = accent ? accents[accent] : t.chip.idle;
+  return (
+    <View
+      className={cn("h-8 flex-row items-center gap-2 rounded-full px-3", c.box)}
+    >
+      <Icon icon={icon} size="lg" stroke="sm" tone={c.icon} />
+      <Text variant="itemSm" className={c.label}>
+        {text}
+      </Text>
+    </View>
+  );
+}
+
 type IndicatorProps = {
   text: string;
   icon?: LucideIcon;

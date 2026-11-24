@@ -62,6 +62,7 @@ export default function LabelCopyPicker({
       acceptCopy={notReleased}
       subtitle={(b) => `${b.activeCount} ejemplares`}
       emptyText="Sin ejemplares por etiquetar"
+      autoFocus={false}
     />
   );
 }

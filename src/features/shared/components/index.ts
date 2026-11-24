@@ -5,7 +5,12 @@ export { Icon, type IconSize, type IconTone } from "./base/Icon";
 export { Panel, Surface } from "./base/Surface";
 export { Text, type TextVariant } from "./base/Text";
 export { ActiveCounter } from "./base/ActiveCounter";
-export { StatusBadge, StatusIcon, StatusIndicator } from "./base/Badge";
+export {
+  StatusBadge,
+  StatusChip,
+  StatusIcon,
+  StatusIndicator,
+} from "./base/Badge";
 export { FieldError } from "./form/FieldError";
 export { FormHeader } from "./form/FormHeader";
 export { FormScreen } from "./form/FormScreen";

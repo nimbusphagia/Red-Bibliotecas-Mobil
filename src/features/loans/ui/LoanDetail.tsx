@@ -12,14 +12,10 @@ import {
   DetailColumns,
   PageHeader,
   Panel,
+  StatusChip,
   StatusIndicator,
-  type DetailRow,
 } from "@/features/shared/components";
-import {
-  gradeLabel,
-  LOAN_STATE_ES,
-  ROLE_ES,
-} from "@/features/shared/format/translate";
+import { LOAN_STATE_ES } from "@/features/shared/format/translate";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { Link } from "expo-router";
@@ -30,6 +26,7 @@ import { loanStateOf } from "../internal/loan/rules";
 import LoanLines from "./loans/detail/LoanLines";
 import { LOAN_STATE_ACCENT, LOAN_STATE_ICON } from "./loans/stateIcon";
 import { loanDetailRows } from "./loans/detail/loanRows";
+import { visitorRows } from "./visitors/visitorRows";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 
 type Data = { loan: LoanListItem; lines: LoanLine[]; visitor: VisitorListItem };
@@ -55,24 +52,11 @@ export default function LoanDetail({ id }: { id: string }) {
   const { loan, lines, visitor } = data;
   const state = loanStateOf(loan);
 
-  const visitorRows: DetailRow[] = [
-    { label: "Nombre", content: visitor.name },
-    { label: "Rol", content: ROLE_ES[visitor.role] },
-    ...(visitor.role === "student"
-      ? [
-          {
-            label: "Grado",
-            content: gradeLabel(visitor.grade!, visitor.level!),
-          },
-        ]
-      : []),
-  ];
-
   return (
     <>
       <PageHeader title={`Préstamo #${loan.id}`}>
         <View className="flex-1 flex-row">
-          <StatusIndicator
+          <StatusChip
             text={LOAN_STATE_ES[state]}
             icon={LOAN_STATE_ICON[state]}
             accent={LOAN_STATE_ACCENT[state]}
@@ -94,7 +78,7 @@ export default function LoanDetail({ id }: { id: string }) {
                   />
                 </Link>
               ),
-              rows: visitorRows,
+              rows: visitorRows(visitor),
             },
           ]}
         />

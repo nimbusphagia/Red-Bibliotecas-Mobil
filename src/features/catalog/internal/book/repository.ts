@@ -65,6 +65,11 @@ const onLoanCount = rowCount(
   { ...copies, where: eq(copy.status, "on_loan") },
   book.id,
 );
+const damagedCount = rowCount(
+  { ...copies, where: eq(copy.status, "damaged") },
+  book.id,
+);
+const outdatedCount = rowCount({ ...copies, where: outdatedSql }, book.id);
 
 const matches = (column: AnyColumn | SQL, token: string) =>
   likeTokens(column, [token])[0];
@@ -137,6 +142,8 @@ const selectItems = () =>
       activeCount,
       availableCount,
       onLoanCount,
+      damagedCount,
+      outdatedCount,
     })
     .from(book)
     .leftJoin(publisher, eq(book.publisherId, publisher.id))

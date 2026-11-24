@@ -1,14 +1,13 @@
 import RecoverCopyDialog from "@/features/inventory/ui/copies/RecoverCopyDialog";
 import { canRecover } from "@/features/inventory/ui/copies/canRecover";
 import type { LoanLine } from "@/features/loans/internal/loan/types";
-import { Button, Column, Icon, ListRow } from "@/features/shared/components";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
 import {
   ArrowDown,
   ArrowUpRight,
-  CircleCheck,
   RotateCcwClock,
   TriangleExclamationPoint,
 } from "lucide-react-native";
@@ -63,23 +62,25 @@ export default function LoanLines({
               <>
                 <Button
                   variant="soft"
+                  accent={overdue ? "neg" : undefined}
+                  size={overdue ? "sm" : "md"}
+                  weight={overdue ? "md" : "sm"}
                   icon={TriangleExclamationPoint}
+                  title={overdue ? "Reportar" : undefined}
                   onPress={() => setActive({ line: l, reportOnly: true })}
                 />
                 <Button
                   variant="soft"
-                  size="sm"
-                  weight="md"
+                  accent={overdue ? undefined : "sm"}
+                  size={overdue ? "md" : "sm"}
+                  weight={overdue ? "sm" : "md"}
                   icon={ArrowDown}
-                  title="Devolver"
+                  title={overdue ? undefined : "Devolver"}
                   onPress={() => setActive({ line: l, reportOnly: false })}
                 />
               </>
             ) : (
               <>
-                {l.outcome === "returned" && (
-                  <Icon icon={CircleCheck} size="lg" stroke="sm" />
-                )}
                 {canManageStock && canRecover(l.status) && (
                   <Button
                     variant="soft"

@@ -13,12 +13,11 @@ module.exports = {
   fonts,
   palette: {
     // Lienzo de la página (tono canvas)
-    bg: "#F0F0F7",
+    bg: "#E8E8F1",
 
     // light: contenedores claros
     light1: "#FAFAFA", // superficie / texto sobre dark
-    lightRow: "#F6F6F8", // fondo opcional de filas de ItemList con gap
-    lightCard: "#F1F0F8", // ItemCard dentro de un contenedor light
+    lightCard: "#F1F0F8", // ItemCard y filas dentro de un contenedor light
     lightSolid: "#E1E1EF",
     lightAccent: "#AACCF7", // = accentMd
     // TEXT sobre light: dark1 > darkSolid

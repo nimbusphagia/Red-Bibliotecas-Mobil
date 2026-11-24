@@ -4,7 +4,7 @@ import {
   Pressable,
   type PressableProps,
 } from "react-native";
-import { cn, colors, useTone } from "../../theme";
+import { accents, cn, colors, useTone, type AccentLevel } from "../../theme";
 import { Icon, type IconSize, type IconTone } from "./Icon";
 import { Text } from "./Text";
 
@@ -18,6 +18,8 @@ type ButtonProps = Omit<PressableProps, "children"> & {
   icon?: LucideIcon;
   iconTone?: IconTone;
   variant?: Variant;
+  /** Reemplaza los colores de la variante. */
+  accent?: AccentLevel;
   size?: Size;
   weight?: Size;
   loading?: boolean;
@@ -38,6 +40,7 @@ export function Button({
   icon,
   iconTone,
   variant = "solid",
+  accent,
   size = "md",
   weight = "sm",
   loading = false,
@@ -47,8 +50,9 @@ export function Button({
 }: ButtonProps) {
   const isDisabled = disabled || loading;
   const t = useTone();
-  const v =
-    variant === "ghost"
+  const v = accent
+    ? accents[accent]
+    : variant === "ghost"
       ? { box: "bg-transparent", label: t.text, icon: t.icon }
       : t.button[variant];
   const s = sizeStyles[size];

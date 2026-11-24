@@ -71,6 +71,7 @@ export default function PrintLabelsDialog({ initial, onClose }: Props) {
             onChange={setSelected}
             fetchOptions={searchCopies}
             placeholder="Agregar..."
+            initiallyOpen={false}
           />
         </DialogBody>
         <FieldError>{printer.error}</FieldError>
