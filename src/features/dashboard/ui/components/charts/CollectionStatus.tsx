@@ -4,11 +4,10 @@ import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { cn } from "@/features/shared/theme";
 import { View } from "react-native";
 
-// Escala lila solo para este gráfico (no está en la paleta).
 const SEGMENTS: { status: HeldStatus; color: string }[] = [
-  { status: "available", color: "bg-[#DBD3F5]" },
-  { status: "on_loan", color: "bg-[#A099D1]" },
-  { status: "damaged", color: "bg-[#6359A6]" },
+  { status: "available", color: "bg-accentMd" },
+  { status: "on_loan", color: "bg-accentLg" },
+  { status: "damaged", color: "bg-accentNeg" },
 ];
 
 export default function CollectionStatus({

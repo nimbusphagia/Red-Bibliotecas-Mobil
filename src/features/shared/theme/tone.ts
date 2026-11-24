@@ -16,7 +16,6 @@ import type { ColorName } from "./colors";
 export type Tone = "canvas" | "light" | "dark";
 
 type Box = { box: string; label: string; icon: ColorName };
-type Accent = Box & { focus: string };
 type ChipStyle = {
   box: string;
   label: string;
@@ -28,6 +27,7 @@ export type ToneStyle = {
   surface: string; // fondo del contenedor
   inset: string; // nivel 2: campos, celdas, chips sin seleccionar
   row: string; // fondo opcional de filas de ItemList (con gap)
+  card: string; // fondo de ItemCard
   valueFilled: string; // valor de un LabeledItem input con contenido
   tag: { empty: string; filled: string }; // etiqueta de LabeledItem
   text: string;
@@ -36,23 +36,21 @@ export type ToneStyle = {
   divider: string; // bordes y separadores
   icon: ColorName;
   placeholder: ColorName; // placeholders y detalles tenues (también Icon "faint")
-  accentFg: ColorName; // acento como color de primer plano (Icon "accent")
-  accent: Accent;
+  accent: Box;
   chip: { idle: ChipStyle; selected: ChipStyle };
-  button: { accent: Box; solid: Box; soft: Box; selector: Box };
+  /** `active`: opción elegida de filtros y orden. */
+  button: { accent: Box; active: Box; solid: Box; soft: Box; selector: Box };
 };
 
-const accentDark: Accent = {
+const accentDark: Box = {
   box: "bg-darkAccent",
-  label: "text-darkSolid",
-  icon: "darkSolid",
-  focus: "focus:border-darkAccent",
+  label: "text-dark1",
+  icon: "dark1",
 };
-const accentLight: Accent = {
+const accentLight: Box = {
   box: "bg-lightAccent",
-  label: "text-darkSolid",
-  icon: "darkSolid",
-  focus: "focus:border-lightAccent",
+  label: "text-dark1",
+  icon: "dark1",
 };
 
 const chipDark = {
@@ -64,8 +62,8 @@ const chipDark = {
   },
   selected: {
     box: "bg-darkAccent",
-    label: "text-darkSolid",
-    icon: "darkSolid",
+    label: "text-dark1",
+    icon: "dark1",
     dot: "dark1",
   },
 } as const;
@@ -114,10 +112,11 @@ export const tones: Record<Tone, ToneStyle> = {
     surface: "bg-bg",
     inset: "bg-light1",
     row: "bg-light1",
+    card: "bg-light1",
     valueFilled: "bg-light1 text-dark1",
-    accentFg: "lightAccent",
     button: {
       accent: accentLight,
+      active: accentLight,
       solid: { box: "bg-darkSolid", label: "text-light1", icon: "light1" },
       soft: { box: "bg-light1", label: "text-dark1", icon: "dark1" },
       selector: selectorLight,
@@ -128,10 +127,11 @@ export const tones: Record<Tone, ToneStyle> = {
     surface: "bg-light1",
     inset: "bg-bg",
     row: "bg-lightRow",
+    card: "bg-lightCard",
     valueFilled: "bg-bg text-dark1",
-    accentFg: "darkSolid",
     button: {
       accent: accentLight,
+      active: accentLight,
       solid: { box: "bg-darkSolid", label: "text-light1", icon: "light1" },
       soft: { box: "bg-bg", label: "text-dark1", icon: "dark1" },
       selector: selectorLight,
@@ -141,6 +141,7 @@ export const tones: Record<Tone, ToneStyle> = {
     surface: "bg-dark1",
     inset: "bg-darkSolid",
     row: "bg-darkSolid",
+    card: "bg-darkSolid",
     valueFilled: "bg-bg text-dark1",
     tag: {
       empty: "bg-darkSolid text-light1",
@@ -152,11 +153,11 @@ export const tones: Record<Tone, ToneStyle> = {
     divider: "border-darkSolid",
     icon: "light1",
     placeholder: "dark2",
-    accentFg: "darkAccent",
     accent: accentDark,
     chip: chipDark,
     button: {
       accent: accentDark,
+      active: accentLight,
       solid: { box: "bg-darkSolid", label: "text-light1", icon: "light1" },
       soft: { box: "bg-darkSolid/60", label: "text-light1", icon: "light1" },
       selector: { box: "bg-darkSolid", label: "text-light1", icon: "light1" },
@@ -182,6 +183,36 @@ export const status: Record<"success" | "info" | "warning" | "error", Status> =
       icon: "error",
     },
   };
+
+/** Ítem activo del sidebar. */
+export const navActive: Box = {
+  box: "bg-light1",
+  label: "text-dark1",
+  icon: "dark1",
+};
+
+export type AccentLevel = "sm" | "md" | "lg" | "neg";
+
+/**
+ * Acentos para chips de valor (serie, reputación...), de menor a mayor
+ * intensidad; `neg` es el resaltado negativo urgente. No dependen del tono.
+ */
+export const accents: Record<AccentLevel, ChipStyle> = {
+  sm: { box: "bg-accentSm", label: "text-dark1", icon: "dark1", dot: "dark1" },
+  md: { box: "bg-accentMd", label: "text-dark1", icon: "dark1", dot: "dark1" },
+  lg: {
+    box: "bg-accentLg",
+    label: "text-light1",
+    icon: "light1",
+    dot: "light1",
+  },
+  neg: {
+    box: "bg-accentNeg",
+    label: "text-light1",
+    icon: "light1",
+    dot: "light1",
+  },
+};
 
 // Sin Surface arriba, lo que se dibuja está sobre el lienzo de la página.
 export const ToneContext = createContext<Tone>("canvas");

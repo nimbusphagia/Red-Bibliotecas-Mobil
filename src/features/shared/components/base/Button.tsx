@@ -9,7 +9,7 @@ import { Icon, type IconSize, type IconTone } from "./Icon";
 import { Text } from "./Text";
 
 /** `ghost`: sin fondo, solo el texto del tono actual. */
-type Variant = "accent" | "solid" | "soft" | "selector" | "ghost";
+type Variant = "accent" | "active" | "solid" | "soft" | "selector" | "ghost";
 
 type Size = "sm" | "md" | "lg";
 

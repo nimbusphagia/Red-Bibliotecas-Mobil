@@ -32,7 +32,7 @@ export function InlineSort<K extends string>({
           <Button
             key={key}
             title={label}
-            variant={selected ? "accent" : "solid"}
+            variant={selected ? "active" : "solid"}
             size="sm"
             weight={selected ? "md" : "sm"}
             icon={selected ? Arrow : undefined}

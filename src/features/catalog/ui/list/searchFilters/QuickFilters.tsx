@@ -23,6 +23,8 @@ type Props = {
   onOpen: (dialog: FilterDialog) => void;
   fields?: FilterField[];
   showPanel?: boolean;
+  /** Filtros activos que no están en `filters`. */
+  extraCount?: number;
 };
 
 export default function QuickFilters({
@@ -30,10 +32,11 @@ export default function QuickFilters({
   onOpen,
   fields = PANEL_FIELDS,
   showPanel = true,
+  extraCount = 0,
 }: Props) {
   const activeCount = Object.values(filters).filter(
     (v) => v !== undefined,
-  ).length;
+  ).length + extraCount;
   const categories = useOptions(loadCategories);
   const subcategories = useOptions(loadSubcategories);
   const shelves = useOptions(loadShelves);
@@ -77,7 +80,6 @@ export default function QuickFilters({
             variant="solid"
             weight="lg"
             size="sm"
-            iconTone="accent"
             icon={SlidersHorizontal}
             onPress={() => onOpen("all")}
           />

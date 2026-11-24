@@ -14,7 +14,7 @@ import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useState } from "react";
 
 type Props = {
-  copy: ShelfCopy;
+  copy: Pick<ShelfCopy, "id" | "bookTitle" | "labelText">;
   currentShelfId: number;
   onClose: () => void;
   onMoved: () => void;

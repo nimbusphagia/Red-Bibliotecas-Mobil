@@ -18,6 +18,7 @@ import Animated from "react-native-reanimated";
 import { cn, type Tone } from "../../theme";
 import { Button } from "./Button";
 import { DialogDismissContext } from "./dismiss";
+import { DialogFocusContext } from "./focus";
 import { LAYOUT } from "./motion";
 import { Surface } from "./Surface";
 import { Text } from "./Text";
@@ -43,7 +44,7 @@ type DialogProps = {
 export function Dialog({
   onClose,
   size = "md",
-  tone = "dark",
+  tone = "light",
   className,
   children,
 }: PropsWithChildren<DialogProps>) {
@@ -56,6 +57,7 @@ export function Dialog({
     touched.current = id;
   }, []);
   const value = useMemo(() => ({ ...dismiss, protect }), [dismiss, protect]);
+  const [focus] = useState<{ first?: string }>({});
 
   // Se ejecuta en la fase de captura (antes que cualquier hijo) y devuelve
   // false, así que no interfiere con ningún botón. Los controles que están
@@ -92,7 +94,9 @@ export function Dialog({
           onStartShouldSetResponderCapture={onTouch}
         >
           <DialogDismissContext.Provider value={value}>
-            {children}
+            <DialogFocusContext.Provider value={focus}>
+              {children}
+            </DialogFocusContext.Provider>
           </DialogDismissContext.Provider>
         </AnimatedSurface>
       </KeyboardAvoidingView>

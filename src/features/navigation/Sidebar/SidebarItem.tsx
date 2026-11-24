@@ -1,6 +1,6 @@
 import type { NavItem } from "@/features/navigation/navigation";
 import { Icon } from "@/features/shared/components";
-import { cn, useTone } from "@/features/shared/theme";
+import { cn, navActive, useTone } from "@/features/shared/theme";
 import { Link } from "expo-router";
 import { Pressable } from "react-native";
 
@@ -10,10 +10,10 @@ type Props = {
   standalone?: boolean;
 };
 
-/** Se dibuja sobre un Surface dark: inactivo = su inset (o su superficie si va solo). El activo usa el acento. */
+/** Se dibuja sobre un Surface dark: inactivo = su inset (o su superficie si va solo). El activo va en claro. */
 export function SidebarItem({ item, active, standalone = false }: Props) {
   const t = useTone();
-  const box = active ? t.accent.box : standalone ? t.surface : t.inset;
+  const box = active ? navActive.box : standalone ? t.surface : t.inset;
   return (
     <Link href={item.href} asChild>
       <Pressable
@@ -26,7 +26,7 @@ export function SidebarItem({ item, active, standalone = false }: Props) {
           icon={item.icon}
           size="xl"
           stroke="sm"
-          tone={active ? "dark1" : t.icon}
+          tone={active ? navActive.icon : t.icon}
         />
       </Pressable>
     </Link>

@@ -3,15 +3,15 @@ import type { LoanListItem } from "@/features/loans/internal/loan/types";
 import {
   Button,
   Column,
-  Icon,
   ListRow,
+  StatusIcon,
   Text,
 } from "@/features/shared/components";
 import { formatDateRangeES } from "@/features/shared/format/dates";
 import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
 import { ChevronRight } from "lucide-react-native";
-import { LOAN_STATE_ICON } from "../stateIcon";
+import { LOAN_STATE_ACCENT, LOAN_STATE_ICON } from "../stateIcon";
 
 type Props = {
   loan: LoanListItem;
@@ -39,7 +39,10 @@ export default function LoanRow({ loan, inset, hideVisitor }: Props) {
       )}
       <Column text={formatDateRangeES(loan.createdAt, loan.expiresBy)} />
       <Column width="md" containerClass="gap-2">
-        <Icon icon={LOAN_STATE_ICON[state]} size="lg" stroke="sm" />
+        <StatusIcon
+          icon={LOAN_STATE_ICON[state]}
+          accent={LOAN_STATE_ACCENT[state]}
+        />
         <Text variant="itemSm">
           {loan.lineCount - loan.openCount}/{loan.lineCount}
         </Text>

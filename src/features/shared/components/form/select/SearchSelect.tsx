@@ -8,6 +8,7 @@ import { Text } from "../../base/Text";
 import type { Option } from "./option";
 import { Icon } from "../../base/Icon";
 import { DialogDismissContext } from "../../base/dismiss";
+import { useDialogAutoFocus } from "../../base/focus";
 import { FADE_IN, FADE_OUT, LAYOUT } from "../../base/motion";
 
 export type SearchSelectProps = {
@@ -30,6 +31,10 @@ export function SearchSelect({
   initiallyOpen,
 }: SearchSelectProps) {
   const [open, setOpen] = useState(!!initiallyOpen);
+  // Sin `initiallyOpen` explícito, el primer select del Dialog se abre solo.
+  useDialogAutoFocus(() => {
+    if (initiallyOpen === undefined) setOpen(true);
+  });
   const [search, setSearch] = useState("");
   const [options, setOptions] = useState<Option[]>([]);
   const [none, setNone] = useState(false);
@@ -152,7 +157,7 @@ export function SearchSelect({
                 onPress={create}
                 className="px-4 py-3 active:opacity-80"
               >
-                <Text variant="item" className="font-sans-semibold">
+                <Text variant="itemSm" className="font-sans-semibold">
                   Crear «{search.trim()}»
                 </Text>
               </Pressable>

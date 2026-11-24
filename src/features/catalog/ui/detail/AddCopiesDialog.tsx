@@ -70,7 +70,6 @@ export default function AddCopiesDialog({
               : undefined
           }
           onSubmitEditing={confirm}
-          autoFocus
         />
         <SimpleSelect
           label="Estante"

@@ -1,3 +1,4 @@
+import type { Reputation } from "@/features/loans/internal/visitor/reputation";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import { ItemCard } from "@/features/shared/components";
 import {
@@ -5,14 +6,25 @@ import {
   REPUTATION_ES,
   ROLE_ES,
 } from "@/features/shared/format/translate";
+import type { AccentLevel } from "@/features/shared/theme";
 
 type Props = { visitor: VisitorListItem };
 
+const REPUTATION_ACCENT: Record<Reputation, AccentLevel> = {
+  new: "sm",
+  regular: "sm",
+  reliable: "lg",
+  at_risk: "neg",
+};
+
 export default function VisitorCard({ visitor }: Props) {
-  const reputation = REPUTATION_ES[visitor.reputation];
+  const reputation = {
+    label: REPUTATION_ES[visitor.reputation],
+    accent: REPUTATION_ACCENT[visitor.reputation],
+  };
   const chips =
     visitor.role === "student"
-      ? [gradeLabel(visitor.grade!, visitor.level!), reputation]
+      ? [{ label: gradeLabel(visitor.grade!, visitor.level!) }, reputation]
       : [reputation];
 
   return (

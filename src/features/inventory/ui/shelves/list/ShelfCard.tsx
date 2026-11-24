@@ -11,7 +11,7 @@ export default function ShelfCard({ shelf }: Props) {
       subtitle={shelf.description}
       detail={`${shelf.copyCount} ejemplar${shelf.copyCount === 1 ? "" : "es"}`}
       href={`/shelves/${shelf.id}`}
-      chips={shelf.isDefault ? ["Predeterminada"] : undefined}
+      chips={shelf.isDefault ? [{ label: "Predeterminada" }] : undefined}
     />
   );
 }

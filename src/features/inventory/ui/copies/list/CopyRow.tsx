@@ -2,50 +2,102 @@ import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   Button,
   Column,
-  Icon,
   ListRow,
-  Text,
 } from "@/features/shared/components";
 import { shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { Printer, ShelvingUnit, Stamp } from "lucide-react-native";
+import {
+  ArrowDown,
+  ArrowUp,
+  RotateCcwClock,
+  SendToBack,
+  ShelvingUnit,
+} from "lucide-react-native";
 import { useState } from "react";
 import PrintLabelsDialog from "../../labels/form/PrintLabelsDialog";
 import { LABEL_STATE_ICON, labelStateOf } from "../../labels/labelState";
+import MoveCopyDialog from "../../shelves/form/MoveCopyDialog";
+import { canRecover } from "../canRecover";
+import RecoverCopyDialog from "../RecoverCopyDialog";
 
-type Props = { copy: CopyItem };
+type Dialog = "print" | "move" | "recover" | null;
 
-export default function CopyRow({ copy }: Props) {
+type Props = {
+  copy: CopyItem;
+  /** Usuario que puede mover y recuperar; null si no tiene permiso. */
+  actorId: number | null;
+  onChanged: () => void;
+};
+
+export default function CopyRow({ copy, actorId, onChanged }: Props) {
   const state = labelStateOf(copy);
-  const [printing, setPrinting] = useState(false);
+  const [dialog, setDialog] = useState<Dialog>(null);
+  const isAvailable = ["available", "damaged"].includes(copy.status);
+  const loanHref = isAvailable
+    ? {
+        pathname: "/loans/new" as const,
+        params: { copyId: String(copy.id) },
+      }
+    : copy.loan && (`/loans/${copy.loan.loanId}` as const);
+  const done = () => {
+    setDialog(null);
+    onChanged();
+  };
 
   return (
     <>
       <ListRow>
         <Column variant="id" text={`#${copy.id}`} />
         <Column text={copy.labelText ?? "---"} />
-        <Column containerClass="gap-2">
-          <Icon icon={ShelvingUnit} size="lg" stroke="sm" />
-          <Text variant="itemSm" className="shrink" numberOfLines={1}>
-            {shelfLabel({
-              name: copy.shelfName,
-              isDefault: copy.shelfIsDefault,
-            })}
-          </Text>
+        <Column>
+          <Link href={`/shelves/${copy.shelfId}`} asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              weight="md"
+              icon={ShelvingUnit}
+              title={shelfLabel({
+                name: copy.shelfName,
+                isDefault: copy.shelfIsDefault,
+              })}
+              className="-ml-4 shrink"
+            />
+          </Link>
         </Column>
         <Column
           variant="actions"
           expand={false}
-          containerClass="w-36 shrink-0 items-center justify-between"
+          containerClass="shrink-0 items-center justify-end gap-2"
         >
-          <Icon icon={LABEL_STATE_ICON[state]} size="lg" stroke="sm" />
+          {actorId !== null && canRecover(copy.status) && (
+            <Button
+              variant="soft"
+              icon={RotateCcwClock}
+              onPress={() => setDialog("recover")}
+            />
+          )}
+          {actorId !== null && (
+            <Button
+              variant="soft"
+              icon={SendToBack}
+              onPress={() => setDialog("move")}
+            />
+          )}
+          {loanHref && (
+            <Link href={loanHref} asChild>
+              <Button
+                variant="soft"
+                icon={isAvailable ? ArrowUp : ArrowDown}
+              />
+            </Link>
+          )}
           {state === "labeled" ? (
             <Button
               variant="soft"
               size="sm"
-              icon={Printer}
+              icon={LABEL_STATE_ICON[state]}
               title="Imprimir"
-              onPress={() => setPrinting(true)}
+              onPress={() => setDialog("print")}
             />
           ) : (
             <Link
@@ -55,17 +107,33 @@ export default function CopyRow({ copy }: Props) {
               <Button
                 variant="soft"
                 size="sm"
-                icon={Stamp}
-                title="Etiquetar"
+                icon={LABEL_STATE_ICON[state]}
+                title={state === "outdated" ? "Actualizar" : "Etiquetar"}
               />
             </Link>
           )}
         </Column>
       </ListRow>
-      {printing && (
+      {dialog === "print" && (
         <PrintLabelsDialog
           initial={[copy]}
-          onClose={() => setPrinting(false)}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {dialog === "move" && (
+        <MoveCopyDialog
+          copy={copy}
+          currentShelfId={copy.shelfId}
+          onClose={() => setDialog(null)}
+          onMoved={done}
+        />
+      )}
+      {dialog === "recover" && actorId !== null && (
+        <RecoverCopyDialog
+          copy={{ ...copy, copyId: copy.id }}
+          actorId={actorId}
+          onClose={() => setDialog(null)}
+          onDone={done}
         />
       )}
     </>

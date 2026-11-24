@@ -56,7 +56,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
       p.some((x) => x.id === c.id) ? p.filter((x) => x.id !== c.id) : [...p, c],
     );
 
-  const leave = () => router.replace("/copies");
+  const leave = () => router.back();
 
   const submit = () => {
     if (session.status !== "signed-in") return;

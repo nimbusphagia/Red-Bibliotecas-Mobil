@@ -39,7 +39,7 @@ export function PageHeader({
     );
 
   const searchbar = !search ? null : !searchExtra ? (
-    bar(isExpanded ? undefined : "w-full h-10")
+    bar(isExpanded ? undefined : "w-full max-w-none h-10")
   ) : (
     <View
       className={cn(

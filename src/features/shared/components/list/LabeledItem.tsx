@@ -65,6 +65,7 @@ export function LabeledItem({
         className={cn(
           cell,
           "flex-1 text-right",
+          input && "px-3",
           input && !empty ? [t.valueFilled, "text-left"] : t.inset,
           empty && !input && t.faint,
           contentClass,

@@ -1,4 +1,5 @@
 import type { CopyStatus } from "@/features/inventory/internal/copy/types";
+import type { AccentLevel } from "@/features/shared/theme";
 import {
   CircleCheck,
   CircleQuestionMark,
@@ -14,4 +15,11 @@ export const COPY_STATUS_ICON: Record<CopyStatus, LucideIcon> = {
   damaged: ShieldExclamationPoint,
   lost: CircleQuestionMark,
   discarded: CircleX,
+};
+
+export const COPY_STATUS_ACCENT: Partial<Record<CopyStatus, AccentLevel>> = {
+  available: "sm",
+  on_loan: "md",
+  damaged: "md",
+  lost: "neg",
 };

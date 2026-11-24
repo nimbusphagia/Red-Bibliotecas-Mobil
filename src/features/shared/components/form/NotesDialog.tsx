@@ -23,7 +23,6 @@ export function NotesDialog({ value, onChange, onClose }: Props) {
         onChangeText={setDraft}
         maxLength={500}
         onSubmitEditing={confirm}
-        autoFocus
       />
       <DialogActions
         confirmTitle="Aceptar"

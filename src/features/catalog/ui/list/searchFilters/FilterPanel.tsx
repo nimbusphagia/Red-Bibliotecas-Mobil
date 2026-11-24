@@ -8,7 +8,7 @@ import {
   SimpleSelect,
   type Option,
 } from "@/features/shared/components";
-import { useCallback } from "react";
+import { useCallback, type ReactNode } from "react";
 import {
   fetchCollections,
   loadCategories,
@@ -68,6 +68,10 @@ type Props = {
   onOpenChange: (open: FilterDialog) => void;
   /** Campos visibles en el panel completo. */
   fields?: FilterField[];
+  /** Contenido extra al inicio del panel completo. */
+  children?: ReactNode;
+  /** Se llama además de limpiar `filters`. */
+  onClear?: () => void;
 };
 
 export default function FilterPanel({
@@ -76,6 +80,8 @@ export default function FilterPanel({
   open,
   onOpenChange: setOpen,
   fields = PANEL_FIELDS,
+  children,
+  onClear,
 }: Props) {
   const all = open === "all";
   const shows = (field: FilterField) =>
@@ -117,7 +123,10 @@ export default function FilterPanel({
                   <Button
                     title="Limpiar"
                     variant="solid"
-                    onPress={() => onChange({})}
+                    onPress={() => {
+                      onChange({});
+                      onClear?.();
+                    }}
                   />
                   <Button
                     variant="accent"
@@ -130,6 +139,7 @@ export default function FilterPanel({
             />
           )}
           <DialogBody>
+            {all && children}
             {shows("author") && (
               <SearchSelect
                 label="Autor"

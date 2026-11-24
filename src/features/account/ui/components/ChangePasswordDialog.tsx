@@ -61,7 +61,6 @@ export default function ChangePasswordDialog({ onClose, onChanged }: Props) {
           error={errors.fields.currentPassword}
           returnKeyType="next"
           onSubmitEditing={() => nextRef.current?.focus()}
-          autoFocus
         />
         <TextField
           ref={nextRef}

@@ -18,16 +18,23 @@ module.exports = {
     // light: contenedores claros
     light1: "#FAFAFA", // superficie / texto sobre dark
     lightRow: "#F6F6F8", // fondo opcional de filas de ItemList con gap
+    lightCard: "#F1F0F8", // ItemCard dentro de un contenedor light
     lightSolid: "#E1E1EF",
-    lightAccent: "#CECFF8",
+    lightAccent: "#AACCF7", // = accentMd
     // TEXT sobre light: dark1 > darkSolid
 
     // dark: contenedores oscuros
     dark1: "#222026", // superficie / texto sobre light
     darkSolid: "#3F3E43",
-    darkAccent: "#CECFF8",
+    darkAccent: "#AACCF7", // = accentMd
     dark2: "#8D8F93", // gris neutro: placeholders y detalles tenues
     // TEXT sobre dark: light1 > lightSolid
+
+    // acentos de intensidad creciente para chips de valor (theme/tone.ts → accents)
+    accentSm: "#CBDEF6",
+    accentMd: "#AACCF7",
+    accentLg: "#69A3EF",
+    accentNeg: "#C2405C",
 
     secondary: "#8AAAD4",
     error: "#D14343",

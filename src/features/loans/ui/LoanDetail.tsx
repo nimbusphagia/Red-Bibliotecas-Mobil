@@ -28,7 +28,7 @@ import { useCallback } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { loanStateOf } from "../internal/loan/rules";
 import LoanLines from "./loans/detail/LoanLines";
-import { LOAN_STATE_ICON } from "./loans/stateIcon";
+import { LOAN_STATE_ACCENT, LOAN_STATE_ICON } from "./loans/stateIcon";
 import { loanDetailRows } from "./loans/detail/loanRows";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 
@@ -75,6 +75,7 @@ export default function LoanDetail({ id }: { id: string }) {
           <StatusIndicator
             text={LOAN_STATE_ES[state]}
             icon={LOAN_STATE_ICON[state]}
+            accent={LOAN_STATE_ACCENT[state]}
           />
         </View>
       </PageHeader>

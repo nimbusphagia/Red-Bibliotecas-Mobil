@@ -1,6 +1,5 @@
 import type { Href } from "expo-router";
 import {
-  Book,
   ClipboardClock,
   House,
   LibraryBig,
@@ -34,12 +33,6 @@ export const NAVBAR: Navbar = {
       label: "Libros",
       href: "/catalog",
       icon: LibraryBig,
-    },
-    {
-      key: "copies",
-      label: "Ejemplares",
-      href: "/copies",
-      icon: Book,
     },
     {
       key: "loans",

@@ -1,7 +1,9 @@
 import { Search } from "lucide-react-native";
-import { TextInput, View } from "react-native";
+import { useRef } from "react";
+import { TextInput, View, type TextInputInstance } from "react-native";
 import { cn, colors, useTone } from "../../../theme";
 import { Icon } from "../../base/Icon";
+import { useDialogAutoFocus } from "../../base/focus";
 
 type Props = {
   value: string;
@@ -18,6 +20,8 @@ export function Searchbar({
   placeholder = "Buscar...",
 }: Props) {
   const t = useTone();
+  const input = useRef<TextInputInstance>(null);
+  useDialogAutoFocus(() => input.current?.focus());
   return (
     <View
       className={cn(
@@ -30,6 +34,7 @@ export function Searchbar({
         className={cn("flex-1 h-full font-sans", t.text)}
         value={value}
         onChangeText={onChangeText}
+        ref={input}
         placeholder={placeholder}
         placeholderTextColor={colors[t.placeholder]}
         returnKeyType="search"

@@ -119,12 +119,7 @@ export default function EntryImportDialog({ room, onLoad, onClose }: Props) {
   const problem = review?.plan.problem;
 
   return (
-    <Dialog
-      tone="light"
-      onClose={onClose}
-      size="lg"
-      className="gap-6"
-    >
+    <Dialog onClose={onClose} size="lg" className="gap-6">
       <DialogHeader
         title="Importar"
         subtitle="Ingresa libros nuevos desde un archivo .xlsx o .csv"

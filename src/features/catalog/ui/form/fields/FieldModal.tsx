@@ -131,7 +131,6 @@ export default function FieldModal({
                     : undefined
                 }
                 onSubmitEditing={confirm}
-                autoFocus
               />
             )}
 

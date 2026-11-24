@@ -19,7 +19,7 @@ export function InlineFilter<V extends string>({
           key={o.value}
           title={o.label}
           size="sm"
-          variant={o.value === value ? "accent" : "soft"}
+          variant={o.value === value ? "active" : "soft"}
           onPress={() => onChange(o.value)}
         />
       ))}

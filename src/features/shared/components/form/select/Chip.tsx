@@ -1,6 +1,6 @@
 import { Dot, type LucideIcon } from "lucide-react-native";
 import { Pressable } from "react-native";
-import { cn, useTone } from "../../../theme";
+import { accents, cn, useTone, type AccentLevel } from "../../../theme";
 import { Icon } from "../../base/Icon";
 import { Text } from "../../base/Text";
 
@@ -18,6 +18,7 @@ export function Chip({
   disabled,
   onPress,
   shape = "default",
+  accent,
 }: {
   label: string;
   detail?: string;
@@ -27,8 +28,10 @@ export function Chip({
   /** Sin `onPress` el chip es solo informativo. */
   onPress?: () => void;
   shape?: keyof typeof shapes;
+  accent?: AccentLevel;
 }) {
-  const c = useTone().chip[selected ? "selected" : "idle"];
+  const t = useTone();
+  const c = accent ? accents[accent] : t.chip[selected ? "selected" : "idle"];
   const compact = shape !== "default";
   const textClass = cn("font-sans-regular", compact && "text-[12px]", c.label);
 

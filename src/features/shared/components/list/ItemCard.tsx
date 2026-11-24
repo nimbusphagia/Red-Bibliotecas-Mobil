@@ -2,21 +2,26 @@ import { Link, type Href } from "expo-router";
 import { ArrowUpRight } from "lucide-react-native";
 import { View } from "react-native";
 import { Button } from "../base/Button";
+import { cn, useTone } from "../../theme";
 import { Surface } from "../base/Surface";
 import { Text } from "../base/Text";
-import { ChipRow } from "../form/select/ChipRow";
+import { ChipRow, type ChipItem } from "../form/select/ChipRow";
 
 type Props = {
   title: string;
   subtitle?: string | null;
   detail?: string | null;
   href: Href;
-  chips?: string[];
+  chips?: ChipItem[];
 };
 
 export function ItemCard({ title, subtitle, detail, href, chips }: Props) {
+  const t = useTone();
   return (
-    <Surface row className="grow justify-between gap-4 p-4 rounded-2xl">
+    <Surface
+      row
+      className={cn("grow justify-between gap-4 p-4 rounded-2xl", t.card)}
+    >
       <View className="flex-row items-start gap-2">
         <View className="flex-1 gap-1">
           <Text variant="item" numberOfLines={2}>
@@ -41,7 +46,7 @@ export function ItemCard({ title, subtitle, detail, href, chips }: Props) {
           />
         </Link>
       </View>
-      {!!chips?.length && <ChipRow labels={chips} />}
+      {!!chips?.length && <ChipRow chips={chips} />}
     </Surface>
   );
 }
