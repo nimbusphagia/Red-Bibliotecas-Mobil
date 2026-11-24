@@ -12,25 +12,33 @@ type Props = {
   loan: LoanListItem;
   inset?: boolean;
   external?: boolean;
+  hideVisitor?: boolean;
 };
 
-export default function LoanRow({ loan, inset, external }: Props) {
+export default function LoanRow({
+  loan,
+  inset,
+  external,
+  hideVisitor,
+}: Props) {
   const state = loanStateOf(loan);
   const { isCompact } = useLayoutMode();
 
   return (
     <ListRow inset={inset}>
       <Column variant="id" text={`#${loan.id}`} />
-      <Column
-        variant="subtitled"
-        text={loan.visitorName}
-        subtitle1={ROLE_ES[loan.visitorRole]}
-        subtitle2={
-          loan.visitorGrade && loan.visitorLevel
-            ? gradeLabel(loan.visitorGrade, loan.visitorLevel)
-            : undefined
-        }
-      />
+      {!hideVisitor && (
+        <Column
+          variant="subtitled"
+          text={loan.visitorName}
+          subtitle1={ROLE_ES[loan.visitorRole]}
+          subtitle2={
+            loan.visitorGrade && loan.visitorLevel
+              ? gradeLabel(loan.visitorGrade, loan.visitorLevel)
+              : undefined
+          }
+        />
+      )}
       <Column text={formatDateRangeES(loan.createdAt, loan.expiresBy)} />
       <Column
         width={isCompact ? "sm" : "md"}

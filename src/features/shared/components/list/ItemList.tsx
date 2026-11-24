@@ -1,9 +1,12 @@
 import type { ReactElement, ReactNode } from "react";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
+import Animated from "react-native-reanimated";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
 import { cn, colors, useTone, type Tone } from "../../theme";
+import { LAYOUT } from "../base/motion";
 import { Surface } from "../base/Surface";
 import { Text } from "../base/Text";
+import { AccordionProvider } from "./CollapsibleList";
 
 type Props<T extends { id: number }> = {
   items: T[];
@@ -55,55 +58,58 @@ export function ItemList<T extends { id: number }>({
   const toolbarRow = "flex-row items-center justify-between";
 
   return (
-    <View className="flex-1 gap-3">
-      {toolbar &&
-        (toolbarSurface ? (
-          <Surface
-            tone={tone ?? "dark"}
-            className={cn(toolbarRow, "rounded-lg p-3")}
-          >
-            {toolbar}
-          </Surface>
-        ) : (
-          <View className={cn(toolbarRow, "px-1")}>{toolbar}</View>
-        ))}
-      <Surface tone={tone} className="flex-1 overflow-hidden">
-        <FlatList
-          key={numColumns}
-          numColumns={numColumns}
-          data={items}
-          keyExtractor={(i) => String(i.id)}
-          renderItem={({ item }) =>
-            multi ? (
-              <View
-                style={{
-                  width: `${100 / numColumns}%`,
-                  paddingHorizontal: COLUMN_GAP / 2,
-                }}
-              >
-                {renderItem(item)}
-              </View>
-            ) : (
-              renderItem(item)
-            )
-          }
-          contentContainerClassName={cn("p-3", gap && "gap-3")}
-          columnWrapperStyle={
-            multi ? { marginHorizontal: -COLUMN_GAP / 2 } : undefined
-          }
-          showsVerticalScrollIndicator={false}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={loading ? <Loader /> : undefined}
-          ListEmptyComponent={
-            loading ? undefined : (
-              <Text variant="caption" className="pt-3 text-center">
-                Sin resultados
-              </Text>
-            )
-          }
-        />
-      </Surface>
-    </View>
+    <AccordionProvider>
+      <View className="flex-1 gap-3">
+        {toolbar &&
+          (toolbarSurface ? (
+            <Surface
+              tone={tone ?? "dark"}
+              className={cn(toolbarRow, "rounded-lg p-3")}
+            >
+              {toolbar}
+            </Surface>
+          ) : (
+            <View className={cn(toolbarRow, "px-1")}>{toolbar}</View>
+          ))}
+        <Surface tone={tone} className="flex-1 overflow-hidden">
+          <Animated.FlatList
+            key={numColumns}
+            numColumns={numColumns}
+            data={items}
+            keyExtractor={(i) => String(i.id)}
+            renderItem={({ item }) =>
+              multi ? (
+                <View
+                  style={{
+                    width: `${100 / numColumns}%`,
+                    paddingHorizontal: COLUMN_GAP / 2,
+                  }}
+                >
+                  {renderItem(item)}
+                </View>
+              ) : (
+                renderItem(item)
+              )
+            }
+            contentContainerClassName={cn("p-3", gap && "gap-3")}
+            itemLayoutAnimation={multi ? undefined : LAYOUT}
+            columnWrapperStyle={
+              multi ? { marginHorizontal: -COLUMN_GAP / 2 } : undefined
+            }
+            showsVerticalScrollIndicator={false}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={loading ? <Loader /> : undefined}
+            ListEmptyComponent={
+              loading ? undefined : (
+                <Text variant="caption" className="pt-3 text-center">
+                  Sin resultados
+                </Text>
+              )
+            }
+          />
+        </Surface>
+      </View>
+    </AccordionProvider>
   );
 }

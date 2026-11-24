@@ -6,8 +6,8 @@ import { useDebounce } from "./useDebounce";
 export const PAGE_SIZE = 20;
 
 /** Texto del buscador y su versión con retardo, que es la que consulta. */
-export function useSearch() {
-  const [search, setSearch] = useState("");
+export function useSearch(initial = "") {
+  const [search, setSearch] = useState(initial);
   const debouncedSearch = useDebounce(search);
   return { search, setSearch, debouncedSearch };
 }

@@ -218,17 +218,34 @@ export async function listCopies(
 const tally = (cond: SQL | undefined) =>
   sql<number>`sum(case when ${cond} then 1 else 0 end)`.mapWith(Number);
 
+const copyBookFields = {
+  id: book.id,
+  title: book.title,
+  authors: writersSql,
+  publisherName: publisher.name,
+  labeled: tally(and(isNotNull(copy.labeledAt), not(outdatedSql))),
+  pending: tally(and(isNotNull(copy.id), isNull(copy.labeledAt))),
+  outdated: tally(outdatedSql),
+};
+
 /**
- * Libros con al menos un ejemplar activo que cumple los filtros. Los conteos
- * son de todos sus ejemplares activos, no solo de los que cumplen.
+ * Libros activos, como en el catálogo, con los conteos de sus ejemplares
+ * activos. Si se filtra por algo del ejemplar (ID, estante, etiquetado), solo
+ * quedan los libros con al menos un ejemplar que cumple.
  */
 export async function listCopyBooks(
   filters: CopyBookFilters,
 ): Promise<Page<CopyBook>> {
   const { sortBy, sortDir, limit, offset } = filters;
+  const byCopy =
+    filters.copyId !== undefined ||
+    filters.shelfId !== undefined ||
+    filters.labeled !== undefined ||
+    filters.outdated !== undefined;
   const match = copyWhere(filters);
-  const active = notInArray(copy.status, [...RELEASED_STATUSES]);
-  const having = match && sql`max(case when ${match} then 1 else 0 end) = 1`;
+  const counted = byCopy ? and(isNotNull(copy.id), match) : match;
+  const having =
+    counted && sql`max(case when ${counted} then 1 else 0 end) = 1`;
 
   const order =
     sortBy === "author"
@@ -239,30 +256,27 @@ export async function listCopyBooks(
         ]
       : [direction(sortDir)(book.titleKey)];
 
+  const copies = and(
+    eq(copy.bookId, book.id),
+    notInArray(copy.status, [...RELEASED_STATUSES]),
+  );
+
   const matching = db
     .select({ id: book.id })
-    .from(copy)
-    .innerJoin(book, eq(book.id, copy.bookId))
-    .where(active)
+    .from(book)
+    .leftJoin(copy, copies)
+    .where(eq(book.active, true))
     .groupBy(book.id)
     .having(having)
     .as("matching");
 
   const [items, [{ n }]] = await Promise.all([
     db
-      .select({
-        id: book.id,
-        title: book.title,
-        authors: writersSql,
-        publisherName: publisher.name,
-        labeled: tally(and(isNotNull(copy.labeledAt), not(outdatedSql))),
-        pending: tally(isNull(copy.labeledAt)),
-        outdated: tally(outdatedSql),
-      })
-      .from(copy)
-      .innerJoin(book, eq(book.id, copy.bookId))
+      .select(copyBookFields)
+      .from(book)
+      .leftJoin(copy, copies)
       .leftJoin(publisher, eq(publisher.id, book.publisherId))
-      .where(active)
+      .where(eq(book.active, true))
       .groupBy(book.id)
       .having(having)
       .orderBy(...order, book.id)

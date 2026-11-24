@@ -14,9 +14,10 @@ type Props = {
 export function DetailRows({ rows, variant = "pill", columns = 1 }: Props) {
   const { isExpanded } = useLayoutMode();
   const n = isExpanded ? columns : 1;
-  const size = Math.ceil(rows.length / n);
+  const visible = isExpanded ? rows : rows.filter((r) => r.content);
+  const size = Math.ceil(visible.length / n);
   const groups = Array.from({ length: n }, (_, i) =>
-    rows.slice(i * size, (i + 1) * size),
+    visible.slice(i * size, (i + 1) * size),
   );
   const labelWidth = variant === "pill" && n === 1 ? "wide" : "narrow";
 

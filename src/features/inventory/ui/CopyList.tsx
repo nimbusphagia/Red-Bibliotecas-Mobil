@@ -44,9 +44,13 @@ const SORTS: SortOption<CopyBookSort>[] = [
   { key: "author", label: "Autor", defaultDir: "asc" },
 ];
 
-export default function CopyList() {
+type Props = {
+  initialSearch?: string;
+};
+
+export default function CopyList({ initialSearch }: Props) {
   const { isExpanded } = useLayoutMode();
-  const { search, setSearch, debouncedSearch } = useSearch();
+  const { search, setSearch, debouncedSearch } = useSearch(initialSearch);
   const [idText, setIdText] = useState("");
   const copyId = useDebounce(idText);
   const [filter, setFilter] = useState<StatusFilter>("all");

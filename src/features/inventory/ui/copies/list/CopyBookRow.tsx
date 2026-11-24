@@ -37,6 +37,7 @@ export default function CopyBookRow({ book, filters, defaultOpen }: Props) {
 
   return (
     <CollapsibleList
+      groupId={book.id}
       defaultOpen={defaultOpen}
       reloadKey={book}
       load={() => loadCopies(book.id, filters)}

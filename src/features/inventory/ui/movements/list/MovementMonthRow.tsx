@@ -29,6 +29,7 @@ type Props = {
 export default function MovementMonthRow({ month, filters, defaultOpen }: Props) {
   return (
     <CollapsibleList
+      groupId={month.month}
       defaultOpen={defaultOpen}
       reloadKey={month}
       load={() => loadMonth(month.month, filters)}

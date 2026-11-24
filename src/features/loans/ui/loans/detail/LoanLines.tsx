@@ -6,6 +6,7 @@ import {
   ListRow,
   StatusBadge,
 } from "@/features/shared/components";
+import { formatDateES } from "@/features/shared/format/dates";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
 import {
   ArrowDown,
@@ -18,7 +19,6 @@ import ReturnLineDialog from "./ReturnLineDialog";
 
 type Props = {
   lines: LoanLine[];
-  expiresBy: string;
   overdue: boolean;
   actorId: number;
   onChanged: () => void;
@@ -26,7 +26,6 @@ type Props = {
 
 export default function LoanLines({
   lines,
-  expiresBy,
   overdue,
   actorId,
   onChanged,
@@ -48,8 +47,14 @@ export default function LoanLines({
           />
           <Column
             variant="subtitled"
-            text={expiresBy}
-            subtitle1={l.outcome ? "Finalizado" : overdue ? "Vencido" : "Vence"}
+            text={l.resolvedAt ? formatDateES(l.resolvedAt) : "---"}
+            subtitle1={
+              l.outcome
+                ? OUTCOME_ES[l.outcome]
+                : overdue
+                  ? "Vencido"
+                  : "Pendiente"
+            }
           />
           <Column variant="actions" width="lg">
             {!l.outcome ? (
@@ -60,10 +65,11 @@ export default function LoanLines({
                   onPress={() => setActive({ line: l, reportOnly: true })}
                 />
                 <Button
-                  variant="accent"
+                  variant="soft"
                   size="sm"
                   weight="md"
                   icon={ArrowDown}
+                  title="Devolver"
                   onPress={() => setActive({ line: l, reportOnly: false })}
                 />
               </>

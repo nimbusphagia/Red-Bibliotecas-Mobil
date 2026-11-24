@@ -1,9 +1,15 @@
 import { CopyItem } from "@/features/inventory/internal/copy/types";
-import { Button, Column, ListRow, Text } from "@/features/shared/components";
-import { StatusBadge } from "@/features/shared/components";
-import { COPY_STATUS_ES, shelfLabel } from "@/features/shared/format/translate";
+import { COPY_STATUS_ICON } from "@/features/inventory/ui/copies/statusIcon";
+import {
+  Button,
+  Column,
+  Icon,
+  ListRow,
+  Text,
+} from "@/features/shared/components";
+import { shelfLabel } from "@/features/shared/format/translate";
 import { Link } from "expo-router";
-import { ArrowDown, ArrowUp, ScanSearch } from "lucide-react-native";
+import { ArrowDown, ArrowUp, ShelvingUnit } from "lucide-react-native";
 import { View } from "react-native";
 
 type Props = {
@@ -29,34 +35,36 @@ export default function CopiesList({ copies }: Props) {
           : c.loan && (`/loans/${c.loan.loanId}` as const);
         return (
           <ListRow key={c.id}>
-            <Column
-              text={`#${c.id}`}
-              variant="id"
-              containerClass="justify-start"
-            />
-            <Column text={c.labelText ?? "---"} containerClass="" />
-            <Column variant="actions" containerClass="justify-start">
-              <StatusBadge
-                text={COPY_STATUS_ES[c.status]}
-                variant={isAvailable ? "finished" : "pending"}
-              />
+            <Column variant="id" text={`#${c.id}`} />
+            <Column text={c.labelText ?? "---"} />
+            <Column>
+              <Link href={`/shelves/${c.shelfId}`} asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  weight="md"
+                  icon={ShelvingUnit}
+                  title={shelfLabel({
+                    name: c.shelfName,
+                    isDefault: c.shelfIsDefault,
+                  })}
+                  className="-ml-4 shrink"
+                />
+              </Link>
             </Column>
             <Column
-              text={shelfLabel({
-                name: c.shelfName,
-                isDefault: c.shelfIsDefault,
-              })}
-              containerClass="justify-start"
-            />
-            <Column variant="actions" expand={false}>
-              <Link href={`/shelves/${c.shelfId}`} asChild>
-                <Button variant="soft" icon={ScanSearch} />
-              </Link>
+              variant="actions"
+              expand={false}
+              containerClass="w-36 shrink-0 items-center justify-between"
+            >
+              <Icon icon={COPY_STATUS_ICON[c.status]} size="lg" stroke="sm" />
               {href && (
                 <Link href={href} asChild>
                   <Button
                     variant="soft"
+                    size="sm"
                     icon={isAvailable ? ArrowUp : ArrowDown}
+                    title={isAvailable ? "Prestar" : "Devolver"}
                   />
                 </Link>
               )}

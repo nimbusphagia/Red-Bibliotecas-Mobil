@@ -35,18 +35,17 @@ export const NAVBAR: Navbar = {
       href: "/catalog",
       icon: LibraryBig,
     },
-
-    {
-      key: "loans",
-      label: "Préstamos",
-      href: "/loans",
-      icon: NotebookPen,
-    },
     {
       key: "copies",
       label: "Ejemplares",
       href: "/copies",
       icon: Book,
+    },
+    {
+      key: "loans",
+      label: "Préstamos",
+      href: "/loans",
+      icon: NotebookPen,
     },
     {
       key: "visitors",

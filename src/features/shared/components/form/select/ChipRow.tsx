@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { View, type LayoutChangeEvent } from "react-native";
+import Animated from "react-native-reanimated";
+import { FADE_IN } from "../../base/motion";
 import { Chip } from "./Chip";
 
 const GAP = 8;
@@ -58,12 +60,17 @@ export function ChipRow({ labels }: { labels: string[] }) {
           <Chip shape="circle" label={`+${labels.length}`} />
         </View>
       </View>
-      {measured &&
-        labels
-          .slice(0, visible)
-          .map((label, i) => <Chip key={i} shape="pill" label={label} />)}
-      {measured && hidden > 0 && (
-        <Chip shape="circle" label={`+${hidden}`} />
+      {measured && (
+        <Animated.View
+          entering={FADE_IN}
+          className="flex-row"
+          style={{ gap: GAP }}
+        >
+          {labels.slice(0, visible).map((label, i) => (
+            <Chip key={i} shape="pill" label={label} />
+          ))}
+          {hidden > 0 && <Chip shape="circle" label={`+${hidden}`} />}
+        </Animated.View>
       )}
     </View>
   );

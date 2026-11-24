@@ -14,7 +14,6 @@ import {
   StatusIndicator,
   type DetailRow,
 } from "@/features/shared/components";
-import { formatDateES } from "@/features/shared/format/dates";
 import {
   gradeLabel,
   LOAN_STATE_ES,
@@ -23,7 +22,7 @@ import {
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { Link } from "expo-router";
-import { UserRoundSearch } from "lucide-react-native";
+import { ArrowUpRight } from "lucide-react-native";
 import { useCallback } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { loanStateOf } from "../internal/loan/rules";
@@ -87,10 +86,9 @@ export default function LoanDetail({ id }: { id: string }) {
               lead: (
                 <Link href={`/visitors/${visitor.id}`} asChild>
                   <Button
-                    title="Ver detalles"
-                    icon={UserRoundSearch}
-                    size="sm"
-                    weight="md"
+                    icon={ArrowUpRight}
+                    variant="soft"
+                    className="bg-transparent"
                   />
                 </Link>
               ),
@@ -111,7 +109,6 @@ export default function LoanDetail({ id }: { id: string }) {
         >
           <LoanLines
             lines={lines}
-            expiresBy={formatDateES(loan.expiresBy)}
             overdue={loan.overdue}
             actorId={session.account.id}
             onChanged={reload}

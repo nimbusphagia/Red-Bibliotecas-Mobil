@@ -1,18 +1,45 @@
-import { ChevronDown, ChevronUp } from "lucide-react-native";
+import { ChevronDown } from "lucide-react-native";
 import {
-  Fragment,
+  createContext,
+  useContext,
   useEffect,
   useEffectEvent,
   useState,
+  type Dispatch,
   type ReactElement,
   type ReactNode,
+  type SetStateAction,
 } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
+import Animated from "react-native-reanimated";
 import { colors, useTone } from "../../theme";
 import { Icon } from "../base/Icon";
+import { DURATION, FADE_IN, LAYOUT } from "../base/motion";
 import { Surface } from "../base/Surface";
 
+const AnimatedSurface = Animated.createAnimatedComponent(Surface);
+
+type GroupId = string | number;
+type OpenGroup = [
+  GroupId | undefined,
+  Dispatch<SetStateAction<GroupId | undefined>>,
+];
+
+const OpenGroupContext = createContext<OpenGroup | null>(null);
+
+/** Dentro de este proveedor, abrir un grupo cierra el que estaba abierto. */
+export function AccordionProvider({ children }: { children: ReactNode }) {
+  const state = useState<GroupId>();
+  return (
+    <OpenGroupContext.Provider value={state}>
+      {children}
+    </OpenGroupContext.Provider>
+  );
+}
+
 type Props<T extends { id: number }> = {
+  /** Identifica el grupo dentro de un AccordionProvider. */
+  groupId?: GroupId;
   header: ReactNode;
   /** Carga las filas al abrir. */
   load: () => Promise<T[]>;
@@ -25,6 +52,7 @@ type Props<T extends { id: number }> = {
 
 /** Grupo plegable: un encabezado y, al abrirlo, sus filas sobre un fondo inset. */
 export function CollapsibleList<T extends { id: number }>({
+  groupId,
   header,
   load,
   renderItem,
@@ -32,11 +60,28 @@ export function CollapsibleList<T extends { id: number }>({
   defaultOpen = false,
 }: Props<T>) {
   const t = useTone();
-  const [open, setOpen] = useState(defaultOpen);
+  const accordion = useContext(OpenGroupContext);
+  const [openId, setOpenId] =
+    accordion && groupId !== undefined ? accordion : [];
+  const [open, setOpen] = useState(
+    defaultOpen || (openId !== undefined && openId === groupId),
+  );
   const [items, setItems] = useState<T[]>();
   const loadItems = useEffectEvent(load);
 
   useEffect(() => setOpen(defaultOpen), [defaultOpen]);
+
+  // Con defaultOpen (p. ej. buscando) los grupos pueden quedar todos abiertos.
+  useEffect(() => {
+    if (!defaultOpen && openId !== undefined && openId !== groupId)
+      setOpen(false);
+  }, [openId, groupId, defaultOpen]);
+
+  const toggle = () => {
+    if (!open) setOpenId?.(groupId);
+    else if (openId === groupId) setOpenId?.(undefined);
+    setOpen(!open);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -50,24 +95,35 @@ export function CollapsibleList<T extends { id: number }>({
     };
   }, [open, reloadKey]);
 
-  const Chevron = open ? ChevronUp : ChevronDown;
-
   return (
-    <Surface inset className="gap-3 rounded-2xl p-3">
+    <AnimatedSurface
+      inset
+      layout={LAYOUT}
+      className="gap-3 overflow-hidden rounded-2xl p-3"
+    >
       <Pressable
-        onPress={() => setOpen((o) => !o)}
+        onPress={toggle}
         className="flex-row items-center gap-4 px-1 py-1"
       >
         <View className="flex-1">{header}</View>
-        <View className="size-6 items-center justify-center rounded-full bg-bg/25">
-          <Icon icon={Chevron} tone="darkSolid" />
-        </View>
+        <Animated.View
+          className="size-6 items-center justify-center rounded-full bg-bg/25"
+          style={{
+            transform: [{ rotate: open ? "180deg" : "0deg" }],
+            transitionProperty: "transform",
+            transitionDuration: DURATION,
+          }}
+        >
+          <Icon icon={ChevronDown} tone="darkSolid" />
+        </Animated.View>
       </Pressable>
       {open && !items && <ActivityIndicator color={colors[t.icon]} />}
       {open &&
         items?.map((item) => (
-          <Fragment key={item.id}>{renderItem(item)}</Fragment>
+          <Animated.View key={item.id} entering={FADE_IN}>
+            {renderItem(item)}
+          </Animated.View>
         ))}
-    </Surface>
+    </AnimatedSurface>
   );
 }

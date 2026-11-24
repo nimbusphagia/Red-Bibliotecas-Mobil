@@ -3,6 +3,7 @@ import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { LabelCodes } from "@/features/catalog/internal/book/types";
 import { Button, DetailColumns, Panel } from "@/features/shared/components";
 import { ScreenBody } from "@/features/shared/layout/Screen";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { PencilLine, Plus } from "lucide-react-native";
@@ -24,16 +25,21 @@ export default function DetailMain({
   onCopiesAdded,
 }: Props) {
   const [adding, setAdding] = useState(false);
+  const { isCompact } = useLayoutMode();
 
   return (
     <ScreenBody>
       <DetailColumns
         columns={[
-          {
-            title: "Tejuelo",
-            fit: true,
-            rows: bookLabelRows(book, codes),
-          },
+          ...(isCompact
+            ? []
+            : [
+                {
+                  title: "Tejuelo",
+                  fit: true,
+                  rows: bookLabelRows(book, codes),
+                },
+              ]),
           {
             title: "Detalles",
             columns: 2,
