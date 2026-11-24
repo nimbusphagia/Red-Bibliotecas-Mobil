@@ -22,6 +22,7 @@ import type {
   ExitResult,
   MovementLine,
   MovementListItem,
+  MovementMonth,
 } from "./types";
 import { requireStockRole } from "./utils/auth";
 import { writeExit } from "./utils/exit";
@@ -65,6 +66,12 @@ export async function listMovements(
   params: MovementListParams = {},
 ): Promise<Page<MovementListItem>> {
   return repo.listMovements(parseOrThrow(listMovementsSchema, params));
+}
+
+export async function listMovementMonths(
+  params: MovementListParams = {},
+): Promise<MovementMonth[]> {
+  return repo.listMovementMonths(parseOrThrow(listMovementsSchema, params));
 }
 
 export async function getMovement(id: number): Promise<MovementListItem> {

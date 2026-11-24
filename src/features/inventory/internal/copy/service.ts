@@ -10,15 +10,19 @@ import {
   findCopyById,
   findLabelCandidatesSync,
   listCopies as listCopiesRepo,
+  listCopyBooks as listCopyBooksRepo,
 } from "./repository";
 import {
   labelCopiesSchema,
   listCopiesSchema,
+  listCopyBooksSchema,
+  type CopyBookListParams,
   type CopyListParams,
   type LabelCopiesInput,
 } from "./schemas";
 import {
   RELEASED_STATUSES,
+  type CopyBook,
   type CopyItem,
   type MarkLabeledResult,
   type PrintLabelsResult,
@@ -30,6 +34,13 @@ export async function getCopy(id: number): Promise<CopyItem> {
   const found = await findCopyById(validId);
   if (!found) throw new NotFoundError("copy", validId);
   return found;
+}
+
+/** Libros con sus conteos de etiquetado, para la lista agrupada. */
+export async function listCopyBooks(
+  params: CopyBookListParams = {},
+): Promise<Page<CopyBook>> {
+  return listCopyBooksRepo(parseOrThrow(listCopyBooksSchema, params));
 }
 
 /** Ejemplares de todo el inventario, o de un libro si se pasa `bookId`. */

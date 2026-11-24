@@ -12,11 +12,21 @@ import {
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
 import { labelTextSql, writersSql } from "../copy/sql";
-import { and, asc, count, eq, getTableColumns, gte, lt } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  eq,
+  getTableColumns,
+  gte,
+  lt,
+  sql,
+} from "drizzle-orm";
 import type {
   MovementLine,
   MovementListFilters,
   MovementListItem,
+  MovementMonth,
   NewEntryMovement,
   NewExitMovement,
   StockMovement,
@@ -84,12 +94,14 @@ export async function findMovementById(
   return row ?? null;
 }
 
-export async function listMovements(
-  filters: MovementListFilters,
-): Promise<Page<MovementListItem>> {
-  const { type, reason, signedById, from, until, sortBy, sortDir } = filters;
-
-  const where = and(
+const movementWhere = ({
+  type,
+  reason,
+  signedById,
+  from,
+  until,
+}: MovementListFilters) =>
+  and(
     type === undefined ? undefined : eq(stockMovement.type, type),
     reason === undefined ? undefined : eq(stockMovement.reason, reason),
     signedById === undefined
@@ -98,6 +110,12 @@ export async function listMovements(
     from === undefined ? undefined : gte(stockMovement.createdAt, from),
     until === undefined ? undefined : lt(stockMovement.createdAt, until),
   );
+
+export async function listMovements(
+  filters: MovementListFilters,
+): Promise<Page<MovementListItem>> {
+  const { sortBy, sortDir } = filters;
+  const where = movementWhere(filters);
 
   const sortKey = { createdAt: stockMovement.createdAt, copyCount }[sortBy];
 
@@ -151,4 +169,26 @@ export async function listMovementLines(
     db.select({ n: count() }).from(stockMovementLine).where(where),
   ]);
   return toPage(items, n, page);
+}
+
+const monthOf = sql<string>`strftime('%Y-%m', ${stockMovement.createdAt}, 'unixepoch', 'localtime')`;
+
+const copiesOf = (type: StockMovement["type"]) =>
+  sql<number>`coalesce(sum(case when ${stockMovement.type} = ${type} then ${copyCount} else 0 end), 0)`.mapWith(
+    Number,
+  );
+
+export async function listMovementMonths(
+  filters: MovementListFilters,
+): Promise<MovementMonth[]> {
+  return db
+    .select({
+      month: monthOf,
+      entries: copiesOf("entry"),
+      exits: copiesOf("exit"),
+    })
+    .from(stockMovement)
+    .where(movementWhere(filters))
+    .groupBy(monthOf)
+    .orderBy(direction(filters.sortDir)(monthOf));
 }

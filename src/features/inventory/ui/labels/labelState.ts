@@ -1,7 +1,7 @@
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   CircleCheck,
-  CircleDashedCheck,
+  CircleDashed,
   TriangleExclamationPoint,
   type LucideIcon,
 } from "lucide-react-native";
@@ -15,6 +15,6 @@ export const labelStateOf = (
 
 export const LABEL_STATE_ICON: Record<LabelState, LucideIcon> = {
   labeled: CircleCheck,
-  pending: CircleDashedCheck,
+  pending: CircleDashed,
   outdated: TriangleExclamationPoint,
 };

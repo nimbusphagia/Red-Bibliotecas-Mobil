@@ -1,23 +1,29 @@
-import type { CopySort } from "@/features/inventory/internal/copy/schemas";
-import { listCopies } from "@/features/inventory/internal/copy/service";
+import type {
+  CopyBookSort,
+  CopyListParams,
+} from "@/features/inventory/internal/copy/schemas";
+import { listCopyBooks } from "@/features/inventory/internal/copy/service";
 import {
   Button,
   InlineFilter,
   InlineSort,
   ItemList,
   PageHeader,
+  Searchbar,
   type SortOption,
 } from "@/features/shared/components";
+import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
-import { useCallback, useState } from "react";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
+import { useCallback, useMemo, useState } from "react";
 import FilterPanel, {
   type CatalogFilters,
   type FilterDialog,
   type FilterField,
 } from "@/features/catalog/ui/list/searchFilters/FilterPanel";
 import QuickFilters from "@/features/catalog/ui/list/searchFilters/QuickFilters";
-import CopyRow from "./copies/list/CopyRow";
+import CopyBookRow from "./copies/list/CopyBookRow";
 import { Link } from "expo-router";
 import { Stamp } from "lucide-react-native";
 import { View } from "react-native";
@@ -33,41 +39,47 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
 
 const FILTER_FIELDS: FilterField[] = ["shelf"];
 
-const SORTS: SortOption<CopySort>[] = [
-  { key: "createdAt", label: "Fecha de registro", defaultDir: "desc" },
-  { key: "labeledAt", label: "Etiquetado", defaultDir: "desc" },
+const SORTS: SortOption<CopyBookSort>[] = [
+  { key: "title", label: "Título", defaultDir: "asc" },
+  { key: "author", label: "Autor", defaultDir: "asc" },
 ];
 
 export default function CopyList() {
+  const { isExpanded } = useLayoutMode();
   const { search, setSearch, debouncedSearch } = useSearch();
+  const [idText, setIdText] = useState("");
+  const copyId = useDebounce(idText);
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [filters, setFilters] = useState<CatalogFilters>({});
   const [dialog, setDialog] = useState<FilterDialog>(null);
-  const [sort, setSort] = useSort<CopySort>({ by: "createdAt", dir: "desc" });
+  const [sort, setSort] = useSort<CopyBookSort>({ by: "title", dir: "asc" });
 
+  const copyFilters = useMemo<CopyListParams>(
+    () => ({
+      search: debouncedSearch,
+      copyId: copyId ? Number(copyId) : undefined,
+      labeled:
+        filter === "labeled" ? true : filter === "pending" ? false : undefined,
+      outdated: filter === "outdated" ? true : undefined,
+      shelfId: filters.shelfId,
+    }),
+    [debouncedSearch, copyId, filter, filters.shelfId],
+  );
 
   const fetchPage = useCallback(
     (offset: number) =>
-      listCopies({
-        search: debouncedSearch,
-        labeled:
-          filter === "labeled"
-            ? true
-            : filter === "pending"
-              ? false
-              : undefined,
-        outdated: filter === "outdated" ? true : undefined,
-        excludeReleased: true,
-        shelfId: filters.shelfId,
+      listCopyBooks({
+        ...copyFilters,
         sortBy: sort.by,
         sortDir: sort.dir,
         limit: PAGE_SIZE,
         offset,
       }),
-    [debouncedSearch, filter, filters.shelfId, sort],
+    [copyFilters, sort],
   );
 
   const list = useInfiniteList(fetchPage);
+  const searching = !!debouncedSearch || !!copyId;
 
   return (
     <>
@@ -84,6 +96,14 @@ export default function CopyList() {
           onChange: setSearch,
           placeholder: "Buscar por título o tejuelo...",
         }}
+        searchExtra={
+          <Searchbar
+            className={isExpanded ? "w-28" : "h-10 w-28"}
+            value={idText}
+            onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
+            placeholder="#ID"
+          />
+        }
       />
       <ItemList
         toolbar={
@@ -111,7 +131,13 @@ export default function CopyList() {
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
-        renderItem={(copy) => <CopyRow copy={copy} />}
+        renderItem={(book) => (
+          <CopyBookRow
+            book={book}
+            filters={copyFilters}
+            defaultOpen={searching}
+          />
+        )}
       />
       <FilterPanel
         filters={filters}

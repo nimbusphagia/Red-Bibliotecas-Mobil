@@ -1,9 +1,6 @@
 import type { VisitorSort } from "@/features/loans/internal/visitor/schemas";
 import { listVisitors } from "@/features/loans/internal/visitor/service";
-import type {
-  VisitorListItem,
-  VisitorRole,
-} from "@/features/loans/internal/visitor/types";
+import type { VisitorRole } from "@/features/loans/internal/visitor/types";
 import {
   Button,
   InlineFilter,
@@ -17,7 +14,7 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { UserRoundPlus } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import VisitorDialog from "./visitors/form/VisitorDialog";
-import VisitorRow from "./visitors/list/VisitorRow";
+import VisitorCard from "./visitors/list/VisitorCard";
 
 type Filter = "all" | VisitorRole;
 
@@ -36,9 +33,7 @@ export default function VisitorList() {
   const { search, setSearch, debouncedSearch } = useSearch();
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useSort<VisitorSort>({ by: "name", dir: "asc" });
-  const [dialog, setDialog] = useState<{ visitor?: VisitorListItem } | null>(
-    null,
-  );
+  const [adding, setAdding] = useState(false);
 
 
   const fetchPage = useCallback(
@@ -68,7 +63,7 @@ export default function VisitorList() {
             size="sm"
             weight="md"
             icon={UserRoundPlus}
-            onPress={() => setDialog({})}
+            onPress={() => setAdding(true)}
           />
         }
         search={{
@@ -96,16 +91,15 @@ export default function VisitorList() {
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
-        renderItem={(visitor) => (
-          <VisitorRow visitor={visitor} onEdit={() => setDialog({ visitor })} />
-        )}
+        columns={4}
+        compactColumns={3}
+        renderItem={(visitor) => <VisitorCard visitor={visitor} />}
       />
-      {dialog && (
+      {adding && (
         <VisitorDialog
-          visitor={dialog.visitor}
-          onClose={() => setDialog(null)}
+          onClose={() => setAdding(false)}
           onSaved={() => {
-            setDialog(null);
+            setAdding(false);
             list.reload();
           }}
         />

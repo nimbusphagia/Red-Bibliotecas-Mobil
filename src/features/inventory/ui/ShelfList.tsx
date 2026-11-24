@@ -1,6 +1,5 @@
 import type { ShelfSort } from "@/features/inventory/internal/shelf/schemas";
 import { listShelves } from "@/features/inventory/internal/shelf/service";
-import type { ShelfListItem } from "@/features/inventory/internal/shelf/types";
 import {
   Button,
   InlineSort,
@@ -12,7 +11,7 @@ import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListCo
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { useCallback, useState } from "react";
 import ShelfDialog from "./shelves/form/ShelfDialog";
-import ShelfRow from "./shelves/list/ShelfRow";
+import ShelfCard from "./shelves/list/ShelfCard";
 import { Link } from "expo-router";
 import { Plus, SendToBack } from "lucide-react-native";
 import { View } from "react-native";
@@ -26,7 +25,7 @@ const SORTS: SortOption<ShelfSort>[] = [
 export default function ShelfList() {
   const { search, setSearch, debouncedSearch } = useSearch();
   const [sort, setSort] = useSort<ShelfSort>({ by: "createdAt", dir: "desc" });
-  const [dialog, setDialog] = useState<{ shelf?: ShelfListItem } | null>(null);
+  const [adding, setAdding] = useState(false);
 
 
   const fetchPage = useCallback(
@@ -63,7 +62,7 @@ export default function ShelfList() {
               icon={Plus}
               size="sm"
               weight="md"
-              onPress={() => setDialog({})}
+              onPress={() => setAdding(true)}
             />
           </View>
         }
@@ -85,16 +84,15 @@ export default function ShelfList() {
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
-        renderItem={(shelf) => (
-          <ShelfRow shelf={shelf} onEdit={() => setDialog({ shelf })} />
-        )}
+        columns={4}
+        compactColumns={3}
+        renderItem={(shelf) => <ShelfCard shelf={shelf} />}
       />
-      {dialog && (
+      {adding && (
         <ShelfDialog
-          shelf={dialog.shelf}
-          onClose={() => setDialog(null)}
+          onClose={() => setAdding(false)}
           onSaved={() => {
-            setDialog(null);
+            setAdding(false);
             list.reload();
           }}
         />

@@ -30,6 +30,8 @@ type Props<T extends { id: number }> = {
   gap?: boolean;
 };
 
+const COLUMN_GAP = 12;
+
 function Loader() {
   const t = useTone();
   return <ActivityIndicator color={colors[t.icon]} />;
@@ -75,8 +77,8 @@ export function ItemList<T extends { id: number }>({
             multi ? (
               <View
                 style={{
-                  flex: 1,
-                  maxWidth: `${100 / numColumns}%` as `${number}%`,
+                  width: `${100 / numColumns}%`,
+                  paddingHorizontal: COLUMN_GAP / 2,
                 }}
               >
                 {renderItem(item)}
@@ -86,7 +88,9 @@ export function ItemList<T extends { id: number }>({
             )
           }
           contentContainerClassName={cn("p-3", gap && "gap-3")}
-          columnWrapperStyle={multi ? { gap: 12 } : undefined}
+          columnWrapperStyle={
+            multi ? { marginHorizontal: -COLUMN_GAP / 2 } : undefined
+          }
           showsVerticalScrollIndicator={false}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.5}

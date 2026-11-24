@@ -25,6 +25,8 @@ export { DetailColumns, type DetailColumn } from "./list/DetailColumns";
 export type { DetailRow } from "./list/DetailRows";
 export { InlineFilter } from "./list/InlineFilter";
 export { InlineSort, type SortOption } from "./list/InlineSort";
+export { CollapsibleList } from "./list/CollapsibleList";
+export { ItemCard } from "./list/ItemCard";
 export { ItemList } from "./list/ItemList";
 export { LabeledItem, type LabelWidth } from "./list/LabeledItem";
 export { Column, ListRow } from "./list/ListRow";

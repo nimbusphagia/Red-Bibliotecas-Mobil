@@ -1,5 +1,5 @@
 import type { MovementSort } from "@/features/inventory/internal/movement/schemas";
-import { listMovements } from "@/features/inventory/internal/movement/service";
+import { listMovementMonths } from "@/features/inventory/internal/movement/service";
 import type { MovementType } from "@/features/inventory/internal/movement/types";
 import {
   ActiveCounter,
@@ -10,8 +10,9 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { PAGE_SIZE, useSort } from "@/features/shared/hooks/useListControls";
-import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import { useFocusData } from "@/features/shared/hooks/useFocusData";
+import { useSort } from "@/features/shared/hooks/useListControls";
+import { toISODate } from "@/features/shared/format/dates";
 import { Link } from "expo-router";
 import {
   PackageMinus,
@@ -23,7 +24,7 @@ import { View } from "react-native";
 import FilterPanel, {
   type MovementFilters,
 } from "./movements/list/FilterPanel";
-import MovementRow from "./movements/list/MovementRow";
+import MovementMonthRow from "./movements/list/MovementMonthRow";
 
 type TypeFilter = "all" | MovementType;
 
@@ -35,7 +36,6 @@ const TYPE_FILTERS: { value: TypeFilter; label: string }[] = [
 
 const SORTS: SortOption<MovementSort>[] = [
   { key: "createdAt", label: "Fecha", defaultDir: "desc" },
-  { key: "copyCount", label: "Ejemplares", defaultDir: "desc" },
 ];
 
 export default function MovementList() {
@@ -50,19 +50,16 @@ export default function MovementList() {
     (v) => v !== undefined,
   ).length;
 
-  const fetchPage = useCallback(
-    (offset: number) =>
-      listMovements({
-        ...filters,
-        sortBy: sort.by,
-        sortDir: sort.dir,
-        limit: PAGE_SIZE,
-        offset,
-      }),
-    [filters, sort],
+  const { data: months } = useFocusData(
+    useCallback(
+      () =>
+        listMovementMonths({ ...filters, sortDir: sort.dir }).then((list) =>
+          list.map((m) => ({ ...m, id: Number(m.month.replace("-", "")) })),
+        ),
+      [filters, sort.dir],
+    ),
   );
-
-  const list = useInfiniteList(fetchPage);
+  const currentMonth = toISODate().slice(0, 7);
 
   return (
     <>
@@ -122,10 +119,16 @@ export default function MovementList() {
             />
           </>
         }
-        items={list.items}
-        loading={list.loading}
-        onEndReached={list.loadMore}
-        renderItem={(movement) => <MovementRow movement={movement} />}
+        items={months ?? []}
+        loading={!months}
+        onEndReached={() => {}}
+        renderItem={(month) => (
+          <MovementMonthRow
+            month={month}
+            filters={filters}
+            defaultOpen={month.month === currentMonth}
+          />
+        )}
       />
       <FilterPanel
         filters={filters}

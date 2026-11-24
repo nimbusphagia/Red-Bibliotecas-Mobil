@@ -1,6 +1,6 @@
 import type { COPY_STATUSES, copy } from "@/db/schema";
 import type { SortDirection } from "@/features/shared/types/types";
-import type { CopySort } from "./schemas";
+import type { CopyBookSort, CopySort } from "./schemas";
 
 export type Copy = typeof copy.$inferSelect;
 export type NewCopy = { bookId: number; shelfId: number; copyNumber: number };
@@ -20,8 +20,10 @@ export type CopyLookup = {
   labelText: string | null;
 };
 
-export type CopyListFilters = {
+/** Condiciones de un ejemplar en las búsquedas. */
+export type CopyMatch = {
   bookId?: number;
+  copyId?: number;
   tokens: string[];
   status?: CopyStatus;
   shelfId?: number;
@@ -30,10 +32,27 @@ export type CopyListFilters = {
   /** true: solo los etiquetados cuyo tejuelo ya no coincide. */
   outdated?: boolean;
   excludeReleased?: boolean;
-  sortBy: CopySort;
+};
+
+type ListPage<K> = {
+  sortBy: K;
   sortDir: SortDirection;
   limit: number;
   offset: number;
+};
+
+export type CopyListFilters = CopyMatch & ListPage<CopySort>;
+export type CopyBookFilters = CopyMatch & ListPage<CopyBookSort>;
+
+/** Un libro con el estado de etiquetado de sus ejemplares activos. */
+export type CopyBook = {
+  id: number;
+  title: string;
+  authors: string | null;
+  publisherName: string | null;
+  labeled: number;
+  pending: number;
+  outdated: number;
 };
 
 export type CopyItem = {

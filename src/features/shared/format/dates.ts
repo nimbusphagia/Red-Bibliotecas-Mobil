@@ -42,3 +42,15 @@ export const formatDateES = (input: string | Date, year?: boolean) => {
     locale: es,
   });
 };
+
+/** "2026-11" → "Noviembre 2026". */
+export const formatMonthES = (month: string) => {
+  const label = format(parseISODate(`${month}-01`), "MMMM yyyy", { locale: es });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+};
+
+/** Primer y último día de un mes "YYYY-MM", como fechas ISO. */
+export const monthRange = (month: string) => {
+  const [y, m] = month.split("-").map(Number);
+  return { from: `${month}-01`, to: toISODate(new Date(y, m, 0)) };
+};

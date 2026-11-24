@@ -14,12 +14,16 @@ export const COPY_SORT_KEYS = [
 ] as const;
 export type CopySort = (typeof COPY_SORT_KEYS)[number];
 
+export const COPY_BOOK_SORT_KEYS = ["title", "author"] as const;
+export type CopyBookSort = (typeof COPY_BOOK_SORT_KEYS)[number];
+
 const MAX_LABEL_COPIES = 500;
 
 export const listCopiesSchema = z
   .object({
     ...listShape(COPY_SORT_KEYS, "copyNumber"),
     bookId: idSchema.optional(),
+    copyId: idSchema.optional(),
     status: z.enum(COPY_STATUSES).optional(),
     shelfId: idSchema.optional(),
     labeled: z.boolean().optional(),
@@ -38,5 +42,16 @@ export const labelCopiesSchema = z.object({
     }),
 });
 
+export const listCopyBooksSchema = z
+  .object({
+    ...listShape(COPY_BOOK_SORT_KEYS, "title"),
+    copyId: idSchema.optional(),
+    shelfId: idSchema.optional(),
+    labeled: z.boolean().optional(),
+    outdated: z.boolean().optional(),
+  })
+  .transform(withTokens);
+
 export type CopyListParams = z.input<typeof listCopiesSchema>;
+export type CopyBookListParams = z.input<typeof listCopyBooksSchema>;
 export type LabelCopiesInput = z.input<typeof labelCopiesSchema>;

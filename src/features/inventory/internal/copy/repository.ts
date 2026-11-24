@@ -5,6 +5,7 @@ import {
   copy,
   loanMovement,
   loanMovementLine,
+  publisher,
   shelf,
   visitor,
 } from "@/db/schema";
@@ -13,6 +14,7 @@ import { toISODate } from "@/features/shared/format/dates";
 import type { Page } from "@/features/shared/types/types";
 import {
   and,
+  asc,
   count,
   eq,
   inArray,
@@ -22,6 +24,7 @@ import {
   notInArray,
   or,
   sql,
+  type SQL,
 } from "drizzle-orm";
 import {
   derivedLabelTextSql,
@@ -34,7 +37,10 @@ import {
   type Copy,
   type CopyItem,
   type CopyItemRow,
+  type CopyBook,
+  type CopyBookFilters,
   type CopyListFilters,
+  type CopyMatch,
   type LabelCandidate,
   type CopyLookup,
   type CopyStatus,
@@ -148,25 +154,19 @@ export async function findCopyById(id: number): Promise<CopyItem | null> {
 
 const textKey = sql`lower(${labelTextSql})`;
 
-export async function listCopies(
-  filters: CopyListFilters,
-): Promise<Page<CopyItem>> {
-  const {
-    bookId,
-    tokens,
-    status,
-    shelfId,
-    labeled,
-    outdated,
-    excludeReleased,
-    sortBy,
-    sortDir,
-    limit,
-    offset,
-  } = filters;
-
-  const where = and(
+const copyWhere = ({
+  bookId,
+  copyId,
+  tokens,
+  status,
+  shelfId,
+  labeled,
+  outdated,
+  excludeReleased,
+}: CopyMatch) =>
+  and(
     bookId === undefined ? undefined : eq(copy.bookId, bookId),
+    copyId === undefined ? undefined : eq(copy.id, copyId),
     status === undefined ? undefined : eq(copy.status, status),
     shelfId === undefined ? undefined : eq(copy.shelfId, shelfId),
     labeled === undefined
@@ -186,6 +186,12 @@ export async function listCopies(
       or(...likeTokens(textKey, [t]), ...likeTokens(book.titleKey, [t])),
     ),
   );
+
+export async function listCopies(
+  filters: CopyListFilters,
+): Promise<Page<CopyItem>> {
+  const { sortBy, sortDir, limit, offset } = filters;
+  const where = copyWhere(filters);
 
   const sortKey = {
     copyNumber: copy.copyNumber,
@@ -207,6 +213,64 @@ export async function listCopies(
       .where(where),
   ]);
   return toPage(items.map(toItem), n, filters);
+}
+
+const tally = (cond: SQL | undefined) =>
+  sql<number>`sum(case when ${cond} then 1 else 0 end)`.mapWith(Number);
+
+/**
+ * Libros con al menos un ejemplar activo que cumple los filtros. Los conteos
+ * son de todos sus ejemplares activos, no solo de los que cumplen.
+ */
+export async function listCopyBooks(
+  filters: CopyBookFilters,
+): Promise<Page<CopyBook>> {
+  const { sortBy, sortDir, limit, offset } = filters;
+  const match = copyWhere(filters);
+  const active = notInArray(copy.status, [...RELEASED_STATUSES]);
+  const having = match && sql`max(case when ${match} then 1 else 0 end) = 1`;
+
+  const order =
+    sortBy === "author"
+      ? [
+          sql`${writersSql} is null`,
+          direction(sortDir)(writersSql),
+          asc(book.titleKey),
+        ]
+      : [direction(sortDir)(book.titleKey)];
+
+  const matching = db
+    .select({ id: book.id })
+    .from(copy)
+    .innerJoin(book, eq(book.id, copy.bookId))
+    .where(active)
+    .groupBy(book.id)
+    .having(having)
+    .as("matching");
+
+  const [items, [{ n }]] = await Promise.all([
+    db
+      .select({
+        id: book.id,
+        title: book.title,
+        authors: writersSql,
+        publisherName: publisher.name,
+        labeled: tally(and(isNotNull(copy.labeledAt), not(outdatedSql))),
+        pending: tally(isNull(copy.labeledAt)),
+        outdated: tally(outdatedSql),
+      })
+      .from(copy)
+      .innerJoin(book, eq(book.id, copy.bookId))
+      .leftJoin(publisher, eq(publisher.id, book.publisherId))
+      .where(active)
+      .groupBy(book.id)
+      .having(having)
+      .orderBy(...order, book.id)
+      .limit(limit)
+      .offset(offset),
+    db.select({ n: count() }).from(matching),
+  ]);
+  return toPage(items, n, filters);
 }
 
 export function setCopiesShelfSync(

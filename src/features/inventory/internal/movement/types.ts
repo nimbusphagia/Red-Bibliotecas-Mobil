@@ -82,6 +82,13 @@ export type MovementListItem = StockMovement & {
   copyCount: number;
 };
 
+/** Resumen de un mes ("YYYY-MM"): ejemplares que entraron y salieron. */
+export type MovementMonth = {
+  month: string;
+  entries: number;
+  exits: number;
+};
+
 export type MovementLine = {
   id: number;
   copyId: number;
