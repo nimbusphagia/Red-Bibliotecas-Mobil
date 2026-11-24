@@ -11,28 +11,33 @@ import {
   loanMovement,
   loanMovementLine,
   schoolGrade,
+  stockMovementLine,
   visitor,
 } from "@/db/schema";
+import { subMonths } from "date-fns";
 import {
   and,
   asc,
   count,
   eq,
   getTableColumns,
-  inArray,
+  gte,
   isNull,
   sql,
+  type SQL,
 } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 import type { Page } from "@/features/shared/types/types";
+import type { LineOutcome } from "../loan/types";
+import { HISTORY_MONTHS, LATE_GRACE_DAYS } from "./reputation";
 import type {
   NewVisitor,
   Visitor,
   VisitorListFilters,
-  VisitorListItem,
   VisitorPatch,
+  VisitorRow,
   VisitorUsage,
 } from "./types";
-import { LineOutcome } from "../loan/types";
 
 const loans: Reference = {
   table: loanMovement,
@@ -44,19 +49,11 @@ export async function findVisitorById(id: number): Promise<Visitor | null> {
   return row ?? null;
 }
 
-const linesOf = (...outcomes: LineOutcome[]) =>
-  sql<number>`(${db
-    .select({ n: count() })
-    .from(loanMovementLine)
-    .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
-    .where(
-      and(
-        eq(loanMovement.loanedToId, visitor.id),
-        outcomes.length
-          ? inArray(loanMovementLine.outcome, outcomes)
-          : undefined,
-      ),
-    )})`.mapWith(Number);
+const allLines = sql<number>`(${db
+  .select({ n: count() })
+  .from(loanMovementLine)
+  .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+  .where(eq(loanMovement.loanedToId, visitor.id))})`.mapWith(Number);
 
 const pendingLines = sql<number>`(${db
   .select({ n: count() })
@@ -69,29 +66,72 @@ const pendingLines = sql<number>`(${db
     ),
   )})`.mapWith(Number);
 
-const selectVisitors = () =>
+const exitLine = alias(stockMovementLine, "exit_line");
+const recoveryLine = alias(stockMovementLine, "recovery_line");
+
+const countWhen = (cond: SQL) =>
+  sql<number>`count(case when ${cond} then 1 end)`;
+const outcomeIs = (outcome: LineOutcome) =>
+  eq(loanMovementLine.outcome, outcome);
+
+const returnedLate = sql`date(${loanMovementLine.resolvedAt}, 'unixepoch', 'localtime') > date(${loanMovement.expiresBy}, ${`+${LATE_GRACE_DAYS} days`})`;
+
+// Una pérdida recuperada cuenta como devolución normal.
+const historySince = (since: Date) =>
   db
+    .select({
+      visitorId: loanMovement.loanedToId,
+      resolved: count().as("resolved"),
+      late: countWhen(and(outcomeIs("returned"), returnedLate)!).as("late"),
+      damaged: countWhen(outcomeIs("returned_damaged")).as("damaged"),
+      discarded: countWhen(outcomeIs("discarded")).as("discarded"),
+      lost: countWhen(and(outcomeIs("lost"), isNull(recoveryLine.id))!).as(
+        "lost",
+      ),
+    })
+    .from(loanMovementLine)
+    .innerJoin(loanMovement, eq(loanMovement.id, loanMovementLine.movementId))
+    .leftJoin(exitLine, eq(exitLine.loanLineId, loanMovementLine.id))
+    .leftJoin(recoveryLine, eq(recoveryLine.recoveredLineId, exitLine.id))
+    .where(gte(loanMovementLine.resolvedAt, since))
+    .groupBy(loanMovement.loanedToId)
+    .as("history");
+
+const orZero = (column: SQL.Aliased<number>) =>
+  sql<number>`coalesce(${column}, 0)`.mapWith(Number);
+
+const selectVisitors = () => {
+  const history = historySince(subMonths(new Date(), HISTORY_MONTHS));
+  return db
     .select({
       ...getTableColumns(visitor),
       grade: schoolGrade.grade,
       level: schoolGrade.level,
-      lineCount: linesOf(),
+      lineCount: allLines,
       pendingCount: pendingLines,
-      problemCount: linesOf("returned_damaged", "discarded", "lost"),
+      history: {
+        resolved: orZero(history.resolved),
+        late: orZero(history.late),
+        damaged: orZero(history.damaged),
+        discarded: orZero(history.discarded),
+        lost: orZero(history.lost),
+      },
     })
     .from(visitor)
-    .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id));
+    .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id))
+    .leftJoin(history, eq(history.visitorId, visitor.id));
+};
 
 export async function findVisitorItemById(
   id: number,
-): Promise<VisitorListItem | null> {
+): Promise<VisitorRow | null> {
   const [row] = await selectVisitors().where(eq(visitor.id, id));
   return row ?? null;
 }
 
 export async function listVisitors(
   filters: VisitorListFilters,
-): Promise<Page<VisitorListItem>> {
+): Promise<Page<VisitorRow>> {
   const { tokens, role, gradeId, active, sortBy, sortDir, limit, offset } =
     filters;
 

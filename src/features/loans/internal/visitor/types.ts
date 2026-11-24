@@ -1,5 +1,6 @@
 import type { GRADE_LEVELS, visitor } from "@/db/schema";
 import type { ListFilters } from "@/features/shared/types/types";
+import type { LineHistory, Reputation } from "./reputation";
 import type { VisitorSort } from "./schemas";
 
 export type Visitor = typeof visitor.$inferSelect;
@@ -19,13 +20,15 @@ export type VisitorPatch = Partial<{
   active: boolean;
 }>;
 
-export type VisitorListItem = Visitor & {
+export type VisitorRow = Visitor & {
   grade: number | null;
   level: (typeof GRADE_LEVELS)[number] | null;
   lineCount: number;
   pendingCount: number;
-  problemCount: number;
+  history: LineHistory;
 };
+
+export type VisitorListItem = VisitorRow & { reputation: Reputation };
 
 export type VisitorListFilters = ListFilters<VisitorSort> & {
   role?: VisitorRole;

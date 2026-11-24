@@ -1,14 +1,15 @@
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import { ItemCard } from "@/features/shared/components";
-import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
-
-// TODO: placeholder. Calcular con préstamos, devoluciones, pérdidas y daños.
-const REPUTATIONS = ["Confiable", "Regular", "En riesgo"];
+import {
+  gradeLabel,
+  REPUTATION_ES,
+  ROLE_ES,
+} from "@/features/shared/format/translate";
 
 type Props = { visitor: VisitorListItem };
 
 export default function VisitorCard({ visitor }: Props) {
-  const reputation = REPUTATIONS[visitor.id % REPUTATIONS.length];
+  const reputation = REPUTATION_ES[visitor.reputation];
   const chips =
     visitor.role === "student"
       ? [gradeLabel(visitor.grade!, visitor.level!), reputation]

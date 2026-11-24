@@ -18,7 +18,11 @@ import {
   type DetailRow,
   type SortOption,
 } from "@/features/shared/components";
-import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
+import {
+  gradeLabel,
+  REPUTATION_ES,
+  ROLE_ES,
+} from "@/features/shared/format/translate";
 import { PAGE_SIZE } from "@/features/shared/hooks/useListControls";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
@@ -92,7 +96,14 @@ export default function VisitorDetail({ id }: { id: string }) {
     { label: "Activos", content: String(status.open) },
     { label: "Total prestados", content: String(visitor.lineCount) },
     { label: "Préstamos vencidos", content: String(status.overdue) },
-    { label: "Infracciones", content: String(visitor.problemCount) },
+  ];
+  const { history } = visitor;
+  const reputationRows: DetailRow[] = [
+    { label: "Reputación", content: REPUTATION_ES[visitor.reputation] },
+    { label: "Devueltos tarde", content: String(history.late) },
+    { label: "Devueltos deteriorados", content: String(history.damaged) },
+    { label: "Descartados", content: String(history.discarded) },
+    { label: "Perdidos", content: String(history.lost) },
   ];
 
   return (
@@ -101,6 +112,7 @@ export default function VisitorDetail({ id }: { id: string }) {
       <DetailColumns
         columns={[
           { title: "Resumen", rows: summaryRows },
+          { title: "Últimos 12 meses", rows: reputationRows },
           { title: "Detalles", rows: detailRows },
         ]}
       />

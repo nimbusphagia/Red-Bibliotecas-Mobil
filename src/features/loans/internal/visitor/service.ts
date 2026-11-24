@@ -13,6 +13,7 @@ import { idSchema } from "@/features/shared/types/schemas";
 import type { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
 import * as repo from "./repository";
+import { reputationOf } from "./reputation";
 import {
   createVisitorSchema,
   listVisitorsSchema,
@@ -24,6 +25,7 @@ import type {
   Visitor,
   VisitorListItem,
   VisitorPatch,
+  VisitorRow,
   VisitorUsage,
 } from "./types";
 
@@ -37,16 +39,24 @@ export const { get: getVisitor, getUsage: getVisitorUsage } = makeReads<
   countUsage: repo.countVisitorUsage,
 });
 
+const withReputation = (row: VisitorRow): VisitorListItem => ({
+  ...row,
+  reputation: reputationOf(row.history),
+});
+
 export async function listVisitors(
   params: VisitorListParams = {},
 ): Promise<Page<VisitorListItem>> {
-  return repo.listVisitors(parseOrThrow(listVisitorsSchema, params));
+  const page = await repo.listVisitors(
+    parseOrThrow(listVisitorsSchema, params),
+  );
+  return { ...page, items: page.items.map(withReputation) };
 }
 
 export async function getVisitorItem(id: number): Promise<VisitorListItem> {
   const found = await repo.findVisitorItemById(parseOrThrow(idSchema, id));
   if (!found) throw new NotFoundError(ENTITY, id);
-  return found;
+  return withReputation(found);
 }
 
 export const createVisitor = makeCreate({

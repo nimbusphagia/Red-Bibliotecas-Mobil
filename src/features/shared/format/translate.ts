@@ -11,6 +11,7 @@ import {
 } from "@/features/inventory/internal/copy/types";
 import type { Account } from "@/features/account/internal/types";
 import type { VisitorRole } from "@/features/loans/internal/visitor/types";
+import type { Reputation } from "@/features/loans/internal/visitor/reputation";
 import type { GRADE_LEVELS } from "@/db/schema";
 import { LineOutcome, LoanState } from "@/features/loans/internal/loan/types";
 import {
@@ -52,6 +53,13 @@ export const OUTCOME_ES: Record<LineOutcome, string> = {
   returned_damaged: "Devuelto deteriorado",
   discarded: "Descartado",
   lost: "Perdido",
+};
+
+export const REPUTATION_ES: Record<Reputation, string> = {
+  new: "Nuevo",
+  reliable: "Confiable",
+  regular: "Regular",
+  at_risk: "En riesgo",
 };
 
 export const LOAN_STATE_ES: Record<LoanState, string> = {
