@@ -1,13 +1,14 @@
 import type { HeldStatus } from "@/features/dashboard/internal/types";
 import { Panel, Surface, Text } from "@/features/shared/components";
 import { COPY_STATUS_ES } from "@/features/shared/format/translate";
-import { cn, status } from "@/features/shared/theme";
+import { cn } from "@/features/shared/theme";
 import { View } from "react-native";
 
+// Escala lila solo para este gráfico (no está en la paleta).
 const SEGMENTS: { status: HeldStatus; color: string }[] = [
-  { status: "available", color: status.success.bg },
-  { status: "on_loan", color: status.info.bg },
-  { status: "damaged", color: status.warning.bg },
+  { status: "available", color: "bg-[#DBD3F5]" },
+  { status: "on_loan", color: "bg-[#A099D1]" },
+  { status: "damaged", color: "bg-[#6359A6]" },
 ];
 
 export default function CollectionStatus({
