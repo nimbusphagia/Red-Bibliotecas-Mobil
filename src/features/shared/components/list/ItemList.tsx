@@ -25,6 +25,7 @@ type Props<T extends { id: number }> = {
    */
   tone?: Tone;
   columns?: number;
+  compactColumns?: number;
   /** Separación entre filas. Solo los pickers de los diálogos la usan. */
   gap?: boolean;
 };
@@ -43,10 +44,11 @@ export function ItemList<T extends { id: number }>({
   toolbarSurface = true,
   tone,
   columns = 1,
+  compactColumns = 1,
   gap = true,
 }: Props<T>) {
   const { isExpanded } = useLayoutMode();
-  const numColumns = isExpanded ? columns : 1;
+  const numColumns = isExpanded ? columns : compactColumns;
   const multi = numColumns > 1;
   const toolbarRow = "flex-row items-center justify-between";
 

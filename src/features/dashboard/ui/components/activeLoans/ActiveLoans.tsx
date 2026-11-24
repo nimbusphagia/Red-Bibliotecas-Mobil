@@ -62,7 +62,7 @@ export default function ActiveLoans() {
         <Text variant="caption">No hay préstamos pendientes</Text>
       ) : (
         <ScrollView
-          className="h-[300]"
+          className="min-h-[160] max-h-[300]"
           contentContainerClassName="gap-2.5"
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}

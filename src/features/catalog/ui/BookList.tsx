@@ -11,7 +11,7 @@ import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListCo
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
-import BookRow from "./list/BookRow";
+import BookCard from "./list/BookCard";
 import FilterPanel, {
   toBookParams,
   type CatalogFilters,
@@ -84,7 +84,9 @@ export default function BookList() {
         items={list.items}
         loading={list.loading}
         onEndReached={list.loadMore}
-        renderItem={(book) => <BookRow book={book} />}
+        columns={3}
+        compactColumns={2}
+        renderItem={(book) => <BookCard book={book} />}
       />
       <FilterPanel
         filters={filters}

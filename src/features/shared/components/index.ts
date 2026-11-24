@@ -15,6 +15,7 @@ export { TextField } from "./form/input/TextField";
 export { Searchbar } from "./form/search/Searchbar";
 export { Chip } from "./form/select/Chip";
 export { ChipGroup } from "./form/select/ChipGroup";
+export { ChipRow } from "./form/select/ChipRow";
 export { MultiSearchSelect } from "./form/select/MultiSearchSelect";
 export type { Option } from "./form/select/option";
 export { SearchSelect } from "./form/select/SearchSelect";

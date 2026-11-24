@@ -21,11 +21,11 @@ export default function DashboardMain() {
 
   return isExpanded ? (
     <View className="flex-row items-start gap-6 pt-2">
-      <View className="w-[300px]">{side}</View>
       <View className="flex-1 gap-6">
         <MonthlyLoans months={stats.monthlyLoans} />
         <ActiveLoans />
       </View>
+      <View className="w-[300px]">{side}</View>
     </View>
   ) : (
     <View className="gap-6">

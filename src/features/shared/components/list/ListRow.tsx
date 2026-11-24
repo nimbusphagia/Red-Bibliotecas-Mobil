@@ -91,10 +91,14 @@ export function Column({
       )}
       {children}
       {variant === "subtitled" && !!(subtitle1 || subtitle2) && (
-        <View className="flex-row justify-start items-center">
-          <Text variant="caption">{subtitle1}</Text>
+        <View className="max-w-full flex-row justify-start items-center">
+          <Text variant="caption" className="shrink" numberOfLines={1}>
+            {subtitle1}
+          </Text>
           {subtitle1 && subtitle2 && <Icon icon={Dot} tone="faint" />}
-          <Text variant="caption">{subtitle2}</Text>
+          <Text variant="caption" className="shrink" numberOfLines={1}>
+            {subtitle2}
+          </Text>
         </View>
       )}
     </View>
