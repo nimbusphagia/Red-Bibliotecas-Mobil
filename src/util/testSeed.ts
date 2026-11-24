@@ -1,30 +1,62 @@
 import { db } from "@/db/client";
 import {
+  author,
+  book,
+  copy,
   loanMovement,
   loanMovementLine,
   stockMovement,
   stockMovementLine,
+  visitor,
 } from "@/db/schema";
+import {
+  createAccount,
+  getSessionAccount,
+  listAccounts,
+  setAccountActive,
+} from "@/features/account/internal/service";
 import { createAuthor } from "@/features/catalog/internal/author/service";
 import type { CollaboratorRole } from "@/features/catalog/internal/author/types";
-import { listBooks } from "@/features/catalog/internal/book/service";
+import {
+  createBook,
+  listBooks,
+  updateBook,
+} from "@/features/catalog/internal/book/service";
 import { listCategories } from "@/features/catalog/internal/category/service";
 import { createCollection } from "@/features/catalog/internal/collection/service";
 import { createPublisher } from "@/features/catalog/internal/publisher/service";
 import { createSeries } from "@/features/catalog/internal/series/service";
 import { listSubcategories } from "@/features/catalog/internal/subcategory/service";
+import { markCopiesLabeled } from "@/features/inventory/internal/copy/service";
+import { RELEASED_STATUSES } from "@/features/inventory/internal/copy/types";
 import {
   exitCopies,
+  recoverCopy,
   registerCopies,
 } from "@/features/inventory/internal/movement/service";
-import { createShelf } from "@/features/inventory/internal/shelf/service";
+import type {
+  EntryResult,
+  ExitResult,
+} from "@/features/inventory/internal/movement/types";
+import {
+  createShelf,
+  moveCopies,
+} from "@/features/inventory/internal/shelf/service";
 import {
   lendCopies,
   returnCopies,
 } from "@/features/loans/internal/loan/service";
+import type { LineOutcome } from "@/features/loans/internal/loan/types";
 import { listSchoolGrades } from "@/features/loans/internal/reference/service";
-import { createVisitor } from "@/features/loans/internal/visitor/service";
-import { eq, sql } from "drizzle-orm";
+import {
+  createVisitor,
+  updateVisitor,
+} from "@/features/loans/internal/visitor/service";
+import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
+
+// Todo se registra "hoy" con los services y luego se retrocede `daysAgo`
+// días. Los eventos corren en orden cronológico para que el estado de cada
+// ejemplar sea coherente en cada paso.
 
 const AUTHORS: [string, string | null][] = [
   ["Gabriel", "García Márquez"],
@@ -47,6 +79,7 @@ const AUTHORS: [string, string | null][] = [
   ["Luis", "Paredes"],
   ["Gemma", "Rovira"],
   ["Javier", "Sampedro"],
+  ["Cruz Roja", null], // autor del libro sin categoría
 ];
 
 const PUBLISHERS = [
@@ -55,6 +88,7 @@ const PUBLISHERS = [
   "Santillana",
   "Norma",
   "Salamandra",
+  "Editorial Universitaria", // sin libros
 ];
 
 const COLLECTIONS: [publisher: string, name: string][] = [
@@ -88,14 +122,15 @@ type Extra = {
   series?: string;
   ill?: boolean; // el autor también es ilustrador
   tr?: string; // traductor
+  co?: string; // segundo escritor
 };
 type Book = [
   title: string,
   by: string,
-  cat: string,
-  sub: string,
-  year: number,
-  pages: number,
+  cat: string | null,
+  sub: string | null,
+  year: number | null,
+  pages: number | null,
   copies: number,
   extra?: Extra,
 ];
@@ -162,7 +197,8 @@ const BOOKS: Book[] = [
   ["Tradiciones peruanas", "Ricardo Palma", L, CUE, 1872, 420, 3, CE],
   ["Aves sin nido", "Clorinda Matto de Turner", L, LEN, 1889, 280, 2, CE],
   ["Rayuela", "Julio Cortázar", L, LEN, 1963, 600, 1, { pub: "Alfaguara" }],
-  ["Bestiario", "Julio Cortázar", L, CUE, 1951, 190, 2, { pub: "Alfaguara" }],
+  // Mal clasificado: se corrige después y sus tejuelos quedan desactualizados
+  ["Bestiario", "Julio Cortázar", L, LEN, 1951, 190, 2, { pub: "Alfaguara" }],
   [
     "La casa de los espíritus",
     "Isabel Allende",
@@ -295,12 +331,55 @@ const BOOKS: Book[] = [
 // Libro donado, sin editorial
 const DONATED: Book = ["Poemas humanos", "César Vallejo", L, POE, 1939, 180, 2];
 
+// Segunda compra: anónimo y dos escritores
+const SECOND: Book[] = [
+  ["Lazarillo de Tormes", "Anónimo", L, LEN, 1554, 96, 2, CE],
+  [
+    "Antología del cuento peruano",
+    "Rosa Díaz",
+    L,
+    CUE,
+    2020,
+    310,
+    3,
+    { pub: "Santillana", co: "Luis Paredes" },
+  ],
+];
+
+// Última compra, aún sin etiquetar
+const LATEST: Book = [
+  "La tía Julia y el escribidor",
+  "Mario Vargas Llosa",
+  L,
+  LEN,
+  1977,
+  447,
+  2,
+  BC,
+];
+
+// Catalogados sin ejemplares; sin categoría no se puede registrar stock
+const CATALOG_ONLY: Book[] = [
+  [
+    "Pantaleón y las visitadoras",
+    "Mario Vargas Llosa",
+    L,
+    LEN,
+    1973,
+    310,
+    0,
+    { pub: "Alfaguara" },
+  ],
+  ["Manual de primeros auxilios", "Cruz Roja", null, null, null, 64, 0],
+];
+
 // Estantes (el "Default" ya existe y es la Estantería General)
-const SHELVES: [name: string, description: string][] = [
+const SHELVES: [name: string, description: string | null][] = [
   ["Literatura", "Novelas y obras clásicas"],
   ["Poesía", "Poemarios y antologías"],
   ["Consulta", "Libros de consulta, solo lectura en sala"],
   ["Textos escolares", "Material de apoyo por grado"],
+  ["Depósito", null], // vacío
 ];
 
 const SHELF_BY_CATEGORY: Record<string, string> = {
@@ -309,143 +388,371 @@ const SHELF_BY_CATEGORY: Record<string, string> = {
   [E]: "Textos escolares",
 };
 // Los cuentos no tienen estante propio: quedan en el general
-const shelfOf = (cat: string, sub: string) =>
-  sub === POE ? "Poesía" : sub === CUE ? undefined : SHELF_BY_CATEGORY[cat];
+const shelfOf = (cat: string | null, sub: string | null) =>
+  sub === POE
+    ? "Poesía"
+    : sub === CUE || !cat
+      ? undefined
+      : SHELF_BY_CATEGORY[cat];
 
-const TEACHERS = ["Ana Torres", "Luis Ramos", "Carmen Soto"];
+// Cuentas extra, solo si quien corre el seed es el dueño
+type Staff = "admin" | "practicante";
+const ACCOUNTS: [username: string, role: "admin" | "staff", key: Staff][] = [
+  ["lmendoza", "admin", "admin"],
+  ["practicante", "staff", "practicante"],
+];
 
-const STUDENTS: [
+type Student = [
   name: string,
   level: "primary" | "secondary",
   grade: number,
-][] = [
-  ["Diego Quispe", "secondary", 3],
-  ["Valeria Huamán", "secondary", 5],
-  ["Mateo Flores", "primary", 6],
-  ["Camila Rojas", "secondary", 1],
-  ["Sofía Mendoza", "primary", 4],
-  ["Lucía Vega", "primary", 5],
-  ["Joaquín Paredes", "secondary", 2], // sin préstamos
+  since: number,
 ];
 
+const TEACHERS: [name: string, since: number][] = [
+  ["Ana Torres", 400],
+  ["Luis Ramos", 400],
+  ["Carmen Soto", 400],
+  ["Jorge Villanueva", 20], // sin préstamos
+];
+
+const STUDENTS: Student[] = [
+  ["Diego Quispe", "secondary", 3, 330],
+  ["Valeria Huamán", "secondary", 5, 330],
+  ["Mateo Flores", "primary", 6, 330],
+  ["Camila Rojas", "secondary", 1, 300],
+  ["Sofía Mendoza", "primary", 4, 300],
+  ["Lucía Vega", "primary", 5, 240],
+  ["Renata Chávez", "primary", 3, 60],
+  ["Andrés Cárdenas", "primary", 2, 30],
+  ["Martín Salas", "secondary", 5, 400], // egresado: se desactiva
+  ["Joaquín Paredes", "secondary", 2, 90], // sin préstamos
+  ["Ximena Gutiérrez del Águila Montoya", "primary", 1, 5], // nombre largo
+];
+
+type Return = [daysAgo: number, title: string, outcome?: LineOutcome];
 type Loan = {
   visitor: string;
-  items: [title: string, copies: number][];
   daysAgo: number;
-  // Un ejemplar devuelto por título; sin resultado = devuelto en buen estado
-  returns?: [
-    title: string,
-    outcome?: "returned_damaged" | "discarded" | "lost",
-  ][];
+  items: [title: string, copies: number][];
+  returns?: Return[];
+  by?: Staff;
+  notes?: string;
 };
 
+// Plazo: 7 días alumnos, 10 docentes. Tarde = devuelto más de 3 días después.
 const LOANS: Loan[] = [
-  // Vigentes
+  // Fuera de la ventana de reputación (más de 12 meses)
   {
-    visitor: "Ana Torres",
+    visitor: "Carmen Soto",
+    daysAgo: 390,
     items: [
-      ["Cien años de soledad", 2],
-      ["La ciudad y los perros", 2],
+      ["Cien años de soledad", 1],
+      ["Rayuela", 1],
     ],
-    daysAgo: 2,
+    returns: [
+      [383, "Cien años de soledad"],
+      [383, "Rayuela"],
+    ],
   },
   {
-    visitor: "Lucía Vega",
-    items: [
-      ["Harry Potter y la cámara secreta", 1],
-      ["Papelucho en vacaciones", 1],
-    ],
-    daysAgo: 3,
+    visitor: "Carmen Soto",
+    daysAgo: 375,
+    items: [["Canto general", 1]],
+    returns: [[370, "Canto general"]],
   },
-  // Vencidos
+  // Valeria: confiable
+  {
+    visitor: "Valeria Huamán",
+    daysAgo: 310,
+    items: [["Breve historia del tiempo", 1]],
+    returns: [[305, "Breve historia del tiempo"]],
+  },
+  {
+    visitor: "Valeria Huamán",
+    daysAgo: 250,
+    items: [["Sapiens: de animales a dioses", 1]],
+    returns: [[246, "Sapiens: de animales a dioses"]],
+  },
+  {
+    visitor: "Valeria Huamán",
+    daysAgo: 180,
+    items: [["Cien años de soledad", 1]],
+    returns: [[176, "Cien años de soledad"]],
+    by: "practicante",
+  },
+  {
+    visitor: "Valeria Huamán",
+    daysAgo: 120,
+    items: [["Harry Potter y la piedra filosofal", 1]],
+    returns: [[115, "Harry Potter y la piedra filosofal"]],
+  },
+  {
+    visitor: "Valeria Huamán",
+    daysAgo: 60,
+    items: [["Rayuela", 1]],
+    returns: [[55, "Rayuela"]],
+  },
+  { visitor: "Valeria Huamán", daysAgo: 0, items: [["Trilce", 1]] },
+  // Diego: regular (2 tardías + 1 deteriorado) y un préstamo muy vencido
   {
     visitor: "Diego Quispe",
+    daysAgo: 280,
+    items: [["Harry Potter y la cámara secreta", 1]],
+    returns: [[266, "Harry Potter y la cámara secreta"]],
+  },
+  {
+    visitor: "Diego Quispe",
+    daysAgo: 200,
+    items: [["Mafalda 2", 1]],
+    returns: [[196, "Mafalda 2"]],
+    by: "practicante",
+  },
+  {
+    visitor: "Diego Quispe",
+    daysAgo: 140,
+    items: [["Cuentos de la selva", 1]],
+    returns: [[128, "Cuentos de la selva"]],
+  },
+  {
+    visitor: "Diego Quispe",
+    daysAgo: 70,
+    items: [["Ciencias Sociales 3", 1]],
+    returns: [[66, "Ciencias Sociales 3", "returned_damaged"]],
+  },
+  {
+    visitor: "Diego Quispe",
+    daysAgo: 25,
     items: [
       ["Rayuela", 1],
       ["Bestiario", 1],
     ],
-    daysAgo: 12,
   },
-  { visitor: "Mateo Flores", items: [["Papelucho", 1]], daysAgo: 9 },
-  // Bloqueado: 3 ejemplares vencidos
+  // Camila: en riesgo (2 perdidos + 1 irreparable) y bloqueada (3 vencidos)
   {
     visitor: "Camila Rojas",
+    daysAgo: 290,
+    items: [["Geografía del Perú", 1]],
+    returns: [[286, "Geografía del Perú", "lost"]],
+  },
+  {
+    visitor: "Camila Rojas",
+    daysAgo: 210,
+    items: [["Sapiens: de animales a dioses", 1]],
+    returns: [[205, "Sapiens: de animales a dioses", "discarded"]],
+  },
+  {
+    visitor: "Camila Rojas",
+    daysAgo: 150,
+    items: [["El principito", 1]],
+    returns: [[146, "El principito", "lost"]],
+  },
+  // Se lleva el Ciencias Sociales 3 deteriorado: se presta igual
+  {
+    visitor: "Camila Rojas",
+    daysAgo: 15,
     items: [
       ["Geografía del Perú", 2],
       ["Ciencias Sociales 3", 1],
     ],
-    daysAgo: 15,
   },
-  // Parcialmente devuelto: quedan 1 Mafalda y 1 Harry Potter
+  // Sofía: confiable; su pérdida se recuperó y cuenta como devolución
+  {
+    visitor: "Sofía Mendoza",
+    daysAgo: 260,
+    items: [["Papelucho", 1]],
+    returns: [[256, "Papelucho"]],
+  },
+  {
+    visitor: "Sofía Mendoza",
+    daysAgo: 190,
+    items: [["Mafalda 1", 1]],
+    returns: [[187, "Mafalda 1"]],
+  },
+  {
+    visitor: "Sofía Mendoza",
+    daysAgo: 100,
+    items: [["Cuentos de la selva", 1]],
+    returns: [[97, "Cuentos de la selva"]],
+  },
+  {
+    visitor: "Sofía Mendoza",
+    daysAgo: 45,
+    items: [["Papelucho en vacaciones", 1]],
+    returns: [[40, "Papelucho en vacaciones", "lost"]],
+  },
+  // Lucía: nueva, vence pronto
+  {
+    visitor: "Lucía Vega",
+    daysAgo: 230,
+    items: [["Harry Potter y la cámara secreta", 1]],
+    returns: [[225, "Harry Potter y la cámara secreta"]],
+  },
+  {
+    visitor: "Lucía Vega",
+    daysAgo: 2,
+    items: [
+      ["Harry Potter y el prisionero de Azkaban", 1],
+      ["Papelucho en vacaciones", 1],
+    ],
+  },
+  // Mateo: vencido con una devolución parcial
+  {
+    visitor: "Mateo Flores",
+    daysAgo: 12,
+    items: [
+      ["Papelucho", 1],
+      ["Mafalda 2", 1],
+    ],
+    returns: [[9, "Mafalda 2"]],
+  },
+  // Vence hoy / venció ayer
+  { visitor: "Renata Chávez", daysAgo: 7, items: [["El principito", 1]] },
+  {
+    visitor: "Andrés Cárdenas",
+    daysAgo: 8,
+    items: [["Cuentos de la selva", 1]],
+  },
+  // Martín: historial y luego inactivo
+  {
+    visitor: "Martín Salas",
+    daysAgo: 330,
+    items: [["La ciudad y los perros", 1]],
+    returns: [[326, "La ciudad y los perros"]],
+  },
+  {
+    visitor: "Martín Salas",
+    daysAgo: 240,
+    items: [["Conversación en La Catedral", 1]],
+    returns: [[236, "Conversación en La Catedral"]],
+  },
+  // Ana: confiable y en el límite de 5 ejemplares
+  {
+    visitor: "Ana Torres",
+    daysAgo: 300,
+    items: [
+      ["Todas las sangres", 1],
+      ["Los ríos profundos", 1],
+    ],
+    returns: [
+      [292, "Todas las sangres"],
+      [292, "Los ríos profundos"],
+    ],
+  },
+  {
+    visitor: "Ana Torres",
+    daysAgo: 220,
+    items: [["Tradiciones peruanas", 2]],
+    returns: [
+      [212, "Tradiciones peruanas"],
+      [212, "Tradiciones peruanas"],
+    ],
+    by: "practicante",
+  },
+  {
+    visitor: "Ana Torres",
+    daysAgo: 160,
+    items: [["Cien años de soledad", 1]],
+    returns: [[152, "Cien años de soledad"]],
+  },
+  {
+    visitor: "Ana Torres",
+    daysAgo: 3,
+    items: [
+      ["Cien años de soledad", 2],
+      ["La ciudad y los perros", 2],
+      ["La casa de los espíritus", 1],
+    ],
+    notes: "Plan lector de 4.º de secundaria",
+  },
+  // Luis: regular, con un préstamo abierto parcialmente devuelto
   {
     visitor: "Luis Ramos",
+    daysAgo: 270,
+    items: [["Breve historia del tiempo", 1]],
+    returns: [[262, "Breve historia del tiempo"]],
+  },
+  {
+    visitor: "Luis Ramos",
+    daysAgo: 130,
+    items: [["Sapiens: de animales a dioses", 1]],
+    returns: [[125, "Sapiens: de animales a dioses"]],
+  },
+  {
+    visitor: "Luis Ramos",
+    daysAgo: 6,
     items: [
       ["Harry Potter y la piedra filosofal", 1],
       ["Mafalda 1", 2],
       ["El principito", 1],
     ],
-    daysAgo: 6,
-    returns: [["El principito"], ["Mafalda 1", "returned_damaged"]],
-  },
-  // Finalizados
-  {
-    visitor: "Carmen Soto",
-    items: [
-      ["Canto general", 1],
-      ["Trilce", 1],
-    ],
-    daysAgo: 4,
-    returns: [["Canto general"], ["Trilce"]],
-  },
-  {
-    visitor: "Valeria Huamán",
-    items: [
-      ["Breve historia del tiempo", 1],
-      ["Sapiens: de animales a dioses", 1],
-    ],
-    daysAgo: 8,
     returns: [
-      ["Breve historia del tiempo"],
-      ["Sapiens: de animales a dioses", "lost"],
+      [4, "El principito"],
+      [4, "Mafalda 1", "returned_damaged"],
     ],
   },
-  {
-    visitor: "Sofía Mendoza",
-    items: [
-      ["Cuentos de la selva", 1],
-      ["Anaconda", 1],
-    ],
-    daysAgo: 5,
-    returns: [["Cuentos de la selva"], ["Anaconda", "discarded"]],
-  },
+  // Carmen: abierto, vence en más de una semana
+  { visitor: "Carmen Soto", daysAgo: 1, items: [["Canto general", 1]] },
 ];
 
 const DAY = 86400;
+const ago = (days: number) => sql`${days * DAY}`;
 
-// Igual que backdateLoan: mueve el encabezado y sus líneas
 async function backdateStock(id: number, days: number) {
   await db
     .update(stockMovement)
-    .set({ createdAt: sql`${stockMovement.createdAt} - ${days * DAY}` })
+    .set({ createdAt: sql`${stockMovement.createdAt} - ${ago(days)}` })
     .where(eq(stockMovement.id, id));
   await db
     .update(stockMovementLine)
-    .set({ createdAt: sql`${stockMovementLine.createdAt} - ${days * DAY}` })
+    .set({ createdAt: sql`${stockMovementLine.createdAt} - ${ago(days)}` })
     .where(eq(stockMovementLine.movementId, id));
+}
+
+async function backdateEntry({ movement, lines }: EntryResult, days: number) {
+  await backdateStock(movement.id, days);
+  await db
+    .update(copy)
+    .set({ createdAt: sql`${copy.createdAt} - ${ago(days)}` })
+    .where(
+      inArray(
+        copy.id,
+        lines.flatMap((l) => l.copies.map((c) => c.copyId)),
+      ),
+    );
+  const created = lines.filter((l) => l.isNewBook).map((l) => l.bookId);
+  if (created.length > 0) {
+    await db
+      .update(book)
+      .set({ createdAt: sql`${book.createdAt} - ${ago(days)}` })
+      .where(inArray(book.id, created));
+  }
 }
 
 async function backdateLoan(id: number, days: number) {
   await db
     .update(loanMovement)
     .set({
-      createdAt: sql`${loanMovement.createdAt} - ${days * DAY}`,
+      createdAt: sql`${loanMovement.createdAt} - ${ago(days)}`,
       expiresBy: sql`date(${loanMovement.expiresBy}, ${`-${days} days`})`,
     })
     .where(eq(loanMovement.id, id));
   await db
     .update(loanMovementLine)
-    .set({ createdAt: sql`${loanMovementLine.createdAt} - ${days * DAY}` })
+    .set({ createdAt: sql`${loanMovementLine.createdAt} - ${ago(days)}` })
     .where(eq(loanMovementLine.movementId, id));
+}
+
+async function backdateReturn(loanId: number, copyIds: number[], days: number) {
+  await db
+    .update(loanMovementLine)
+    .set({ resolvedAt: sql`${loanMovementLine.resolvedAt} - ${ago(days)}` })
+    .where(
+      and(
+        eq(loanMovementLine.movementId, loanId),
+        inArray(loanMovementLine.copyId, copyIds),
+      ),
+    );
 }
 
 const idsByName = (rows: { id: number; name: string }[]) =>
@@ -456,12 +763,32 @@ export async function seedDev(actorId: number): Promise<string> {
     return "Ya hay libros: no se hizo nada";
   }
 
+  // Cuentas
+  const staff = new Map<Staff, number>();
+  if ((await getSessionAccount(actorId))?.role === "owner") {
+    const existing = await listAccounts(actorId);
+    for (const [username, role, key] of ACCOUNTS) {
+      const found = existing.find((a) => a.username === username);
+      const id =
+        found?.id ??
+        (await createAccount(actorId, { username, password: "123456", role }))
+          .id;
+      staff.set(key, id);
+    }
+  }
+  const signer = (key?: Staff) => (key && staff.get(key)) ?? actorId;
+
   // Catálogo
   const authors = new Map<string, number>();
   for (const [firstName, lastName] of AUTHORS) {
     const a = await createAuthor({ firstName, lastName });
     authors.set([firstName, lastName].filter(Boolean).join(" "), a.id);
   }
+  const [anon] = await db
+    .select({ id: author.id })
+    .from(author)
+    .where(eq(author.nameKey, "anonimo"));
+  authors.set("Anónimo", anon.id);
 
   const publishers = new Map<string, number>();
   for (const name of PUBLISHERS) {
@@ -493,140 +820,289 @@ export async function seedDev(actorId: number): Promise<string> {
     role,
   });
 
-  const bookLine = ([
+  const bookInput = ([title, by, cat, sub, year, pages, , x = {}]: Book) => ({
     title,
-    by,
-    cat,
-    sub,
-    year,
-    pages,
-    copies,
-    x = {},
-  ]: Book) => {
-    const shelf = shelfOf(cat, sub);
+    omitWords: x.series ? [x.series] : [], // evita etiquetas repetidas
+    publisherId: x.pub ? publishers.get(x.pub) : null,
+    collectionId: x.col ? collections.get(x.col) : null,
+    seriesId: x.series ? series.get(x.series) : null,
+    categoryId: cat ? categories.get(cat) : null,
+    subcategoryId: sub ? subcategories.get(sub) : null,
+    publicationYear: year,
+    pageCount: pages,
+    collaborators: [
+      collab(by, "writer"),
+      ...(x.co ? [collab(x.co, "writer")] : []),
+      ...(x.ill ? [collab(by, "illustrator")] : []),
+      ...(x.tr ? [collab(x.tr, "translator")] : []),
+    ],
+  });
+
+  const bookLine = (b: Book) => {
+    const shelf = shelfOf(b[2], b[3]);
     return {
-      quantity: copies,
+      quantity: b[6],
       shelfId: shelf ? shelves.get(shelf) : undefined,
-      book: {
-        title,
-        omitWords: x.series ? [x.series] : [], // evita etiquetas repetidas
-        publisherId: x.pub ? publishers.get(x.pub) : null,
-        collectionId: x.col ? collections.get(x.col) : null,
-        seriesId: x.series ? series.get(x.series) : null,
-        categoryId: categories.get(cat),
-        subcategoryId: subcategories.get(sub),
-        publicationYear: year,
-        pageCount: pages,
-        collaborators: [
-          collab(by, "writer"),
-          ...(x.ill ? [collab(by, "illustrator")] : []),
-          ...(x.tr ? [collab(x.tr, "translator")] : []),
-        ],
-      },
+      book: bookInput(b),
     };
   };
 
-  // Entradas de stock
-  const copiesOf = new Map<string, number[]>();
-  const track = (lines: { title: string; copies: { copyId: number }[] }[]) => {
-    for (const l of lines) {
-      copiesOf.set(l.title, [
-        ...(copiesOf.get(l.title) ?? []),
-        ...l.copies.map((c) => c.copyId),
-      ]);
-    }
+  // Ejemplares disponibles por título, en el orden en que se toman. Un
+  // deteriorado vuelve al frente para que el siguiente préstamo lo lleve.
+  const pool = new Map<string, number[]>();
+  const bookIds = new Map<string, number>();
+  const give = (title: string, ids: number[], front = false) => {
+    const list = pool.get(title) ?? [];
+    pool.set(title, front ? [...ids, ...list] : [...list, ...ids]);
   };
-  // Saca ejemplares del pool para que ningún préstamo o salida repita copia
   const take = (title: string, n: number) => {
-    const pool = copiesOf.get(title);
-    if (!pool) throw new Error(`No hay ejemplares registrados de "${title}"`);
-    if (pool.length < n) throw new Error(`Faltan ejemplares de "${title}"`);
-    return pool.splice(0, n);
+    const list = pool.get(title) ?? [];
+    if (list.length < n) throw new Error(`Faltan ejemplares de "${title}"`);
+    return list.splice(0, n);
   };
 
-  const purchase = await registerCopies(actorId, {
-    reason: "purchase",
-    notes: "Compra inicial del catálogo",
-    lines: BOOKS.map(bookLine),
-  });
-  track(purchase.lines);
-  await backdateStock(purchase.movement.id, 30);
-  const bookIds = new Map(purchase.lines.map((l) => [l.title, l.bookId]));
+  // Línea de tiempo
+  const events: { at: number; run: () => Promise<void> }[] = [];
+  const on = (at: number, run: () => Promise<void>) => events.push({ at, run });
 
-  const donation = await registerCopies(actorId, {
-    reason: "donation",
-    notes: "Donación de la promoción 2025",
-    lines: [
-      { bookId: bookIds.get("El principito")!, quantity: 2 },
-      { bookId: bookIds.get("Tradiciones peruanas")!, quantity: 3 },
-      bookLine(DONATED),
+  const entry = (
+    at: number,
+    reason: "purchase" | "donation" | "other",
+    notes: string,
+    lines: (ReturnType<typeof bookLine> | [title: string, n: number])[],
+    { label = true, by }: { label?: boolean; by?: Staff } = {},
+  ) => {
+    let copyIds: number[] = [];
+    on(at, async () => {
+      const result = await registerCopies(signer(by), {
+        reason,
+        notes,
+        lines: lines.map((l) =>
+          Array.isArray(l) ? { bookId: bookIds.get(l[0])!, quantity: l[1] } : l,
+        ),
+      });
+      for (const l of result.lines) {
+        bookIds.set(l.title, l.bookId);
+        give(
+          l.title,
+          l.copies.map((c) => c.copyId),
+        );
+      }
+      copyIds = result.lines.flatMap((l) => l.copies.map((c) => c.copyId));
+      await backdateEntry(result, at);
+    });
+    if (!label) return;
+    // Se etiqueta unos días después; los incompletos quedan pendientes
+    on(at - 2, async () => {
+      await markCopiesLabeled(signer(by), { copyIds });
+      await db
+        .update(copy)
+        .set({ labeledAt: sql`${copy.labeledAt} - ${ago(at - 2)}` })
+        .where(inArray(copy.id, copyIds));
+    });
+  };
+
+  const exit = async (
+    at: number,
+    reason: "loss" | "damage" | "discard",
+    copyIds: number[],
+    notes: string,
+  ) => {
+    const { movement } = await exitCopies(actorId, { reason, copyIds, notes });
+    await backdateStock(movement.id, at);
+  };
+
+  const recover = async (at: number, copyId: number, notes: string) => {
+    const { movement } = await recoverCopy(actorId, { copyId, notes });
+    await backdateStock(movement.id, at);
+  };
+
+  // Entradas de stock
+  entry(400, "purchase", "Compra inicial del catálogo", BOOKS.map(bookLine));
+  entry(300, "donation", "Donación de la promoción 2025", [
+    ["El principito", 2],
+    ["Tradiciones peruanas", 3],
+    bookLine(DONATED),
+  ]);
+  entry(
+    150,
+    "purchase",
+    "Reposición de textos escolares y nuevos títulos",
+    [
+      ["Geografía del Perú", 3], // reocupa el número del perdido por Camila
+      ["Ciencias Sociales 3", 3],
+      ["Harry Potter y la piedra filosofal", 1],
+      ...SECOND.map(bookLine),
     ],
-  });
-  track(donation.lines);
-  await backdateStock(donation.movement.id, 14);
+    { by: "admin" },
+  );
+  entry(45, "other", "Reposición de un ejemplar", [["Mafalda 1", 1]]);
+  entry(
+    12,
+    "purchase",
+    "Compra de fin de año",
+    [
+      ["Harry Potter y el prisionero de Azkaban", 2],
+      ["Rayuela", 1],
+      bookLine(LATEST),
+    ],
+    { label: false, by: "admin" },
+  );
 
-  const other = await registerCopies(actorId, {
-    reason: "other",
-    notes: "Reposición de un ejemplar",
-    lines: [{ bookId: bookIds.get("Mafalda 1")!, quantity: 1 }],
+  // Salidas y recuperaciones manuales
+  let torn: number[] = [];
+  on(200, async () => {
+    torn = take("Tradiciones peruanas", 1);
+    await exit(200, "damage", torn, "Lomo despegado y hojas sueltas");
   });
-  track(other.lines);
-  await backdateStock(other.movement.id, 5);
+  on(80, async () => {
+    await recover(80, torn[0], "Reparado: lomo pegado");
+    give("Tradiciones peruanas", torn);
+  });
+
+  let wet: number[] = [];
+  on(150, async () => {
+    wet = take("Aves sin nido", 1);
+    await exit(150, "damage", wet, "Manchas de humedad");
+  });
+  on(90, () =>
+    exit(90, "discard", wet, "Deterioro por humedad, irrecuperable"),
+  );
+
+  // Recuperable desde la UI: nadie ocupó su número
+  on(60, async () => {
+    await exit(
+      60,
+      "loss",
+      take("Conversación en La Catedral", 1),
+      "No apareció en el inventario anual",
+    );
+  });
+
+  // Reorganización: El principito pasa del estante general a Literatura
+  on(100, async () => {
+    const rows = await db
+      .select({ id: copy.id })
+      .from(copy)
+      .where(
+        and(
+          eq(copy.bookId, bookIds.get("El principito")!),
+          notInArray(copy.status, [...RELEASED_STATUSES]),
+        ),
+      );
+    await moveCopies(actorId, {
+      shelfId: shelves.get("Literatura")!,
+      copyIds: rows.map((r) => r.id),
+    });
+  });
 
   // Visitantes
   const visitors = new Map<string, number>();
-  for (const name of TEACHERS) {
-    visitors.set(name, (await createVisitor({ name, role: "teacher" })).id);
-  }
   const grades = new Map(
     (await listSchoolGrades()).map((g) => [`${g.level}-${g.grade}`, g.id]),
   );
-  for (const [name, level, grade] of STUDENTS) {
-    const gradeId = grades.get(`${level}-${grade}`)!;
-    visitors.set(
+  const people: [string, number | null, number][] = [
+    ...TEACHERS.map(([name, since]): [string, null, number] => [
       name,
-      (await createVisitor({ name, role: "student", gradeId })).id,
-    );
+      null,
+      since,
+    ]),
+    ...STUDENTS.map(([name, level, grade, since]): [string, number, number] => [
+      name,
+      grades.get(`${level}-${grade}`)!,
+      since,
+    ]),
+  ];
+  for (const [name, gradeId, since] of people) {
+    const role = gradeId === null ? "teacher" : "student";
+    const { id } = await createVisitor({ name, role, gradeId });
+    visitors.set(name, id);
+    await db
+      .update(visitor)
+      .set({ createdAt: sql`${visitor.createdAt} - ${ago(since)}` })
+      .where(eq(visitor.id, id));
   }
 
-  // Préstamos
+  // Préstamos y devoluciones
+  const lostOnLoan = new Map<string, number[]>();
   for (const loan of LOANS) {
-    const lent = loan.items.map(([title, n]) => ({
-      title,
-      ids: take(title, n),
-    }));
-    const { movement } = await lendCopies(actorId, {
-      visitorId: visitors.get(loan.visitor)!,
-      copyIds: lent.flatMap((l) => l.ids),
+    const lent: [title: string, copyId: number][] = [];
+    let loanId = 0;
+    on(loan.daysAgo, async () => {
+      for (const [title, n] of loan.items) {
+        for (const id of take(title, n)) lent.push([title, id]);
+      }
+      const { movement } = await lendCopies(signer(loan.by), {
+        visitorId: visitors.get(loan.visitor)!,
+        copyIds: lent.map(([, id]) => id),
+        notes: loan.notes ?? null,
+      });
+      loanId = movement.id;
+      await backdateLoan(loanId, loan.daysAgo);
     });
-    await backdateLoan(movement.id, loan.daysAgo);
 
-    if (loan.returns) {
-      await returnCopies(actorId, {
-        items: loan.returns.map(([title, outcome = "returned" as const]) => ({
-          copyId: lent.find((l) => l.title === title)!.ids[0],
-          outcome,
-        })),
+    const byDay = new Map<number, Return[]>();
+    for (const r of loan.returns ?? []) {
+      byDay.set(r[0], [...(byDay.get(r[0]) ?? []), r]);
+    }
+    for (const [at, returns] of byDay) {
+      on(at, async () => {
+        const items = returns.map(([, title, outcome = "returned"]) => {
+          const i = lent.findIndex(([t]) => t === title);
+          const [, copyId] = lent.splice(i, 1)[0];
+          return { title, copyId, outcome };
+        });
+        const result = await returnCopies(signer(loan.by), {
+          items: items.map(({ copyId, outcome }) => ({ copyId, outcome })),
+        });
+        await backdateReturn(
+          loanId,
+          items.map((i) => i.copyId),
+          at,
+        );
+        const exits = [result.damaged, result.lost, result.discarded];
+        for (const e of exits.filter((e): e is ExitResult => e !== null)) {
+          await backdateStock(e.movement.id, at);
+        }
+        for (const { title, copyId, outcome } of items) {
+          if (outcome === "returned") give(title, [copyId]);
+          if (outcome === "returned_damaged") give(title, [copyId], true);
+          if (outcome === "lost") {
+            lostOnLoan.set(title, [...(lostOnLoan.get(title) ?? []), copyId]);
+          }
+        }
       });
     }
   }
 
-  // Salidas manuales
-  await exitCopies(actorId, {
-    reason: "loss",
-    copyIds: take("Geografía del Perú", 1),
-    notes: "Extraviado en el aula",
-  });
-  await exitCopies(actorId, {
-    reason: "damage",
-    copyIds: take("Tradiciones peruanas", 1),
-    notes: "Lomo despegado y hojas sueltas",
-  });
-  await exitCopies(actorId, {
-    reason: "discard",
-    copyIds: take("Aves sin nido", 1),
-    notes: "Deterioro por humedad",
+  // La pérdida de Sofía apareció
+  on(25, async () => {
+    const [copyId] = lostOnLoan.get("Papelucho en vacaciones")!;
+    await recover(25, copyId, "Apareció en el aula de 4.º de primaria");
+    give("Papelucho en vacaciones", [copyId]);
   });
 
-  return `Seed listo: ${BOOKS.length + 1} libros, ${visitors.size} visitantes, ${LOANS.length} préstamos`;
+  // Bestiario se reclasifica: sus tejuelos pegados quedan desactualizados
+  on(10, async () => {
+    await updateBook(bookIds.get("Bestiario")!, {
+      subcategoryId: subcategories.get(CUE),
+    });
+  });
+
+  events.sort((a, b) => b.at - a.at);
+  for (const { run } of events) await run();
+
+  // Estado final
+  for (const b of CATALOG_ONLY) await createBook(bookInput(b));
+  // No hay service para dar de baja un libro: solo debe ocultarse
+  await db
+    .update(book)
+    .set({ active: false })
+    .where(eq(book.id, bookIds.get("Los heraldos negros")!));
+  await updateVisitor(visitors.get("Martín Salas")!, { active: false });
+  const intern = staff.get("practicante");
+  if (intern) await setAccountActive(actorId, intern, { active: false });
+
+  const bookCount = BOOKS.length + SECOND.length + CATALOG_ONLY.length + 2;
+  return `Seed listo: ${bookCount} libros, ${visitors.size} visitantes, ${LOANS.length} préstamos`;
 }

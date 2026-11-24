@@ -18,7 +18,7 @@ INSERT INTO `author` (`first_name`, `last_name`, `name_key`, `is_protected`) VAL
   ('Anónimo', NULL, 'anonimo', 1);
 --> statement-breakpoint
 INSERT INTO `shelf` (`name`, `description`, `is_default`) VALUES
-  ('Default', NULL, 1);
+  ('Default', 'Guarda los libros que no tienen un estante asignado', 1);
 --> statement-breakpoint
 INSERT INTO `loan_rule` (`role`, `max_days`) VALUES
   ('student', 7),
