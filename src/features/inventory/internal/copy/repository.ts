@@ -61,6 +61,26 @@ export function activeCopyNumbersSync(ex: Executor, bookId: number): number[] {
     .map((r) => r.n);
 }
 
+/** El ejemplar activo del libro que tiene ese número, si lo hay. */
+export function findActiveCopyByNumberSync(
+  ex: Executor,
+  bookId: number,
+  copyNumber: number,
+): number | null {
+  const row = ex
+    .select({ id: copy.id })
+    .from(copy)
+    .where(
+      and(
+        eq(copy.bookId, bookId),
+        eq(copy.copyNumber, copyNumber),
+        notInArray(copy.status, [...RELEASED_STATUSES]),
+      ),
+    )
+    .get();
+  return row?.id ?? null;
+}
+
 export function insertCopiesSync(ex: Executor, values: NewCopy[]): Copy[] {
   return ex.insert(copy).values(values).returning().all();
 }

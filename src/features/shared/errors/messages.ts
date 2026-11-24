@@ -9,7 +9,9 @@ import {
   LendProblemKind,
   CopiesNotExitableError,
   CopiesNotLendableError,
+  CopyNotRecoverableError,
   CopyProblemKind,
+  RecoveryProblemKind,
   LoanLimitError,
   VisitorBlockedError,
 } from "./errors";
@@ -34,7 +36,7 @@ const MESSAGES_ES: Record<string, string> = {
 const LEND_PROBLEM_ES: Record<LendProblemKind, string> = {
   not_found: "no existe",
   on_loan: "ya está prestado",
-  damaged: "está dañado",
+  damaged: "está deteriorado",
   lost: "está perdido",
   discarded: "está descartado",
 };
@@ -44,7 +46,15 @@ const EXIT_PROBLEM_ES: Record<CopyProblemKind, string> = {
   on_loan: "está prestado",
   lost: "ya está perdido",
   discarded: "ya está descartado",
-  already_damaged: "ya está dañado",
+  already_damaged: "ya está deteriorado",
+};
+
+const RECOVERY_PROBLEM_ES: Record<RecoveryProblemKind, string> = {
+  nothing_to_recover:
+    "El ejemplar no tiene una pérdida o deterioro por revertir",
+  status_changed: "El ejemplar cambió de estado (¿está prestado?)",
+  number_taken: "Otro ejemplar ya usa su número",
+  label_taken: "Otro ejemplar ya usa su tejuelo",
 };
 
 const LINE_INDEX = /^lines\.(\d+)(\.|$)/;
@@ -132,6 +142,16 @@ export function toFormErrors(error: unknown): FormErrors {
       (p) => `${p.labelText ?? `#${p.copyId}`} ${EXIT_PROBLEM_ES[p.problem]}`,
     );
     return { fields: { copyIds: lines.join("\n") } };
+  }
+  if (error instanceof CopyNotRecoverableError) {
+    const holder =
+      error.conflictingCopyId === undefined
+        ? ""
+        : ` (#${error.conflictingCopyId})`;
+    return {
+      form: `${RECOVERY_PROBLEM_ES[error.problem]}${holder}`,
+      fields: {},
+    };
   }
   if (error instanceof LoanLimitError) {
     return {

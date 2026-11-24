@@ -2,7 +2,9 @@ import { openDatabaseSync } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import * as schema from "./schema";
 
-const sqlite = openDatabaseSync("library.db", { enableChangeListener: true });
+export const sqlite = openDatabaseSync("library.db", {
+  enableChangeListener: true,
+});
 sqlite.execSync("PRAGMA foreign_keys = ON;");
 
 export const db = drizzle(sqlite, { schema });

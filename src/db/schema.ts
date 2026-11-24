@@ -45,6 +45,8 @@ export const COPY_STATUSES = [
 export const MOVEMENT_TYPES = ["entry", "exit"] as const;
 export const ENTRY_REASONS = ["purchase", "donation", "other"] as const;
 export const EXIT_REASONS = ["loss", "damage", "discard"] as const;
+// Entrada que revierte una salida por pérdida o daño; no se registra a mano.
+export const RECOVERY_REASON = "recovery";
 export const MOVEMENT_REASONS = [
   "purchase",
   "donation",
@@ -52,10 +54,16 @@ export const MOVEMENT_REASONS = [
   "damage",
   "discard",
   "other",
+  RECOVERY_REASON,
 ] as const;
 export const GRADE_LEVELS = ["primary", "secondary"] as const;
 export const VISITOR_ROLES = ["student", "teacher"] as const;
-export const LINE_OUTCOMES = ["returned", "returned_damaged", "lost"] as const;
+export const LINE_OUTCOMES = [
+  "returned",
+  "returned_damaged",
+  "discarded",
+  "lost",
+] as const;
 
 // Catalog
 export const author = sqliteTable(
@@ -306,7 +314,7 @@ export const stockMovement = sqliteTable(
   (t) => [
     check(
       "ck_stock_movement_type_reason",
-      sql`(${t.type} = 'entry' AND ${oneOf(t.reason, ENTRY_REASONS)}) OR (${t.type} = 'exit' AND ${oneOf(t.reason, EXIT_REASONS)})`,
+      sql`(${t.type} = 'entry' AND ${oneOf(t.reason, [...ENTRY_REASONS, RECOVERY_REASON])}) OR (${t.type} = 'exit' AND ${oneOf(t.reason, EXIT_REASONS)})`,
     ),
   ],
 );
@@ -323,10 +331,15 @@ export const stockMovementLine = sqliteTable(
       .notNull()
       .references(() => copy.id),
     loanLineId: integer("loan_line_id").references(() => loanMovementLine.id),
+    // En una recuperación: la línea de salida que revierte.
+    recoveredLineId: integer("recovered_line_id").references(
+      (): AnySQLiteColumn => stockMovementLine.id,
+    ),
   },
   (t) => [
     unique("uq_stock_movement_line").on(t.movementId, t.copyId),
     unique("uq_stock_movement_line_loan_line").on(t.loanLineId),
+    unique("uq_stock_movement_line_recovered_line").on(t.recoveredLineId),
     index("idx_stock_movement_line_copy").on(t.copyId),
   ],
 );

@@ -44,7 +44,6 @@ export const returnSchema = z.object({
       z.object({
         copyId: idSchema,
         outcome: z.enum(LINE_OUTCOMES).default("returned"),
-        reason: z.enum(["loss", "discard"]).optional(),
       }),
     )
     .min(1)

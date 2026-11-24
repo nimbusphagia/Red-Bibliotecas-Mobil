@@ -11,10 +11,12 @@ import {
   exitMovementSchema,
   listLinesSchema,
   listMovementsSchema,
+  recoverCopySchema,
   registerCopiesSchema,
   type ExitMovementInput,
   type MovementLinesParams,
   type MovementListParams,
+  type RecoverCopyInput,
   type RegisterCopiesInput,
 } from "./schemas";
 import type {
@@ -23,10 +25,12 @@ import type {
   MovementLine,
   MovementListItem,
   MovementMonth,
+  RecoveryResult,
 } from "./types";
 import { requireStockRole } from "./utils/auth";
 import { writeExit } from "./utils/exit";
 import { prepareLines } from "./utils/prepare";
+import { writeRecovery } from "./utils/recover";
 import { writeEntry } from "./utils/write";
 
 export async function registerCopies(
@@ -59,6 +63,17 @@ export async function exitCopies(
   };
   return mapWriteErrors("stock movement", async () =>
     inTransaction((tx) => writeExit(tx, header, parsed.copyIds)),
+  );
+}
+
+export async function recoverCopy(
+  actorId: number,
+  input: RecoverCopyInput,
+): Promise<RecoveryResult> {
+  await requireStockRole(actorId, "recover stock");
+  const { copyId, notes } = parseOrThrow(recoverCopySchema, input);
+  return mapWriteErrors("stock movement", async () =>
+    inTransaction((tx) => writeRecovery(tx, copyId, actorId, notes)),
   );
 }
 

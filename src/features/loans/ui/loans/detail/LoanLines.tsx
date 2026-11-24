@@ -1,16 +1,15 @@
+import RecoverCopyDialog from "@/features/inventory/ui/copies/RecoverCopyDialog";
+import { canRecover } from "@/features/inventory/ui/copies/canRecover";
 import type { LoanLine } from "@/features/loans/internal/loan/types";
-import {
-  Button,
-  Column,
-  Icon,
-  ListRow,
-  StatusBadge,
-} from "@/features/shared/components";
+import { Button, Column, Icon, ListRow } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { OUTCOME_ES } from "@/features/shared/format/translate";
+import { Link } from "expo-router";
 import {
   ArrowDown,
+  ArrowUpRight,
   CircleCheck,
+  RotateCcwClock,
   TriangleExclamationPoint,
 } from "lucide-react-native";
 import { useState } from "react";
@@ -21,6 +20,7 @@ type Props = {
   lines: LoanLine[];
   overdue: boolean;
   actorId: number;
+  canManageStock: boolean;
   onChanged: () => void;
 };
 
@@ -28,12 +28,14 @@ export default function LoanLines({
   lines,
   overdue,
   actorId,
+  canManageStock,
   onChanged,
 }: Props) {
   const [active, setActive] = useState<{
     line: LoanLine;
     reportOnly: boolean;
   } | null>(null);
+  const [recovering, setRecovering] = useState<LoanLine | null>(null);
 
   return (
     <View className="gap-2 ">
@@ -73,10 +75,27 @@ export default function LoanLines({
                   onPress={() => setActive({ line: l, reportOnly: false })}
                 />
               </>
-            ) : l.outcome === "returned" ? (
-              <Icon icon={CircleCheck} size="lg" stroke="sm" />
             ) : (
-              <StatusBadge text={OUTCOME_ES[l.outcome]} variant="active" />
+              <>
+                {l.outcome === "returned" && (
+                  <Icon icon={CircleCheck} size="lg" stroke="sm" />
+                )}
+                {canManageStock && canRecover(l.status) && (
+                  <Button
+                    variant="soft"
+                    size="sm"
+                    weight="md"
+                    icon={RotateCcwClock}
+                    title={l.status === "damaged" ? "Reparar" : "Recuperar"}
+                    onPress={() => setRecovering(l)}
+                  />
+                )}
+                {l.recoveryId !== null && (
+                  <Link href={`/stock/${l.recoveryId}`} asChild>
+                    <Button variant="soft" icon={ArrowUpRight} />
+                  </Link>
+                )}
+              </>
             )}
           </Column>
         </ListRow>
@@ -89,6 +108,17 @@ export default function LoanLines({
           onClose={() => setActive(null)}
           onDone={() => {
             setActive(null);
+            onChanged();
+          }}
+        />
+      )}
+      {recovering && (
+        <RecoverCopyDialog
+          copy={recovering}
+          actorId={actorId}
+          onClose={() => setRecovering(null)}
+          onDone={() => {
+            setRecovering(null);
             onChanged();
           }}
         />

@@ -1,4 +1,4 @@
-import type { stockMovement } from "@/db/schema";
+import type { RECOVERY_REASON, stockMovement } from "@/db/schema";
 import type { SortDirection } from "@/features/shared/types/types";
 import type { CopyStatus, ReleasedStatus } from "../copy/types";
 import type { ENTRY_REASONS, EXIT_REASONS, MovementSort } from "./schemas";
@@ -9,8 +9,10 @@ export type MovementReason = StockMovement["reason"];
 export type EntryReason = (typeof ENTRY_REASONS)[number];
 export type ExitReason = (typeof EXIT_REASONS)[number];
 
+export type RecoveryReason = typeof RECOVERY_REASON;
+
 export type NewEntryMovement = {
-  reason: EntryReason;
+  reason: EntryReason | RecoveryReason;
   signedById: number;
   notes: string | null;
 };
@@ -27,6 +29,20 @@ export const EXIT_STATUS: Record<ExitReason, ExitStatus> = {
   loss: "lost",
   damage: "damaged",
   discard: "discarded",
+};
+
+/** Salidas que se pueden revertir con una recuperación. */
+export const RECOVERABLE_REASONS = [
+  "loss",
+  "damage",
+] as const satisfies readonly ExitReason[];
+export type RecoverableReason = (typeof RECOVERABLE_REASONS)[number];
+
+export type RecoveryResult = {
+  movement: StockMovement;
+  copyId: number;
+  previousStatus: CopyStatus;
+  newStatus: "available" | "damaged";
 };
 
 export type RegisteredCopy = {
@@ -89,6 +105,16 @@ export type MovementMonth = {
   exits: number;
 };
 
+export type ExitLine = {
+  id: number;
+  reason: MovementReason;
+  copyId: number;
+  bookId: number;
+  copyNumber: number;
+  status: CopyStatus;
+  labeledText: string | null;
+};
+
 export type MovementLine = {
   id: number;
   copyId: number;
@@ -101,4 +127,8 @@ export type MovementLine = {
   shelfName: string;
   labelText: string | null;
   loanId: number | null;
+  /** En una salida: la recuperación que la revirtió. */
+  recoveryId: number | null;
+  /** En una recuperación: la salida que revierte. */
+  recoveredExitId: number | null;
 };

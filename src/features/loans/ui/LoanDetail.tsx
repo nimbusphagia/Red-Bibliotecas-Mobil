@@ -1,4 +1,5 @@
 import { useSession } from "@/features/account/internal/session";
+import { canManageStock } from "@/features/inventory/internal/movement/utils/auth";
 import { getLoan, listLoanLines } from "@/features/loans/internal/loan/service";
 import type {
   LoanLine,
@@ -111,6 +112,7 @@ export default function LoanDetail({ id }: { id: string }) {
             lines={lines}
             overdue={loan.overdue}
             actorId={session.account.id}
+            canManageStock={canManageStock(session.account.role)}
             onChanged={reload}
           />
         </Panel>

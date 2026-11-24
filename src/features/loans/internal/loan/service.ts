@@ -7,6 +7,7 @@ import {
 } from "@/features/inventory/internal/copy/repository";
 import type { CopyStatus } from "@/features/inventory/internal/copy/types";
 import type { ExitReason } from "@/features/inventory/internal/movement/types";
+import { findOpenDamageSync } from "@/features/inventory/internal/movement/repository";
 import { writeExit } from "@/features/inventory/internal/movement/utils/exit";
 import { getLoanRule } from "@/features/loans/internal/reference/service";
 import { getVisitor } from "@/features/loans/internal/visitor/service";
@@ -196,20 +197,20 @@ export async function returnCopies(
         items.filter((i) => i.outcome === outcome).map((i) => i.copyId);
       const returned = idsOf("returned");
       const damaged = idsOf("returned_damaged");
-
-      const lostItems = items.filter((i) => i.outcome === "lost");
-      const discarded = lostItems
-        .filter((i) => i.reason === "discard")
-        .map((i) => i.copyId);
-      const lost = lostItems
-        .filter((i) => i.reason !== "discard")
-        .map((i) => i.copyId);
+      const discarded = idsOf("discarded");
+      const lost = idsOf("lost");
 
       repo.resolveLinesSync(tx, returned, "returned", actorId);
       repo.resolveLinesSync(tx, damaged, "returned_damaged", actorId);
-      repo.resolveLinesSync(tx, [...lost, ...discarded], "lost", actorId);
+      repo.resolveLinesSync(tx, discarded, "discarded", actorId);
+      repo.resolveLinesSync(tx, lost, "lost", actorId);
 
-      setCopiesStatusSync(tx, returned, "available");
+      // Un deteriorado se presta igual: vuelve deteriorado, y su salida por
+      // daño sigue abierta hasta que se recupere (reparado).
+      const alreadyDamaged = findOpenDamageSync(tx, [...returned, ...damaged]);
+      const notYet = (id: number) => !alreadyDamaged.has(id);
+      setCopiesStatusSync(tx, returned.filter(notYet), "available");
+      setCopiesStatusSync(tx, [...alreadyDamaged], "damaged");
 
       const exit = (reason: ExitReason, ids: number[]) =>
         ids.length === 0
@@ -221,7 +222,7 @@ export async function returnCopies(
 
       return {
         returned: returned.length,
-        damaged: exit("damage", damaged),
+        damaged: exit("damage", damaged.filter(notYet)),
         lost: exit("loss", lost),
         discarded: exit("discard", discarded),
       };

@@ -335,8 +335,7 @@ type Loan = {
   // Un ejemplar devuelto por título; sin resultado = devuelto en buen estado
   returns?: [
     title: string,
-    outcome?: "returned_damaged" | "lost",
-    reason?: "discard",
+    outcome?: "returned_damaged" | "discarded" | "lost",
   ][];
 };
 
@@ -417,7 +416,7 @@ const LOANS: Loan[] = [
       ["Anaconda", 1],
     ],
     daysAgo: 5,
-    returns: [["Cuentos de la selva"], ["Anaconda", "lost", "discard"]],
+    returns: [["Cuentos de la selva"], ["Anaconda", "discarded"]],
   },
 ];
 
@@ -604,13 +603,10 @@ export async function seedDev(actorId: number): Promise<string> {
 
     if (loan.returns) {
       await returnCopies(actorId, {
-        items: loan.returns.map(
-          ([title, outcome = "returned" as const, reason]) => ({
-            copyId: lent.find((l) => l.title === title)!.ids[0],
-            outcome,
-            reason,
-          }),
-        ),
+        items: loan.returns.map(([title, outcome = "returned" as const]) => ({
+          copyId: lent.find((l) => l.title === title)!.ids[0],
+          outcome,
+        })),
       });
     }
   }

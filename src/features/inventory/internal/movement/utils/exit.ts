@@ -64,7 +64,7 @@ export function writeExit(
 
   const movement = insertExitMovementSync(tx, header);
   setCopiesStatusSync(tx, copyIds, target);
-  insertMovementLinesSync(tx, movement.id, copyIds, loanLineByCopy);
+  insertMovementLinesSync(tx, movement.id, copyIds, { loanLineByCopy });
 
   return {
     movement,

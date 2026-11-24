@@ -23,7 +23,7 @@ export const COPY_STATUS_ES: Record<CopyStatus, string> = {
   on_loan: "Prestado",
   lost: "Perdido",
   discarded: "Descartado",
-  damaged: "Dañado",
+  damaged: "Deteriorado",
 };
 
 export const ROLE_ES: Record<VisitorRole, string> = {
@@ -49,7 +49,8 @@ export const gradeLabel = (
 
 export const OUTCOME_ES: Record<LineOutcome, string> = {
   returned: "Devuelto",
-  returned_damaged: "Devuelto dañado",
+  returned_damaged: "Devuelto deteriorado",
+  discarded: "Descartado",
   lost: "Perdido",
 };
 
@@ -67,9 +68,10 @@ export const MOVEMENT_REASON_ES: Record<MovementReason, string> = {
   purchase: "Compra",
   donation: "Donación",
   loss: "Pérdida",
-  damage: "Daño",
+  damage: "Deterioro",
   discard: "Descarte",
   other: "Otro",
+  recovery: "Recuperación",
 };
 
 export const shelfLabel = (shelf: { name: string; isDefault: boolean }) =>

@@ -77,7 +77,7 @@ const selectVisitors = () =>
       level: schoolGrade.level,
       lineCount: linesOf(),
       pendingCount: pendingLines,
-      problemCount: linesOf("returned_damaged", "lost"),
+      problemCount: linesOf("returned_damaged", "discarded", "lost"),
     })
     .from(visitor)
     .leftJoin(schoolGrade, eq(visitor.gradeId, schoolGrade.id));

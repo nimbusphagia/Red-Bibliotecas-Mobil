@@ -11,18 +11,24 @@ import {
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
 import type { Page } from "@/features/shared/types/types";
+import { alias } from "drizzle-orm/sqlite-core";
 import { labelTextSql, writersSql } from "../copy/sql";
 import {
   and,
   asc,
   count,
+  desc,
   eq,
   getTableColumns,
   gte,
+  inArray,
+  isNull,
   lt,
   sql,
 } from "drizzle-orm";
+import { RECOVERABLE_REASONS } from "./types";
 import type {
+  ExitLine,
   MovementLine,
   MovementListFilters,
   MovementListItem,
@@ -43,11 +49,16 @@ export function insertEntryMovementSync(
     .get();
 }
 
+export type LineLinks = {
+  loanLineByCopy?: Map<number, number>;
+  recoveredLineByCopy?: Map<number, number>;
+};
+
 export function insertMovementLinesSync(
   ex: Executor,
   movementId: number,
   copyIds: number[],
-  loanLineByCopy?: Map<number, number>,
+  { loanLineByCopy, recoveredLineByCopy }: LineLinks = {},
 ): void {
   if (copyIds.length === 0) return;
   ex.insert(stockMovementLine)
@@ -56,6 +67,7 @@ export function insertMovementLinesSync(
         movementId,
         copyId,
         loanLineId: loanLineByCopy?.get(copyId) ?? null,
+        recoveredLineId: recoveredLineByCopy?.get(copyId) ?? null,
       })),
     )
     .run();
@@ -76,6 +88,10 @@ const lineRefs: Reference = {
   column: stockMovementLine.movementId,
 };
 const copyCount = rowCount(lineRefs, stockMovement.id);
+
+// Línea de recuperación que revierte una salida, y la salida revertida.
+const recoveryLine = alias(stockMovementLine, "recovery_line");
+const recoveredLine = alias(stockMovementLine, "recovered_line");
 
 const selectMovements = () =>
   db
@@ -151,6 +167,8 @@ export async function listMovementLines(
         shelfName: shelf.name,
         labelText: labelTextSql,
         loanId: loanMovementLine.movementId,
+        recoveryId: recoveryLine.movementId,
+        recoveredExitId: recoveredLine.movementId,
       })
       .from(stockMovementLine)
       .innerJoin(copy, eq(copy.id, stockMovementLine.copyId))
@@ -159,6 +177,14 @@ export async function listMovementLines(
       .leftJoin(
         loanMovementLine,
         eq(loanMovementLine.id, stockMovementLine.loanLineId),
+      )
+      .leftJoin(
+        recoveryLine,
+        eq(recoveryLine.recoveredLineId, stockMovementLine.id),
+      )
+      .leftJoin(
+        recoveredLine,
+        eq(recoveredLine.id, stockMovementLine.recoveredLineId),
       )
       .where(where)
       .orderBy(asc(book.titleKey), asc(copy.copyNumber), asc(copy.id))
@@ -189,4 +215,77 @@ export async function listMovementMonths(
     .where(movementWhere(filters))
     .groupBy(monthOf)
     .orderBy(direction(filters.sortDir)(monthOf));
+}
+
+/** La última salida por pérdida o daño del ejemplar que aún no se revirtió. */
+export function findOpenExitLineSync(
+  ex: Executor,
+  copyId: number,
+): ExitLine | null {
+  const row = ex
+    .select({
+      id: stockMovementLine.id,
+      reason: stockMovement.reason,
+      copyId: copy.id,
+      bookId: copy.bookId,
+      copyNumber: copy.copyNumber,
+      status: copy.status,
+      labeledText: copy.labeledText,
+    })
+    .from(stockMovementLine)
+    .innerJoin(
+      stockMovement,
+      eq(stockMovement.id, stockMovementLine.movementId),
+    )
+    .innerJoin(copy, eq(copy.id, stockMovementLine.copyId))
+    .leftJoin(
+      recoveryLine,
+      eq(recoveryLine.recoveredLineId, stockMovementLine.id),
+    )
+    .where(
+      and(
+        eq(stockMovementLine.copyId, copyId),
+        inArray(stockMovement.reason, [...RECOVERABLE_REASONS]),
+        isNull(recoveryLine.id),
+      ),
+    )
+    .orderBy(desc(stockMovementLine.id))
+    .limit(1)
+    .get();
+  return row ?? null;
+}
+
+/**
+ * De esos ejemplares, los que tienen una salida por daño sin revertir (solo
+ * anteriores a `beforeLineId`, si se indica).
+ */
+export function findOpenDamageSync(
+  ex: Executor,
+  copyIds: number[],
+  beforeLineId?: number,
+): Set<number> {
+  if (copyIds.length === 0) return new Set();
+  const rows = ex
+    .selectDistinct({ copyId: stockMovementLine.copyId })
+    .from(stockMovementLine)
+    .innerJoin(
+      stockMovement,
+      eq(stockMovement.id, stockMovementLine.movementId),
+    )
+    .leftJoin(
+      recoveryLine,
+      eq(recoveryLine.recoveredLineId, stockMovementLine.id),
+    )
+    .where(
+      and(
+        inArray(stockMovementLine.copyId, copyIds),
+        beforeLineId === undefined
+          ? undefined
+          : lt(stockMovementLine.id, beforeLineId),
+        eq(stockMovement.reason, "damage"),
+        isNull(recoveryLine.id),
+      ),
+    )
+    .all();
+  return new Set(rows.map((r) => r.copyId));
 }

@@ -98,6 +98,13 @@ export const exitMovementSchema = z.object({
 export type ExitMovementInput = z.input<typeof exitMovementSchema>;
 export type ExitMovementParsed = z.output<typeof exitMovementSchema>;
 
+export const recoverCopySchema = z.object({
+  copyId: idSchema,
+  notes: notes.default(null),
+});
+
+export type RecoverCopyInput = z.input<typeof recoverCopySchema>;
+
 export const MOVEMENT_SORT_KEYS = ["createdAt"] as const;
 export type MovementSort = (typeof MOVEMENT_SORT_KEYS)[number];
 

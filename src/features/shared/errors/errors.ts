@@ -185,6 +185,28 @@ export class CopiesNotExitableError extends AppError {
   }
 }
 
+export type RecoveryProblemKind =
+  "nothing_to_recover" | "status_changed" | "number_taken" | "label_taken";
+
+const RECOVERY_PROBLEM_TEXT: Record<RecoveryProblemKind, string> = {
+  nothing_to_recover: "has no loss or damage to revert",
+  status_changed: "is not lost or damaged right now",
+  number_taken: "has its number taken by another copy",
+  label_taken: "has its label taken by another copy",
+};
+
+export class CopyNotRecoverableError extends AppError {
+  readonly code = "COPY_NOT_RECOVERABLE";
+  constructor(
+    public readonly copyId: number,
+    public readonly problem: RecoveryProblemKind,
+    public readonly conflictingCopyId?: number,
+  ) {
+    super(`Copy #${copyId} ${RECOVERY_PROBLEM_TEXT[problem]}`);
+    this.name = "CopyNotRecoverableError";
+  }
+}
+
 export type LendProblemKind =
   "not_found" | "on_loan" | "damaged" | "lost" | "discarded";
 

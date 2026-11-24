@@ -1,4 +1,5 @@
 import type { GRADE_LEVELS, LINE_OUTCOMES, loanMovement } from "@/db/schema";
+import type { CopyStatus } from "@/features/inventory/internal/copy/types";
 import type { ExitResult } from "@/features/inventory/internal/movement/types";
 import type { ListFilters } from "@/features/shared/types/types";
 import type { LineStatus, LoanSort } from "./schemas";
@@ -51,6 +52,9 @@ export type LoanLine = {
   resolvedAt: Date | null;
   outcome: LineOutcome | null;
   resolvedByUsername: string | null;
+  status: CopyStatus;
+  /** Recuperación que revirtió la salida de stock que generó la línea. */
+  recoveryId: number | null;
 };
 
 export type VisitorLine = LoanLine & { loanId: number; createdAt: Date };

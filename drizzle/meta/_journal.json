@@ -36,6 +36,20 @@
       "when": 1795379029785,
       "tag": "0004_label_to_copy",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1795539415561,
+      "tag": "0005_stock_recovery",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1795547176277,
+      "tag": "0006_loan_line_discarded",
+      "breakpoints": true
     }
   ]
 }

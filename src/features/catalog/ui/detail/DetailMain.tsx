@@ -15,14 +15,14 @@ type Props = {
   book: BookListItem;
   copies: CopyItem[];
   codes: LabelCodes | null;
-  onCopiesAdded: () => void;
+  onCopiesChanged: () => void;
 };
 
 export default function DetailMain({
   book,
   copies,
   codes,
-  onCopiesAdded,
+  onCopiesChanged,
 }: Props) {
   const [adding, setAdding] = useState(false);
   const { isCompact } = useLayoutMode();
@@ -77,7 +77,7 @@ export default function DetailMain({
           />
         }
       >
-        <CopiesList copies={copies} />
+        <CopiesList copies={copies} onChanged={onCopiesChanged} />
       </Panel>
       {adding && (
         <AddCopiesDialog
@@ -86,7 +86,7 @@ export default function DetailMain({
           onClose={() => setAdding(false)}
           onAdded={() => {
             setAdding(false);
-            onCopiesAdded();
+            onCopiesChanged();
           }}
         />
       )}

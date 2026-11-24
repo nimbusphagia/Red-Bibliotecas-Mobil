@@ -125,7 +125,7 @@ export default function ExitForm() {
               error={
                 errors.fields.copyIds ??
                 (blocked > 0
-                  ? "Hay ejemplares dañados: no pueden salir por daño"
+                  ? "Hay ejemplares deteriorados: no pueden salir por deterioro"
                   : undefined)
               }
               onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}

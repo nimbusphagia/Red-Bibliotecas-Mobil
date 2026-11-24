@@ -15,6 +15,7 @@ import {
   loanMovement,
   loanMovementLine,
   schoolGrade,
+  stockMovementLine,
   visitor,
 } from "@/db/schema";
 import type { Executor } from "@/db/transaction";
@@ -57,6 +58,9 @@ const lineCount = rowCount(lines, loanMovement.id);
 const openCount = rowCount(openLines, loanMovement.id);
 
 const resolver = alias(account, "resolver");
+// La salida de stock que generó la línea (pérdida, daño) y su recuperación.
+const exitLine = alias(stockMovementLine, "exit_line");
+const recoveryLine = alias(stockMovementLine, "recovery_line");
 
 const lineColumns = {
   id: loanMovementLine.id,
@@ -68,6 +72,8 @@ const lineColumns = {
   resolvedAt: loanMovementLine.resolvedAt,
   outcome: loanMovementLine.outcome,
   resolvedByUsername: resolver.username,
+  status: copy.status,
+  recoveryId: recoveryLine.movementId,
 };
 
 // Writes
@@ -244,6 +250,8 @@ export async function listLoanLines(
       .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
       .leftJoin(resolver, eq(resolver.id, loanMovementLine.resolvedById))
+      .leftJoin(exitLine, eq(exitLine.loanLineId, loanMovementLine.id))
+      .leftJoin(recoveryLine, eq(recoveryLine.recoveredLineId, exitLine.id))
       .where(where)
       .orderBy(
         asc(book.titleKey),
@@ -283,6 +291,8 @@ export async function listVisitorLines(
       .innerJoin(copy, eq(copy.id, loanMovementLine.copyId))
       .innerJoin(book, eq(book.id, copy.bookId))
       .leftJoin(resolver, eq(resolver.id, loanMovementLine.resolvedById))
+      .leftJoin(exitLine, eq(exitLine.loanLineId, loanMovementLine.id))
+      .leftJoin(recoveryLine, eq(recoveryLine.recoveredLineId, exitLine.id))
       .where(where)
       .orderBy(
         direction(sortDir)(loanMovementLine.createdAt),

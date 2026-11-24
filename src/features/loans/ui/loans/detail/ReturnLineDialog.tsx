@@ -19,18 +19,18 @@ const CHOICES: Choice[] = [
   { key: "ok", label: "Bien", item: { outcome: "returned" } },
   {
     key: "damaged",
-    label: "Dañado pero funcional",
+    label: "Deteriorado pero prestable",
     item: { outcome: "returned_damaged" },
   },
   {
     key: "irreparable",
     label: "Irreparablemente dañado",
-    item: { outcome: "lost", reason: "discard" },
+    item: { outcome: "discarded" },
   },
   {
     key: "lost",
     label: "Perdido",
-    item: { outcome: "lost", reason: "loss" },
+    item: { outcome: "lost" },
   },
 ];
 

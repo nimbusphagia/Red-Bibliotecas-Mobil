@@ -51,7 +51,7 @@ export default function BookDetail({ id }: Props) {
         book={data.book}
         copies={data.copies}
         codes={data.codes}
-        onCopiesAdded={reload}
+        onCopiesChanged={reload}
       />
     </>
   );

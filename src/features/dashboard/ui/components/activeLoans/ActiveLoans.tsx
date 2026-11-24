@@ -66,7 +66,7 @@ export default function ActiveLoans() {
           showsVerticalScrollIndicator={false}
         >
           {loans.map((l) => (
-            <LoanRow key={l.id} loan={l} inset external />
+            <LoanRow key={l.id} loan={l} inset />
           ))}
         </ScrollView>
       )}
