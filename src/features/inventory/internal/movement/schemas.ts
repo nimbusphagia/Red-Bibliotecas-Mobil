@@ -98,7 +98,7 @@ export const exitMovementSchema = z.object({
 export type ExitMovementInput = z.input<typeof exitMovementSchema>;
 export type ExitMovementParsed = z.output<typeof exitMovementSchema>;
 
-export const MOVEMENT_SORT_KEYS = ["createdAt", "copyCount"] as const;
+export const MOVEMENT_SORT_KEYS = ["createdAt"] as const;
 export type MovementSort = (typeof MOVEMENT_SORT_KEYS)[number];
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");

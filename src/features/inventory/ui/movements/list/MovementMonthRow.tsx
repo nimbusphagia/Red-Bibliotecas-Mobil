@@ -1,32 +1,24 @@
 import { listMovements } from "@/features/inventory/internal/movement/service";
-import type {
-  MovementListItem,
-  MovementMonth,
-} from "@/features/inventory/internal/movement/types";
+import type { MovementMonth } from "@/features/inventory/internal/movement/types";
 import { CollapsibleList, Icon, Text } from "@/features/shared/components";
 import { formatMonthES, monthRange } from "@/features/shared/format/dates";
+import { loadAllPages } from "@/features/shared/hooks/useInfiniteList";
 import { ArrowDown, ArrowUp } from "lucide-react-native";
 import { View } from "react-native";
 import type { MovementFilters } from "./FilterPanel";
 import MovementRow from "./MovementRow";
 
-const PAGE = 100;
-
-async function loadMonth(month: string, filters: MovementFilters) {
-  const items: MovementListItem[] = [];
-  for (;;) {
-    const page = await listMovements({
+const loadMonth = (month: string, filters: MovementFilters) =>
+  loadAllPages((offset, limit) =>
+    listMovements({
       ...filters,
       ...monthRange(month),
       sortBy: "createdAt",
       sortDir: "desc",
-      limit: PAGE,
-      offset: items.length,
-    });
-    items.push(...page.items);
-    if (!page.items.length || items.length >= page.total) return items;
-  }
-}
+      limit,
+      offset,
+    }),
+  );
 
 type Props = {
   month: MovementMonth;

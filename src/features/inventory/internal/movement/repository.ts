@@ -114,16 +114,14 @@ const movementWhere = ({
 export async function listMovements(
   filters: MovementListFilters,
 ): Promise<Page<MovementListItem>> {
-  const { sortBy, sortDir } = filters;
+  const { sortDir } = filters;
   const where = movementWhere(filters);
-
-  const sortKey = { createdAt: stockMovement.createdAt, copyCount }[sortBy];
 
   const [items, [{ n }]] = await Promise.all([
     selectMovements()
       .where(where)
       .orderBy(
-        direction(sortDir)(sortKey),
+        direction(sortDir)(stockMovement.createdAt),
         direction(sortDir)(stockMovement.id),
       )
       .limit(filters.limit)

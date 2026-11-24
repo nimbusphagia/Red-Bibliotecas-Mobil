@@ -121,7 +121,6 @@ export default function MovementList() {
         }
         items={months ?? []}
         loading={!months}
-        onEndReached={() => {}}
         renderItem={(month) => (
           <MovementMonthRow
             month={month}

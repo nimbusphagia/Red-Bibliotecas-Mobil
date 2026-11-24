@@ -4,7 +4,7 @@ import { ActivityIndicator, View } from "react-native";
 import ActiveLoans from "./activeLoans/ActiveLoans";
 import CollectionStatus from "./charts/CollectionStatus";
 import MonthlyLoans from "./charts/MonthlyLoans";
-import Metrics from "./metrics/Metrics";
+import { DueMetrics, LabelMetrics } from "./metrics/Metrics";
 
 export default function DashboardMain() {
   const stats = useDashboardStats();
@@ -12,26 +12,33 @@ export default function DashboardMain() {
 
   if (!stats) return <ActivityIndicator />;
 
-  const side = (
-    <View className="gap-3">
-      <CollectionStatus copies={stats.copies} />
-      <Metrics summary={stats} />
-    </View>
-  );
-
   return isExpanded ? (
     <View className="flex-row items-start gap-6 pt-2">
       <View className="flex-1 gap-6">
         <MonthlyLoans months={stats.monthlyLoans} />
         <ActiveLoans />
       </View>
-      <View className="w-[300px]">{side}</View>
+      <View className="w-[300px] gap-3">
+        <CollectionStatus copies={stats.copies} />
+        <View className="gap-4">
+          <DueMetrics summary={stats} />
+          <LabelMetrics summary={stats} />
+        </View>
+      </View>
     </View>
   ) : (
     <View className="gap-6">
-      {side}
       <MonthlyLoans months={stats.monthlyLoans} />
+      <View className="flex-row gap-4">
+        <DueMetrics summary={stats} className="flex-1" />
+      </View>
       <ActiveLoans />
+      <View className="flex-row gap-4">
+        <View className="flex-1">
+          <CollectionStatus copies={stats.copies} />
+        </View>
+        <LabelMetrics summary={stats} className="flex-1" />
+      </View>
     </View>
   );
 }

@@ -74,3 +74,17 @@ export function useInfiniteList<T>(
 
   return { items, total, loading, error, loadMore, reload };
 }
+
+const ALL_PAGES_SIZE = 100;
+
+/** Pide página tras página hasta traer todos los elementos. */
+export async function loadAllPages<T>(
+  fetchPage: (offset: number, limit: number) => Promise<Page<T>>,
+): Promise<T[]> {
+  const items: T[] = [];
+  for (;;) {
+    const page = await fetchPage(items.length, ALL_PAGES_SIZE);
+    items.push(...page.items);
+    if (!page.items.length || items.length >= page.total) return items;
+  }
+}

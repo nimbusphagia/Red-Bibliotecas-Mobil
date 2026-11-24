@@ -2,23 +2,33 @@ import type {
   DashboardSummary,
   LoanPreview,
 } from "@/features/dashboard/internal/types";
-import { Surface, Text } from "@/features/shared/components";
+import { LABEL_STATE_ICON } from "@/features/inventory/ui/labels/labelState";
+import { Icon, Surface, Text } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
-import { cn } from "@/features/shared/theme";
-import { CalendarClock, Flag, Stamp } from "lucide-react-native";
-import { View } from "react-native";
+import {
+  CalendarClock,
+  Flag,
+  Stamp,
+  type LucideIcon,
+} from "lucide-react-native";
 import MetricCard from "./MetricCard";
 
 const UP_TO_DATE = "Al día";
 
-function StatRow({ label, value }: { label: string; value: string | number }) {
+type StatRowProps = {
+  label: string;
+  value: string | number;
+  icon?: LucideIcon;
+};
+
+function StatRow({ label, value, icon }: StatRowProps) {
   return (
     <Surface
       row
       className="flex-row items-center justify-between gap-2 px-3 py-1.5"
     >
-      <Text variant="itemSm" numberOfLines={1} className="shrink">
+      {icon && <Icon icon={icon} size="sm" />}
+      <Text variant="itemSm" numberOfLines={1} className="flex-1">
         {label}
       </Text>
       <Text variant="caption">{value}</Text>
@@ -37,18 +47,17 @@ function LoanPreviews({ loans }: { loans: LoanPreview[] }) {
   ));
 }
 
-export default function Metrics({ summary: s }: { summary: DashboardSummary }) {
-  const { isExpanded } = useLayoutMode();
-  const card = cn(!isExpanded && "min-w-[30%] flex-1");
+type Props = { summary: DashboardSummary; className?: string };
 
+export function DueMetrics({ summary: s, className }: Props) {
   return (
-    <View className={cn("gap-4", !isExpanded && "flex-row flex-wrap")}>
+    <>
       <MetricCard
         title="Vencidos"
         icon={Flag}
         value={s.overdue}
         href="/loans?state=overdue"
-        className={card}
+        className={className}
       >
         <LoanPreviews loans={s.oldestOverdue} />
       </MetricCard>
@@ -57,19 +66,37 @@ export default function Metrics({ summary: s }: { summary: DashboardSummary }) {
         icon={CalendarClock}
         value={s.dueSoon}
         href="/loans?state=open"
-        className={card}
+        className={className}
       >
         <LoanPreviews loans={s.nextDue} />
       </MetricCard>
-      <MetricCard
-        title="Tejuelos"
-        icon={Stamp}
-        href="/copies/mark"
-        className={card}
-      >
-        <StatRow label="Sin etiquetar" value={s.unlabeled} />
-        <StatRow label="Ejemplares etiquetados" value={s.labeled} />
-      </MetricCard>
-    </View>
+    </>
+  );
+}
+
+export function LabelMetrics({ summary: s, className }: Props) {
+  return (
+    <MetricCard
+      title="Tejuelos"
+      icon={Stamp}
+      href="/copies/mark"
+      className={className}
+    >
+      <StatRow
+        label="Necesitan actualizarse"
+        value={s.outdated}
+        icon={LABEL_STATE_ICON.outdated}
+      />
+      <StatRow
+        label="Sin etiquetar"
+        value={s.unlabeled}
+        icon={LABEL_STATE_ICON.pending}
+      />
+      <StatRow
+        label="Ejemplares etiquetados"
+        value={s.labeled}
+        icon={LABEL_STATE_ICON.labeled}
+      />
+    </MetricCard>
   );
 }

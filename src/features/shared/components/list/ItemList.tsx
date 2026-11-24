@@ -8,7 +8,7 @@ import { Text } from "../base/Text";
 type Props<T extends { id: number }> = {
   items: T[];
   loading: boolean;
-  onEndReached: () => void;
+  onEndReached?: () => void;
   renderItem: (item: T) => ReactElement;
   toolbar?: ReactNode;
   /**

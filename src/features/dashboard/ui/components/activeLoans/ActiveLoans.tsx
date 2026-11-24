@@ -8,7 +8,6 @@ import {
   Text,
 } from "@/features/shared/components";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
-import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { Link } from "expo-router";
 import { ArrowUpRight } from "lucide-react-native";
 import { useCallback, useState } from "react";
@@ -24,7 +23,6 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 export default function ActiveLoans() {
-  const { isExpanded } = useLayoutMode();
   const [filter, setFilter] = useState<Filter>("open");
   const { data: loans } = useFocusData(
     useCallback(
@@ -68,7 +66,7 @@ export default function ActiveLoans() {
           showsVerticalScrollIndicator={false}
         >
           {loans.map((l) => (
-            <LoanRow key={l.id} loan={l} inset external compact={!isExpanded} />
+            <LoanRow key={l.id} loan={l} inset external />
           ))}
         </ScrollView>
       )}

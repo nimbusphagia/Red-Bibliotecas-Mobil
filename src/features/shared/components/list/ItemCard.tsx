@@ -16,7 +16,7 @@ type Props = {
 
 export function ItemCard({ title, subtitle, detail, href, chips }: Props) {
   return (
-    <Surface row className="grow justify-between gap-4 p-4">
+    <Surface row className="grow justify-between gap-4 p-4 rounded-2xl">
       <View className="flex-row items-start gap-2">
         <View className="flex-1 gap-1">
           <Text variant="item" numberOfLines={2}>

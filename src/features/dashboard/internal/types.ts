@@ -20,6 +20,7 @@ export type DashboardSummary = {
   nextDue: LoanPreview[];
   unlabeled: number;
   labeled: number;
+  outdated: number;
   copies: Record<HeldStatus, number>;
   monthlyLoans: MonthCount[];
 };

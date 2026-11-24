@@ -42,11 +42,11 @@ export default function CollectionStatus({
             <Text variant="itemXs" className="flex-1">
               {COPY_STATUS_ES[s.status]}
             </Text>
-            <Text variant="itemSm" className="text-[12px]">
-              {copies[s.status]}
-            </Text>
-            <Text variant="caption" className="w-12 text-right text-[12px]">
+            <Text variant="caption" className="text-[12px]">
               {percent(copies[s.status])}%
+            </Text>
+            <Text variant="itemSm" className="w-12 text-right text-[12px]">
+              {copies[s.status]}
             </Text>
           </View>
         ))}

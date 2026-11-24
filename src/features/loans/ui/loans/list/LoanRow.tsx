@@ -1,42 +1,26 @@
 import { loanStateOf } from "@/features/loans/internal/loan/rules";
 import type { LoanListItem } from "@/features/loans/internal/loan/types";
-import {
-  Button,
-  Column,
-  Icon,
-  ListRow,
-  Text,
-} from "@/features/shared/components";
-import { formatDateES } from "@/features/shared/format/dates";
-import {
-  gradeLabel,
-  LOAN_STATE_ES,
-  ROLE_ES,
-} from "@/features/shared/format/translate";
+import { Button, Column, Icon, ListRow } from "@/features/shared/components";
+import { formatDateRangeES } from "@/features/shared/format/dates";
+import { gradeLabel, ROLE_ES } from "@/features/shared/format/translate";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { Link } from "expo-router";
-import { Eye, ScanSearch } from "lucide-react-native";
-import { View } from "react-native";
+import { ArrowDown, ChevronRight } from "lucide-react-native";
 import { LOAN_STATE_ICON } from "../stateIcon";
 
 type Props = {
   loan: LoanListItem;
   inset?: boolean;
   external?: boolean;
-  /** Sin la columna de estado, para espacios angostos. */
-  compact?: boolean;
 };
 
-export default function LoanRow({ loan, inset, external, compact }: Props) {
+export default function LoanRow({ loan, inset, external }: Props) {
   const state = loanStateOf(loan);
+  const { isCompact } = useLayoutMode();
 
   return (
     <ListRow inset={inset}>
-      <Column
-        variant="subtitled"
-        width="lg"
-        text={`Préstamo #${loan.id}`}
-        subtitle1={formatDateES(loan.createdAt)}
-      />
+      <Column variant="id" text={`#${loan.id}`} />
       <Column
         variant="subtitled"
         text={loan.visitorName}
@@ -47,22 +31,32 @@ export default function LoanRow({ loan, inset, external, compact }: Props) {
             : undefined
         }
       />
+      <Column text={formatDateRangeES(loan.createdAt, loan.expiresBy)} />
       <Column
-        variant="subtitled"
-        text={`${loan.lineCount - loan.openCount} / ${loan.lineCount}`}
-        subtitle1="Devueltos"
+        width={isCompact ? "sm" : "md"}
+        text={`${loan.lineCount - loan.openCount}/${loan.lineCount}`}
       />
-      {!compact && (
-        <Column variant="subtitled" subtitle1={formatDateES(loan.expiresBy)}>
-          <View className="flex-row items-center gap-2">
-            <Icon icon={LOAN_STATE_ICON[state]} size="lg" stroke="sm" />
-            <Text variant="itemSm">{LOAN_STATE_ES[state]}</Text>
-          </View>
-        </Column>
-      )}
-      <Column variant="actions" expand={false}>
+      <Column
+        variant="actions"
+        expand={false}
+        containerClass="w-36 shrink-0 items-center justify-end gap-3"
+      >
+        <Icon icon={LOAN_STATE_ICON[state]} size="lg" stroke="sm" />
         <Link href={`/loans/${loan.id}`} asChild>
-          <Button variant="soft" icon={external ? ScanSearch : Eye} size="md" />
+          {external ? (
+            <Button
+              variant="soft"
+              icon={ChevronRight}
+              className="bg-transparent"
+            />
+          ) : (
+            <Button
+              variant="soft"
+              size="sm"
+              icon={ArrowDown}
+              title="Devolver"
+            />
+          )}
         </Link>
       </Column>
     </ListRow>

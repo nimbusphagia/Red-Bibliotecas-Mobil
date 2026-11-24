@@ -1,5 +1,6 @@
 import { db } from "@/db/client";
-import { copy, loanMovement, loanMovementLine, visitor } from "@/db/schema";
+import { book, copy, loanMovement, loanMovementLine, visitor } from "@/db/schema";
+import { outdatedSql } from "@/features/inventory/internal/copy/sql";
 import { RELEASED_STATUSES } from "@/features/inventory/internal/copy/types";
 import {
   and,
@@ -67,8 +68,10 @@ export function countHeldCopies() {
       status: copy.status,
       n: count(),
       unlabeled: sumIf(isNull(copy.labeledAt)),
+      outdated: sumIf(outdatedSql),
     })
     .from(copy)
+    .innerJoin(book, eq(book.id, copy.bookId))
     .where(notInArray(copy.status, [...RELEASED_STATUSES]))
     .groupBy(copy.status);
 }

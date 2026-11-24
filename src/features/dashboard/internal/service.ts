@@ -26,10 +26,12 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
   };
   let total = 0;
   let unlabeled = 0;
+  let outdated = 0;
   for (const row of held) {
     copies[row.status as HeldStatus] = row.n;
     total += row.n;
     unlabeled += row.unlabeled;
+    outdated += row.outdated;
   }
 
   const monthlyLoans = Array.from({ length: 12 }, (_, i) => ({
@@ -43,7 +45,8 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     oldestOverdue,
     nextDue,
     unlabeled,
-    labeled: total - unlabeled,
+    outdated,
+    labeled: total - unlabeled - outdated,
     copies,
     monthlyLoans,
   };

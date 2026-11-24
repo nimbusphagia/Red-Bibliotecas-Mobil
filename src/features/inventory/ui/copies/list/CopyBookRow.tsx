@@ -1,32 +1,24 @@
 import { listCopies } from "@/features/inventory/internal/copy/service";
-import type {
-  CopyBook,
-  CopyItem,
-} from "@/features/inventory/internal/copy/types";
+import type { CopyBook } from "@/features/inventory/internal/copy/types";
 import type { CopyListParams } from "@/features/inventory/internal/copy/schemas";
 import { CollapsibleList, Icon, Text } from "@/features/shared/components";
+import { loadAllPages } from "@/features/shared/hooks/useInfiniteList";
 import { View } from "react-native";
 import { LABEL_STATE_ICON, type LabelState } from "../../labels/labelState";
 import CopyRow from "./CopyRow";
 
-const PAGE = 100;
-
-async function loadCopies(bookId: number, filters: CopyListParams) {
-  const items: CopyItem[] = [];
-  for (;;) {
-    const page = await listCopies({
+const loadCopies = (bookId: number, filters: CopyListParams) =>
+  loadAllPages((offset, limit) =>
+    listCopies({
       ...filters,
       bookId,
       excludeReleased: true,
       sortBy: "copyNumber",
       sortDir: "asc",
-      limit: PAGE,
-      offset: items.length,
-    });
-    items.push(...page.items);
-    if (!page.items.length || items.length >= page.total) return items;
-  }
-}
+      limit,
+      offset,
+    }),
+  );
 
 const COUNTS: LabelState[] = ["labeled", "pending", "outdated"];
 
@@ -38,6 +30,7 @@ type Props = {
 };
 
 export default function CopyBookRow({ book, filters, defaultOpen }: Props) {
+  const total = book.labeled + book.pending + book.outdated;
   const subtitle = [book.authors, book.publisherName]
     .filter(Boolean)
     .join(" · ");
@@ -51,9 +44,12 @@ export default function CopyBookRow({ book, filters, defaultOpen }: Props) {
       header={
         <View className="flex-row items-center justify-between gap-4">
           <View className="shrink gap-1">
-            <Text variant="item" numberOfLines={1}>
-              {book.title}
-            </Text>
+            <View className="flex-row items-center gap-2">
+              <Text variant="item" className="shrink" numberOfLines={1}>
+                {book.title}
+              </Text>
+              <Text variant="caption">({total})</Text>
+            </View>
             {!!subtitle && (
               <Text variant="caption" numberOfLines={1}>
                 {subtitle}
