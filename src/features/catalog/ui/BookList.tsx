@@ -64,7 +64,7 @@ export default function BookList() {
         subtitle="Cataloga y explora tu biblioteca"
         lead={
           <View className="flex-row gap-2">
-            <Link href="/copies/mark" asChild>
+            <Link href="/catalog/label" asChild>
               <Button icon={Stamp} size="sm" title="Tejuelos" weight="md" />
             </Link>
             <Link href="/catalog/form" asChild>

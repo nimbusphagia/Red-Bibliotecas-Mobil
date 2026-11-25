@@ -1,4 +1,6 @@
 import { useSession } from "@/features/account/internal/session";
+import { getCopy } from "@/features/inventory/internal/copy/service";
+import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   getLoanExpiry,
   getVisitorLoanStatus,
@@ -8,7 +10,6 @@ import type { VisitorLoanStatus } from "@/features/loans/internal/loan/types";
 import { getVisitorItem } from "@/features/loans/internal/visitor/service";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import {
-  Button,
   FieldError,
   FieldRow,
   FormHeader,
@@ -22,14 +23,14 @@ import {
 } from "@/features/shared/components";
 import { formatDate, formatISO } from "@/features/shared/format/dates";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
 import { Info } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
-import CopyTable from "./loans/form/CopyTable";
-import { CopySearchDialog, PickVisitorDialog } from "./loans/form/LoanDialogs";
-import { copyById, type LoanCopy } from "./options";
+import { PickVisitorDialog } from "./loans/form/LoanDialogs";
+import LoanCopySelector from "./loans/form/LoanCopySelector";
 import { visitorInfoRows } from "./visitors/visitorRows";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {
@@ -40,14 +41,17 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
   const [visitorItem, setVisitorItem] = useState<VisitorListItem>();
   const [status, setStatus] = useState<VisitorLoanStatus>();
   const [expiresBy, setExpiresBy] = useState<string>();
-  const [copies, setCopies] = useState<LoanCopy[]>([]);
+  const [copies, setCopies] = useState<CopyItem[]>([]);
+  const loadMore = useRef<() => void>(undefined);
   const [notes, setNotes] = useState("");
-  const [editing, setEditing] = useState<"visitor" | "notes" | "copies" | null>(
-    null,
-  );
+  const [editing, setEditing] = useState<"visitor" | "notes" | null>(null);
+  const { isExpanded } = useLayoutMode();
 
   useEffect(() => {
-    if (copyId) copyById(Number(copyId)).then((r) => r && setCopies([r.copy]));
+    if (copyId)
+      getCopy(Number(copyId))
+        .then((c) => setCopies([c]))
+        .catch(() => {});
   }, [copyId]);
 
   useEffect(() => {
@@ -83,13 +87,21 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
     });
   };
 
-  const toggleCopy = (c: LoanCopy) =>
+  const toggleCopy = (c: CopyItem) =>
     setCopies((p) =>
       p.some((x) => x.id === c.id) ? p.filter((x) => x.id !== c.id) : [...p, c],
     );
-  const removeCopy = (id: number) =>
-    setCopies((p) => p.filter((c) => c.id !== id));
   const close = () => setEditing(null);
+
+  // En vertical no hay panel de detalles: las notas pasan al del visitante.
+  const notesRow = (
+    <FieldRow
+      label="Notas"
+      value={notes || undefined}
+      error={errors.fields.notes}
+      onPress={() => setEditing("notes")}
+    />
+  );
 
   return (
     <>
@@ -101,7 +113,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
         onSubmit={submit}
         onCancel={() => router.back()}
       />
-      <ScreenBody form>
+      <ScreenBody form onEndReached={() => loadMore.current?.()}>
         <FieldError>{errors.form}</FieldError>
         <SplitColumns>
           <Panel
@@ -135,55 +147,42 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
               error={errors.fields.visitorId}
               onPress={() => setEditing("visitor")}
             />
-            {visitorItem &&
-              visitorInfoRows(visitorItem).map((r) => (
-                <LabeledItem key={r.label} {...r} labelWidth="form" />
-              ))}
+            {visitorInfoRows(visitorItem).map((r) => (
+              <LabeledItem key={r.label} {...r} labelWidth="form" />
+            ))}
+            {!isExpanded && notesRow}
           </Panel>
-          <Panel title="Detalles" className="grow">
-            <LabeledItem
-              label="Encargado"
-              content={
-                session.status === "signed-in"
-                  ? session.account.name
-                  : undefined
-              }
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Vencimiento"
-              content={expiresBy && formatISO(expiresBy)}
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Registro"
-              content={formatDate(new Date())}
-              labelWidth="form"
-            />
-            <FieldRow
-              label="Notas"
-              value={notes || undefined}
-              error={errors.fields.notes}
-              onPress={() => setEditing("notes")}
-            />
-          </Panel>
+          {isExpanded && (
+            <Panel title="Detalles" className="grow">
+              <LabeledItem
+                label="Encargado"
+                content={
+                  session.status === "signed-in"
+                    ? session.account.name
+                    : undefined
+                }
+                labelWidth="form"
+              />
+              <LabeledItem
+                label="Vencimiento"
+                content={expiresBy && formatISO(expiresBy)}
+                labelWidth="form"
+              />
+              <LabeledItem
+                label="Registro"
+                content={formatDate(new Date())}
+                labelWidth="form"
+              />
+              {notesRow}
+            </Panel>
+          )}
         </SplitColumns>
-        <Panel
-          title="Ejemplares"
-          lead={
-            <Button
-              title="Agregar"
-              size="sm"
-              onPress={() => setEditing("copies")}
-            />
-          }
-        >
-          <CopyTable
-            copies={copies}
-            error={errors.fields.copyIds}
-            onRemove={removeCopy}
-          />
-        </Panel>
+        <LoanCopySelector
+          selected={copies}
+          onToggle={toggleCopy}
+          error={errors.fields.copyIds}
+          loadMoreRef={loadMore}
+        />
       </ScreenBody>
 
       {editing === "visitor" && (
@@ -195,13 +194,6 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
       )}
       {editing === "notes" && (
         <NotesDialog value={notes} onChange={setNotes} onClose={close} />
-      )}
-      {editing === "copies" && (
-        <CopySearchDialog
-          selected={copies}
-          onToggle={toggleCopy}
-          onClose={close}
-        />
       )}
     </>
   );

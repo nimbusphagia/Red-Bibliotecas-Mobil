@@ -188,6 +188,7 @@ export async function listBooks(
     shelfId,
     active,
     labelState,
+    withCopies,
     sortBy,
     sortDir,
     limit,
@@ -221,16 +222,19 @@ export async function listBooks(
           book.id,
         );
 
-  const byShelf =
-    shelfId === undefined
+  // Estantería y estado en el mismo ejemplar.
+  const byCopies =
+    shelfId === undefined && withCopies === undefined
       ? undefined
       : hasRows(
           {
             table: copy,
             column: copy.bookId,
             where: and(
-              eq(copy.shelfId, shelfId),
-              notInArray(copy.status, [...RELEASED_STATUSES]),
+              shelfId === undefined ? undefined : eq(copy.shelfId, shelfId),
+              withCopies === "available"
+                ? eq(copy.status, "available")
+                : notInArray(copy.status, [...RELEASED_STATUSES]),
             ),
           },
           book.id,
@@ -254,7 +258,7 @@ export async function listBooks(
   const where = and(
     ...search,
     byCollaborator,
-    byShelf,
+    byCopies,
     byLabelState,
     filterBy(book.publisherId, publisherId),
     filterBy(book.collectionId, collectionId),

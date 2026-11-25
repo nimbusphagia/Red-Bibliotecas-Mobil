@@ -66,6 +66,8 @@ export type BookListFilters = ListFilters<BookSort> & {
   active?: boolean;
   /** Libros con algún ejemplar activo sin etiquetar o con el tejuelo desactualizado. */
   labelState?: "pending" | "outdated";
+  /** Libros con algún ejemplar activo, o disponible para préstamo. */
+  withCopies?: "active" | "available";
 };
 
 export type BookUsage = { copies: number };

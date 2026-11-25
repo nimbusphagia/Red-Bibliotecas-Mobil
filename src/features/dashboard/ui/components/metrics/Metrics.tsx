@@ -91,7 +91,7 @@ export function LabelMetrics({ summary: s, className }: Props) {
     <MetricCard
       title="Tejuelos"
       icon={Stamp}
-      href="/copies/mark"
+      href="/catalog/label"
       className={className}
     >
       <StatRow

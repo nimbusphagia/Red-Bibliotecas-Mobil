@@ -11,16 +11,26 @@ export const visitorRoleLabel = (visitor: VisitorListItem) =>
     ? `${ROLE_ES.student} · ${gradeLabel(visitor.grade!, visitor.level!)}`
     : ROLE_ES[visitor.role];
 
-/** Sin el nombre: el formulario de préstamo lo muestra como campo editable. */
-export const visitorInfoRows = (visitor: VisitorListItem): DetailRow[] => [
-  { label: "Rol", content: ROLE_ES[visitor.role] },
-  ...(visitor.role === "student"
-    ? [{ label: "Grado", content: gradeLabel(visitor.grade!, visitor.level!) }]
-    : []),
-  { label: "Reputación", content: REPUTATION_ES[visitor.reputation] },
+/**
+ * Sin el nombre: el formulario de préstamo lo muestra como campo editable.
+ * Siempre las mismas filas; vacías mientras no hay visitante.
+ */
+export const visitorInfoRows = (visitor?: VisitorListItem): DetailRow[] => [
+  { label: "Rol", content: visitor && ROLE_ES[visitor.role] },
+  {
+    label: "Grado",
+    content:
+      visitor?.role === "student"
+        ? gradeLabel(visitor.grade!, visitor.level!)
+        : undefined,
+  },
+  {
+    label: "Reputación",
+    content: visitor && REPUTATION_ES[visitor.reputation],
+  },
 ];
 
 export const visitorRows = (visitor: VisitorListItem): DetailRow[] => [
   { label: "Nombre", content: visitor.name },
-  ...visitorInfoRows(visitor),
+  ...visitorInfoRows(visitor).filter((r) => r.content),
 ];

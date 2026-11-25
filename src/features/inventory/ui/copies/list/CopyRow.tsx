@@ -152,7 +152,7 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
             />
           ) : (
             <Link
-              href={{ pathname: "/copies/mark", params: { copyId: copy.id } }}
+              href={{ pathname: "/catalog/label", params: { copyId: copy.id } }}
               asChild
             >
               <Button

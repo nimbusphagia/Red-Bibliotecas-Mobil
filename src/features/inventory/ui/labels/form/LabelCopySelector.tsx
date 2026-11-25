@@ -26,10 +26,13 @@ import {
 } from "react";
 import { CircleDashedCheck } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
-import LabelBookGroup, {
-  RemoteLabelBookGroup,
+import { LABEL_STATE_ES } from "@/features/shared/format/translate";
+import CopyBookGroup, {
+  RemoteCopyBookGroup,
+  groupCopies,
   type BookHeader,
-} from "./LabelBookGroup";
+} from "../../picker/CopyBookGroup";
+import { LABEL_STATE_ICON, labelStateOf } from "../labelState";
 
 type Mode = "selected" | "all" | "needsLabel";
 
@@ -56,25 +59,10 @@ const matches = (c: CopyItem, m: Match) => {
   );
 };
 
-/** Los seleccionados que cumplen `m`, agrupados por libro. */
-function groupSelected(selected: CopyItem[], m: Match) {
-  const groups = new Map<number, BookHeader & { copies: CopyItem[] }>();
-  for (const c of selected) {
-    if (!matches(c, m)) continue;
-    const group = groups.get(c.bookId) ?? {
-      id: c.bookId,
-      title: c.bookTitle,
-      authors: c.authors,
-      publisherName: c.publisherName,
-      copies: [],
-    };
-    group.copies.push(c);
-    groups.set(c.bookId, group);
-  }
-  return [...groups.values()]
-    .sort((a, b) => a.title.localeCompare(b.title))
-    .map((g) => ({ ...g, copies: g.copies.sort((a, b) => a.id - b.id) }));
-}
+const stateOf = (c: CopyItem) => {
+  const state = labelStateOf(c);
+  return { icon: LABEL_STATE_ICON[state], text: LABEL_STATE_ES[state] };
+};
 
 type Props = {
   selected: CopyItem[];
@@ -134,29 +122,30 @@ export default function LabelCopySelector({
   }, [loadMoreRef, list.loadMore]);
 
   const local = useMemo(
-    () => (mode === "selected" ? groupSelected(selected, match) : []),
+    () => (mode === "selected" ? groupCopies(selected, (c) => matches(c, match)) : []),
     [mode, selected, match],
   );
 
   return (
-    <Panel title="Seleccionar ejemplares">
+    <Panel title="Seleccionar">
       <ItemList
         inline
         toolbarSurface={false}
         toolbar={
           <>
+            {/* Fuera del ScrollView: si no, recorta el contador del botón. */}
+            <QuickFilters
+              filters={filters}
+              onOpen={setDialog}
+              fields={[]}
+              light
+            />
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              className="shrink grow-0"
+              className="ml-4 shrink grow-0"
             >
               <View className="flex-row items-center gap-4">
-                <QuickFilters
-                  filters={filters}
-                  onOpen={setDialog}
-                  fields={[]}
-                  light
-                />
                 <InlineFilter options={MODES} value={mode} onChange={setMode} />
                 <Button
                   title={isExpanded ? "Seleccionados" : undefined}
@@ -190,18 +179,20 @@ export default function LabelCopySelector({
         loading={mode !== "selected" && list.loading}
         renderItem={(book) =>
           mode === "selected" ? (
-            <LabelBookGroup
+            <CopyBookGroup
               book={book}
               copies={local.find((g) => g.id === book.id)?.copies}
               selected={selected}
               onToggle={onToggle}
+              stateOf={stateOf}
             />
           ) : (
-            <RemoteLabelBookGroup
+            <RemoteCopyBookGroup
               book={book}
               match={copyMatch}
               selected={selected}
               onToggle={onToggle}
+              stateOf={stateOf}
             />
           )
         }

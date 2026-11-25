@@ -96,6 +96,7 @@ export const listBooksSchema = z
     shelfId: idSchema.optional(),
     active: z.boolean().optional(),
     labelState: z.enum(["pending", "outdated"]).optional(),
+    withCopies: z.enum(["active", "available"]).optional(),
   })
   .transform(withTokens);
 
