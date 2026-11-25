@@ -5,24 +5,29 @@ import { Button } from "../base/Button";
 import { cn, useTone } from "../../theme";
 import { Surface } from "../base/Surface";
 import { Text } from "../base/Text";
+import { Chip } from "../form/select/Chip";
 import { ChipRow, type ChipItem } from "../form/select/ChipRow";
 
 type Props = {
   title: string;
   subtitle?: string | null;
   detail?: string | null;
+  detailClassName?: string;
   href: Href;
   chips?: ChipItem[];
   lead?: string;
+  className?: string;
 };
 
 export function ItemCard({
   title,
   subtitle,
   detail,
+  detailClassName,
   href,
   chips,
   lead,
+  className,
 }: Props) {
   const t = useTone();
   return (
@@ -30,7 +35,11 @@ export function ItemCard({
       <Pressable className="grow active:opacity-80">
         <Surface
           row
-          className={cn("grow justify-between gap-4 p-4 rounded-2xl", t.card)}
+          className={cn(
+            "grow justify-between gap-4 p-4 rounded-2xl",
+            t.card,
+            className,
+          )}
         >
           <View className="flex-row items-start gap-2">
             <View className="flex-1 gap-1">
@@ -43,7 +52,11 @@ export function ItemCard({
                 </Text>
               )}
               {!!detail && (
-                <Text variant="captionXs" numberOfLines={1}>
+                <Text
+                  variant="captionXs"
+                  numberOfLines={1}
+                  className={detailClassName}
+                >
                   {detail}
                 </Text>
               )}
@@ -56,13 +69,17 @@ export function ItemCard({
               />
             </View>
           </View>
-          {!!chips?.length && (
+          {lead ? (
             <View className="flex-row items-center gap-2">
-              {!!lead && <Text variant="itemSm">{lead}</Text>}
-              <View className="flex-1">
-                <ChipRow chips={chips} end={!!lead} />
-              </View>
+              <Text variant="itemSm" numberOfLines={1} className="flex-1">
+                {lead}
+              </Text>
+              {chips?.map(({ label, accent }, i) => (
+                <Chip key={i} shape="pill" label={label} accent={accent} />
+              ))}
             </View>
+          ) : (
+            !!chips?.length && <ChipRow chips={chips} />
           )}
         </Surface>
       </Pressable>

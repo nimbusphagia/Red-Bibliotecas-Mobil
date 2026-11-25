@@ -7,8 +7,10 @@ type Props = {
   book: BookListItem;
 };
 
-const chip = (label: string | false | null, accent?: AccentLevel): ChipItem[] =>
-  label ? [{ label, accent }] : [];
+const chip = (
+  label: string | false | null,
+  accent?: AccentLevel,
+): ChipItem[] => (label ? [{ label, accent }] : []);
 
 export default function BookCard({ book }: Props) {
   const chips = [
@@ -27,6 +29,7 @@ export default function BookCard({ book }: Props) {
       detail={book.publisherName}
       href={`/catalog/${book.id}`}
       chips={chips}
+      className="py-6"
     />
   );
 }

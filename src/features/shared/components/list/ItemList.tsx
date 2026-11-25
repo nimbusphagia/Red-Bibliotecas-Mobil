@@ -38,7 +38,7 @@ type Props<T extends { id: number }> = {
   inline?: boolean;
 };
 
-const COLUMN_GAP = 16;
+const COLUMN_GAP = 24;
 
 function Loader() {
   const t = useTone();
@@ -61,7 +61,9 @@ export function ItemList<T extends { id: number }>({
   const { isExpanded } = useLayoutMode();
   const numColumns = isExpanded ? columns : compactColumns;
   const multi = numColumns > 1;
-  const pad = useInSection() ? "py-4" : "p-4";
+  const inSection = useInSection();
+  const pad = multi ? (inSection ? "py-6" : "p-6") : inSection ? "py-4" : "p-4";
+  const rowGap = multi ? "gap-7" : "gap-4";
   const toolbarRow = "flex-row items-center justify-between";
   const empty = (
     <Text variant="caption" className="pt-3 text-center">
@@ -71,7 +73,9 @@ export function ItemList<T extends { id: number }>({
 
   return (
     <AccordionProvider>
-      <View className={cn("gap-3", !inline && "flex-1")}>
+      <View
+        className={cn(toolbarSurface ? "gap-4" : "gap-3", !inline && "flex-1")}
+      >
         {toolbar &&
           (toolbarSurface ? (
             <Surface
@@ -88,7 +92,7 @@ export function ItemList<T extends { id: number }>({
           className={cn("overflow-hidden", !inline && "flex-1")}
         >
           {inline ? (
-            <View className={cn(pad, gap && "gap-4")}>
+            <View className={cn(pad, gap && rowGap)}>
               {items.map((item) => (
                 <Fragment key={item.id}>{renderItem(item)}</Fragment>
               ))}
@@ -114,7 +118,7 @@ export function ItemList<T extends { id: number }>({
                   renderItem(item)
                 )
               }
-              contentContainerClassName={cn(pad, gap && "gap-4")}
+              contentContainerClassName={cn(pad, gap && rowGap)}
               itemLayoutAnimation={multi ? undefined : LAYOUT}
               columnWrapperStyle={
                 multi ? { marginHorizontal: -COLUMN_GAP / 2 } : undefined

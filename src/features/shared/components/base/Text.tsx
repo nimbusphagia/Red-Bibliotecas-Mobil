@@ -13,14 +13,14 @@ export type TextVariant =
 
 // Solo tamaño y peso. El color sale de la superficie (useTone).
 const sizes: Record<TextVariant, string> = {
-  display: "font-sans-semibold text-[28px]",
-  title: "font-sans-medium text-[24px]",
-  section: "font-sans-regular text-[18px]",
-  item: "font-sans-regular text-[16px]",
-  itemSm: "font-sans text-[14px]",
-  itemXs: "font-sans text-[13px]",
-  caption: "font-sans text-[14px]",
-  captionXs: "font-sans text-[13px]",
+  display: "font-sans-semibold text-[26px]",
+  title: "font-sans-medium text-[22px]",
+  section: "font-sans-regular text-[17px]",
+  item: "font-sans-regular text-[15px]",
+  itemSm: "font-sans text-[13px]",
+  itemXs: "font-sans text-[12px]",
+  caption: "font-sans text-[13px]",
+  captionXs: "font-sans text-[12px]",
 };
 
 type Props = TextProps & { variant?: TextVariant; className?: string };

@@ -33,7 +33,7 @@ import { routeIdSchema } from "@/features/shared/types/schemas";
 import { Link, useRouter } from "expo-router";
 import { ArrowUpRight, Eye, RotateCcwClock } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import MovementLineRow from "./movements/detail/MovementLineRow";
 import RecoverCopyDialog from "./copies/RecoverCopyDialog";
 
@@ -102,7 +102,7 @@ export default function MovementDetail({ id }: { id: string }) {
     columns.push({
       title: "Préstamo",
       lead: (
-        <>
+        <View className="flex-row gap-2">
           {loanRecover && (
             <Button
               variant="soft"
@@ -119,7 +119,7 @@ export default function MovementDetail({ id }: { id: string }) {
           <Link href={`/loans/${loan.id}`} asChild>
             <Button variant="soft" size="sm" icon={Eye} />
           </Link>
-        </>
+        </View>
       ),
       rows: [
         { label: "Prestado a", content: loan.visitorName },

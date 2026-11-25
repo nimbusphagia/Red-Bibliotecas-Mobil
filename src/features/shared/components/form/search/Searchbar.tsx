@@ -28,7 +28,7 @@ export function Searchbar({
   return (
     <View
       className={cn(
-        "flex flex-row items-center gap-2 w-full max-w-[400px] h-full px-4 rounded-lg",
+        "flex flex-row items-center gap-2 w-full max-w-[400px] h-11 px-4 rounded-lg",
         t.inset,
         className,
       )}

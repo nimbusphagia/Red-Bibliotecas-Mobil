@@ -17,10 +17,12 @@ import {
   type DetailRow,
 } from "@/features/shared/components";
 import { shelfLabel } from "@/features/shared/format/translate";
+import { cn } from "@/features/shared/theme";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { PAGE_SIZE, useSearch } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { useCallback, useState } from "react";
@@ -43,6 +45,7 @@ export default function ShelfDetail({ id }: { id: string }) {
   const { search, setSearch, debouncedSearch } = useSearch();
   const [idText, setIdText] = useState("");
   const copyId = useDebounce(idText);
+  const { isExpanded } = useLayoutMode();
   const session = useSession();
   const actorId =
     session.status === "signed-in" && canManageStock(session.account.role)
@@ -118,19 +121,21 @@ export default function ShelfDetail({ id }: { id: string }) {
           title="Ejemplares"
           className="pt-7"
           lead={
-            <View className="h-10 flex-1 flex-row justify-end gap-3">
+            <View className="h-11 flex-1 flex-row justify-end gap-3">
               <Searchbar
-                className="flex-1"
+                className={cn("flex-1", !isExpanded && "max-w-[300px]")}
                 value={search}
                 onChangeText={setSearch}
                 placeholder="Buscar por título o tejuelo..."
               />
-              <Searchbar
-                className="w-28"
-                value={idText}
-                onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
-                placeholder="#ID"
-              />
+              {isExpanded && (
+                <Searchbar
+                  className="w-28"
+                  value={idText}
+                  onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
+                  placeholder="#ID"
+                />
+              )}
             </View>
           }
         >

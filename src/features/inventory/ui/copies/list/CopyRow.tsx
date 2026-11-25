@@ -34,10 +34,11 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
   const [dialog, setDialog] = useState<Dialog>(null);
   const { isExpanded } = useLayoutMode();
   // Ancho fijo por acción para que los botones queden alineados entre filas.
+  const labelIconOnly = showBook && !isExpanded;
   const slot = {
     move: isExpanded ? "w-28" : "size-9",
     loan: isExpanded ? "w-32" : "size-9",
-    label: "w-32",
+    label: labelIconOnly ? "size-9" : "w-36",
   };
   const isAvailable = ["available", "damaged"].includes(copy.status);
   const loanHref = isAvailable
@@ -71,7 +72,10 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
         ) : (
           <>
             <Column text={copy.labelText ?? "---"} />
-            <Column>
+            <Column
+              width={isExpanded ? undefined : "md"}
+              containerClass={isExpanded ? undefined : "w-36"}
+            >
               <Link href={`/shelves/${copy.shelfId}`} asChild>
                 <Button
                   variant="ghost"
@@ -138,9 +142,10 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
           {state === "labeled" ? (
             <Button
               variant="soft"
-              size="sm"
+              size={labelIconOnly ? "md" : "sm"}
+              weight={labelIconOnly ? "sm" : undefined}
               icon={LABEL_STATE_ICON[state]}
-              title="Imprimir"
+              title={labelIconOnly ? undefined : "Imprimir"}
               className={slot.label}
               onPress={() => setDialog("print")}
             />
@@ -154,9 +159,16 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
                 accent={
                   state === "outdated" ? "neg" : showBook ? "sm" : undefined
                 }
-                size="sm"
+                size={labelIconOnly ? "md" : "sm"}
+                weight={labelIconOnly ? "sm" : undefined}
                 icon={LABEL_STATE_ICON[state]}
-                title={state === "outdated" ? "Actualizar" : "Etiquetar"}
+                title={
+                  labelIconOnly
+                    ? undefined
+                    : state === "outdated"
+                      ? "Actualizar"
+                      : "Etiquetar"
+                }
                 className={slot.label}
               />
             </Link>

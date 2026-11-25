@@ -4,7 +4,6 @@ import { View } from "react-native";
 import { SIDEBAR_WIDTH } from "./constants";
 import { SidebarItem } from "./SidebarItem";
 import { Surface } from "@/features/shared/components";
-import { cn } from "@/features/shared/theme";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -15,25 +14,22 @@ export function Sidebar() {
   };
   return (
     <View
-      className={cn(
-        `w-[${SIDEBAR_WIDTH}]`,
-        "flex-col items-center justify-between p-4",
-      )}
+      className="flex-col items-center justify-between pl-4 pr-2 pt-4 pb-10"
+      style={{ width: SIDEBAR_WIDTH }}
     >
-      <Surface tone="dark" className="gap-6 p-3">
+      <Surface tone="dark" className="gap-6 px-4 py-5">
         {NAVBAR.main.map((item) => {
           const active = isActive(item.href);
           return <SidebarItem key={item.key} item={item} active={active} />;
         })}
       </Surface>
-      <Surface tone="dark">
+      <Surface tone="dark" className="px-4 py-4">
         {NAVBAR.footer.map((item) => {
           return (
             <SidebarItem
               key={item.key}
               item={item}
               active={isActive(item.href)}
-              standalone
             />
           );
         })}

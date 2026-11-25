@@ -12,8 +12,10 @@ const SEGMENTS: { status: HeldStatus; color: string }[] = [
 
 export default function CollectionStatus({
   copies,
+  className,
 }: {
   copies: Record<HeldStatus, number>;
+  className?: string;
 }) {
   const total = SEGMENTS.reduce((sum, s) => sum + copies[s.status], 0);
   const percent = (n: number) => (total ? Math.round((n / total) * 100) : 0);
@@ -21,9 +23,9 @@ export default function CollectionStatus({
   return (
     <Panel
       title="Ejemplares"
-      titleClassName="text-[16px]"
+      titleClassName="text-[15px]"
       lead={<Text variant="itemSm">{total}</Text>}
-      className="p-4"
+      className={cn("p-4", className)}
     >
       <Surface inset className="h-4 flex-row overflow-hidden rounded-full">
         {SEGMENTS.map((s) => (
@@ -41,10 +43,10 @@ export default function CollectionStatus({
             <Text variant="itemXs" className="flex-1">
               {COPY_STATUS_ES[s.status]}
             </Text>
-            <Text variant="caption" className="text-[12px]">
+            <Text variant="caption" className="text-[11px]">
               {percent(copies[s.status])}%
             </Text>
-            <Text variant="itemSm" className="w-12 text-right text-[12px]">
+            <Text variant="itemSm" className="w-12 text-right text-[11px]">
               {copies[s.status]}
             </Text>
           </View>

@@ -5,7 +5,6 @@ import ActiveLoans from "./activeLoans/ActiveLoans";
 import CollectionStatus from "./charts/CollectionStatus";
 import MonthlyLoans from "./charts/MonthlyLoans";
 import {
-  DueMetrics,
   DueSoonMetrics,
   LabelMetrics,
   OverdueMetrics,
@@ -35,14 +34,9 @@ export default function DashboardMain() {
   ) : (
     <View className="gap-6">
       <MonthlyLoans months={stats.monthlyLoans} />
-      <View className="flex-row gap-4">
-        <DueMetrics summary={stats} className="flex-1" />
-      </View>
       <ActiveLoans />
       <View className="flex-row gap-4">
-        <View className="flex-1">
-          <CollectionStatus copies={stats.copies} />
-        </View>
+        <CollectionStatus copies={stats.copies} className="flex-1" />
         <LabelMetrics summary={stats} className="flex-1" />
       </View>
     </View>

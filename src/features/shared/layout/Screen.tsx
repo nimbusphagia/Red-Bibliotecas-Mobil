@@ -6,7 +6,7 @@ export function Screen({ children }: PropsWithChildren) {
   return (
     <ToneContext.Provider value="canvas">
       <View
-        className={cn("flex-1 gap-4 px-6 pb-4 pl-2 pt-2", tones.canvas.surface)}
+        className={cn("flex-1 gap-5 px-6 pb-10 pl-2 pt-4", tones.canvas.surface)}
       >
         {children}
       </View>

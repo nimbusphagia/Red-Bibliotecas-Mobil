@@ -7,7 +7,11 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
+import {
+  PAGE_SIZE,
+  useSearch,
+  useSort,
+} from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { useCallback, useState } from "react";
@@ -35,7 +39,6 @@ export default function BookList() {
   const [dialog, setDialog] = useState<FilterDialog>(null);
   const [sort, setSort] = useSort<BookSort>({ by: "title", dir: "asc" });
   const { isExpanded } = useLayoutMode();
-
 
   const fetchPage = useCallback(
     (offset: number) => {

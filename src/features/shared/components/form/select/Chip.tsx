@@ -33,7 +33,7 @@ export function Chip({
   const t = useTone();
   const c = accent ? accents[accent] : t.chip[selected ? "selected" : "idle"];
   const compact = shape !== "default";
-  const textClass = cn("font-sans-regular", compact && "text-[12px]", c.label);
+  const textClass = cn("font-sans-regular", compact && "text-[11px]", c.label);
 
   return (
     <Pressable

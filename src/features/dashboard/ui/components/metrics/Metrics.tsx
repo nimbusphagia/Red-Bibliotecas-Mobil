@@ -28,7 +28,7 @@ function StatRow({ label, value, icon }: StatRowProps) {
       className="flex-row items-center justify-between gap-2 px-4 py-2.5"
     >
       {icon && <Icon icon={icon} size="sm" />}
-      <Text variant="itemSm" numberOfLines={1} className="flex-1 text-[13px]">
+      <Text variant="itemSm" numberOfLines={1} className="flex-1 text-[12px]">
         {label}
       </Text>
       <Text variant="captionXs">{value}</Text>

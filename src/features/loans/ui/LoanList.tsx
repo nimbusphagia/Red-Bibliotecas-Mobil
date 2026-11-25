@@ -9,8 +9,13 @@ import {
   PageHeader,
   type SortOption,
 } from "@/features/shared/components";
-import { PAGE_SIZE, useSearch, useSort } from "@/features/shared/hooks/useListControls";
+import {
+  PAGE_SIZE,
+  useSearch,
+  useSort,
+} from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { Link } from "expo-router";
 import { ArrowUp } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
@@ -26,7 +31,7 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 const SORTS: SortOption<LoanSort>[] = [
-  { key: "createdAt", label: "Fecha de préstamo", defaultDir: "desc" },
+  { key: "createdAt", label: "Préstamo", defaultDir: "desc" },
   { key: "expiresBy", label: "Vencimiento", defaultDir: "asc" },
 ];
 
@@ -43,6 +48,7 @@ export default function LoanList({ state }: { state?: string }) {
   }, [state]);
 
   const [sort, setSort] = useSort<LoanSort>({ by: "createdAt", dir: "desc" });
+  const { isExpanded } = useLayoutMode();
 
   const fetchPage = useCallback(
     (offset: number) =>
@@ -84,7 +90,9 @@ export default function LoanList({ state }: { state?: string }) {
               onChange={setFilter}
             />
             <InlineSort
-              options={SORTS}
+              options={
+                isExpanded ? SORTS : SORTS.filter((s) => s.key === sort.by)
+              }
               sortBy={sort.by}
               sortDir={sort.dir}
               onChange={setSort}

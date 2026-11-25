@@ -7,20 +7,19 @@ import { Pressable } from "react-native";
 type Props = {
   item: NavItem;
   active: boolean;
-  standalone?: boolean;
 };
 
-/** Se dibuja sobre un Surface dark: inactivo = su inset (o su superficie si va solo). El activo va en claro. */
-export function SidebarItem({ item, active, standalone = false }: Props) {
+/** Se dibuja sobre un Surface dark: inactivo = su inset. El activo va en claro. */
+export function SidebarItem({ item, active }: Props) {
   const t = useTone();
-  const box = active ? navActive.box : standalone ? t.surface : t.inset;
+  const box = active ? navActive.box : t.inset;
   return (
     <Link href={item.href} asChild>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={item.label}
         accessibilityState={{ selected: active }}
-        className={cn("flex items-center justify-center rounded-xl p-2", box)}
+        className={cn("flex items-center justify-center rounded-xl p-2.5", box)}
       >
         <Icon
           icon={item.icon}

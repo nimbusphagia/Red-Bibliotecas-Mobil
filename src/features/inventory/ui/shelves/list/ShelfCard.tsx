@@ -9,7 +9,7 @@ export default function ShelfCard({ shelf }: Props) {
     <ItemCard
       title={shelfLabel(shelf)}
       subtitle={shelf.description}
-      detail={`${shelf.copyCount} ejemplar${shelf.copyCount === 1 ? "" : "es"}`}
+      lead={`${shelf.copyCount} ejemplar${shelf.copyCount === 1 ? "" : "es"}`}
       href={`/shelves/${shelf.id}`}
       chips={shelf.isDefault ? [{ label: "Predeterminada" }] : undefined}
     />

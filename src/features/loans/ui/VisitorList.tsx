@@ -92,7 +92,7 @@ export default function VisitorList() {
         loading={list.loading}
         onEndReached={list.loadMore}
         columns={4}
-        compactColumns={3}
+        compactColumns={2}
         renderItem={(visitor) => <VisitorCard visitor={visitor} />}
       />
       {adding && (

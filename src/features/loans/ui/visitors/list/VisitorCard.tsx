@@ -1,9 +1,12 @@
 import type { Reputation } from "@/features/loans/internal/visitor/reputation";
 import type { VisitorListItem } from "@/features/loans/internal/visitor/types";
 import { ItemCard } from "@/features/shared/components";
-import { REPUTATION_ES } from "@/features/shared/format/translate";
+import {
+  gradeLabel,
+  REPUTATION_ES,
+  ROLE_ES,
+} from "@/features/shared/format/translate";
 import type { AccentLevel } from "@/features/shared/theme";
-import { visitorRoleLabel } from "../visitorRows";
 
 type Props = { visitor: VisitorListItem };
 
@@ -22,7 +25,13 @@ export default function VisitorCard({ visitor }: Props) {
   return (
     <ItemCard
       title={visitor.name}
-      subtitle={visitorRoleLabel(visitor)}
+      subtitle={ROLE_ES[visitor.role]}
+      detail={
+        visitor.role === "student"
+          ? gradeLabel(visitor.grade!, visitor.level!)
+          : undefined
+      }
+      detailClassName="text-[11px]"
       lead={visitor.lineCount === 1 ? "1 libro" : `${visitor.lineCount} libros`}
       href={`/visitors/${visitor.id}`}
       chips={[reputation]}
