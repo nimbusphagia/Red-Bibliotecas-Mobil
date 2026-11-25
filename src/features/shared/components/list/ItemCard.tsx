@@ -16,6 +16,8 @@ type Props = {
   href: Href;
   chips?: ChipItem[];
   lead?: string;
+  /** Línea extra bajo `detail`. */
+  note?: string;
   className?: string;
 };
 
@@ -27,6 +29,7 @@ export function ItemCard({
   href,
   chips,
   lead,
+  note,
   className,
 }: Props) {
   const t = useTone();
@@ -58,6 +61,11 @@ export function ItemCard({
                   className={detailClassName}
                 >
                   {detail}
+                </Text>
+              )}
+              {!!note && (
+                <Text variant="captionXs" numberOfLines={1}>
+                  {note}
                 </Text>
               )}
             </View>

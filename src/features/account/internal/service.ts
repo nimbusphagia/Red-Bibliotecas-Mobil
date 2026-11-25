@@ -48,19 +48,22 @@ export async function createAccount(
   input: unknown,
 ): Promise<PublicAccount> {
   await requireOwner(actorId);
-  const { username, password, role } = parseOrThrow(createAccountSchema, input);
+  const { email, name, password, role } = parseOrThrow(
+    createAccountSchema,
+    input,
+  );
 
   const passwordHash = await hashPassword(password);
   const row = await mapWriteErrors("account", () =>
-    repo.insertAccount({ username, passwordHash, role }),
+    repo.insertAccount({ email, name, passwordHash, role }),
   );
   return toPublic(row);
 }
 
 export async function login(input: unknown): Promise<PublicAccount> {
-  const { username, password } = parseOrThrow(loginSchema, input);
+  const { email, password } = parseOrThrow(loginSchema, input);
 
-  const found = await repo.findAccountByUsername(username);
+  const found = await repo.findAccountByEmail(email);
   if (!found || !found.active) throw new InvalidCredentialsError();
   if (!(await verifyPassword(password, found.passwordHash))) {
     throw new InvalidCredentialsError();
@@ -142,7 +145,7 @@ export async function getSessionAccount(
 }
 
 export async function completeSetup(input: unknown): Promise<PublicAccount> {
-  const { username, password } = parseOrThrow(completeSetupSchema, input);
+  const { email, name, password } = parseOrThrow(completeSetupSchema, input);
   if (!(await isSetupOpen())) throw new SetupClosedError();
 
   const [ownerHash, ...seedHashes] = await Promise.all([
@@ -153,9 +156,10 @@ export async function completeSetup(input: unknown): Promise<PublicAccount> {
   const rows = await mapWriteErrors("account", async () =>
     inTransaction((tx) =>
       repo.insertAccountsSync(tx, [
-        { username, passwordHash: ownerHash, role: "owner" },
+        { email, name, passwordHash: ownerHash, role: "owner" },
         ...SEED_ACCOUNTS.map((a, i) => ({
-          username: a.username,
+          email: a.email,
+          name: a.name,
           passwordHash: seedHashes[i],
           role: a.role,
         })),

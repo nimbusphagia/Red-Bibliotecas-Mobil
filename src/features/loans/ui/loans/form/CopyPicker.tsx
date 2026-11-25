@@ -14,8 +14,7 @@ const PICKER_FIELDS: FilterField[] = [
 
 const BOOK_PARAMS = { active: true };
 
-const lendable = (c: CopyItem) =>
-  c.status === "available" || c.status === "damaged";
+const lendable = (c: CopyItem) => c.status === "available";
 
 type Props = {
   selected: LoanCopy[];

@@ -69,6 +69,7 @@ export type CopyItem = {
   shelfIsDefault: boolean;
   labelText: string | null;
   labeledAt: Date | null;
+  damagedAt: Date | null;
   /** Etiquetado, pero el tejuelo de hoy ya no coincide con el pegado. */
   outdated: boolean;
   loan: CopyLoan | null;

@@ -96,7 +96,7 @@ export class SetupClosedError extends AppError {
 export class InvalidCredentialsError extends AppError {
   readonly code = "INVALID_CREDENTIALS";
   constructor() {
-    super("Incorrect username or password");
+    super("Incorrect email or password");
     this.name = "InvalidCredentialsError";
   }
 }
@@ -154,8 +154,7 @@ export class LabelConflictError extends AppError {
     this.suggestedOmitWords = d.suggestedOmitWords;
   }
 }
-export type CopyProblemKind =
-  "not_found" | "on_loan" | "lost" | "discarded" | "already_damaged";
+export type CopyProblemKind = "not_found" | "on_loan" | "lost" | "discarded";
 
 export type CopyProblem = {
   copyId: number;
@@ -168,7 +167,6 @@ const PROBLEM_TEXT: Record<CopyProblemKind, string> = {
   on_loan: "is on loan",
   lost: "is already lost",
   discarded: "is already discarded",
-  already_damaged: "is already damaged",
 };
 
 export class CopiesNotExitableError extends AppError {
@@ -189,8 +187,8 @@ export type RecoveryProblemKind =
   "nothing_to_recover" | "status_changed" | "number_taken" | "label_taken";
 
 const RECOVERY_PROBLEM_TEXT: Record<RecoveryProblemKind, string> = {
-  nothing_to_recover: "has no loss or damage to revert",
-  status_changed: "is not lost or damaged right now",
+  nothing_to_recover: "has no loss to revert",
+  status_changed: "is not lost right now",
   number_taken: "has its number taken by another copy",
   label_taken: "has its label taken by another copy",
 };
@@ -207,8 +205,7 @@ export class CopyNotRecoverableError extends AppError {
   }
 }
 
-export type LendProblemKind =
-  "not_found" | "on_loan" | "damaged" | "lost" | "discarded";
+export type LendProblemKind = "not_found" | "on_loan" | "lost" | "discarded";
 
 export type LendProblem = {
   copyId: number;
@@ -219,7 +216,6 @@ export type LendProblem = {
 const LEND_PROBLEM_TEXT: Record<LendProblemKind, string> = {
   not_found: "does not exist",
   on_loan: "is already on loan",
-  damaged: "is damaged",
   lost: "is lost",
   discarded: "is discarded",
 };

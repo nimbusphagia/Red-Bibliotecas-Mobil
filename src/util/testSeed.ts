@@ -27,7 +27,10 @@ import { createCollection } from "@/features/catalog/internal/collection/service
 import { createPublisher } from "@/features/catalog/internal/publisher/service";
 import { createSeries } from "@/features/catalog/internal/series/service";
 import { listSubcategories } from "@/features/catalog/internal/subcategory/service";
-import { markCopiesLabeled } from "@/features/inventory/internal/copy/service";
+import {
+  markCopiesLabeled,
+  setCopyDamaged,
+} from "@/features/inventory/internal/copy/service";
 import { RELEASED_STATUSES } from "@/features/inventory/internal/copy/types";
 import {
   exitCopies,
@@ -397,9 +400,14 @@ const shelfOf = (cat: string | null, sub: string | null) =>
 
 // Cuentas extra, solo si quien corre el seed es el dueño
 type Staff = "admin" | "practicante";
-const ACCOUNTS: [username: string, role: "admin" | "staff", key: Staff][] = [
-  ["lmendoza", "admin", "admin"],
-  ["practicante", "staff", "practicante"],
+const ACCOUNTS: [
+  email: string,
+  name: string,
+  role: "admin" | "staff",
+  key: Staff,
+][] = [
+  ["lmendoza@biblioteca.local", "Laura Mendoza", "admin", "admin"],
+  ["practicante@biblioteca.local", "Practicante", "staff", "practicante"],
 ];
 
 type Student = [
@@ -709,6 +717,14 @@ async function backdateStock(id: number, days: number) {
     .where(eq(stockMovementLine.movementId, id));
 }
 
+async function backdateDamage(copyIds: number[], days: number) {
+  if (copyIds.length === 0) return;
+  await db
+    .update(copy)
+    .set({ damagedAt: sql`${copy.damagedAt} - ${ago(days)}` })
+    .where(inArray(copy.id, copyIds));
+}
+
 async function backdateEntry({ movement, lines }: EntryResult, days: number) {
   await backdateStock(movement.id, days);
   await db
@@ -767,12 +783,18 @@ export async function seedDev(actorId: number): Promise<string> {
   const staff = new Map<Staff, number>();
   if ((await getSessionAccount(actorId))?.role === "owner") {
     const existing = await listAccounts(actorId);
-    for (const [username, role, key] of ACCOUNTS) {
-      const found = existing.find((a) => a.username === username);
+    for (const [email, name, role, key] of ACCOUNTS) {
+      const found = existing.find((a) => a.email === email);
       const id =
         found?.id ??
-        (await createAccount(actorId, { username, password: "123456", role }))
-          .id;
+        (
+          await createAccount(actorId, {
+            email,
+            name,
+            password: "123456",
+            role,
+          })
+        ).id;
       staff.set(key, id);
     }
   }
@@ -904,7 +926,7 @@ export async function seedDev(actorId: number): Promise<string> {
 
   const exit = async (
     at: number,
-    reason: "loss" | "damage" | "discard",
+    reason: "loss" | "discard",
     copyIds: number[],
     notes: string,
   ) => {
@@ -915,6 +937,11 @@ export async function seedDev(actorId: number): Promise<string> {
   const recover = async (at: number, copyId: number, notes: string) => {
     const { movement } = await recoverCopy(actorId, { copyId, notes });
     await backdateStock(movement.id, at);
+  };
+
+  const damage = async (at: number, copyId: number, damaged: boolean) => {
+    await setCopyDamaged(actorId, { copyId, damaged });
+    if (damaged) await backdateDamage([copyId], at);
   };
 
   // Entradas de stock
@@ -949,21 +976,21 @@ export async function seedDev(actorId: number): Promise<string> {
     { label: false, by: "admin" },
   );
 
-  // Salidas y recuperaciones manuales
+  // Deterioros y salidas manuales. Un deteriorado se aparta hasta repararlo.
   let torn: number[] = [];
   on(200, async () => {
     torn = take("Tradiciones peruanas", 1);
-    await exit(200, "damage", torn, "Lomo despegado y hojas sueltas");
+    await damage(200, torn[0], true);
   });
   on(80, async () => {
-    await recover(80, torn[0], "Reparado: lomo pegado");
+    await damage(80, torn[0], false);
     give("Tradiciones peruanas", torn);
   });
 
   let wet: number[] = [];
   on(150, async () => {
     wet = take("Aves sin nido", 1);
-    await exit(150, "damage", wet, "Manchas de humedad");
+    await damage(150, wet[0], true);
   });
   on(90, () =>
     exit(90, "discard", wet, "Deterioro por humedad, irrecuperable"),
@@ -1024,6 +1051,7 @@ export async function seedDev(actorId: number): Promise<string> {
   }
 
   // Préstamos y devoluciones
+  const damaged = new Set<number>();
   const lostOnLoan = new Map<string, number[]>();
   for (const loan of LOANS) {
     const lent: [title: string, copyId: number][] = [];
@@ -1060,7 +1088,14 @@ export async function seedDev(actorId: number): Promise<string> {
           items.map((i) => i.copyId),
           at,
         );
-        const exits = [result.damaged, result.lost, result.discarded];
+        // Uno que ya volvió deteriorado conserva su fecha de deterioro
+        const newlyDamaged = items
+          .filter((i) => i.outcome === "returned_damaged")
+          .map((i) => i.copyId)
+          .filter((id) => !damaged.has(id));
+        newlyDamaged.forEach((id) => damaged.add(id));
+        await backdateDamage(newlyDamaged, at);
+        const exits = [result.lost, result.discarded];
         for (const e of exits.filter((e): e is ExitResult => e !== null)) {
           await backdateStock(e.movement.id, at);
         }

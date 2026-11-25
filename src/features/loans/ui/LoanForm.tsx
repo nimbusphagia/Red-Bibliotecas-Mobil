@@ -145,7 +145,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
               label="Encargado"
               content={
                 session.status === "signed-in"
-                  ? session.account.username
+                  ? session.account.name
                   : undefined
               }
               labelWidth="form"

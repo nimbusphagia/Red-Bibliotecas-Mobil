@@ -4,6 +4,11 @@ import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { cn } from "@/features/shared/theme";
 import { View } from "react-native";
 
+const LABEL: Record<HeldStatus, string> = {
+  ...COPY_STATUS_ES,
+  damaged: "Deteriorado",
+};
+
 const SEGMENTS: { status: HeldStatus; color: string }[] = [
   { status: "available", color: "bg-accentMd" },
   { status: "on_loan", color: "bg-accentLg" },
@@ -41,7 +46,7 @@ export default function CollectionStatus({
           <View key={s.status} className="flex-row items-center gap-2">
             <View className={cn("size-2.5 rounded-full", s.color)} />
             <Text variant="itemXs" className="flex-1">
-              {COPY_STATUS_ES[s.status]}
+              {LABEL[s.status]}
             </Text>
             <Text variant="caption" className="text-[11px]">
               {percent(copies[s.status])}%

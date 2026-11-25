@@ -36,7 +36,6 @@ module.exports = {
     accentNeg: "#C2405C",
 
     secondary: "#8AAAD4",
-    error: "#D14343",
     success: "#4E9F6B",
     warning: "#D99A2B",
   },

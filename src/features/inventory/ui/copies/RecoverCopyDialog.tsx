@@ -1,4 +1,3 @@
-import type { CopyStatus } from "@/features/inventory/internal/copy/types";
 import { recoverCopy } from "@/features/inventory/internal/movement/service";
 import {
   Dialog,
@@ -17,7 +16,6 @@ type Props = {
     copyId: number;
     bookTitle: string;
     labelText: string | null;
-    status: CopyStatus;
   };
   actorId: number;
   onClose: () => void;
@@ -32,8 +30,6 @@ export default function RecoverCopyDialog({
 }: Props) {
   const [notes, setNotes] = useState("");
   const { errors, submitting, run } = useFormSubmit();
-  // Revierte un deterioro: el ejemplar se reparó.
-  const repair = copy.status === "damaged";
 
   const confirm = () =>
     run(async () => {
@@ -54,10 +50,8 @@ export default function RecoverCopyDialog({
       />
       <View className="mb-2 gap-4">
         <Text variant="caption">
-          {repair
-            ? "El ejemplar dejará de figurar como deteriorado."
-            : "El ejemplar volverá al inventario."}{" "}
-          Se registrará una entrada de recuperación que revierte su salida.
+          El ejemplar volverá al inventario. Se registrará una entrada de
+          recuperación que revierte su salida.
         </Text>
         <TextField
           label="Notas"
@@ -69,7 +63,7 @@ export default function RecoverCopyDialog({
       <FieldError>{error}</FieldError>
       <DialogActions
         className="justify-between"
-        confirmTitle={repair ? "Reparar" : "Recuperar"}
+        confirmTitle="Recuperar"
         loading={submitting}
         onConfirm={confirm}
         onCancel={onClose}

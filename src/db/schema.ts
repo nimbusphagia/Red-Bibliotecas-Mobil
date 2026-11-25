@@ -40,18 +40,16 @@ export const COPY_STATUSES = [
   "on_loan",
   "lost",
   "discarded",
-  "damaged",
 ] as const;
 export const MOVEMENT_TYPES = ["entry", "exit"] as const;
 export const ENTRY_REASONS = ["purchase", "donation", "other"] as const;
-export const EXIT_REASONS = ["loss", "damage", "discard"] as const;
-// Entrada que revierte una salida por pérdida o daño; no se registra a mano.
+export const EXIT_REASONS = ["loss", "discard"] as const;
+// Entrada que revierte una salida por pérdida; no se registra a mano.
 export const RECOVERY_REASON = "recovery";
 export const MOVEMENT_REASONS = [
   "purchase",
   "donation",
   "loss",
-  "damage",
   "discard",
   "other",
   RECOVERY_REASON,
@@ -226,14 +224,15 @@ export const account = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
-    username: text("username").notNull(),
+    email: text("email").notNull(),
+    name: text("name").notNull(),
     passwordHash: text("password_hash").notNull(),
     role: text("role", { enum: ACCOUNT_ROLES }).notNull().default("staff"),
     active: integer("active", { mode: "boolean" }).notNull().default(true),
   },
   (t) => [
     check("ck_account_role", oneOf(t.role, ACCOUNT_ROLES)),
-    uniqueIndex("uq_account_username_lower").on(lower(t.username)),
+    uniqueIndex("uq_account_email_lower").on(lower(t.email)),
     uniqueIndex("uq_account_single_owner")
       .on(t.role)
       .where(sql`role = 'owner'`),
@@ -284,16 +283,27 @@ export const copy = sqliteTable(
     labeledText: text("labeled_text"),
     labeledAt: integer("labeled_at", { mode: "timestamp" }),
     labeledById: integer("labeled_by_id").references(() => account.id),
+    // Deterioro, aparte del estado: un deteriorado se sigue prestando. Los
+    // dos campos `damaged*` van siempre juntos; `damagedById` es quien lo
+    // registró, no quien lo causó.
+    damagedAt: integer("damaged_at", { mode: "timestamp" }),
+    damagedById: integer("damaged_by_id").references(() => account.id),
   },
   (t) => [
     check("ck_copy_status", oneOf(t.status, COPY_STATUSES)),
+    check(
+      "ck_copy_damaged_pair",
+      sql`(${t.damagedAt} IS NULL) = (${t.damagedById} IS NULL)`,
+    ),
     check("ck_copy_number_positive", sql`${t.copyNumber} > 0`),
     uniqueIndex("uq_copy_book_number")
       .on(t.bookId, t.copyNumber)
       .where(sql`status NOT IN ('lost', 'discarded')`),
     uniqueIndex("uq_copy_labeled_text")
       .on(t.labeledText)
-      .where(sql`labeled_text IS NOT NULL AND status NOT IN ('lost', 'discarded')`),
+      .where(
+        sql`labeled_text IS NOT NULL AND status NOT IN ('lost', 'discarded')`,
+      ),
     index("idx_copy_book").on(t.bookId),
     index("idx_copy_shelf").on(t.shelfId),
   ],

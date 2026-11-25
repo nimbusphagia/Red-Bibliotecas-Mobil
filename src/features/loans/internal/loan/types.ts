@@ -36,7 +36,7 @@ export type LoanListItem = LoanMovement & {
   visitorRole: VisitorRole;
   visitorGrade: number | null;
   visitorLevel: (typeof GRADE_LEVELS)[number] | null;
-  loanedByUsername: string;
+  loanedByName: string;
   lineCount: number;
   openCount: number;
   overdue: boolean;
@@ -51,7 +51,7 @@ export type LoanLine = {
   labelText: string | null;
   resolvedAt: Date | null;
   outcome: LineOutcome | null;
-  resolvedByUsername: string | null;
+  resolvedByName: string | null;
   status: CopyStatus;
   /** Recuperación que revirtió la salida de stock que generó la línea. */
   recoveryId: number | null;
@@ -79,7 +79,7 @@ export type LendResult = { movement: LoanMovement; copies: LentCopy[] };
 
 export type ReturnResult = {
   returned: number;
-  damaged: ExitResult | null;
+  damaged: number;
   lost: ExitResult | null;
   discarded: ExitResult | null;
 };

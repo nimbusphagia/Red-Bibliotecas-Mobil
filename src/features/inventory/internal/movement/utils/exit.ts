@@ -24,14 +24,11 @@ type ExitOptions = {
 
 function problemFor(
   c: CopyLookup,
-  target: ExitStatus,
   allowOnLoan: boolean,
 ): CopyProblemKind | null {
   switch (c.status) {
     case "available":
       return null;
-    case "damaged":
-      return target === "damaged" ? "already_damaged" : null;
     case "on_loan":
       return allowOnLoan ? null : "on_loan";
     case "lost":
@@ -55,7 +52,7 @@ export function writeExit(
   const problems: CopyProblem[] = [];
   for (const copyId of copyIds) {
     const c = found.get(copyId);
-    const problem = c ? problemFor(c, target, allowOnLoan) : "not_found";
+    const problem = c ? problemFor(c, allowOnLoan) : "not_found";
     if (problem) {
       problems.push({ copyId, labelText: c?.labelText ?? null, problem });
     }

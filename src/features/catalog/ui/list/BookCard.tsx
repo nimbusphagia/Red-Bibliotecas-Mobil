@@ -29,6 +29,7 @@ export default function BookCard({ book }: Props) {
       detail={book.publisherName}
       href={`/catalog/${book.id}`}
       chips={chips}
+      note={`${book.activeCount} ${book.activeCount === 1 ? "ejemplar" : "ejemplares"}`}
       className="py-6"
     />
   );

@@ -3,7 +3,8 @@ import type {
   ReleasedStatus,
 } from "@/features/inventory/internal/copy/types";
 
-export type HeldStatus = Exclude<CopyStatus, ReleasedStatus>;
+/** Los disponibles deteriorados van aparte; los prestados, no. */
+export type HeldStatus = Exclude<CopyStatus, ReleasedStatus> | "damaged";
 
 export type MonthCount = { month: Date; count: number };
 

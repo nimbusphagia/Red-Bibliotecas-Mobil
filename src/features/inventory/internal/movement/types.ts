@@ -23,18 +23,16 @@ export type NewExitMovement = {
   notes: string | null;
 };
 
-export type ExitStatus = ReleasedStatus | "damaged";
+export type ExitStatus = ReleasedStatus;
 
 export const EXIT_STATUS: Record<ExitReason, ExitStatus> = {
   loss: "lost",
-  damage: "damaged",
   discard: "discarded",
 };
 
 /** Salidas que se pueden revertir con una recuperación. */
 export const RECOVERABLE_REASONS = [
   "loss",
-  "damage",
 ] as const satisfies readonly ExitReason[];
 export type RecoverableReason = (typeof RECOVERABLE_REASONS)[number];
 
@@ -42,7 +40,7 @@ export type RecoveryResult = {
   movement: StockMovement;
   copyId: number;
   previousStatus: CopyStatus;
-  newStatus: "available" | "damaged";
+  newStatus: "available";
 };
 
 export type RegisteredCopy = {
@@ -94,7 +92,7 @@ export type MovementListFilters = {
 };
 
 export type MovementListItem = StockMovement & {
-  signedByUsername: string;
+  signedByName: string;
   copyCount: number;
 };
 

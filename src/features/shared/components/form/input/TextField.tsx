@@ -8,7 +8,7 @@ import { useDialogAutoFocus } from "../../base/focus";
 import { FieldError } from "../FieldError";
 
 type Props = TextInputProps & {
-  label: string;
+  label?: string;
   error?: string;
   helperText?: string;
   ref?: Ref<TextInputInstance>;
@@ -33,11 +33,11 @@ export function TextField({
 
   return (
     <View className={cn("w-full gap-2", editable === false && "opacity-80")}>
-      <Text variant="item">{label}</Text>
+      {label ? <Text variant="item">{label}</Text> : null}
       <View className="justify-center">
         <TextInput
           ref={input}
-          accessibilityLabel={label}
+          accessibilityLabel={label ?? rest.placeholder}
           editable={editable}
           autoFocus={autoFocus}
           placeholderTextColor={colors[t.placeholder]}

@@ -90,7 +90,7 @@ export default function MovementDetail({ id }: { id: string }) {
       title: "Detalles",
       rows: [
         { label: "Motivo", content: MOVEMENT_REASON_ES[movement.reason] },
-        { label: "Firmado por", content: movement.signedByUsername },
+        { label: "Firmado por", content: movement.signedByName },
         { label: "Fecha", content: formatDate(movement.createdAt) },
         { label: "Ejemplares", content: String(movement.copyCount) },
         { label: "Notas", content: movement.notes ?? "---" },

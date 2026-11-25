@@ -30,6 +30,7 @@ import {
   exists,
   getTableColumns,
   inArray,
+  isNotNull,
   isNull,
   notInArray,
   or,
@@ -66,7 +67,13 @@ const onLoanCount = rowCount(
   book.id,
 );
 const damagedCount = rowCount(
-  { ...copies, where: eq(copy.status, "damaged") },
+  {
+    ...copies,
+    where: and(
+      notInArray(copy.status, [...RELEASED_STATUSES]),
+      isNotNull(copy.damagedAt),
+    ),
+  },
   book.id,
 );
 const outdatedCount = rowCount({ ...copies, where: outdatedSql }, book.id);

@@ -12,9 +12,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/library1.avif"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#F7E7D3"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.NativeLMS"
     },
     "web": {
       "bundler": "metro",

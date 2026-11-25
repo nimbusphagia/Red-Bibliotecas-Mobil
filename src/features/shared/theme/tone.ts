@@ -177,10 +177,10 @@ export const status: Record<"success" | "info" | "warning" | "error", Status> =
     info: { text: "text-secondary", bg: "bg-secondary", icon: "secondary" },
     warning: { text: "text-warning", bg: "bg-warning", icon: "warning" },
     error: {
-      text: "text-error",
-      bg: "bg-error",
-      border: "border-error",
-      icon: "error",
+      text: "text-accentNeg",
+      bg: "bg-accentNeg",
+      border: "border-accentNeg",
+      icon: "accentNeg",
     },
   };
 

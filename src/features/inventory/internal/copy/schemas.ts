@@ -56,3 +56,9 @@ export const listCopyBooksSchema = z
 export type CopyListParams = z.input<typeof listCopiesSchema>;
 export type CopyBookListParams = z.input<typeof listCopyBooksSchema>;
 export type LabelCopiesInput = z.input<typeof labelCopiesSchema>;
+
+export const setDamagedSchema = z.object({
+  copyId: idSchema,
+  damaged: z.boolean(),
+});
+export type SetDamagedInput = z.input<typeof setDamagedSchema>;

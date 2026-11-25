@@ -3,11 +3,11 @@ import { inTransaction } from "@/db/transaction";
 import { requireActive } from "@/features/account/internal/service";
 import {
   findCopiesByIdsSync,
+  markCopiesDamagedSync,
   setCopiesStatusSync,
 } from "@/features/inventory/internal/copy/repository";
 import type { CopyStatus } from "@/features/inventory/internal/copy/types";
 import type { ExitReason } from "@/features/inventory/internal/movement/types";
-import { findOpenDamageSync } from "@/features/inventory/internal/movement/repository";
 import { writeExit } from "@/features/inventory/internal/movement/utils/exit";
 import { getLoanRule } from "@/features/loans/internal/reference/service";
 import { getVisitor } from "@/features/loans/internal/visitor/service";
@@ -56,7 +56,6 @@ const ENTITY = "loan";
 const LEND_PROBLEM: Record<CopyStatus, LendProblemKind | null> = {
   available: null,
   on_loan: "on_loan",
-  damaged: null,
   lost: "lost",
   discarded: "discarded",
 };
@@ -205,12 +204,9 @@ export async function returnCopies(
       repo.resolveLinesSync(tx, discarded, "discarded", actorId);
       repo.resolveLinesSync(tx, lost, "lost", actorId);
 
-      // Un deteriorado se presta igual: vuelve deteriorado, y su salida por
-      // daño sigue abierta hasta que se recupere (reparado).
-      const alreadyDamaged = findOpenDamageSync(tx, [...returned, ...damaged]);
-      const notYet = (id: number) => !alreadyDamaged.has(id);
-      setCopiesStatusSync(tx, returned.filter(notYet), "available");
-      setCopiesStatusSync(tx, [...alreadyDamaged], "damaged");
+      // Un deteriorado no sale del stock: vuelve disponible y marcado.
+      setCopiesStatusSync(tx, [...returned, ...damaged], "available");
+      markCopiesDamagedSync(tx, damaged, actorId);
 
       const exit = (reason: ExitReason, ids: number[]) =>
         ids.length === 0
@@ -222,7 +218,7 @@ export async function returnCopies(
 
       return {
         returned: returned.length,
-        damaged: exit("damage", damaged.filter(notYet)),
+        damaged: damaged.length,
         lost: exit("loss", lost),
         discarded: exit("discard", discarded),
       };

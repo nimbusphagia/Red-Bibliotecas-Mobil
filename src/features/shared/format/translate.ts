@@ -24,7 +24,6 @@ export const COPY_STATUS_ES: Record<CopyStatus, string> = {
   on_loan: "Prestado",
   lost: "Perdido",
   discarded: "Descartado",
-  damaged: "Deteriorado",
 };
 
 export const ROLE_ES: Record<VisitorRole, string> = {
@@ -76,7 +75,6 @@ export const MOVEMENT_REASON_ES: Record<MovementReason, string> = {
   purchase: "Compra",
   donation: "Donación",
   loss: "Pérdida",
-  damage: "Deterioro",
   discard: "Descarte",
   other: "Otro",
   recovery: "Recuperación",

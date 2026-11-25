@@ -97,7 +97,7 @@ const selectMovements = () =>
   db
     .select({
       ...getTableColumns(stockMovement),
-      signedByUsername: account.username,
+      signedByName: account.name,
       copyCount,
     })
     .from(stockMovement)
@@ -254,39 +254,4 @@ export function findOpenExitLineSync(
     .limit(1)
     .get();
   return row ?? null;
-}
-
-/**
- * De esos ejemplares, los que tienen una salida por daño sin revertir (solo
- * anteriores a `beforeLineId`, si se indica).
- */
-export function findOpenDamageSync(
-  ex: Executor,
-  copyIds: number[],
-  beforeLineId?: number,
-): Set<number> {
-  if (copyIds.length === 0) return new Set();
-  const rows = ex
-    .selectDistinct({ copyId: stockMovementLine.copyId })
-    .from(stockMovementLine)
-    .innerJoin(
-      stockMovement,
-      eq(stockMovement.id, stockMovementLine.movementId),
-    )
-    .leftJoin(
-      recoveryLine,
-      eq(recoveryLine.recoveredLineId, stockMovementLine.id),
-    )
-    .where(
-      and(
-        inArray(stockMovementLine.copyId, copyIds),
-        beforeLineId === undefined
-          ? undefined
-          : lt(stockMovementLine.id, beforeLineId),
-        eq(stockMovement.reason, "damage"),
-        isNull(recoveryLine.id),
-      ),
-    )
-    .all();
-  return new Set(rows.map((r) => r.copyId));
 }

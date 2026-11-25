@@ -24,13 +24,13 @@ export async function findAccountById(id: number): Promise<Account | null> {
   return row ?? null;
 }
 
-export async function findAccountByUsername(
-  username: string,
+export async function findAccountByEmail(
+  email: string,
 ): Promise<Account | null> {
   const [row] = await db
     .select()
     .from(account)
-    .where(sql`lower(${account.username}) = ${username.toLowerCase()}`);
+    .where(sql`lower(${account.email}) = ${email.toLowerCase()}`);
   return row ?? null;
 }
 
@@ -50,7 +50,7 @@ export async function listAccounts(): Promise<Account[]> {
   return db
     .select()
     .from(account)
-    .orderBy(asc(sql`lower(${account.username})`), asc(account.id));
+    .orderBy(asc(sql`lower(${account.name})`), asc(account.id));
 }
 
 export function insertAccountsSync(

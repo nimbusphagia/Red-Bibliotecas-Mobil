@@ -6,7 +6,6 @@ import {
   setCopiesStatusSync,
 } from "../../copy/repository";
 import {
-  findOpenDamageSync,
   findOpenExitLineSync,
   insertEntryMovementSync,
   insertMovementLinesSync,
@@ -40,9 +39,9 @@ function assertSlotFree(tx: Tx, line: ExitLine): void {
 }
 
 /**
- * Revierte la última salida por pérdida o daño del ejemplar con una entrada
- * `recovery` enlazada a ella. La salida queda en el historial. Un perdido que
- * ya estaba deteriorado antes de perderse vuelve como deteriorado.
+ * Revierte la última salida por pérdida del ejemplar con una entrada
+ * `recovery` enlazada a ella. La salida queda en el historial. Si estaba
+ * deteriorado, lo sigue estando.
  */
 export function writeRecovery(
   tx: Tx,
@@ -58,23 +57,22 @@ export function writeRecovery(
     throw new CopyNotRecoverableError(copyId, "status_changed");
   }
 
-  let newStatus: RecoveryResult["newStatus"] = "available";
-  if (line.reason === "loss") {
-    assertSlotFree(tx, line);
-    if (findOpenDamageSync(tx, [copyId], line.id).size > 0) {
-      newStatus = "damaged";
-    }
-  }
+  assertSlotFree(tx, line);
 
   const movement = insertEntryMovementSync(tx, {
     reason: "recovery",
     signedById,
     notes,
   });
-  setCopiesStatusSync(tx, [copyId], newStatus);
+  setCopiesStatusSync(tx, [copyId], "available");
   insertMovementLinesSync(tx, movement.id, [copyId], {
     recoveredLineByCopy: new Map([[copyId, line.id]]),
   });
 
-  return { movement, copyId, previousStatus: line.status, newStatus };
+  return {
+    movement,
+    copyId,
+    previousStatus: line.status,
+    newStatus: "available",
+  };
 }

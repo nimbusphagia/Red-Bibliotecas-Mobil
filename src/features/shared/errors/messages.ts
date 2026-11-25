@@ -36,7 +36,6 @@ const MESSAGES_ES: Record<string, string> = {
 const LEND_PROBLEM_ES: Record<LendProblemKind, string> = {
   not_found: "no existe",
   on_loan: "ya está prestado",
-  damaged: "está deteriorado",
   lost: "está perdido",
   discarded: "está descartado",
 };
@@ -46,12 +45,10 @@ const EXIT_PROBLEM_ES: Record<CopyProblemKind, string> = {
   on_loan: "está prestado",
   lost: "ya está perdido",
   discarded: "ya está descartado",
-  already_damaged: "ya está deteriorado",
 };
 
 const RECOVERY_PROBLEM_ES: Record<RecoveryProblemKind, string> = {
-  nothing_to_recover:
-    "El ejemplar no tiene una pérdida o deterioro por revertir",
+  nothing_to_recover: "El ejemplar no tiene una pérdida por revertir",
   status_changed: "El ejemplar cambió de estado (¿está prestado?)",
   number_taken: "Otro ejemplar ya usa su número",
   label_taken: "Otro ejemplar ya usa su tejuelo",
@@ -99,7 +96,7 @@ export function toFormErrors(error: unknown): FormErrors {
     return { fields };
   }
   if (error instanceof InvalidCredentialsError) {
-    return { form: "Usuario o contraseña incorrectos", fields: {} };
+    return { form: "Correo o contraseña incorrectos", fields: {} };
   }
   if (error instanceof SetupClosedError) {
     return { form: "La configuración inicial ya se completó", fields: {} };
@@ -108,7 +105,7 @@ export function toFormErrors(error: unknown): FormErrors {
     return { fields: { name: "Ya existe una estantería con ese nombre" } };
   }
   if (error instanceof DuplicateError && error.entity === "account") {
-    return { fields: { username: "Ese nombre de usuario ya existe" } };
+    return { fields: { email: "Ya existe una cuenta con ese correo" } };
   }
   if (error instanceof DuplicateError) {
     return { form: "Ya existe un registro con ese nombre", fields: {} };

@@ -1,14 +1,20 @@
 import { db } from "@/db/client";
 import { inTransaction } from "@/db/transaction";
 import { getBook } from "@/features/catalog/internal/book/service";
-import { NotFoundError } from "@/features/shared/errors/errors";
+import {
+  NotFoundError,
+  ValidationError,
+} from "@/features/shared/errors/errors";
 import { idSchema } from "@/features/shared/types/schemas";
 import type { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
 import { requireStockRole } from "../movement/utils/auth";
 import {
+  clearCopyDamagedSync,
+  findCopiesByIdsSync,
   findCopyById,
   findLabelCandidatesSync,
+  markCopiesDamagedSync,
   listCopies as listCopiesRepo,
   listCopyBooks as listCopyBooksRepo,
 } from "./repository";
@@ -16,9 +22,11 @@ import {
   labelCopiesSchema,
   listCopiesSchema,
   listCopyBooksSchema,
+  setDamagedSchema,
   type CopyBookListParams,
   type CopyListParams,
   type LabelCopiesInput,
+  type SetDamagedInput,
 } from "./schemas";
 import {
   RELEASED_STATUSES,
@@ -89,4 +97,24 @@ export async function listPrintLabels(
     else result.labels.push({ copyId, text: c.derivedText });
   }
   return result;
+}
+
+/** Marca un ejemplar como deteriorado o lo da por reparado. No cambia su estado. */
+export async function setCopyDamaged(
+  actorId: number,
+  input: SetDamagedInput,
+): Promise<void> {
+  await requireStockRole(actorId, "mark copies damaged");
+  const { copyId, damaged } = parseOrThrow(setDamagedSchema, input);
+  inTransaction((tx) => {
+    const [c] = findCopiesByIdsSync(tx, [copyId]);
+    if (!c) throw new NotFoundError("copy", copyId);
+    if ((RELEASED_STATUSES as readonly string[]).includes(c.status)) {
+      throw new ValidationError([
+        { path: "copyId", message: `The copy is ${c.status}` },
+      ]);
+    }
+    if (damaged) markCopiesDamagedSync(tx, [copyId], actorId);
+    else clearCopyDamagedSync(tx, copyId);
+  });
 }

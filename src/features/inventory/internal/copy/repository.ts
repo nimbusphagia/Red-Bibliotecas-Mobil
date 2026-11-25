@@ -115,6 +115,26 @@ export function setCopiesStatusSync(
   ex.update(copy).set({ status }).where(inArray(copy.id, ids)).run();
 }
 
+/** Los que ya estaban deteriorados conservan su registro. */
+export function markCopiesDamagedSync(
+  ex: Executor,
+  ids: number[],
+  actorId: number,
+): void {
+  if (ids.length === 0) return;
+  ex.update(copy)
+    .set({ damagedAt: new Date(), damagedById: actorId })
+    .where(and(inArray(copy.id, ids), isNull(copy.damagedAt)))
+    .run();
+}
+
+export function clearCopyDamagedSync(ex: Executor, id: number): void {
+  ex.update(copy)
+    .set({ damagedAt: null, damagedById: null })
+    .where(eq(copy.id, id))
+    .run();
+}
+
 const itemColumns = {
   id: copy.id,
   bookId: copy.bookId,
@@ -128,6 +148,7 @@ const itemColumns = {
   shelfIsDefault: shelf.isDefault,
   labelText: labelTextSql,
   labeledAt: copy.labeledAt,
+  damagedAt: copy.damagedAt,
   outdated: outdatedSql,
   loanId: loanMovement.id,
   visitorId: visitor.id,
@@ -253,7 +274,7 @@ export async function summarizeCopies(match: CopyMatch): Promise<CopySummary> {
     .select({
       total: count(),
       onLoan: tally(eq(copy.status, "on_loan")),
-      damaged: tally(eq(copy.status, "damaged")),
+      damaged: tally(isNotNull(copy.damagedAt)),
       labeled: tally(and(isNotNull(copy.labeledAt), not(outdatedSql))),
       pending: tally(isNull(copy.labeledAt)),
       outdated: tally(outdatedSql),

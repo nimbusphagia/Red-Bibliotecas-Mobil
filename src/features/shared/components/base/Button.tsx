@@ -17,6 +17,8 @@ type ButtonProps = Omit<PressableProps, "children"> & {
   title?: string;
   icon?: LucideIcon;
   iconTone?: IconTone;
+  iconSize?: IconSize;
+  iconPosition?: "start" | "end";
   variant?: Variant;
   /** Reemplaza los colores de la variante. */
   accent?: AccentLevel;
@@ -39,6 +41,8 @@ export function Button({
   title,
   icon,
   iconTone,
+  iconSize,
+  iconPosition = "start",
   variant = "solid",
   accent,
   size = "md",
@@ -56,6 +60,14 @@ export function Button({
       ? { box: "bg-transparent", label: t.text, icon: t.icon }
       : t.button[variant];
   const s = sizeStyles[size];
+  const iconNode = icon && (
+    <Icon
+      icon={icon}
+      size={iconSize ?? (!title && s.icon === "md" ? "lg" : s.icon)}
+      tone={iconTone ?? v.icon}
+      stroke={weight}
+    />
+  );
 
   return (
     <Pressable
@@ -74,14 +86,7 @@ export function Button({
     >
       {loading && <ActivityIndicator color={colors[v.icon]} />}
 
-      {icon && (
-        <Icon
-          icon={icon}
-          size={!title && s.icon === "md" ? "lg" : s.icon}
-          tone={iconTone ?? v.icon}
-          stroke={weight}
-        />
-      )}
+      {iconPosition === "start" && iconNode}
       {title && (
         <Text
           variant={size === "sm" ? "itemSm" : "item"}
@@ -96,6 +101,7 @@ export function Button({
           {title}
         </Text>
       )}
+      {iconPosition === "end" && iconNode}
     </Pressable>
   );
 }

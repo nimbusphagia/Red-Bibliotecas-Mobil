@@ -12,7 +12,7 @@ export function loanDetailRows(
     ...(withState
       ? [{ label: "Estado", content: LOAN_STATE_ES[loanStateOf(loan)] }]
       : []),
-    { label: "Encargado", content: loan.loanedByUsername },
+    { label: "Encargado", content: loan.loanedByName },
     { label: "Inicio", content: formatDateES(loan.createdAt) },
     {
       label: "Fecha de devolución",

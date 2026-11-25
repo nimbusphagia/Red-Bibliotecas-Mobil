@@ -1,13 +1,17 @@
 import { collapse } from "@/features/shared/format/text";
 import { z } from "zod";
-import { RESERVED_USERNAMES } from "./setup";
+import { RESERVED_EMAILS } from "./setup";
 
-const username = z
+const email = z
+  .string()
+  .transform((s) => s.trim().toLowerCase())
+  .pipe(
+    z.email("Correo electrónico inválido").max(254, "Máximo 254 caracteres"),
+  );
+const name = z
   .string()
   .transform(collapse)
-  .pipe(
-    z.string().min(3, "Mínimo 3 caracteres").max(32, "Máximo 32 caracteres"),
-  );
+  .pipe(z.string().min(1, "Ingresa tu nombre").max(64, "Máximo 64 caracteres"));
 const password = z
   .string()
   .min(6, "Mínimo 6 caracteres")
@@ -16,13 +20,14 @@ const password = z
 const CREATABLE_ROLES = ["admin", "staff"] as const;
 
 export const createAccountSchema = z.object({
-  username,
+  email,
+  name,
   password,
   role: z.enum(CREATABLE_ROLES),
 });
 
 export const loginSchema = z.object({
-  username: z.string().transform(collapse),
+  email: z.string().transform((s) => s.trim().toLowerCase()),
   password: z.string().min(1),
 });
 
@@ -35,9 +40,9 @@ export const changeOwnPasswordSchema = z.object({
   newPassword: password,
 });
 
-const registerOwnerSchema = z.object({ username, password });
+const registerOwnerSchema = z.object({ email, name, password });
 
 export const completeSetupSchema = registerOwnerSchema.refine(
-  (d) => !RESERVED_USERNAMES.has(d.username.toLowerCase()),
-  { path: ["username"], message: "Ese nombre de usuario está reservado" },
+  (d) => !RESERVED_EMAILS.has(d.email),
+  { path: ["email"], message: "Ese correo está reservado" },
 );

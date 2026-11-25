@@ -33,8 +33,6 @@ const TYPE_FILTERS: { value: TypeFilter; label: string }[] = [
   { value: "exit", label: "Salidas" },
 ];
 
-const INITIAL_MOVEMENTS = 6;
-
 const SORTS: SortOption<MovementSort>[] = [
   { key: "createdAt", label: "Fecha", defaultDir: "desc" },
 ];
@@ -60,14 +58,6 @@ export default function MovementList() {
       [filters, sort.dir],
     ),
   );
-
-  const openMonths = new Set<string>();
-  let shown = 0;
-  for (const m of months ?? []) {
-    if (shown >= INITIAL_MOVEMENTS) break;
-    openMonths.add(m.month);
-    shown += m.movements;
-  }
 
   return (
     <>
@@ -129,11 +119,7 @@ export default function MovementList() {
         items={months ?? []}
         loading={!months}
         renderItem={(month) => (
-          <MovementMonthRow
-            month={month}
-            filters={filters}
-            defaultOpen={openMonths.has(month.month)}
-          />
+          <MovementMonthRow month={month} filters={filters} />
         )}
       />
       <FilterPanel

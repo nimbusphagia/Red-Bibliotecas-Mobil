@@ -55,7 +55,8 @@ export default function Account() {
             {
               title: "Datos",
               rows: [
-                { label: "Usuario", content: account.username },
+                { label: "Nombre", content: account.name },
+                { label: "Correo", content: account.email },
                 { label: "Rol", content: ACCOUNT_ROLE_ES[account.role] },
                 {
                   label: "Miembro desde",

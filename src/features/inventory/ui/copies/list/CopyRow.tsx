@@ -6,7 +6,7 @@ import { Link } from "expo-router";
 import {
   ArrowDown,
   ArrowUp,
-  RotateCcwClock,
+  OctagonExclamationPoint,
   SendToBack,
   ShelvingUnit,
 } from "lucide-react-native";
@@ -15,14 +15,13 @@ import { Pressable, View } from "react-native";
 import PrintLabelsDialog from "../../labels/form/PrintLabelsDialog";
 import { LABEL_STATE_ICON, labelStateOf } from "../../labels/labelState";
 import MoveCopyDialog from "../../shelves/form/MoveCopyDialog";
-import { canRecover } from "../canRecover";
-import RecoverCopyDialog from "../RecoverCopyDialog";
+import DamageCopyDialog from "../DamageCopyDialog";
 
-type Dialog = "print" | "move" | "recover" | null;
+type Dialog = "print" | "move" | "damage" | null;
 
 type Props = {
   copy: CopyItem;
-  /** Usuario que puede mover y recuperar; null si no tiene permiso. */
+  /** Usuario que puede mover y marcar deterioros; null si no tiene permiso. */
   actorId: number | null;
   onChanged: () => void;
   /** Mostrar el libro en lugar del estante (en el detalle de un estante). */
@@ -40,7 +39,7 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
     loan: isExpanded ? "w-32" : "size-9",
     label: labelIconOnly ? "size-9" : "w-36",
   };
-  const isAvailable = ["available", "damaged"].includes(copy.status);
+  const isAvailable = copy.status === "available";
   const loanHref = isAvailable
     ? {
         pathname: "/loans/new" as const,
@@ -97,16 +96,18 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
           expand={false}
           containerClass="shrink-0 items-center justify-end gap-2"
         >
-          {actorId !== null &&
-            (canRecover(copy.status) ? (
-              <Button
-                variant="soft"
-                icon={RotateCcwClock}
-                onPress={() => setDialog("recover")}
-              />
-            ) : (
-              <View className="size-9" />
-            ))}
+          {actorId !== null && isExpanded && (
+            <Button
+              variant="soft"
+              accent={copy.damagedAt ? "neg" : undefined}
+              size="sm"
+              weight="md"
+              icon={OctagonExclamationPoint}
+              title="Reportar"
+              className="w-32"
+              onPress={() => setDialog("damage")}
+            />
+          )}
           {actorId !== null && (
             <Button
               variant="soft"
@@ -186,9 +187,9 @@ export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
           onMoved={done}
         />
       )}
-      {dialog === "recover" && actorId !== null && (
-        <RecoverCopyDialog
-          copy={{ ...copy, copyId: copy.id }}
+      {dialog === "damage" && actorId !== null && (
+        <DamageCopyDialog
+          copy={copy}
           actorId={actorId}
           onClose={() => setDialog(null)}
           onDone={done}

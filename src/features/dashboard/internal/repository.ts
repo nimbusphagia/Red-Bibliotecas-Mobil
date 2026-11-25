@@ -1,5 +1,11 @@
 import { db } from "@/db/client";
-import { book, copy, loanMovement, loanMovementLine, visitor } from "@/db/schema";
+import {
+  book,
+  copy,
+  loanMovement,
+  loanMovementLine,
+  visitor,
+} from "@/db/schema";
 import { outdatedSql } from "@/features/inventory/internal/copy/sql";
 import { RELEASED_STATUSES } from "@/features/inventory/internal/copy/types";
 import {
@@ -16,6 +22,7 @@ import {
   sql,
   type SQL,
 } from "drizzle-orm";
+import type { HeldStatus } from "./types";
 
 const openLineOfLoan = and(
   eq(loanMovementLine.movementId, loanMovement.id),
@@ -62,10 +69,13 @@ export const listOldestOverdue = (today: string, limit: number) =>
 export const listDueSoon = (today: string, soon: string, limit: number) =>
   listOpenLoansByExpiry(between(loanMovement.expiresBy, today, soon), limit);
 
+// Un disponible deteriorado cuenta como deteriorado; prestado, como prestado.
+const heldStatusSql = sql<HeldStatus>`case when ${copy.status} = 'available' and ${copy.damagedAt} is not null then 'damaged' else ${copy.status} end`;
+
 export function countHeldCopies() {
   return db
     .select({
-      status: copy.status,
+      status: heldStatusSql,
       n: count(),
       unlabeled: sumIf(isNull(copy.labeledAt)),
       outdated: sumIf(outdatedSql),
@@ -73,7 +83,7 @@ export function countHeldCopies() {
     .from(copy)
     .innerJoin(book, eq(book.id, copy.bookId))
     .where(notInArray(copy.status, [...RELEASED_STATUSES]))
-    .groupBy(copy.status);
+    .groupBy(heldStatusSql);
 }
 
 export function countLoanLinesByMonth(from: Date, until: Date) {

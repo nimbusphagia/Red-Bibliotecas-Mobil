@@ -20,7 +20,7 @@ type SessionState =
   | { status: "signed-in"; account: PublicAccount };
 
 type SessionActions = {
-  signIn: (username: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   finishSetup: () => void;
   retry: () => void;
@@ -74,8 +74,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [attempt]);
 
   const actions: SessionActions = {
-    async signIn(username, password) {
-      const account = await login({ username, password });
+    async signIn(email, password) {
+      const account = await login({ email, password });
       await Storage.setItem(STORAGE_KEY, String(account.id));
       setState({ status: "signed-in", account });
     },

@@ -87,7 +87,7 @@ export default function LoanLines({
                     size="sm"
                     weight="md"
                     icon={RotateCcwClock}
-                    title={l.status === "damaged" ? "Reparar" : "Recuperar"}
+                    title="Recuperar"
                     onPress={() => setRecovering(l)}
                   />
                 )}

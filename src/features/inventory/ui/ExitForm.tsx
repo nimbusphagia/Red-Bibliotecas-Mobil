@@ -23,7 +23,6 @@ import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
-import { canExit } from "./exit/canExit";
 import ExitCopyPicker from "./exit/ExitCopyPicker";
 import ExitCopyTable from "./exit/ExitCopyTable";
 
@@ -41,8 +40,6 @@ export default function ExitForm() {
   const [notes, setNotes] = useState("");
   const [copies, setCopies] = useState<CopyItem[]>([]);
   const [editing, setEditing] = useState<"notes" | "copies" | null>(null);
-
-  const blocked = copies.filter((c) => !canExit(c, reason)).length;
 
   const toggle = (c: CopyItem) =>
     setCopies((p) =>
@@ -76,7 +73,7 @@ export default function ExitForm() {
         title="Registrar salida"
         submitTitle="Registrar"
         submitting={submitting}
-        canSubmit={copies.length > 0 && blocked === 0}
+        canSubmit={copies.length > 0}
         onSubmit={submit}
         onCancel={() => router.back()}
       />
@@ -89,7 +86,7 @@ export default function ExitForm() {
                 label="Encargado"
                 content={
                   session.status === "signed-in"
-                    ? session.account.username
+                    ? session.account.name
                     : undefined
                 }
                 labelWidth="form"
@@ -133,13 +130,7 @@ export default function ExitForm() {
         >
           <ExitCopyTable
             copies={copies}
-            reason={reason}
-            error={
-              errors.fields.copyIds ??
-              (blocked > 0
-                ? "Hay ejemplares deteriorados: no pueden salir por deterioro"
-                : undefined)
-            }
+            error={errors.fields.copyIds}
             onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
           />
         </Panel>
@@ -156,7 +147,6 @@ export default function ExitForm() {
         <Dialog onClose={() => setEditing(null)} size="lg" tone="canvas">
           <ExitCopyPicker
             className="flex-1"
-            reason={reason}
             selected={copies}
             onToggle={toggle}
           />

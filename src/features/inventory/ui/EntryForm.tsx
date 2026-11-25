@@ -179,7 +179,7 @@ export default function EntryForm() {
                 label="Encargado"
                 content={
                   session.status === "signed-in"
-                    ? session.account.username
+                    ? session.account.name
                     : undefined
                 }
                 labelWidth="form"

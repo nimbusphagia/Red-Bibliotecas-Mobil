@@ -71,7 +71,7 @@ const lineColumns = {
   labelText: labelTextSql,
   resolvedAt: loanMovementLine.resolvedAt,
   outcome: loanMovementLine.outcome,
-  resolvedByUsername: resolver.username,
+  resolvedByName: resolver.name,
   status: copy.status,
   recoveryId: recoveryLine.movementId,
 };
@@ -164,7 +164,7 @@ const selectLoans = () =>
       visitorRole: visitor.role,
       visitorGrade: schoolGrade.grade,
       visitorLevel: schoolGrade.level,
-      loanedByUsername: account.username,
+      loanedByName: account.name,
       lineCount,
       openCount,
     })
@@ -308,4 +308,3 @@ export async function listVisitorLines(
   ]);
   return toPage(items, n, filters);
 }
-

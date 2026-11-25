@@ -1,15 +1,11 @@
 import type { MovementLine } from "@/features/inventory/internal/movement/types";
-import {
-  Button,
-  Column,
-  ListRow,
-  StatusIcon,
-  Text,
-} from "@/features/shared/components";
-import { COPY_STATUS_ES } from "@/features/shared/format/translate";
+import { Button, Column, ListRow } from "@/features/shared/components";
 import { Link } from "expo-router";
-import { ArrowUpRight, Eye, RotateCcwClock } from "lucide-react-native";
-import { COPY_STATUS_ACCENT, COPY_STATUS_ICON } from "../../copies/statusIcon";
+import {
+  ArrowUpRight,
+  ChevronRight,
+  RotateCcwClock,
+} from "lucide-react-native";
 
 type Props = {
   line: MovementLine;
@@ -35,13 +31,6 @@ export default function MovementLineRow({
         subtitle1={line.authors ?? undefined}
       />
       <Column text={line.labelText ?? "---"} />
-      <Column containerClass="gap-2">
-        <StatusIcon
-          icon={COPY_STATUS_ICON[line.status]}
-          accent={COPY_STATUS_ACCENT[line.status]}
-        />
-        <Text variant="itemSm">{COPY_STATUS_ES[line.status]}</Text>
-      </Column>
       <Column variant="actions" width={actions.length > 1 ? "md" : "sm"}>
         {onRecover && (
           <Button variant="soft" icon={RotateCcwClock} onPress={onRecover} />
@@ -53,7 +42,11 @@ export default function MovementLineRow({
         )}
         {canOpenBook && (
           <Link href={`/catalog/${line.bookId}`} asChild>
-            <Button variant="soft" icon={Eye} />
+            <Button
+              variant="soft"
+              icon={ChevronRight}
+              className="bg-transparent"
+            />
           </Link>
         )}
       </Column>

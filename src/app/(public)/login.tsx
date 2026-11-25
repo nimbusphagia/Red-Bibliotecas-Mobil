@@ -6,16 +6,16 @@ import {
   FieldError,
 } from "@/features/shared/components";
 
-import { Image } from "expo-image";
+import { KeyRound } from "lucide-react-native";
 import { useRef, useState } from "react";
 import type { TextInputInstance } from "react-native";
-import { View } from "react-native";
-import splash from "../../../assets/images/splash1.avif";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
+
+const background = require("@/assets/images/auth-background.jpg");
 
 export default function LoginScreen() {
   const { signIn } = useSession();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const passwordRef = useRef<TextInputInstance>(null);
@@ -23,40 +23,48 @@ export default function LoginScreen() {
   const { errors, submitting, run } = useFormSubmit();
   const submit = () =>
     run(
-      () => signIn(username, password),
+      () => signIn(email, password),
       () => setPassword(""),
     );
 
   return (
-    <View className="flex flex-row h-full">
-      <Image source={splash} contentFit="cover" style={{ flex: 1 }} />
-      <FormScreen
-        title="Bienvenido"
-        subtitle="Administra tu biblioteca facilmente"
-      >
-        <TextField
-          label="Nombre de usuario"
-          value={username}
-          onChangeText={setUsername}
-          error={errors.fields.username}
-          autoCapitalize="none"
-          autoCorrect={false}
-          returnKeyType="next"
-          onSubmitEditing={() => passwordRef.current?.focus()}
-        />
-        <TextField
-          ref={passwordRef}
-          label="Contraseña"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          error={errors.fields.password}
-          returnKeyType="done"
-          onSubmitEditing={submit}
-        />
-        <FieldError>{errors.form}</FieldError>
-        <Button title="Iniciar sesión" onPress={submit} loading={submitting} />
-      </FormScreen>
-    </View>
+    <FormScreen title="Inicia sesión" background={background}>
+      <TextField
+        label="Correo electrónico"
+        placeholder="nombre@ejemplo.com"
+        keyboardType="email-address"
+        autoComplete="email"
+        value={email}
+        onChangeText={setEmail}
+        error={errors.fields.email}
+        autoCapitalize="none"
+        autoCorrect={false}
+        returnKeyType="next"
+        onSubmitEditing={() => passwordRef.current?.focus()}
+      />
+      <TextField
+        ref={passwordRef}
+        label="Contraseña"
+        placeholder="Ingresa tu contraseña"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        error={errors.fields.password}
+        returnKeyType="done"
+        onSubmitEditing={submit}
+      />
+      <FieldError>{errors.form}</FieldError>
+      <Button
+        title="Iniciar sesión"
+        icon={KeyRound}
+        weight="md"
+        iconSize="lg"
+        accent="lg"
+        size="lg"
+        className="mt-2 self-end"
+        onPress={submit}
+        loading={submitting}
+      />
+    </FormScreen>
   );
 }
