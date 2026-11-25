@@ -1,11 +1,12 @@
 import { useSession } from "@/features/account/internal/session";
+import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   getShelf,
   getShelfSummary,
   moveCopies,
 } from "@/features/inventory/internal/shelf/service";
+import CopySelector from "@/features/inventory/ui/picker/CopySelector";
 import {
-  Button,
   FieldError,
   FieldRow,
   FormHeader,
@@ -13,25 +14,22 @@ import {
   Panel,
   type Option,
 } from "@/features/shared/components";
+import { shelfLabel } from "@/features/shared/format/translate";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import MoveCopyTable from "./shelves/form/MoveCopyTable";
-import {
-  CopySearchDialog,
-  PickShelfDialog,
-} from "./shelves/form/ReorganizeDialogs";
-import type { MoveCopy } from "./shelves/options";
 import { ScreenBody } from "@/features/shared/layout/Screen";
+import { useRouter } from "expo-router";
+import { ShelvingUnit } from "lucide-react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { PickShelfDialog } from "./shelves/form/ReorganizeDialogs";
 
 export default function ReorganizeForm() {
   const router = useRouter();
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
   const [target, setTarget] = useState<Option>();
-  const [copies, setCopies] = useState<MoveCopy[]>([]);
-  const [editing, setEditing] = useState<"target" | "copies" | null>(null);
-  const close = () => setEditing(null);
+  const [copies, setCopies] = useState<CopyItem[]>([]);
+  const loadMore = useRef<() => void>(undefined);
+  const [editing, setEditing] = useState<"target" | null>(null);
   const [targetInfo, setTargetInfo] = useState<{
     description: string | null;
     total: number;
@@ -51,7 +49,8 @@ export default function ReorganizeForm() {
     };
   }, [target]);
 
-  const pending = copies.filter((c) => c.shelfId !== target?.id).length;
+  const targetId = target?.id;
+  const pending = copies.filter((c) => c.shelfId !== targetId).length;
 
   const copyError =
     Object.entries(errors.fields)
@@ -73,13 +72,25 @@ export default function ReorganizeForm() {
     });
   };
 
-  const removeCopy = (id: number) =>
-    setCopies((p) => p.filter((c) => c.id !== id));
-
-  const toggleCopy = (c: MoveCopy) =>
+  const toggleCopy = (c: CopyItem) =>
     setCopies((p) =>
       p.some((x) => x.id === c.id) ? p.filter((x) => x.id !== c.id) : [...p, c],
     );
+
+  const stateOf = useCallback(
+    (c: CopyItem) => ({
+      icon: ShelvingUnit,
+      text:
+        c.shelfId === targetId
+          ? "Ya está en el destino"
+          : shelfLabel({ name: c.shelfName, isDefault: c.shelfIsDefault }),
+    }),
+    [targetId],
+  );
+  const inTarget = useCallback(
+    (c: CopyItem) => c.shelfId === targetId,
+    [targetId],
+  );
 
   return (
     <>
@@ -91,7 +102,7 @@ export default function ReorganizeForm() {
         onSubmit={submit}
         onCancel={() => router.back()}
       />
-      <ScreenBody form>
+      <ScreenBody form onEndReached={() => loadMore.current?.()}>
         <FieldError>{errors.form}</FieldError>
         <Panel title="Estantería">
           <FieldRow
@@ -111,35 +122,29 @@ export default function ReorganizeForm() {
             content={targetInfo && String(targetInfo.total)}
             labelWidth="formWide"
           />
-        </Panel>
-        <Panel
-          title="Ejemplares"
-          lead={
-            <Button
-              title="Agregar"
-              size="sm"
-              onPress={() => setEditing("copies")}
-            />
-          }
-        >
-          <MoveCopyTable
-            copies={copies}
-            targetId={target?.id}
-            error={copyError}
-            onRemove={removeCopy}
+          <LabeledItem
+            label="Seleccionados"
+            content={String(pending)}
+            labelWidth="formWide"
           />
         </Panel>
+
+        <CopySelector
+          anyStatus
+          selected={copies}
+          onToggle={toggleCopy}
+          stateOf={stateOf}
+          disabled={inTarget}
+          error={copyError}
+          loadMoreRef={loadMore}
+        />
       </ScreenBody>
 
       {editing === "target" && (
-        <PickShelfDialog value={target} onChange={setTarget} onClose={close} />
-      )}
-
-      {editing === "copies" && (
-        <CopySearchDialog
-          selected={copies}
-          onToggle={toggleCopy}
-          onClose={close}
+        <PickShelfDialog
+          value={target}
+          onChange={setTarget}
+          onClose={() => setEditing(null)}
         />
       )}
     </>

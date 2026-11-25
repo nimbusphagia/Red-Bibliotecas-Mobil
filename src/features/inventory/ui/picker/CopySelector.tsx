@@ -12,6 +12,7 @@ import CopyBookGroup, {
   RemoteCopyBookGroup,
   groupCopies,
   type BookHeader,
+  type CopyState,
 } from "./CopyBookGroup";
 import { findCopyWithBook } from "./copyWithBook";
 import {
@@ -55,7 +56,7 @@ const toHeader = (b: BookListItem): BookHeader => ({
   publisherName: b.publisherName,
 });
 
-const stateOf = (c: CopyItem) => ({
+const statusOf = (c: CopyItem) => ({
   icon: c.status === "available" ? CircleCheck : CircleDashed,
   text: COPY_STATUS_ES[c.status],
 });
@@ -83,6 +84,11 @@ type Props = {
   error?: string;
   /** Recibe la carga de la página siguiente, para el scroll de la pantalla. */
   loadMoreRef: RefObject<(() => void) | undefined>;
+  /** Sin el filtro de disponibles: se ofrecen todos los ejemplares activos. */
+  anyStatus?: boolean;
+  stateOf?: (copy: CopyItem) => CopyState;
+  /** Por defecto, los que no están disponibles. */
+  disabled?: (copy: CopyItem) => boolean;
 };
 
 /** Libros con sus ejemplares; se tocan los disponibles para elegirlos. */
@@ -91,8 +97,11 @@ export default function CopySelector({
   onToggle,
   error,
   loadMoreRef,
+  anyStatus = false,
+  stateOf = statusOf,
+  disabled = anyStatus ? undefined : notAvailable,
 }: Props) {
-  const [mode, setMode] = useState<Mode>("available");
+  const [mode, setMode] = useState<Mode>(anyStatus ? "all" : "available");
   const { search, setSearch, debouncedSearch } = useSearch();
   const [idText, setIdText] = useState("");
   const idDebounced = useDebounce(idText);
@@ -163,7 +172,11 @@ export default function CopySelector({
               className="ml-4 shrink grow-0"
             >
               <View className="flex-row items-center gap-4">
-                <InlineFilter options={MODES} value={mode} onChange={setMode} />
+                <InlineFilter
+                  options={anyStatus ? MODES.slice(0, 1) : MODES}
+                  value={mode}
+                  onChange={setMode}
+                />
                 <Button
                   title={isExpanded ? "Seleccionados" : undefined}
                   accessibilityLabel="Seleccionados"
@@ -202,6 +215,7 @@ export default function CopySelector({
               selected={selected}
               onToggle={onToggle}
               stateOf={stateOf}
+              disabled={disabled}
             />
           ) : (
             <RemoteCopyBookGroup
@@ -210,7 +224,7 @@ export default function CopySelector({
               selected={selected}
               onToggle={onToggle}
               stateOf={stateOf}
-              disabled={notAvailable}
+              disabled={disabled}
             />
           )
         }

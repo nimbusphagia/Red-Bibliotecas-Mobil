@@ -3,8 +3,7 @@ import {
   SearchSelect,
   type Option,
 } from "@/features/shared/components";
-import { searchShelves, type MoveCopy } from "../options";
-import ShelfCopyPicker from "./ShelfCopyPicker";
+import { searchShelves } from "../options";
 
 export function PickShelfDialog({
   value,
@@ -29,26 +28,6 @@ export function PickShelfDialog({
         onChange={pick}
         fetchOptions={searchShelves}
         placeholder="Buscar estantería..."
-      />
-    </Dialog>
-  );
-}
-
-export function CopySearchDialog({
-  selected,
-  onToggle,
-  onClose,
-}: {
-  selected: MoveCopy[];
-  onToggle: (copy: MoveCopy) => void;
-  onClose: () => void;
-}) {
-  return (
-    <Dialog onClose={onClose} size="lg" tone="canvas">
-      <ShelfCopyPicker
-        className="flex-1"
-        selected={selected}
-        onToggle={onToggle}
       />
     </Dialog>
   );

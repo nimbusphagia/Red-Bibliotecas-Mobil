@@ -217,23 +217,24 @@ export default function EntryForm() {
         </Panel>
 
         <Panel
-          title="Libros"
+          title="Resumen"
+          className="gap-4"
           lead={
             <View className="flex-1 flex-row justify-between">
               <Button
-                title="Existente"
+                title="Importar"
                 variant="soft"
-                icon={Search}
+                icon={Upload}
                 size="sm"
-                onPress={() => setEditing({ type: "existing" })}
+                onPress={() => setEditing({ type: "import" })}
               />
               <View className="flex-row gap-2">
                 <Button
-                  title="Importar"
+                  title="Existente"
                   variant="soft"
-                  icon={Upload}
+                  icon={Search}
                   size="sm"
-                  onPress={() => setEditing({ type: "import" })}
+                  onPress={() => setEditing({ type: "existing" })}
                 />
                 <Button
                   title="Nuevo"

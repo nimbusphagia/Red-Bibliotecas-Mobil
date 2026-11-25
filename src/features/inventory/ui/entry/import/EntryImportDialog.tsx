@@ -23,6 +23,8 @@ import {
 } from "@/features/shared/components";
 import { toFormErrors } from "@/features/shared/errors/messages";
 import { sheetProblemText } from "@/features/shared/format/translate";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
+import { cn } from "@/features/shared/theme";
 import { File } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
@@ -52,6 +54,7 @@ type Props = {
 
 export default function EntryImportDialog({ room, onLoad, onClose }: Props) {
   const session = useSession();
+  const { isCompact } = useLayoutMode();
   const categories = useOptions(loadCategories);
   const subcategories = useOptions(loadSubcategories);
   const shelves = useOptions(loadShelves);
@@ -119,7 +122,11 @@ export default function EntryImportDialog({ room, onLoad, onClose }: Props) {
   const problem = review?.plan.problem;
 
   return (
-    <Dialog onClose={onClose} size="lg" className="gap-6">
+    <Dialog
+      onClose={onClose}
+      size="lg"
+      className={cn("gap-6", isCompact && "h-[50%]")}
+    >
       <DialogHeader
         title="Importar"
         subtitle="Ingresa libros nuevos desde un archivo .xlsx o .csv"

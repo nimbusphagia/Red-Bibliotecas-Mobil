@@ -10,7 +10,6 @@ import {
   Text,
 } from "@/features/shared/components";
 import { importProblemLabel } from "@/features/shared/format/translate";
-import { cn, useTone } from "@/features/shared/theme";
 import {
   ChevronDown,
   ChevronUp,
@@ -80,15 +79,14 @@ function Group({
   count,
   children,
 }: PropsWithChildren<{ title: string; count: number }>) {
-  const t = useTone();
   return (
-    <View className={cn("gap-2 rounded-lg p-3", t.chip.idle.box)}>
+    <Surface tone="light" className="gap-3 rounded-lg p-3">
       <View className="flex-row items-baseline gap-2">
-        <Text variant="itemSm">{title}</Text>
+        <Text variant="item">{title}</Text>
         <Text variant="caption">{count}</Text>
       </View>
       <ChipGroup>{children}</ChipGroup>
-    </View>
+    </Surface>
   );
 }
 
@@ -117,12 +115,7 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
         >
           <Group title="Libros" count={ready.length}>
             {ready.map((r) => (
-              <Chip
-                key={r.row}
-                label={r.title}
-                accent="dark"
-                detail={String(r.quantity)}
-              />
+              <Chip key={r.row} label={r.title} detail={String(r.quantity)} />
             ))}
           </Group>
         </Section>
@@ -138,7 +131,7 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
           {toCreate.map(({ key, title, list }) => (
             <Group key={key} title={title} count={list.length}>
               {list.map((i) => (
-                <Chip key={i.key} label={i.name} accent="dark" />
+                <Chip key={i.key} label={i.name} />
               ))}
             </Group>
           ))}
@@ -151,7 +144,7 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
           title="Problemas"
           subtitle={`${plural(failed.length, "libro", "libros")} · No serán importados`}
         >
-          <ChipGroup>
+          <Group title="Libros" count={failed.length}>
             {failed.map((r) => (
               <Chip
                 key={r.row}
@@ -161,7 +154,7 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
                 )}
               />
             ))}
-          </ChipGroup>
+          </Group>
         </Section>
       )}
     </View>

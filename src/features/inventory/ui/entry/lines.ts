@@ -15,6 +15,11 @@ export type EntryLine = { key: number; error?: FormErrors } & (
 export const lineTitle = (l: EntryLine) =>
   l.kind === "existing" ? l.book.label : l.values.title;
 
+export const lineAuthors = (l: EntryLine) =>
+  l.kind === "existing"
+    ? l.book.detail
+    : l.values.writers.map((w) => w.label).join(", ");
+
 export const lineQuantity = (l: EntryLine) =>
   l.kind === "existing" ? l.quantity : Number(l.values.quantity) || 1;
 

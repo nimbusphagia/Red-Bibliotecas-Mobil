@@ -48,7 +48,8 @@ export default function ExistingBookDialog({
         .filter((b) => !skip.has(b.id))
         .map((b) => ({
           id: b.id,
-          label: [b.title, writersOf(b)].filter(Boolean).join(" · "),
+          label: b.title,
+          detail: writersOf(b) || undefined,
         }));
     },
     [taken],
