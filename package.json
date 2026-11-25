@@ -1,7 +1,7 @@
 {
   "name": "nativelms",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "dependencies": {
     "@expo-google-fonts/outfit": "^0.4.3",
     "@expo/ui": "~58.0.26",
@@ -36,6 +36,8 @@
     "react-native": "0.88.1",
     "react-native-css-interop": "0.2.7",
     "react-native-gesture-handler": "~3.3.0",
+    "react-native-nitro-modules": "^0.37.2",
+    "react-native-quick-crypto": "^1.1.10",
     "react-native-reanimated": "4.7.1",
     "react-native-safe-area-context": "~5.10.1",
     "react-native-screens": "~4.30.1",

@@ -1,12 +1,15 @@
-import { pbkdf2Async } from "@noble/hashes/pbkdf2.js";
-import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 import { getRandomBytes } from "expo-crypto";
+import { pbkdf2 } from "react-native-quick-crypto";
 
-const ITERATIONS = 20_000;
+const ITERATIONS = 100_000;
 
 const derive = (pw: string, salt: Uint8Array, c: number) =>
-  pbkdf2Async(sha256, pw, salt, { c, dkLen: 32 });
+  new Promise<Uint8Array>((resolve, reject) =>
+    pbkdf2(pw, salt, c, 32, "sha256", (err, dk) =>
+      err || !dk ? reject(err) : resolve(new Uint8Array(dk)),
+    ),
+  );
 
 export async function hashPassword(pw: string): Promise<string> {
   const salt = getRandomBytes(16);
