@@ -5,8 +5,8 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { View } from "react-native";
 
-// Desde aquí la barra tapa el número: se pinta con el color de texto del acento.
-const LABEL_OVERLAP = 0.85;
+// Desde aquí no cabe el número encima de la barra: va dentro, con el color de texto del acento.
+const LABEL_INSIDE = 0.8;
 
 export default function MonthlyLoans({ months }: { months: MonthCount[] }) {
   const total = months.reduce((sum, m) => sum + m.count, 0);
@@ -32,6 +32,7 @@ function Bars({ months }: { months: MonthCount[] }) {
     <View className="flex-row gap-4 px-2 rounded-xl">
       {months.map((m) => {
         const ratio = m.count / max;
+        const inside = ratio >= LABEL_INSIDE;
         return (
           <View key={m.month.getTime()} className="flex-1 items-center gap-1">
             <View
@@ -48,9 +49,11 @@ function Bars({ months }: { months: MonthCount[] }) {
                 <Text
                   variant="itemSm"
                   className={cn(
-                    "absolute inset-x-0 bottom-3 text-center",
-                    ratio >= LABEL_OVERLAP && t.accent.label,
+                    "absolute inset-x-0 text-center",
+                    inside ? "bottom-3" : "mb-1",
+                    inside && t.accent.label,
                   )}
+                  style={inside ? undefined : { bottom: `${ratio * 100}%` }}
                 >
                   {m.count}
                 </Text>

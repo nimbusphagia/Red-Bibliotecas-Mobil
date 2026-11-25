@@ -16,14 +16,15 @@ type Props = {
   loan: LoanListItem;
   inset?: boolean;
   hideVisitor?: boolean;
+  hideId?: boolean;
 };
 
-export default function LoanRow({ loan, inset, hideVisitor }: Props) {
+export default function LoanRow({ loan, inset, hideVisitor, hideId }: Props) {
   const state = loanStateOf(loan);
 
   return (
     <ListRow inset={inset}>
-      <Column variant="id" text={`#${loan.id}`} />
+      {!hideId && <Column variant="id" text={`#${loan.id}`} />}
       {!hideVisitor && (
         <Column
           variant="subtitled"

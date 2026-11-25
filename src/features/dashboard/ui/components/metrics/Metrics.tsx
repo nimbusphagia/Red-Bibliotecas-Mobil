@@ -3,11 +3,11 @@ import type {
   LoanPreview,
 } from "@/features/dashboard/internal/types";
 import { LABEL_STATE_ICON } from "@/features/inventory/ui/labels/labelState";
+import { LOAN_STATE_ICON } from "@/features/loans/ui/loans/stateIcon";
 import { Icon, Surface, Text } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import {
-  CalendarClock,
-  Flag,
+  Clock,
   Stamp,
   type LucideIcon,
 } from "lucide-react-native";
@@ -25,13 +25,13 @@ function StatRow({ label, value, icon }: StatRowProps) {
   return (
     <Surface
       row
-      className="flex-row items-center justify-between gap-2 px-3 py-1.5"
+      className="flex-row items-center justify-between gap-2 px-4 py-2.5"
     >
       {icon && <Icon icon={icon} size="sm" />}
-      <Text variant="itemSm" numberOfLines={1} className="flex-1">
+      <Text variant="itemSm" numberOfLines={1} className="flex-1 text-[13px]">
         {label}
       </Text>
-      <Text variant="caption">{value}</Text>
+      <Text variant="captionXs">{value}</Text>
     </Surface>
   );
 }
@@ -49,27 +49,39 @@ function LoanPreviews({ loans }: { loans: LoanPreview[] }) {
 
 type Props = { summary: DashboardSummary; className?: string };
 
-export function DueMetrics({ summary: s, className }: Props) {
+export function OverdueMetrics({ summary: s, className }: Props) {
+  return (
+    <MetricCard
+      title="Vencidos"
+      icon={LOAN_STATE_ICON.overdue}
+      value={s.overdue}
+      href="/loans?state=overdue"
+      className={className}
+    >
+      <LoanPreviews loans={s.oldestOverdue} />
+    </MetricCard>
+  );
+}
+
+export function DueSoonMetrics({ summary: s, className }: Props) {
+  return (
+    <MetricCard
+      title="Vencen pronto"
+      icon={Clock}
+      value={s.dueSoon}
+      href="/loans?state=open"
+      className={className}
+    >
+      <LoanPreviews loans={s.nextDue} />
+    </MetricCard>
+  );
+}
+
+export function DueMetrics(props: Props) {
   return (
     <>
-      <MetricCard
-        title="Vencidos"
-        icon={Flag}
-        value={s.overdue}
-        href="/loans?state=overdue"
-        className={className}
-      >
-        <LoanPreviews loans={s.oldestOverdue} />
-      </MetricCard>
-      <MetricCard
-        title="Vencen pronto"
-        icon={CalendarClock}
-        value={s.dueSoon}
-        href="/loans?state=open"
-        className={className}
-      >
-        <LoanPreviews loans={s.nextDue} />
-      </MetricCard>
+      <OverdueMetrics {...props} />
+      <DueSoonMetrics {...props} />
     </>
   );
 }

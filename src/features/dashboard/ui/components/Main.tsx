@@ -4,7 +4,12 @@ import { ActivityIndicator, View } from "react-native";
 import ActiveLoans from "./activeLoans/ActiveLoans";
 import CollectionStatus from "./charts/CollectionStatus";
 import MonthlyLoans from "./charts/MonthlyLoans";
-import { DueMetrics, LabelMetrics } from "./metrics/Metrics";
+import {
+  DueMetrics,
+  DueSoonMetrics,
+  LabelMetrics,
+  OverdueMetrics,
+} from "./metrics/Metrics";
 
 export default function DashboardMain() {
   const stats = useDashboardStats();
@@ -21,8 +26,9 @@ export default function DashboardMain() {
       <View className="w-[300px] gap-3">
         <CollectionStatus copies={stats.copies} />
         <View className="gap-4">
-          <DueMetrics summary={stats} />
+          <OverdueMetrics summary={stats} />
           <LabelMetrics summary={stats} />
+          <DueSoonMetrics summary={stats} />
         </View>
       </View>
     </View>

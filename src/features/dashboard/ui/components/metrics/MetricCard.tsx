@@ -5,7 +5,7 @@ import { ArrowUpRight, type LucideIcon } from "lucide-react-native";
 import type { PropsWithChildren } from "react";
 import { Pressable, View } from "react-native";
 
-const HEADER = "font-sans text-[15px]";
+const HEADER = "font-sans-medium";
 
 type Props = PropsWithChildren<{
   title: string;
@@ -31,11 +31,11 @@ export default function MetricCard({
           <View className="flex-row items-center justify-between">
             <View className="flex-row gap-2 items-center">
               <Icon icon={icon} size="sm" stroke="md" />
-              <Text variant="item" className={HEADER}>
+              <Text variant="caption" className={HEADER}>
                 {title}
               </Text>
               {value !== undefined && (
-                <Text variant="item" className={HEADER}>
+                <Text variant="caption" className={HEADER}>
                   {value}
                 </Text>
               )}

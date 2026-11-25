@@ -19,7 +19,7 @@ const LIMIT = 10;
 type Filter = Exclude<LoanState, "closed">;
 
 const FILTERS: { value: Filter; label: string; accent?: AccentLevel }[] = [
-  { value: "open", label: "Activos" },
+  { value: "open", label: "Activos", accent: "sm" },
   { value: "overdue", label: "Vencidos", accent: "neg" },
 ];
 
@@ -40,7 +40,7 @@ export default function ActiveLoans() {
 
   return (
     <Panel
-      className="p-4 gap-4"
+      className="p-6 gap-4"
       title="Préstamos pendientes"
       lead={
         <View className="flex-1 flex-row items-center justify-between">
@@ -67,7 +67,7 @@ export default function ActiveLoans() {
           showsVerticalScrollIndicator={false}
         >
           {loans.map((l) => (
-            <LoanRow key={l.id} loan={l} inset />
+            <LoanRow key={l.id} loan={l} inset hideId />
           ))}
         </ScrollView>
       )}
