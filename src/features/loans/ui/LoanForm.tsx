@@ -1,6 +1,7 @@
 import { useSession } from "@/features/account/internal/session";
 import { getCopy } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
+import CopySelector from "@/features/inventory/ui/picker/CopySelector";
 import {
   getLoanExpiry,
   getVisitorLoanStatus,
@@ -30,7 +31,6 @@ import { Info } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { PickVisitorDialog } from "./loans/form/LoanDialogs";
-import LoanCopySelector from "./loans/form/LoanCopySelector";
 import { visitorInfoRows } from "./visitors/visitorRows";
 
 export default function LoanForm({ copyId }: { copyId?: string }) {
@@ -177,7 +177,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
             </Panel>
           )}
         </SplitColumns>
-        <LoanCopySelector
+        <CopySelector
           selected={copies}
           onToggle={toggleCopy}
           error={errors.fields.copyIds}

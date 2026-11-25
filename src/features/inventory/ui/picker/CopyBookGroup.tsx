@@ -6,7 +6,7 @@ import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { loadAllPages } from "@/features/shared/hooks/useInfiniteList";
 import { accents, cn, colors, useTone } from "@/features/shared/theme";
 import type { LucideIcon } from "lucide-react-native";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 
 export type BookHeader = {
@@ -72,30 +72,56 @@ export default function CopyBookGroup({
       </View>
       {!copies && <ActivityIndicator color={colors[t.icon]} />}
       {copies?.map((c) => {
-        const state = stateOf(c);
         const isSelected = selected.some((s) => s.id === c.id);
-        const isDisabled = !isSelected && !!disabled?.(c);
         return (
-          <Pressable
+          <CopyRow
             key={c.id}
-            onPress={() => onToggle(c)}
-            disabled={isDisabled}
-            className={cn("active:opacity-80", isDisabled && "opacity-50")}
-          >
-            <ListRow className={cn(isSelected && accents.sm.box)}>
-              <Column variant="id" text={`#${c.id}`} />
-              <Column text={c.labelText ?? "---"} />
-              <Column expand={false} containerClass="w-44 shrink-0 gap-2">
-                <Icon icon={state.icon} size="lg" stroke="sm" />
-                <Text variant="itemSm">{state.text}</Text>
-              </Column>
-            </ListRow>
-          </Pressable>
+            copy={c}
+            isSelected={isSelected}
+            isDisabled={!isSelected && !!disabled?.(c)}
+            onToggle={onToggle}
+            stateOf={stateOf}
+          />
         );
       })}
     </View>
   );
 }
+
+type RowProps = {
+  copy: CopyItem;
+  isSelected: boolean;
+  isDisabled: boolean;
+  onToggle: (copy: CopyItem) => void;
+  stateOf: (copy: CopyItem) => CopyState;
+};
+
+// Memo: al elegir un ejemplar solo se vuelve a dibujar su fila.
+const CopyRow = memo(function CopyRow({
+  copy,
+  isSelected,
+  isDisabled,
+  onToggle,
+  stateOf,
+}: RowProps) {
+  const state = stateOf(copy);
+  return (
+    <Pressable
+      onPress={() => onToggle(copy)}
+      disabled={isDisabled}
+      className={cn("active:opacity-80", isDisabled && "opacity-50")}
+    >
+      <ListRow className={cn(isSelected && accents.sm.box)}>
+        <Column variant="id" text={`#${copy.id}`} />
+        <Column text={copy.labelText ?? "---"} />
+        <Column expand={false} containerClass="w-44 shrink-0 gap-2">
+          <Icon icon={state.icon} size="lg" stroke="sm" />
+          <Text variant="itemSm">{state.text}</Text>
+        </Column>
+      </ListRow>
+    </Pressable>
+  );
+});
 
 type RemoteProps = Omit<Props, "copies"> & {
   match: Omit<CopyListParams, "bookId">;

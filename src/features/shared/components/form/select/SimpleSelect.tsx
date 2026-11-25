@@ -1,13 +1,14 @@
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
-import { cn } from "../../../theme";
+import { cn, type AccentLevel } from "../../../theme";
 import { LAYOUT } from "../../base/motion";
 import { Text } from "../../base/Text";
 import { Chip } from "./Chip";
 
 type SimpleProps<V extends string | number> = {
   label: string;
-  options: { id: V; label: string }[];
+  /** `accent` reemplaza el color del chip cuando está elegido. */
+  options: { id: V; label: string; accent?: AccentLevel }[];
   value?: V;
   onChange: (id?: V) => void;
   disabled?: boolean;
@@ -32,6 +33,7 @@ export function SimpleSelect<V extends string | number>({
             key={o.id}
             label={o.label}
             selected={o.id === value}
+            accent={o.id === value ? o.accent : undefined}
             disabled={disabled}
             onPress={() => onChange(o.id === value ? undefined : o.id)}
           />

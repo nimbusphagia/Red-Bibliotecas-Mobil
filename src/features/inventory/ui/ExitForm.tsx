@@ -3,9 +3,8 @@ import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import { EXIT_REASONS } from "@/features/inventory/internal/movement/schemas";
 import { exitCopies } from "@/features/inventory/internal/movement/service";
 import type { ExitReason } from "@/features/inventory/internal/movement/types";
+import CopySelector from "@/features/inventory/ui/picker/CopySelector";
 import {
-  Button,
-  Dialog,
   FieldError,
   FieldRow,
   FormHeader,
@@ -21,14 +20,13 @@ import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { View } from "react-native";
-import ExitCopyPicker from "./exit/ExitCopyPicker";
-import ExitCopyTable from "./exit/ExitCopyTable";
 
 const REASON_OPTIONS = EXIT_REASONS.map((r) => ({
   id: r,
   label: MOVEMENT_REASON_ES[r],
+  accent: "neg" as const,
 }));
 
 export default function ExitForm() {
@@ -39,7 +37,8 @@ export default function ExitForm() {
   const [reason, setReason] = useState<ExitReason>("loss");
   const [notes, setNotes] = useState("");
   const [copies, setCopies] = useState<CopyItem[]>([]);
-  const [editing, setEditing] = useState<"notes" | "copies" | null>(null);
+  const loadMore = useRef<() => void>(undefined);
+  const [editing, setEditing] = useState<"notes" | null>(null);
 
   const toggle = (c: CopyItem) =>
     setCopies((p) =>
@@ -77,7 +76,7 @@ export default function ExitForm() {
         onSubmit={submit}
         onCancel={() => router.back()}
       />
-      <ScreenBody form>
+      <ScreenBody form onEndReached={() => loadMore.current?.()}>
         <FieldError>{errors.form}</FieldError>
         <Panel title="Detalles">
           <SplitColumns>
@@ -118,22 +117,12 @@ export default function ExitForm() {
           </SplitColumns>
         </Panel>
 
-        <Panel
-          title="Ejemplares"
-          lead={
-            <Button
-              title="Agregar"
-              size="sm"
-              onPress={() => setEditing("copies")}
-            />
-          }
-        >
-          <ExitCopyTable
-            copies={copies}
-            error={errors.fields.copyIds}
-            onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
-          />
-        </Panel>
+        <CopySelector
+          selected={copies}
+          onToggle={toggle}
+          error={errors.fields.copyIds}
+          loadMoreRef={loadMore}
+        />
       </ScreenBody>
 
       {editing === "notes" && (
@@ -142,15 +131,6 @@ export default function ExitForm() {
           onChange={setNotes}
           onClose={() => setEditing(null)}
         />
-      )}
-      {editing === "copies" && (
-        <Dialog onClose={() => setEditing(null)} size="lg" tone="canvas">
-          <ExitCopyPicker
-            className="flex-1"
-            selected={copies}
-            onToggle={toggle}
-          />
-        </Dialog>
       )}
     </>
   );

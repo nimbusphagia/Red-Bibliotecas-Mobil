@@ -12,8 +12,8 @@ import CopyBookGroup, {
   RemoteCopyBookGroup,
   groupCopies,
   type BookHeader,
-} from "@/features/inventory/ui/picker/CopyBookGroup";
-import { findCopyWithBook } from "@/features/inventory/ui/picker/copyWithBook";
+} from "./CopyBookGroup";
+import { findCopyWithBook } from "./copyWithBook";
 import {
   Button,
   FieldError,
@@ -60,7 +60,7 @@ const stateOf = (c: CopyItem) => ({
   text: COPY_STATUS_ES[c.status],
 });
 
-const notLendable = (c: CopyItem) => c.status !== "available";
+const notAvailable = (c: CopyItem) => c.status !== "available";
 
 type Match = { search: string; copyId?: number; shelfId?: number };
 
@@ -85,8 +85,8 @@ type Props = {
   loadMoreRef: RefObject<(() => void) | undefined>;
 };
 
-/** Libros con sus ejemplares; se tocan los disponibles para prestarlos. */
-export default function LoanCopySelector({
+/** Libros con sus ejemplares; se tocan los disponibles para elegirlos. */
+export default function CopySelector({
   selected,
   onToggle,
   error,
@@ -210,7 +210,7 @@ export default function LoanCopySelector({
               selected={selected}
               onToggle={onToggle}
               stateOf={stateOf}
-              disabled={notLendable}
+              disabled={notAvailable}
             />
           )
         }
