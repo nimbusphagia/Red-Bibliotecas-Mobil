@@ -1,49 +1,72 @@
+import { useSession } from "@/features/account/internal/session";
+import { listCopies } from "@/features/inventory/internal/copy/service";
+import type { CopySummary } from "@/features/inventory/internal/copy/types";
+import { canManageStock } from "@/features/inventory/internal/movement/utils/auth";
 import {
   getShelf,
-  listShelfCopies,
+  getShelfSummary,
 } from "@/features/inventory/internal/shelf/service";
-import type {
-  Shelf,
-  ShelfCopy,
-} from "@/features/inventory/internal/shelf/types";
+import type { Shelf } from "@/features/inventory/internal/shelf/types";
 import {
   Button,
+  DetailColumns,
   ItemList,
   PageHeader,
   Panel,
   Searchbar,
+  type DetailRow,
 } from "@/features/shared/components";
 import { shelfLabel } from "@/features/shared/format/translate";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { PAGE_SIZE, useSearch } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import { ScreenBody } from "@/features/shared/layout/Screen";
 import { routeIdSchema } from "@/features/shared/types/schemas";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { PencilLine } from "lucide-react-native";
 import { ActivityIndicator, View } from "react-native";
-import ShelfCopyRow from "./shelves/detail/ShelfCopyRow";
-import MoveCopyDialog from "./shelves/form/MoveCopyDialog";
+import CopyRow from "./copies/list/CopyRow";
 import ShelfDialog from "./shelves/form/ShelfDialog";
+
+type Data = { shelf: Shelf; summary: CopySummary };
+
+const countRow = (label: string, n: number): DetailRow => ({
+  label,
+  content: String(n),
+  muted: n === 0,
+});
 
 export default function ShelfDetail({ id }: { id: string }) {
   const shelfId = routeIdSchema.parse(id);
-  const [moving, setMoving] = useState<ShelfCopy | null>(null);
-  const [shelf, setShelf] = useState<Shelf | null>(null);
   const [editing, setEditing] = useState(false);
   const { search, setSearch, debouncedSearch } = useSearch();
   const [idText, setIdText] = useState("");
   const copyId = useDebounce(idText);
+  const session = useSession();
+  const actorId =
+    session.status === "signed-in" && canManageStock(session.account.role)
+      ? session.account.id
+      : null;
 
-  useEffect(() => {
-    getShelf(shelfId).then(setShelf);
-  }, [shelfId]);
+  const { data, reload } = useFocusData(
+    useCallback(async (): Promise<Data> => {
+      const [shelf, summary] = await Promise.all([
+        getShelf(shelfId),
+        getShelfSummary(shelfId),
+      ]);
+      return { shelf, summary };
+    }, [shelfId]),
+  );
 
   const fetchPage = useCallback(
     (offset: number) =>
-      listShelfCopies({
+      listCopies({
         shelfId,
+        excludeReleased: true,
         search: debouncedSearch,
         copyId: copyId ? Number(copyId) : undefined,
+        sortBy: "title",
         limit: PAGE_SIZE,
         offset,
       }),
@@ -52,7 +75,21 @@ export default function ShelfDetail({ id }: { id: string }) {
 
   const list = useInfiniteList(fetchPage);
 
-  if (!shelf) return <ActivityIndicator />;
+  if (!data) return <ActivityIndicator />;
+
+  const { shelf, summary } = data;
+
+  const summaryRows: DetailRow[] = [
+    countRow("Total", summary.total),
+    countRow("Prestados", summary.onLoan),
+    countRow("Deteriorados", summary.damaged),
+    countRow("Etiquetados", summary.labeled),
+    countRow("Sin etiquetar", summary.pending),
+    {
+      ...countRow("Desactualizados", summary.outdated),
+      accent: summary.outdated > 0 ? "neg" : undefined,
+    },
+  ];
 
   return (
     <>
@@ -71,53 +108,57 @@ export default function ShelfDetail({ id }: { id: string }) {
           )
         }
       />
-      <Panel
-        title="Ejemplares"
-        className="flex-1"
-        lead={
-          <View className="h-10 flex-1 flex-row justify-end gap-3">
-            <Searchbar
-              className="flex-1"
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Buscar por título o tejuelo..."
-            />
-            <Searchbar
-              className="w-28"
-              value={idText}
-              onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
-              placeholder="#ID"
-            />
-          </View>
-        }
-      >
-        <ItemList
-          items={list.items}
-          loading={list.loading}
-          onEndReached={list.loadMore}
-          renderItem={(copy) => (
-            <ShelfCopyRow copy={copy} onMove={() => setMoving(copy)} />
-          )}
+      <ScreenBody onEndReached={list.loadMore}>
+        <DetailColumns
+          columns={[
+            { title: "Resumen", rows: summaryRows, columns: 2, fixed: true },
+          ]}
         />
-      </Panel>
+        <Panel
+          title="Ejemplares"
+          className="pt-7"
+          lead={
+            <View className="h-10 flex-1 flex-row justify-end gap-3">
+              <Searchbar
+                className="flex-1"
+                value={search}
+                onChangeText={setSearch}
+                placeholder="Buscar por título o tejuelo..."
+              />
+              <Searchbar
+                className="w-28"
+                value={idText}
+                onChangeText={(t) => setIdText(t.replace(/\D/g, ""))}
+                placeholder="#ID"
+              />
+            </View>
+          }
+        >
+          <ItemList
+            inline
+            items={list.items}
+            loading={list.loading}
+            renderItem={(copy) => (
+              <CopyRow
+                copy={copy}
+                actorId={actorId}
+                showBook
+                onChanged={() => {
+                  list.reload();
+                  reload();
+                }}
+              />
+            )}
+          />
+        </Panel>
+      </ScreenBody>
       {editing && (
         <ShelfDialog
           shelf={shelf}
           onClose={() => setEditing(false)}
           onSaved={() => {
             setEditing(false);
-            getShelf(shelfId).then(setShelf);
-          }}
-        />
-      )}
-      {moving && (
-        <MoveCopyDialog
-          copy={moving}
-          currentShelfId={shelfId}
-          onClose={() => setMoving(null)}
-          onMoved={() => {
-            setMoving(null);
-            list.reload();
+            reload();
           }}
         />
       )}

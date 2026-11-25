@@ -25,6 +25,8 @@ type Props = {
   showPanel?: boolean;
   /** Filtros activos que no están en `filters`. */
   extraCount?: number;
+  /** Botón del panel claro (en los diálogos). */
+  light?: boolean;
 };
 
 export default function QuickFilters({
@@ -33,6 +35,7 @@ export default function QuickFilters({
   fields = PANEL_FIELDS,
   showPanel = true,
   extraCount = 0,
+  light,
 }: Props) {
   const activeCount = Object.values(filters).filter(
     (v) => v !== undefined,
@@ -77,7 +80,7 @@ export default function QuickFilters({
       {showPanel && (
         <View>
           <Button
-            variant="solid"
+            variant={light ? "soft" : "solid"}
             weight="lg"
             size="sm"
             icon={SlidersHorizontal}

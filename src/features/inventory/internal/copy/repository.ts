@@ -44,6 +44,7 @@ import {
   type LabelCandidate,
   type CopyLookup,
   type CopyStatus,
+  type CopySummary,
   type NewCopy,
 } from "./types";
 
@@ -218,12 +219,18 @@ export async function listCopies(
     status: copy.status,
     createdAt: copy.createdAt,
     labeledAt: copy.labeledAt,
+    title: book.titleKey,
   }[sortBy];
 
   const [items, [{ n }]] = await Promise.all([
     selectItems()
       .where(where)
-      .orderBy(sql`${sortKey} is null`, direction(sortDir)(sortKey), copy.id)
+      .orderBy(
+        sql`${sortKey} is null`,
+        direction(sortDir)(sortKey),
+        copy.copyNumber,
+        copy.id,
+      )
       .limit(limit)
       .offset(offset),
     db
@@ -236,7 +243,26 @@ export async function listCopies(
 }
 
 const tally = (cond: SQL | undefined) =>
-  sql<number>`sum(case when ${cond} then 1 else 0 end)`.mapWith(Number);
+  sql<number>`coalesce(sum(case when ${cond} then 1 else 0 end), 0)`.mapWith(
+    Number,
+  );
+
+/** Conteos de los ejemplares que cumplen `match`. */
+export async function summarizeCopies(match: CopyMatch): Promise<CopySummary> {
+  const [row] = await db
+    .select({
+      total: count(),
+      onLoan: tally(eq(copy.status, "on_loan")),
+      damaged: tally(eq(copy.status, "damaged")),
+      labeled: tally(and(isNotNull(copy.labeledAt), not(outdatedSql))),
+      pending: tally(isNull(copy.labeledAt)),
+      outdated: tally(outdatedSql),
+    })
+    .from(copy)
+    .innerJoin(book, eq(book.id, copy.bookId))
+    .where(copyWhere(match));
+  return row;
+}
 
 const copyBookFields = {
   id: book.id,

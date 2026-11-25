@@ -17,6 +17,7 @@ export type DetailColumn = {
   variant?: DetailRowsVariant;
   columns?: 1 | 2;
   fit?: boolean;
+  fixed?: boolean;
 };
 
 type Props = { columns: DetailColumn[] };
@@ -33,7 +34,12 @@ export function DetailColumns({ columns }: Props) {
             tone={c.tone}
             className={cn(isExpanded && (c.fit ? "w-60" : "flex-1"))}
           >
-            <DetailRows rows={c.rows} variant={c.variant} columns={c.columns} />
+            <DetailRows
+              rows={c.rows}
+              variant={c.variant}
+              columns={c.columns}
+              fixed={c.fixed}
+            />
           </Panel>
         </Fragment>
       ))}

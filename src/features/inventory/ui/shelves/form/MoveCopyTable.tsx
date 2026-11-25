@@ -5,7 +5,7 @@ import {
   ListRow,
   Text,
 } from "@/features/shared/components";
-import { Trash } from "lucide-react-native";
+import { Minus } from "lucide-react-native";
 import { View } from "react-native";
 import type { MoveCopy } from "../options";
 
@@ -32,7 +32,9 @@ export default function MoveCopyTable({
             variant="subtitled"
             text={c.title}
             subtitle1={c.labelText ?? undefined}
-            subtitle2={
+          />
+          <Column
+            text={
               c.shelfId === targetId
                 ? "Ya está en el destino"
                 : `Desde: ${c.shelfName}`
@@ -41,7 +43,7 @@ export default function MoveCopyTable({
           <Column variant="actions" expand={false}>
             <Button
               variant="soft"
-              icon={Trash}
+              icon={Minus}
               onPress={() => onRemove(c.id)}
             />
           </Column>

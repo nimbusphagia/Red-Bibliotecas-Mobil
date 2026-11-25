@@ -31,20 +31,6 @@ export const listShelvesSchema = z
   .object(listShape(SHELF_SORT_KEYS, "name"))
   .transform(withTokens);
 
-const { limit, offset } = listShape(SHELF_SORT_KEYS, "name");
-
-export const listShelfCopiesSchema = z
-  .object({
-    shelfId: idSchema,
-    copyId: idSchema.optional(),
-    search: z.string().default(""),
-    limit,
-    offset,
-  })
-  .transform(withTokens);
-
-export type ShelfCopiesParams = z.input<typeof listShelfCopiesSchema>;
-
 export const moveCopiesSchema = z.object({
   shelfId: idSchema,
   copyIds: z

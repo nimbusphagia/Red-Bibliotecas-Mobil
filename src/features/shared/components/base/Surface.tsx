@@ -1,4 +1,9 @@
-import { useContext, type PropsWithChildren, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  type PropsWithChildren,
+  type ReactNode,
+} from "react";
 import { View, type ViewProps } from "react-native";
 import { cn, ToneContext, tones, type Tone } from "../../theme";
 import { Text } from "./Text";
@@ -55,6 +60,10 @@ export function Surface({
   );
 }
 
+/** Dentro de un Panel (sección con encabezado): las listas van más compactas. */
+const SectionContext = createContext(false);
+export const useInSection = () => useContext(SectionContext);
+
 type PanelProps = PropsWithChildren<{
   title?: string;
   titleClassName?: string;
@@ -74,23 +83,25 @@ export function Panel({
 }: PanelProps) {
   return (
     <Surface tone={tone} className={cn("gap-2 p-5", className)}>
-      {(title || lead) && (
-        <View className="mb-2 flex-row items-center justify-between gap-4">
-          {title ? (
-            <Text variant="section" className={titleClassName}>
-              {title}
-            </Text>
-          ) : (
-            <View />
-          )}
-          {/* Margen negativo: el lead (p. ej. un botón) no agranda el encabezado,
+      <SectionContext.Provider value>
+        {(title || lead) && (
+          <View className="mb-2 flex-row items-center justify-between gap-4">
+            {title ? (
+              <Text variant="section" className={titleClassName}>
+                {title}
+              </Text>
+            ) : (
+              <View />
+            )}
+            {/* Margen negativo: el lead (p. ej. un botón) no agranda el encabezado,
               así el título queda igual con o sin acción. */}
-          {lead && (
-            <View className="-my-2 flex-1 flex-row justify-end">{lead}</View>
-          )}
-        </View>
-      )}
-      {children}
+            {lead && (
+              <View className="-my-2 flex-1 flex-row justify-end">{lead}</View>
+            )}
+          </View>
+        )}
+        {children}
+      </SectionContext.Provider>
     </Surface>
   );
 }

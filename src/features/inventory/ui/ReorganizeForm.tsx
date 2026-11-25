@@ -1,17 +1,21 @@
 import { useSession } from "@/features/account/internal/session";
-import { moveCopies } from "@/features/inventory/internal/shelf/service";
+import {
+  getShelf,
+  getShelfSummary,
+  moveCopies,
+} from "@/features/inventory/internal/shelf/service";
 import {
   Button,
   FieldError,
   FieldRow,
   FormHeader,
+  LabeledItem,
   Panel,
-  SplitColumns,
   type Option,
 } from "@/features/shared/components";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MoveCopyTable from "./shelves/form/MoveCopyTable";
 import {
   CopySearchDialog,
@@ -28,6 +32,24 @@ export default function ReorganizeForm() {
   const [copies, setCopies] = useState<MoveCopy[]>([]);
   const [editing, setEditing] = useState<"target" | "copies" | null>(null);
   const close = () => setEditing(null);
+  const [targetInfo, setTargetInfo] = useState<{
+    description: string | null;
+    total: number;
+  }>();
+
+  useEffect(() => {
+    setTargetInfo(undefined);
+    if (!target) return;
+    let live = true;
+    Promise.all([getShelf(target.id), getShelfSummary(target.id)]).then(
+      ([shelf, summary]) =>
+        live &&
+        setTargetInfo({ description: shelf.description, total: summary.total }),
+    );
+    return () => {
+      live = false;
+    };
+  }, [target]);
 
   const pending = copies.filter((c) => c.shelfId !== target?.id).length;
 
@@ -71,34 +93,42 @@ export default function ReorganizeForm() {
       />
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
-        <SplitColumns>
-          <Panel
-            title="Ejemplares"
-            lead={
-              <Button
-                title="Agregar"
-                size="sm"
-                onPress={() => setEditing("copies")}
-              />
-            }
-          >
-            <MoveCopyTable
-              copies={copies}
-              targetId={target?.id}
-              error={copyError}
-              onRemove={removeCopy}
+        <Panel title="Estantería">
+          <FieldRow
+            label="Mover a *"
+            labelWidth="formWide"
+            value={target?.label}
+            error={errors.fields.shelfId}
+            onPress={() => setEditing("target")}
+          />
+          <LabeledItem
+            label="Descripción"
+            content={targetInfo?.description ?? undefined}
+            labelWidth="formWide"
+          />
+          <LabeledItem
+            label="Ejemplares"
+            content={targetInfo && String(targetInfo.total)}
+            labelWidth="formWide"
+          />
+        </Panel>
+        <Panel
+          title="Ejemplares"
+          lead={
+            <Button
+              title="Agregar"
+              size="sm"
+              onPress={() => setEditing("copies")}
             />
-          </Panel>
-
-          <Panel title="Estantería">
-            <FieldRow
-              label="Destino *"
-              value={target?.label}
-              error={errors.fields.shelfId}
-              onPress={() => setEditing("target")}
-            />
-          </Panel>
-        </SplitColumns>
+          }
+        >
+          <MoveCopyTable
+            copies={copies}
+            targetId={target?.id}
+            error={copyError}
+            onRemove={removeCopy}
+          />
+        </Panel>
       </ScreenBody>
 
       {editing === "target" && (

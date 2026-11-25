@@ -7,6 +7,7 @@ export type LabeledItemVariant = "pill" | "input";
 const labelWidths = {
   narrow: "w-[28%]",
   wide: "w-[30%]",
+  half: "w-[45%]",
   form: "w-[110px]",
   formWide: "w-[140px]",
   fit: "shrink-0 px-4",
@@ -46,7 +47,7 @@ export function LabeledItem({
     <View
       className={cn(
         "flex-row items-center justify-between",
-        labelWidth === "narrow" ? "gap-6" : "gap-2",
+        labelWidth === "narrow" || labelWidth === "half" ? "gap-6" : "gap-2",
         expand && "flex-1",
         className,
       )}

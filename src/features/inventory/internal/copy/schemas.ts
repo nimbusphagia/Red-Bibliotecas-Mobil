@@ -11,6 +11,7 @@ export const COPY_SORT_KEYS = [
   "status",
   "createdAt",
   "labeledAt",
+  "title",
 ] as const;
 export type CopySort = (typeof COPY_SORT_KEYS)[number];
 

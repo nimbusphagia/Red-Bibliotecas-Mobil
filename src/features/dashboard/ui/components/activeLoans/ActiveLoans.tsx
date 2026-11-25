@@ -9,6 +9,7 @@ import {
 } from "@/features/shared/components";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { Link } from "expo-router";
+import type { AccentLevel } from "@/features/shared/theme";
 import { ArrowUpRight } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
@@ -17,9 +18,9 @@ const LIMIT = 10;
 
 type Filter = Exclude<LoanState, "closed">;
 
-const FILTERS: { value: Filter; label: string }[] = [
+const FILTERS: { value: Filter; label: string; accent?: AccentLevel }[] = [
   { value: "open", label: "Activos" },
-  { value: "overdue", label: "Vencidos" },
+  { value: "overdue", label: "Vencidos", accent: "neg" },
 ];
 
 export default function ActiveLoans() {
@@ -60,7 +61,7 @@ export default function ActiveLoans() {
         <Text variant="caption">No hay préstamos pendientes</Text>
       ) : (
         <ScrollView
-          className="min-h-[160] max-h-[300]"
+          className="min-h-[180] max-h-[360]"
           contentContainerClassName="gap-2.5"
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}

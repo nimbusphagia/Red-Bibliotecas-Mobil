@@ -1,7 +1,7 @@
 import { useSession } from "@/features/account/internal/session";
 import { loadShelves, useOptions } from "@/features/catalog/ui/options";
 import { moveCopies } from "@/features/inventory/internal/shelf/service";
-import type { ShelfCopy } from "@/features/inventory/internal/shelf/types";
+import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import {
   Dialog,
   DialogActions,
@@ -14,7 +14,7 @@ import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 import { useState } from "react";
 
 type Props = {
-  copy: Pick<ShelfCopy, "id" | "bookTitle" | "labelText">;
+  copy: Pick<CopyItem, "id" | "bookTitle" | "labelText">;
   currentShelfId: number;
   onClose: () => void;
   onMoved: () => void;

@@ -11,7 +11,7 @@ import {
   ShelvingUnit,
 } from "lucide-react-native";
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import PrintLabelsDialog from "../../labels/form/PrintLabelsDialog";
 import { LABEL_STATE_ICON, labelStateOf } from "../../labels/labelState";
 import MoveCopyDialog from "../../shelves/form/MoveCopyDialog";
@@ -25,9 +25,11 @@ type Props = {
   /** Usuario que puede mover y recuperar; null si no tiene permiso. */
   actorId: number | null;
   onChanged: () => void;
+  /** Mostrar el libro en lugar del estante (en el detalle de un estante). */
+  showBook?: boolean;
 };
 
-export default function CopyRow({ copy, actorId, onChanged }: Props) {
+export default function CopyRow({ copy, actorId, onChanged, showBook }: Props) {
   const state = labelStateOf(copy);
   const [dialog, setDialog] = useState<Dialog>(null);
   const { isExpanded } = useLayoutMode();
@@ -53,22 +55,39 @@ export default function CopyRow({ copy, actorId, onChanged }: Props) {
     <>
       <ListRow>
         <Column variant="id" text={`#${copy.id}`} />
-        <Column text={copy.labelText ?? "---"} />
-        <Column>
-          <Link href={`/shelves/${copy.shelfId}`} asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              weight="md"
-              icon={ShelvingUnit}
-              title={shelfLabel({
-                name: copy.shelfName,
-                isDefault: copy.shelfIsDefault,
-              })}
-              className="-ml-4 shrink"
-            />
-          </Link>
-        </Column>
+        {showBook ? (
+          <>
+            <Link href={`/catalog/${copy.bookId}`} asChild>
+              <Pressable className="flex-1 active:opacity-80">
+                <Column
+                  variant="subtitled"
+                  text={copy.bookTitle}
+                  subtitle1={copy.authors ?? undefined}
+                />
+              </Pressable>
+            </Link>
+            <Column text={copy.labelText ?? "---"} />
+          </>
+        ) : (
+          <>
+            <Column text={copy.labelText ?? "---"} />
+            <Column>
+              <Link href={`/shelves/${copy.shelfId}`} asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  weight="md"
+                  icon={ShelvingUnit}
+                  title={shelfLabel({
+                    name: copy.shelfName,
+                    isDefault: copy.shelfIsDefault,
+                  })}
+                  className="-ml-4 shrink"
+                />
+              </Link>
+            </Column>
+          </>
+        )}
         <Column
           variant="actions"
           expand={false}
@@ -132,7 +151,9 @@ export default function CopyRow({ copy, actorId, onChanged }: Props) {
             >
               <Button
                 variant="soft"
-                accent={state === "outdated" ? "neg" : undefined}
+                accent={
+                  state === "outdated" ? "neg" : showBook ? "sm" : undefined
+                }
                 size="sm"
                 icon={LABEL_STATE_ICON[state]}
                 title={state === "outdated" ? "Actualizar" : "Etiquetar"}

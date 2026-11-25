@@ -100,10 +100,7 @@ export type LabelFailure<R extends string> = {
 };
 
 export type MarkFailureReason =
-  | "not_found"
-  | "released"
-  | "incomplete"
-  | "conflict";
+  "not_found" | "released" | "incomplete" | "conflict";
 
 export type MarkLabeledResult = {
   /** Etiquetados ahora, incluidos los desactualizados que se volvieron a guardar. */
@@ -127,4 +124,13 @@ export type CopyItemRow = Omit<CopyItem, "loan"> & {
   visitorId: number | null;
   visitorName: string | null;
   expiresBy: string | null;
+};
+
+export type CopySummary = {
+  total: number;
+  onLoan: number;
+  damaged: number;
+  labeled: number;
+  pending: number;
+  outdated: number;
 };

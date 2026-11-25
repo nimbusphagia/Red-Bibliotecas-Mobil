@@ -11,25 +11,26 @@ import {
 } from "@/features/shared/errors/errors";
 import type { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
-import { findCopiesByIdsSync, setCopiesShelfSync } from "../copy/repository";
-import type { CopyStatus } from "../copy/types";
+import {
+  findCopiesByIdsSync,
+  setCopiesShelfSync,
+  summarizeCopies,
+} from "../copy/repository";
+import type { CopyStatus, CopySummary } from "../copy/types";
 import { requireStockRole } from "../movement/utils/auth";
 import * as repo from "./repository";
 import { searchKey } from "@/features/shared/format/text";
 import {
   createShelfSchema,
-  listShelfCopiesSchema,
   listShelvesSchema,
   moveCopiesSchema,
   updateShelfSchema,
   type MoveCopiesInput,
-  type ShelfCopiesParams,
   type ShelfListParams,
 } from "./schemas";
 import type {
   NewShelf,
   Shelf,
-  ShelfCopy,
   ShelfListItem,
   ShelfPatch,
   ShelfUsage,
@@ -51,12 +52,10 @@ export async function listShelves(
   return repo.listShelves(parseOrThrow(listShelvesSchema, params));
 }
 
-export async function listShelfCopies(
-  params: ShelfCopiesParams,
-): Promise<Page<ShelfCopy>> {
-  const { shelfId, ...filters } = parseOrThrow(listShelfCopiesSchema, params);
+/** Conteos de los ejemplares activos del estante. */
+export async function getShelfSummary(shelfId: number): Promise<CopySummary> {
   await getShelf(shelfId);
-  return repo.listShelfCopies(shelfId, filters);
+  return summarizeCopies({ shelfId, tokens: [], excludeReleased: true });
 }
 
 export const createShelf = makeCreate({

@@ -3,7 +3,7 @@ import { PropsWithChildren, ReactNode } from "react";
 import { View } from "react-native";
 import { cn } from "../../theme";
 import { Icon } from "../base/Icon";
-import { Surface } from "../base/Surface";
+import { Surface, useInSection } from "../base/Surface";
 import { Text } from "../base/Text";
 
 type Props = {
@@ -14,12 +14,14 @@ type Props = {
 };
 
 export function ListRow({ children, compact, inset = true, className }: Props) {
+  const inSection = useInSection();
   return (
     <Surface
       row={inset}
       className={cn(
-        "flex-row items-center justify-between gap-6 px-3",
-        compact ? "py-1" : "py-2",
+        "flex-row items-center justify-between gap-6",
+        inSection ? "px-3" : "px-4",
+        compact ? "py-1.5" : "py-3",
         className,
       )}
     >

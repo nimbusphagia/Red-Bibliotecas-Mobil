@@ -110,6 +110,7 @@ export default function BookCopyPicker<T extends { id: number }>({
       onOpen={setDialog}
       fields={panelOnly ? [] : filterFields}
       showPanel={panelOnly}
+      light
     />
   );
   const inSearchRow = panelOnly && filterInSearchRow;

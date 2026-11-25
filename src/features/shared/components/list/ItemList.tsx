@@ -1,10 +1,10 @@
-import type { ReactElement, ReactNode } from "react";
+import { Fragment, type ReactElement, type ReactNode } from "react";
 import { ActivityIndicator, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { useLayoutMode } from "../../hooks/useLayoutMode";
 import { cn, colors, useTone, type Tone } from "../../theme";
 import { LAYOUT } from "../base/motion";
-import { Surface } from "../base/Surface";
+import { Surface, useInSection } from "../base/Surface";
 import { Text } from "../base/Text";
 import { AccordionProvider } from "./CollapsibleList";
 
@@ -31,9 +31,14 @@ type Props<T extends { id: number }> = {
   compactColumns?: number;
   /** Separación entre filas. Solo los pickers de los diálogos la usan. */
   gap?: boolean;
+  /**
+   * Sin scroll propio: los elementos se dibujan en la página, que scrollea
+   * (dentro de ScreenBody, que también pide las páginas). Una sola columna.
+   */
+  inline?: boolean;
 };
 
-const COLUMN_GAP = 12;
+const COLUMN_GAP = 16;
 
 function Loader() {
   const t = useTone();
@@ -51,15 +56,22 @@ export function ItemList<T extends { id: number }>({
   columns = 1,
   compactColumns = 1,
   gap = true,
+  inline,
 }: Props<T>) {
   const { isExpanded } = useLayoutMode();
   const numColumns = isExpanded ? columns : compactColumns;
   const multi = numColumns > 1;
+  const pad = useInSection() ? "py-4" : "p-4";
   const toolbarRow = "flex-row items-center justify-between";
+  const empty = (
+    <Text variant="caption" className="pt-3 text-center">
+      Sin resultados
+    </Text>
+  );
 
   return (
     <AccordionProvider>
-      <View className="flex-1 gap-3">
+      <View className={cn("gap-3", !inline && "flex-1")}>
         {toolbar &&
           (toolbarSurface ? (
             <Surface
@@ -71,43 +83,49 @@ export function ItemList<T extends { id: number }>({
           ) : (
             <View className={cn(toolbarRow, "px-1")}>{toolbar}</View>
           ))}
-        <Surface tone={tone} className="flex-1 overflow-hidden">
-          <Animated.FlatList
-            key={numColumns}
-            numColumns={numColumns}
-            data={items}
-            keyExtractor={(i) => String(i.id)}
-            renderItem={({ item }) =>
-              multi ? (
-                <View
-                  style={{
-                    width: `${100 / numColumns}%`,
-                    paddingHorizontal: COLUMN_GAP / 2,
-                  }}
-                >
-                  {renderItem(item)}
-                </View>
-              ) : (
-                renderItem(item)
-              )
-            }
-            contentContainerClassName={cn("p-3", gap && "gap-3")}
-            itemLayoutAnimation={multi ? undefined : LAYOUT}
-            columnWrapperStyle={
-              multi ? { marginHorizontal: -COLUMN_GAP / 2 } : undefined
-            }
-            showsVerticalScrollIndicator={false}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={loading ? <Loader /> : undefined}
-            ListEmptyComponent={
-              loading ? undefined : (
-                <Text variant="caption" className="pt-3 text-center">
-                  Sin resultados
-                </Text>
-              )
-            }
-          />
+        <Surface
+          tone={tone}
+          className={cn("overflow-hidden", !inline && "flex-1")}
+        >
+          {inline ? (
+            <View className={cn(pad, gap && "gap-4")}>
+              {items.map((item) => (
+                <Fragment key={item.id}>{renderItem(item)}</Fragment>
+              ))}
+              {loading ? <Loader /> : items.length === 0 && empty}
+            </View>
+          ) : (
+            <Animated.FlatList
+              key={numColumns}
+              numColumns={numColumns}
+              data={items}
+              keyExtractor={(i) => String(i.id)}
+              renderItem={({ item }) =>
+                multi ? (
+                  <View
+                    style={{
+                      width: `${100 / numColumns}%`,
+                      paddingHorizontal: COLUMN_GAP / 2,
+                    }}
+                  >
+                    {renderItem(item)}
+                  </View>
+                ) : (
+                  renderItem(item)
+                )
+              }
+              contentContainerClassName={cn(pad, gap && "gap-4")}
+              itemLayoutAnimation={multi ? undefined : LAYOUT}
+              columnWrapperStyle={
+                multi ? { marginHorizontal: -COLUMN_GAP / 2 } : undefined
+              }
+              showsVerticalScrollIndicator={false}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={loading ? <Loader /> : undefined}
+              ListEmptyComponent={loading ? undefined : empty}
+            />
+          )}
         </Surface>
       </View>
     </AccordionProvider>
