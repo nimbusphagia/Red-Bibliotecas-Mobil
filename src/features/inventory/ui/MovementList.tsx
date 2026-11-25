@@ -12,7 +12,6 @@ import {
 } from "@/features/shared/components";
 import { useFocusData } from "@/features/shared/hooks/useFocusData";
 import { useSort } from "@/features/shared/hooks/useListControls";
-import { toISODate } from "@/features/shared/format/dates";
 import { Link } from "expo-router";
 import {
   PackageMinus,
@@ -33,6 +32,8 @@ const TYPE_FILTERS: { value: TypeFilter; label: string }[] = [
   { value: "entry", label: "Entradas" },
   { value: "exit", label: "Salidas" },
 ];
+
+const INITIAL_MOVEMENTS = 6;
 
 const SORTS: SortOption<MovementSort>[] = [
   { key: "createdAt", label: "Fecha", defaultDir: "desc" },
@@ -59,7 +60,14 @@ export default function MovementList() {
       [filters, sort.dir],
     ),
   );
-  const currentMonth = toISODate().slice(0, 7);
+
+  const openMonths = new Set<string>();
+  let shown = 0;
+  for (const m of months ?? []) {
+    if (shown >= INITIAL_MOVEMENTS) break;
+    openMonths.add(m.month);
+    shown += m.movements;
+  }
 
   return (
     <>
@@ -124,7 +132,7 @@ export default function MovementList() {
           <MovementMonthRow
             month={month}
             filters={filters}
-            defaultOpen={month.month === currentMonth}
+            defaultOpen={openMonths.has(month.month)}
           />
         )}
       />

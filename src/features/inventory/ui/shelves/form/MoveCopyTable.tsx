@@ -44,6 +44,7 @@ export default function MoveCopyTable({
             <Button
               variant="soft"
               icon={Minus}
+              className="bg-transparent"
               onPress={() => onRemove(c.id)}
             />
           </Column>

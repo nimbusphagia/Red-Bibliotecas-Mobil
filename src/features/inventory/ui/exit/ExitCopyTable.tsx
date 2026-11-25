@@ -5,14 +5,11 @@ import {
   Column,
   FieldError,
   ListRow,
-  StatusIcon,
   Text,
 } from "@/features/shared/components";
-import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { status } from "@/features/shared/theme";
 import { Minus } from "lucide-react-native";
 import { View } from "react-native";
-import { COPY_STATUS_ACCENT, COPY_STATUS_ICON } from "../copies/statusIcon";
 import { canExit } from "./canExit";
 
 type Props = {
@@ -39,27 +36,16 @@ export default function ExitCopyTable({
             <Column
               variant="subtitled"
               text={c.bookTitle}
+              textClass={blocked ? status.warning.text : undefined}
               subtitle1={c.authors ?? undefined}
             />
-            <Column expand={false} containerClass="w-32 shrink-0 gap-2">
-              <StatusIcon
-                icon={COPY_STATUS_ICON[c.status]}
-                accent={blocked ? undefined : COPY_STATUS_ACCENT[c.status]}
-                tone={blocked ? status.warning.icon : undefined}
-              />
-              <Text
-                variant="itemSm"
-                className={blocked ? status.warning.text : undefined}
-              >
-                {COPY_STATUS_ES[c.status]}
-              </Text>
-            </Column>
+            <Column text={c.labelText ?? "---"} />
             <Column variant="actions" expand={false}>
               <Button
                 variant="soft"
                 icon={Minus}
                 size="sm"
-                className="size-7"
+                className="size-7 bg-transparent"
                 onPress={() => onRemove(c.id)}
               />
             </Column>

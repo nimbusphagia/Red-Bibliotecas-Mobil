@@ -103,6 +103,7 @@ export type MovementMonth = {
   month: string;
   entries: number;
   exits: number;
+  movements: number;
 };
 
 export type ExitLine = {

@@ -210,6 +210,7 @@ export async function listMovementMonths(
       month: monthOf,
       entries: copiesOf("entry"),
       exits: copiesOf("exit"),
+      movements: sql<number>`count(*)`.mapWith(Number),
     })
     .from(stockMovement)
     .where(movementWhere(filters))

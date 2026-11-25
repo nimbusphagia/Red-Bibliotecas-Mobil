@@ -191,11 +191,12 @@ export const navActive: Box = {
   icon: "dark1",
 };
 
-export type AccentLevel = "sm" | "md" | "lg" | "neg";
+export type AccentLevel = "sm" | "md" | "lg" | "neg" | "dark";
 
 /**
  * Acentos para chips de valor (serie, reputación...), de menor a mayor
- * intensidad; `neg` es el resaltado negativo urgente. No dependen del tono.
+ * intensidad; `neg` es el resaltado negativo urgente y `dark` el chip oscuro
+ * neutro. No dependen del tono.
  */
 export const accents: Record<AccentLevel, ChipStyle> = {
   sm: { box: "bg-accentSm", label: "text-dark1", icon: "dark1", dot: "dark1" },
@@ -212,6 +213,7 @@ export const accents: Record<AccentLevel, ChipStyle> = {
     icon: "light1",
     dot: "light1",
   },
+  dark: chipDark.idle,
 };
 
 // Sin Surface arriba, lo que se dibuja está sobre el lienzo de la página.

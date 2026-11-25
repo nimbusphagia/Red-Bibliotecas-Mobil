@@ -41,7 +41,7 @@ export default function LabelCopyTable({ copies, error, onRemove }: Props) {
                 variant="soft"
                 icon={Minus}
                 size="sm"
-                className="size-7"
+                className="size-7 bg-transparent"
                 onPress={() => onRemove(c.id)}
               />
             </Column>

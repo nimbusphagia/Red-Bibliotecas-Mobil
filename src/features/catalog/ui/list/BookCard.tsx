@@ -12,7 +12,7 @@ const chip = (label: string | false | null, accent?: AccentLevel): ChipItem[] =>
 
 export default function BookCard({ book }: Props) {
   const chips = [
-    ...chip(book.damagedCount > 0 && "Ejemplares dañados", "neg"),
+    ...chip(book.damagedCount > 0 && "Ejemplares deteriorados", "neg"),
     ...chip(book.outdatedCount > 0 && "Tejuelos desactualizados", "neg"),
     ...chip(book.seriesName && `"${book.seriesName}"`, "md"),
     ...chip(book.collectionName, "sm"),

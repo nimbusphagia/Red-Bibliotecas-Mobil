@@ -25,6 +25,7 @@ import { toLineErrors } from "@/features/shared/errors/messages";
 import { formatDate } from "@/features/shared/format/dates";
 import { MOVEMENT_REASON_ES } from "@/features/shared/format/translate";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
@@ -52,6 +53,7 @@ export default function EntryForm() {
   const router = useRouter();
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
+  const { isExpanded } = useLayoutMode();
   const shelves = useOptions(loadShelves);
   const [reason, setReason] = useState<EntryReason>("purchase");
   const [notes, setNotes] = useState("");
@@ -149,6 +151,15 @@ export default function EntryForm() {
   const editLine = (index: number) =>
     setEditing({ type: lines[index].kind, index });
 
+  const notesField = (
+    <FieldRow
+      label="Notas"
+      value={notes || undefined}
+      error={errors.fields.notes}
+      onPress={() => setEditing({ type: "notes" })}
+    />
+  );
+
   return (
     <>
       <FormHeader
@@ -161,86 +172,86 @@ export default function EntryForm() {
       />
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
-        <SplitColumns>
-          <Panel title="Detalles">
-            <LabeledItem
-              label="Encargado"
-              content={
-                session.status === "signed-in"
-                  ? session.account.username
-                  : undefined
-              }
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Libros"
-              content={String(lines.length)}
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Ejemplares"
-              content={String(copies)}
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Registro"
-              content={formatDate(new Date())}
-              labelWidth="form"
-            />
-            <FieldRow
-              label="Notas"
-              value={notes || undefined}
-              error={errors.fields.notes}
-              onPress={() => setEditing({ type: "notes" })}
-            />
-            <View className="mt-4 mb-2 gap-1">
-              <SimpleSelect
-                label="Motivo *"
-                options={REASON_OPTIONS}
-                value={reason}
-                onChange={(r) => r && setReason(r)}
+        <Panel title="Detalles">
+          <SplitColumns>
+            <View className="gap-2">
+              <LabeledItem
+                label="Encargado"
+                content={
+                  session.status === "signed-in"
+                    ? session.account.username
+                    : undefined
+                }
+                labelWidth="form"
               />
-              <FieldError>{errors.fields.reason}</FieldError>
+              <LabeledItem
+                label="Fecha"
+                content={formatDate(new Date())}
+                labelWidth="form"
+              />
+              {isExpanded && notesField}
             </View>
-          </Panel>
-
-          <Panel
-            title="Libros"
-            lead={
-              <View className="flex-1 flex-row justify-between">
-                <Button
-                  title="Existente"
-                  variant="soft"
-                  icon={Search}
-                  size="sm"
-                  onPress={() => setEditing({ type: "existing" })}
+            <View className="gap-2">
+              <LabeledItem
+                label="Libros"
+                content={String(lines.length)}
+                labelWidth="form"
+              />
+              <LabeledItem
+                label="Ejemplares"
+                content={String(copies)}
+                labelWidth="form"
+              />
+              {!isExpanded && notesField}
+              <View className="mt-4 mb-2 gap-1">
+                <SimpleSelect
+                  label="Motivo *"
+                  options={REASON_OPTIONS}
+                  value={reason}
+                  onChange={(r) => r && setReason(r)}
                 />
-                <View className="flex-row gap-2">
-                  <Button
-                    title="Importar"
-                    variant="soft"
-                    icon={Upload}
-                    size="sm"
-                    onPress={() => setEditing({ type: "import" })}
-                  />
-                  <Button
-                    title="Nuevo"
-                    icon={Plus}
-                    size="sm"
-                    onPress={() => setEditing({ type: "new" })}
-                  />
-                </View>
+                <FieldError>{errors.fields.reason}</FieldError>
               </View>
-            }
-          >
-            <EntryLineTable
-              lines={lines}
-              error={errors.fields.lines}
-              onEdit={editLine}
-              onRemove={(i) => setLines((p) => p.filter((_, x) => x !== i))}
-            />
-          </Panel>
-        </SplitColumns>
+            </View>
+          </SplitColumns>
+        </Panel>
+
+        <Panel
+          title="Libros"
+          lead={
+            <View className="flex-1 flex-row justify-between">
+              <Button
+                title="Existente"
+                variant="soft"
+                icon={Search}
+                size="sm"
+                onPress={() => setEditing({ type: "existing" })}
+              />
+              <View className="flex-row gap-2">
+                <Button
+                  title="Importar"
+                  variant="soft"
+                  icon={Upload}
+                  size="sm"
+                  onPress={() => setEditing({ type: "import" })}
+                />
+                <Button
+                  title="Nuevo"
+                  icon={Plus}
+                  size="sm"
+                  onPress={() => setEditing({ type: "new" })}
+                />
+              </View>
+            </View>
+          }
+        >
+          <EntryLineTable
+            lines={lines}
+            error={errors.fields.lines}
+            onEdit={editLine}
+            onRemove={(i) => setLines((p) => p.filter((_, x) => x !== i))}
+          />
+        </Panel>
       </ScreenBody>
 
       {editing?.type === "notes" && (

@@ -18,6 +18,7 @@ import {
 import { formatDate } from "@/features/shared/format/dates";
 import { MOVEMENT_REASON_ES } from "@/features/shared/format/translate";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -35,6 +36,7 @@ export default function ExitForm() {
   const router = useRouter();
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
+  const { isExpanded } = useLayoutMode();
   const [reason, setReason] = useState<ExitReason>("loss");
   const [notes, setNotes] = useState("");
   const [copies, setCopies] = useState<CopyItem[]>([]);
@@ -59,6 +61,15 @@ export default function ExitForm() {
     });
   };
 
+  const notesField = (
+    <FieldRow
+      label="Notas"
+      value={notes || undefined}
+      error={errors.fields.notes}
+      onPress={() => setEditing("notes")}
+    />
+  );
+
   return (
     <>
       <FormHeader
@@ -71,67 +82,67 @@ export default function ExitForm() {
       />
       <ScreenBody form>
         <FieldError>{errors.form}</FieldError>
-        <SplitColumns>
-          <Panel title="Detalles">
-            <LabeledItem
-              label="Encargado"
-              content={
-                session.status === "signed-in"
-                  ? session.account.username
-                  : undefined
-              }
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Seleccionados"
-              content={String(copies.length)}
-              labelWidth="form"
-            />
-            <LabeledItem
-              label="Registro"
-              content={formatDate(new Date())}
-              labelWidth="form"
-            />
-            <FieldRow
-              label="Notas"
-              value={notes || undefined}
-              error={errors.fields.notes}
-              onPress={() => setEditing("notes")}
-            />
-            <View className="mt-4 mb-2 gap-1">
-              <SimpleSelect
-                label="Motivo *"
-                options={REASON_OPTIONS}
-                value={reason}
-                onChange={(r) => r && setReason(r)}
+        <Panel title="Detalles">
+          <SplitColumns>
+            <View className="gap-2">
+              <LabeledItem
+                label="Encargado"
+                content={
+                  session.status === "signed-in"
+                    ? session.account.username
+                    : undefined
+                }
+                labelWidth="form"
               />
-              <FieldError>{errors.fields.reason}</FieldError>
+              <LabeledItem
+                label="Fecha"
+                content={formatDate(new Date())}
+                labelWidth="form"
+              />
+              {isExpanded && notesField}
             </View>
-          </Panel>
-
-          <Panel
-            title="Ejemplares"
-            lead={
-              <Button
-                title="Agregar"
-                size="sm"
-                onPress={() => setEditing("copies")}
+            <View className="gap-2">
+              <LabeledItem
+                label="Seleccionados"
+                content={String(copies.length)}
+                labelWidth="form"
               />
-            }
-          >
-            <ExitCopyTable
-              copies={copies}
-              reason={reason}
-              error={
-                errors.fields.copyIds ??
-                (blocked > 0
-                  ? "Hay ejemplares deteriorados: no pueden salir por deterioro"
-                  : undefined)
-              }
-              onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
+              {!isExpanded && notesField}
+              <View className="mt-4 mb-2 gap-1">
+                <SimpleSelect
+                  label="Motivo *"
+                  options={REASON_OPTIONS}
+                  value={reason}
+                  onChange={(r) => r && setReason(r)}
+                />
+                <FieldError>{errors.fields.reason}</FieldError>
+              </View>
+            </View>
+          </SplitColumns>
+        </Panel>
+
+        <Panel
+          title="Ejemplares"
+          lead={
+            <Button
+              title="Agregar"
+              size="sm"
+              onPress={() => setEditing("copies")}
             />
-          </Panel>
-        </SplitColumns>
+          }
+        >
+          <ExitCopyTable
+            copies={copies}
+            reason={reason}
+            error={
+              errors.fields.copyIds ??
+              (blocked > 0
+                ? "Hay ejemplares deteriorados: no pueden salir por deterioro"
+                : undefined)
+            }
+            onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
+          />
+        </Panel>
       </ScreenBody>
 
       {editing === "notes" && (

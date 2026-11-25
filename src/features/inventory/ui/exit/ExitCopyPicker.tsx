@@ -2,7 +2,6 @@ import type { FilterField } from "@/features/catalog/ui/list/searchFilters/Filte
 import { listCopies } from "@/features/inventory/internal/copy/service";
 import type { CopyItem } from "@/features/inventory/internal/copy/types";
 import type { ExitReason } from "@/features/inventory/internal/movement/types";
-import { COPY_STATUS_ES } from "@/features/shared/format/translate";
 import { useCallback } from "react";
 import BookCopyPicker from "../picker/BookCopyPicker";
 import { canExit } from "./canExit";
@@ -47,9 +46,6 @@ export default function ExitCopyPicker({
         }).then((p) => p.items.filter(accept))
       }
       toItem={(copy) => copy}
-      chipDetail={(c) =>
-        c.status === "damaged" ? COPY_STATUS_ES.damaged : undefined
-      }
       acceptCopy={accept}
       subtitle={(b) => `${b.activeCount} ejemplares`}
       emptyText="Sin ejemplares que puedan salir"

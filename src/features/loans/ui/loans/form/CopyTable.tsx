@@ -32,6 +32,7 @@ export default function CopyTable({ copies, error, onRemove }: Props) {
             <Button
               variant="soft"
               icon={Minus}
+              className="bg-transparent"
               onPress={() => onRemove(c.id)}
             />
           </Column>

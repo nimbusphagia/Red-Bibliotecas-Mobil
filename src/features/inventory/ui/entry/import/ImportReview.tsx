@@ -10,49 +10,53 @@ import {
   Text,
 } from "@/features/shared/components";
 import { importProblemLabel } from "@/features/shared/format/translate";
+import { cn, useTone } from "@/features/shared/theme";
 import {
   ChevronDown,
   ChevronUp,
   TriangleExclamationPoint,
   type LucideIcon,
 } from "lucide-react-native";
-import { useState, type PropsWithChildren, type ReactNode } from "react";
+import { useState, type PropsWithChildren } from "react";
 import { Pressable, View } from "react-native";
 import { isReady } from "./toLines";
-
-const MAX_NAMES = 8;
 
 const plural = (n: number, one: string, many: string) =>
   `${n} ${n === 1 ? one : many}`;
 
-function names(list: { name: string }[]) {
-  const shown = list.slice(0, MAX_NAMES).map((i) => i.name);
-  const more = list.length - shown.length;
-  return shown.join(", ") + (more > 0 ? ` y ${more} más` : "");
-}
-
 const CREATE_LABELS: {
   key: keyof ToCreate;
+  title: string;
   one: string;
   many: string;
 }[] = [
-  { key: "authors", one: "autor", many: "autores" },
-  { key: "publishers", one: "editorial", many: "editoriales" },
-  { key: "collections", one: "colección", many: "colecciones" },
-  { key: "series", one: "serie", many: "series" },
+  { key: "authors", title: "Autores", one: "autor", many: "autores" },
+  {
+    key: "publishers",
+    title: "Editoriales",
+    one: "editorial",
+    many: "editoriales",
+  },
+  {
+    key: "collections",
+    title: "Colecciones",
+    one: "colección",
+    many: "colecciones",
+  },
+  { key: "series", title: "Series", one: "serie", many: "series" },
 ];
 
 function Section({
   icon,
   title,
-  defaultOpen = true,
+  subtitle,
   children,
 }: PropsWithChildren<{
   icon?: LucideIcon;
-  title: ReactNode;
-  defaultOpen?: boolean;
+  title: string;
+  subtitle: string;
 }>) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen] = useState(false);
   return (
     <Surface inset className="gap-4 p-4">
       <Pressable
@@ -60,11 +64,31 @@ function Section({
         className="flex-row items-center gap-2"
       >
         {icon && <Icon icon={icon} size="lg" stroke="sm" />}
-        <View className="flex-1">{title}</View>
+        <View className="flex-1">
+          <Text variant="item">{title}</Text>
+          <Text variant="caption">{subtitle}</Text>
+        </View>
         <Icon icon={open ? ChevronUp : ChevronDown} />
       </Pressable>
       {open && children}
     </Surface>
+  );
+}
+
+function Group({
+  title,
+  count,
+  children,
+}: PropsWithChildren<{ title: string; count: number }>) {
+  const t = useTone();
+  return (
+    <View className={cn("gap-2 rounded-lg p-3", t.chip.idle.box)}>
+      <View className="flex-row items-baseline gap-2">
+        <Text variant="itemSm">{title}</Text>
+        <Text variant="caption">{count}</Text>
+      </View>
+      <ChipGroup>{children}</ChipGroup>
+    </View>
   );
 }
 
@@ -73,6 +97,10 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
   const ready = plan.rows.filter(isReady);
   const failed = plan.rows.filter((r) => !isReady(r));
   const copies = ready.reduce((n, r) => n + r.quantity, 0);
+  const toCreate = CREATE_LABELS.map((l) => ({
+    ...l,
+    list: plan.toCreate[l.key],
+  })).filter((l) => l.list.length > 0);
 
   return (
     <View className="gap-6">
@@ -82,59 +110,46 @@ export default function ImportReview({ plan }: { plan: ImportPlan }) {
         </Text>
       )}
 
-      {CREATE_LABELS.map(({ key, one, many }) => {
-        const list = plan.toCreate[key];
-        return list.length === 0 ? null : (
-          <View key={key} className="gap-1">
-            <Text variant="item">
-              Se {list.length === 1 ? "creará" : "crearán"}{" "}
-              {plural(list.length, one, many)}
-            </Text>
-            <Text variant="caption">{names(list)}</Text>
-          </View>
-        );
-      })}
-
       {ready.length > 0 && (
         <Section
-          title={
-            <Text variant="item">
-              Resumen{" "}
-              <Text variant="caption">
-                ({plural(ready.length, "libro", "libros")} ·{" "}
-                {plural(copies, "ejemplar", "ejemplares")})
-              </Text>
-            </Text>
-          }
+          title="Resumen"
+          subtitle={`${plural(ready.length, "libro", "libros")} · ${plural(copies, "ejemplar", "ejemplares")}`}
         >
-          <ChipGroup>
+          <Group title="Libros" count={ready.length}>
             {ready.map((r) => (
               <Chip
                 key={r.row}
                 label={r.title}
-                detail={[
-                  ...r.writers.map((w) => w.name),
-                  plural(r.quantity, "ejemplar", "ejemplares"),
-                ].join(" · ")}
+                accent="dark"
+                detail={String(r.quantity)}
               />
             ))}
-          </ChipGroup>
+          </Group>
+        </Section>
+      )}
+
+      {toCreate.length > 0 && (
+        <Section
+          title="Se crearán"
+          subtitle={toCreate
+            .map(({ list, one, many }) => plural(list.length, one, many))
+            .join(" · ")}
+        >
+          {toCreate.map(({ key, title, list }) => (
+            <Group key={key} title={title} count={list.length}>
+              {list.map((i) => (
+                <Chip key={i.key} label={i.name} accent="dark" />
+              ))}
+            </Group>
+          ))}
         </Section>
       )}
 
       {failed.length > 0 && (
         <Section
           icon={TriangleExclamationPoint}
-          defaultOpen={false}
-          title={
-            <Text variant="item">
-              Problemas{" "}
-              <Text variant="caption">
-                ({plural(failed.length, "libro", "libros")} · No serán
-                importados)
-              </Text>
-            </Text>
-          }
+          title="Problemas"
+          subtitle={`${plural(failed.length, "libro", "libros")} · No serán importados`}
         >
           <ChipGroup>
             {failed.map((r) => (
