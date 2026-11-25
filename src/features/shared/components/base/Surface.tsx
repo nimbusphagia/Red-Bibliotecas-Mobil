@@ -4,8 +4,10 @@ import {
   type PropsWithChildren,
   type ReactNode,
 } from "react";
+import type { LucideIcon } from "lucide-react-native";
 import { View, type ViewProps } from "react-native";
 import { cn, ToneContext, tones, type Tone } from "../../theme";
+import { Icon } from "./Icon";
 import { Text } from "./Text";
 
 type SurfaceProps = PropsWithChildren<
@@ -66,6 +68,8 @@ export const useInSection = () => useContext(SectionContext);
 
 type PanelProps = PropsWithChildren<{
   title?: string;
+  subtitle?: string;
+  icon?: LucideIcon;
   titleClassName?: string;
   lead?: ReactNode;
   tone?: Tone;
@@ -75,6 +79,8 @@ type PanelProps = PropsWithChildren<{
 /** Surface con encabezado (título y acción opcional). */
 export function Panel({
   title,
+  subtitle,
+  icon,
   titleClassName,
   lead,
   tone,
@@ -87,9 +93,15 @@ export function Panel({
         {(title || lead) && (
           <View className="mb-2 flex-row items-center justify-between gap-4">
             {title ? (
-              <Text variant="section" className={titleClassName}>
-                {title}
-              </Text>
+              <View className="gap-1">
+                <View className="flex-row items-center gap-2">
+                  {icon && <Icon icon={icon} size="lg" stroke="sm" />}
+                  <Text variant="section" className={titleClassName}>
+                    {title}
+                  </Text>
+                </View>
+                {subtitle ? <Text variant="caption">{subtitle}</Text> : null}
+              </View>
             ) : (
               <View />
             )}

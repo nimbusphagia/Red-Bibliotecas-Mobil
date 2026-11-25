@@ -10,24 +10,32 @@ import type {
 import { markFailureText } from "@/features/shared/format/translate";
 import {
   Button,
-  Dialog,
   FieldError,
   FormHeader,
   LabeledItem,
   Panel,
   SplitColumns,
+  Surface,
+  Text,
 } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
+import { useLayoutMode } from "@/features/shared/hooks/useLayoutMode";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { useRouter } from "expo-router";
-import { Printer } from "lucide-react-native";
-import { useEffect, useState } from "react";
-import LabelCopyPicker from "./labels/form/LabelCopyPicker";
-import LabelCopyTable from "./labels/form/LabelCopyTable";
+import { Info, Printer } from "lucide-react-native";
+import { useEffect, useRef, useState } from "react";
+import { View } from "react-native";
+import LabelCopySelector from "./labels/form/LabelCopySelector";
 import LabelResultDialog from "./labels/form/LabelResultDialog";
 import { usePrintLabels } from "./labels/form/usePrintLabels";
 import { labelStateOf } from "./labels/labelState";
+
+const STEPS = [
+  "Elige los ejemplares que necesiten ser etiquetados.",
+  "Haz click en el botón «Imprimir» para generar la hoja de tejuelos. Puedes guardar o imprimir los tejuelos cuantas veces quieras, esta acción no afecta al sistema.",
+  "Después de pegar cada tejuelo en su ejemplar, presiona «Actualizar» para que el sistema guarde su estado.",
+];
 
 const plural = (n: number, one: string, many: string) =>
   `${n} ${n === 1 ? one : many}`;
@@ -37,12 +45,13 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
   const session = useSession();
   const { errors, submitting, run } = useFormSubmit();
   const [copies, setCopies] = useState<CopyItem[]>([]);
-  const [picking, setPicking] = useState(false);
+  const loadMore = useRef<() => void>(undefined);
   const [result, setResult] = useState<{
     value: MarkLabeledResult;
     attempted: CopyItem[];
   }>();
   const printer = usePrintLabels();
+  const { isExpanded } = useLayoutMode();
 
   useEffect(() => {
     if (copyId)
@@ -87,7 +96,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
     <>
       <FormHeader
         title="Etiquetar ejemplares"
-        submitTitle="Marcar como etiquetado"
+        submitTitle="Actualizar"
         submitting={submitting}
         canSubmit={copies.length > 0}
         onSubmit={submit}
@@ -95,7 +104,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
         extra={
           <Button
             icon={Printer}
-            accessibilityLabel="Imprimir etiqueta"
+            title={isExpanded ? "Imprimir tejuelos" : "Imprimir"}
             variant="soft"
             loading={printer.printing}
             disabled={copies.length === 0 || submitting}
@@ -103,64 +112,63 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
           />
         }
       />
-      <ScreenBody form>
+      <ScreenBody form onEndReached={() => loadMore.current?.()}>
         <FieldError>{errors.form ?? printer.error}</FieldError>
-        <SplitColumns>
-          <Panel title="Detalles">
-            <LabeledItem
-              label="Encargado"
-              content={
-                session.status === "signed-in"
-                  ? session.account.name
-                  : undefined
-              }
-              labelWidth="formWide"
-            />
-            <LabeledItem
-              label="Seleccionados"
-              content={String(copies.length)}
-              labelWidth="formWide"
-            />
-            <LabeledItem
-              label="Desactualizados"
-              content={String(outdated)}
-              labelWidth="formWide"
-            />
-            <LabeledItem
-              label="Fecha"
-              content={formatDateES(new Date())}
-              labelWidth="formWide"
-            />
-          </Panel>
+        <View className="gap-6">
+          <SplitColumns>
+            <Panel
+              title="Instrucciones"
+              subtitle="Imprimir tejuelos y actualizar el estado de los ejemplares"
+              icon={Info}
+            >
+              <Surface inset className="gap-2 p-4">
+                {STEPS.map((step, i) => (
+                  <Text key={i} variant="itemSm">
+                    {i + 1}. {step}
+                  </Text>
+                ))}
+              </Surface>
+            </Panel>
+            {isExpanded && (
+              <Panel title="Detalles">
+                <LabeledItem
+                  label="Encargado"
+                  content={
+                    session.status === "signed-in"
+                      ? session.account.name
+                      : undefined
+                  }
+                  labelWidth="formWide"
+                />
+                <LabeledItem
+                  label="Seleccionados"
+                  content={String(copies.length)}
+                  labelWidth="formWide"
+                />
+                <LabeledItem
+                  label="Desactualizados"
+                  content={String(outdated)}
+                  accent={outdated > 0 ? "neg" : undefined}
+                  labelWidth="formWide"
+                />
+                <LabeledItem
+                  label="Fecha"
+                  content={formatDateES(new Date())}
+                  labelWidth="formWide"
+                />
+              </Panel>
+            )}
+          </SplitColumns>
 
-          <Panel
-            title="Ejemplares"
-            lead={
-              <Button
-                title="Agregar"
-                size="sm"
-                onPress={() => setPicking(true)}
-              />
-            }
-          >
-            <LabelCopyTable
-              copies={copies}
-              error={errors.fields.copyIds}
-              onRemove={(id) => setCopies((p) => p.filter((c) => c.id !== id))}
-            />
-          </Panel>
-        </SplitColumns>
-      </ScreenBody>
-
-      {picking && (
-        <Dialog onClose={() => setPicking(false)} size="lg" tone="canvas">
-          <LabelCopyPicker
-            className="flex-1"
+          <LabelCopySelector
             selected={copies}
             onToggle={toggle}
+            error={errors.fields.copyIds}
+            loadMoreRef={loadMore}
           />
-        </Dialog>
-      )}
+        </View>
+      </ScreenBody>
+
       {result && (
         <LabelResultDialog
           title={

@@ -29,6 +29,7 @@ export const listCopiesSchema = z
     shelfId: idSchema.optional(),
     labeled: z.boolean().optional(),
     outdated: z.boolean().optional(),
+    needsLabel: z.boolean().optional(),
     excludeReleased: z.boolean().optional(),
   })
   .transform(withTokens);
@@ -50,6 +51,8 @@ export const listCopyBooksSchema = z
     shelfId: idSchema.optional(),
     labeled: z.boolean().optional(),
     outdated: z.boolean().optional(),
+    needsLabel: z.boolean().optional(),
+    hasCopies: z.boolean().optional(),
   })
   .transform(withTokens);
 

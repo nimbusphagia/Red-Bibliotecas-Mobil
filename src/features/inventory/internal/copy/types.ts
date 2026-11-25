@@ -31,6 +31,8 @@ export type CopyMatch = {
   labeled?: boolean;
   /** true: solo los etiquetados cuyo tejuelo ya no coincide. */
   outdated?: boolean;
+  /** true: pendientes o desactualizados (los que hay que etiquetar). */
+  needsLabel?: boolean;
   excludeReleased?: boolean;
 };
 
@@ -42,7 +44,11 @@ type ListPage<K> = {
 };
 
 export type CopyListFilters = CopyMatch & ListPage<CopySort>;
-export type CopyBookFilters = CopyMatch & ListPage<CopyBookSort>;
+export type CopyBookFilters = CopyMatch &
+  ListPage<CopyBookSort> & {
+    /** Solo libros con al menos un ejemplar activo. */
+    hasCopies?: boolean;
+  };
 
 /** Un libro con el estado de etiquetado de sus ejemplares activos. */
 export type CopyBook = {
@@ -61,6 +67,7 @@ export type CopyItem = {
   bookTitle: string;
   /** Escritores del libro; null si no tiene. */
   authors: string | null;
+  publisherName: string | null;
   copyNumber: number;
   status: CopyStatus;
   notes: string | null;

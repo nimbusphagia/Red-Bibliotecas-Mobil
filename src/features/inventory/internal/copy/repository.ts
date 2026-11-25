@@ -140,6 +140,7 @@ const itemColumns = {
   bookId: copy.bookId,
   bookTitle: book.title,
   authors: writersSql,
+  publisherName: publisher.name,
   copyNumber: copy.copyNumber,
   status: copy.status,
   notes: copy.notes,
@@ -162,6 +163,7 @@ const selectItems = () =>
     .from(copy)
     .innerJoin(book, eq(book.id, copy.bookId))
     .innerJoin(shelf, eq(shelf.id, copy.shelfId))
+    .leftJoin(publisher, eq(publisher.id, book.publisherId))
     .leftJoin(
       loanMovementLine,
       and(
@@ -204,6 +206,7 @@ const copyWhere = ({
   shelfId,
   labeled,
   outdated,
+  needsLabel,
   excludeReleased,
 }: CopyMatch) =>
   and(
@@ -221,6 +224,11 @@ const copyWhere = ({
       : outdated
         ? outdatedSql
         : not(outdatedSql),
+    needsLabel === undefined
+      ? undefined
+      : needsLabel
+        ? or(isNull(copy.labeledAt), outdatedSql)
+        : and(isNotNull(copy.labeledAt), not(outdatedSql)),
     excludeReleased
       ? notInArray(copy.status, [...RELEASED_STATUSES])
       : undefined,
@@ -308,7 +316,9 @@ export async function listCopyBooks(
     filters.copyId !== undefined ||
     filters.shelfId !== undefined ||
     filters.labeled !== undefined ||
-    filters.outdated !== undefined;
+    filters.outdated !== undefined ||
+    filters.needsLabel !== undefined ||
+    !!filters.hasCopies;
   const match = copyWhere(filters);
   const counted = byCopy ? and(isNotNull(copy.id), match) : match;
   const having =
