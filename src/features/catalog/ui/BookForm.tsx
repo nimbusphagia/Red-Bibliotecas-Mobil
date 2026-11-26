@@ -8,22 +8,38 @@ import { BookFormSections } from "./form/BookFormSections";
 import FieldModal from "./form/fields/FieldModal";
 import { type Field } from "./form/fields/fields";
 import { useBookForm } from "./form/useBookForm";
+import { LoadErrorScreen } from "@/features/shared/layout/LoadingScreen";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 
 export default function BookForm({ id }: { id?: string }) {
   const [book, setBook] = useState<BookListItem>();
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    void getBookItem(routeIdSchema.parse(id)).then((b) => {
-      if (!cancelled) setBook(b);
-    });
+    getBookItem(routeIdSchema.parse(id))
+      .then((b) => {
+        if (!cancelled) setBook(b);
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true);
+      });
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, attempt]);
 
+  const retry = () => {
+    setFailed(false);
+    setAttempt((a) => a + 1);
+  };
+
+  if (failed)
+    return (
+      <LoadErrorScreen message="No se pudo cargar el libro" onRetry={retry} />
+    );
   if (id && !book) return <ActivityIndicator />;
   return <Form key={book?.id} book={book} />;
 }

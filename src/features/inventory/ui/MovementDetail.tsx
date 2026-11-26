@@ -29,6 +29,7 @@ import {
 } from "@/features/shared/format/translate";
 import { PAGE_SIZE } from "@/features/shared/hooks/useListControls";
 import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
+import { LoadErrorScreen } from "@/features/shared/layout/LoadingScreen";
 import { routeIdSchema } from "@/features/shared/types/schemas";
 import { Link, useRouter } from "expo-router";
 import { ArrowUpRight, Eye, RotateCcwClock } from "lucide-react-native";
@@ -44,10 +45,14 @@ export default function MovementDetail({ id }: { id: string }) {
   const [movement, setMovement] = useState<MovementListItem | null>(null);
   const [loan, setLoan] = useState<LoanListItem | null>(null);
   const [recovering, setRecovering] = useState<MovementLine | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    void getMovement(movementId).then(setMovement);
-  }, [movementId]);
+    getMovement(movementId)
+      .then(setMovement)
+      .catch(() => setFailed(true));
+  }, [movementId, attempt]);
 
   const fetchPage = useCallback(
     (offset: number) =>
@@ -68,6 +73,19 @@ export default function MovementDetail({ id }: { id: string }) {
     void getLoan(loanId).then(setLoan);
   }, [loanId]);
 
+  const retry = () => {
+    setFailed(false);
+    setAttempt((a) => a + 1);
+    list.reload();
+  };
+
+  if (failed)
+    return (
+      <LoadErrorScreen
+        message="No se pudo cargar el movimiento"
+        onRetry={retry}
+      />
+    );
   if (!movement) return <ActivityIndicator />;
 
   const actorId =
