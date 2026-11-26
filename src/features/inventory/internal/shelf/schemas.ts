@@ -38,7 +38,7 @@ export const moveCopiesSchema = z.object({
     .min(1)
     .max(MAX_MOVE_COPIES)
     .refine((ids) => new Set(ids).size === ids.length, {
-      message: "The same copy appears more than once",
+      message: "El mismo ejemplar aparece más de una vez",
     }),
 });
 

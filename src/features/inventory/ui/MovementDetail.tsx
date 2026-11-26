@@ -144,6 +144,7 @@ export default function MovementDetail({ id }: { id: string }) {
           <ItemList
             items={list.items}
             loading={list.loading}
+            error={list.error}
             onEndReached={list.loadMore}
             renderItem={(line) => (
               <MovementLineRow

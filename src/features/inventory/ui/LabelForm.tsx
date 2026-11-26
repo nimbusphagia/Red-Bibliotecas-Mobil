@@ -43,7 +43,7 @@ const plural = (n: number, one: string, many: string) =>
 export default function LabelForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
   const session = useSession();
-  const { errors, submitting, run, release } = useFormSubmit();
+  const { errors, setErrors, submitting, run, release } = useFormSubmit();
   const [copies, setCopies] = useState<CopyItem[]>([]);
   const loadMore = useRef<() => void>(undefined);
   const [result, setResult] = useState<{
@@ -57,7 +57,9 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
     if (copyId)
       getCopy(Number(copyId))
         .then((c) => setCopies([c]))
-        .catch(() => {});
+        .catch(() =>
+          setErrors({ form: "No se pudo cargar el ejemplar", fields: {} }),
+        );
   }, [copyId]);
 
   const toggle = (c: CopyItem) =>

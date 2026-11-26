@@ -98,6 +98,7 @@ export default function BookList() {
         }
         items={list.items}
         loading={list.loading}
+        error={list.error}
         onEndReached={list.loadMore}
         columns={3}
         compactColumns={2}

@@ -20,11 +20,11 @@ export const createVisitorSchema = z
   })
   .refine((v) => v.role !== "student" || v.gradeId !== null, {
     path: ["gradeId"],
-    message: "Required for students",
+    message: "Obligatorio para estudiantes",
   })
   .refine((v) => v.role !== "teacher" || v.gradeId === null, {
     path: ["gradeId"],
-    message: "Teachers have no grade",
+    message: "Los profesores no tienen curso",
   });
 
 export const updateVisitorSchema = z

@@ -36,7 +36,7 @@ import { visitorInfoRows } from "./visitors/visitorRows";
 export default function LoanForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
   const session = useSession();
-  const { errors, submitting, run } = useFormSubmit();
+  const { errors, setErrors, submitting, run } = useFormSubmit();
   const [visitor, setVisitor] = useState<Option>();
   const [visitorItem, setVisitorItem] = useState<VisitorListItem>();
   const [status, setStatus] = useState<VisitorLoanStatus>();
@@ -52,7 +52,9 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
     if (copyId)
       getCopy(Number(copyId))
         .then((c) => setCopies([c]))
-        .catch(() => {});
+        .catch(() =>
+          setErrors({ form: "No se pudo cargar el ejemplar", fields: {} }),
+        );
   }, [copyId]);
 
   useEffect(() => {

@@ -9,7 +9,9 @@ import {
   ValidationError,
   type ValidationIssue,
 } from "@/features/shared/errors/errors";
-import type { z } from "zod";
+import { z } from "zod";
+
+z.config(z.locales.es());
 
 function toIssues(error: z.ZodError): ValidationIssue[] {
   return error.issues.map((issue) => ({

@@ -61,7 +61,7 @@ export function useBookFields(
   const shown = new Set(fields.map((f) => f.error ?? f.key));
   const orphanErrors = Object.entries(errors.fields)
     .filter(([key]) => !shown.has(key))
-    .map(([key, message]) => `${key}: ${message}`)
+    .map(([, message]) => message)
     .join("\n");
 
   return {

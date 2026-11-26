@@ -27,18 +27,26 @@ const collaboratorSchema = z.object({
 const collaboratorsSchema = z
   .array(collaboratorSchema)
   .refine((list) => list.some((c) => c.role === "writer"), {
-    message: "At least one writer is required",
+    message: "Se necesita al menos un escritor",
   })
   .refine(
     (list) =>
       new Set(list.map((c) => `${c.authorId}:${c.role}`)).size === list.length,
-    { message: "Duplicate collaborator" },
+    { message: "Colaborador repetido" },
   );
 
 export const MAX_OMIT_WORDS = 10;
 export const OMIT_WORD_MAX = 40;
 
-const omitWord = z.string().transform(collapse).pipe(z.string().min(1).max(OMIT_WORD_MAX));
+const omitWord = z
+  .string()
+  .transform(collapse)
+  .pipe(
+    z
+      .string()
+      .min(1, "Hay una palabra vacía")
+      .max(OMIT_WORD_MAX, `Máximo ${OMIT_WORD_MAX} caracteres por palabra`),
+  );
 
 const fkId = idSchema.nullable();
 
@@ -50,8 +58,10 @@ const fields = {
   categoryId: fkId,
   subcategoryId: fkId,
   publicationYear: z.number().int().nullable(),
-  pageCount: z.number().int().positive().nullable(),
-  omitWords: z.array(omitWord).max(MAX_OMIT_WORDS),
+  pageCount: z.number().int().positive("Debe ser mayor que 0").nullable(),
+  omitWords: z
+    .array(omitWord)
+    .max(MAX_OMIT_WORDS, `Máximo ${MAX_OMIT_WORDS} palabras`),
   collaborators: collaboratorsSchema,
 };
 
@@ -59,7 +69,7 @@ const collectionNeedsPublisher = {
   check: (b: { publisherId?: number | null; collectionId?: number | null }) =>
     !(typeof b.collectionId === "number" && b.publisherId === null),
   options: {
-    message: "A collection requires a publisher",
+    message: "La colección necesita una editorial",
     path: ["collectionId"],
   },
 };

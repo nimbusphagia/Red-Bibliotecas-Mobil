@@ -115,7 +115,7 @@ export async function lendCopies(
   const visitor = await getVisitor(visitorId);
   if (!visitor.active) {
     throw new ValidationError([
-      { path: "visitorId", message: "The visitor is inactive" },
+      { path: "visitorId", message: "El visitante está inactivo" },
     ]);
   }
   const today = toISODate();
@@ -186,7 +186,7 @@ export async function returnCopies(
         if (!open.has(item.copyId)) {
           issues.push({
             path: `items.${i}.copyId`,
-            message: "The copy is not on loan",
+            message: "El ejemplar no está prestado",
           });
         }
       });

@@ -93,7 +93,7 @@ export const updateVisitor = makeUpdate({
   build: (existing, patch): VisitorPatch => {
     if (patch.gradeId !== undefined && existing.role !== "student") {
       throw new ValidationError([
-        { path: "gradeId", message: "Teachers have no grade" },
+        { path: "gradeId", message: "Los profesores no tienen curso" },
       ]);
     }
     return {

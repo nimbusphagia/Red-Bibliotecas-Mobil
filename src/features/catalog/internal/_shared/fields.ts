@@ -6,4 +6,9 @@ export const NAME_MAX = 100;
 export const nameField = z
   .string()
   .transform(collapse)
-  .pipe(z.string().min(1, "Required").max(NAME_MAX));
+  .pipe(
+    z
+      .string()
+      .min(1, "Obligatorio")
+      .max(NAME_MAX, `Máximo ${NAME_MAX} caracteres`),
+  );

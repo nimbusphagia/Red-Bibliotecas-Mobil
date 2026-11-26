@@ -101,6 +101,7 @@ export default function LoanList({ state }: { state?: string }) {
         }
         items={list.items}
         loading={list.loading}
+        error={list.error}
         onEndReached={list.loadMore}
         renderItem={(loan) => <LoanRow loan={loan} />}
       />

@@ -11,15 +11,13 @@ const TYPES = [
   "application/vnd.ms-excel",
 ];
 
-const messageOf = (e: unknown) => (e instanceof Error ? e.message : String(e));
-
 /** Un fallo al leer el archivo elegido, con la etapa en que ocurrió. */
 export class SheetReadError extends Error {
   constructor(stage: "read" | "parse", cause: unknown) {
     super(
       stage === "read"
-        ? `No se pudo leer el archivo: ${messageOf(cause)}`
-        : `El archivo no parece un .xlsx o .csv válido: ${messageOf(cause)}`,
+        ? "No se pudo leer el archivo"
+        : "El archivo no parece un .xlsx o .csv válido",
     );
     this.name = "SheetReadError";
     this.cause = cause;

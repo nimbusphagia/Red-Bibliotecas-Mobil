@@ -90,6 +90,7 @@ export default function VisitorList() {
         }
         items={list.items}
         loading={list.loading}
+        error={list.error}
         onEndReached={list.loadMore}
         columns={4}
         compactColumns={2}

@@ -69,7 +69,7 @@ async function factsFor(
       throw new ValidationError([
         {
           path: `lines.${lineIndex}.bookId`,
-          message: "The book is inactive",
+          message: "El libro está inactivo",
         },
       ]);
     }

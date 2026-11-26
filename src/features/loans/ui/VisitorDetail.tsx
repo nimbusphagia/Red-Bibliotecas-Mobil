@@ -114,6 +114,7 @@ export default function VisitorDetail({ id }: { id: string }) {
           }
           items={list.items}
           loading={list.loading}
+          error={list.error}
           onEndReached={list.loadMore}
           renderItem={(loan) => <LoanRow loan={loan} hideVisitor />}
         />

@@ -177,6 +177,7 @@ export default function LabelCopySelector({
         }
         items={mode === "selected" ? local : list.items}
         loading={mode !== "selected" && list.loading}
+        error={mode === "selected" ? null : list.error}
         renderItem={(book) =>
           mode === "selected" ? (
             <CopyBookGroup

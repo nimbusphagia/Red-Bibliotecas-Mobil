@@ -71,7 +71,8 @@ export default function EntryImportDialog({ room, onLoad, onClose }: Props) {
     try {
       await action();
     } catch (e) {
-      setError(toFormErrors(e).form);
+      const f = toFormErrors(e);
+      setError(f.form ?? Object.values(f.fields)[0]);
     } finally {
       setBusy(false);
     }

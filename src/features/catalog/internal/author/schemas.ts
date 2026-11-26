@@ -13,7 +13,7 @@ const lastName = z
   .string()
   .nullable()
   .transform((v) => (v === null ? null : collapse(v) || null))
-  .pipe(z.string().max(NAME_MAX).nullable());
+  .pipe(z.string().max(NAME_MAX, `Máximo ${NAME_MAX} caracteres`).nullable());
 
 export const createAuthorSchema = z.object({
   firstName: nameField,

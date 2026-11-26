@@ -83,6 +83,7 @@ export default function ShelfList() {
         }
         items={list.items}
         loading={list.loading}
+        error={list.error}
         onEndReached={list.loadMore}
         columns={4}
         compactColumns={3}

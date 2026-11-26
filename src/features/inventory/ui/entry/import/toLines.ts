@@ -5,6 +5,7 @@ import type {
   PersonRef,
 } from "@/features/inventory/internal/entryImport/types";
 import type { Option } from "@/features/shared/components";
+import { ValidationError } from "@/features/shared/errors/errors";
 
 /** Nombres de lo que ya existe, para mostrar en los campos del formulario. */
 export type CatalogOptions = {
@@ -21,7 +22,7 @@ const idOf = (
   key: string,
 ) => {
   const found = id ?? created[key];
-  if (found === undefined) throw new Error(`Falta crear «${key}»`);
+  if (found === undefined) throw new ValidationError([{ path: key, message: `Falta crear «${key}»` }]);
   return found;
 };
 

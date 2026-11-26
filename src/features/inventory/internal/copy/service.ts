@@ -111,7 +111,10 @@ export async function setCopyDamaged(
     if (!c) throw new NotFoundError("copy", copyId);
     if ((RELEASED_STATUSES as readonly string[]).includes(c.status)) {
       throw new ValidationError([
-        { path: "copyId", message: `The copy is ${c.status}` },
+        {
+          path: "copyId",
+          message: `El ejemplar está ${c.status === "lost" ? "perdido" : "descartado"}`,
+        },
       ]);
     }
     if (damaged) markCopiesDamagedSync(tx, [copyId], actorId);

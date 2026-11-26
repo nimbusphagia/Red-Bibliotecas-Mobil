@@ -11,6 +11,8 @@ import { AccordionProvider } from "./CollapsibleList";
 type Props<T extends { id: number }> = {
   items: T[];
   loading: boolean;
+  /** Fallo al cargar: se muestra en lugar de "Sin resultados" o al final. */
+  error?: unknown;
   onEndReached?: () => void;
   renderItem: (item: T) => ReactElement;
   toolbar?: ReactNode;
@@ -48,6 +50,7 @@ function Loader() {
 export function ItemList<T extends { id: number }>({
   items,
   loading,
+  error,
   onEndReached,
   renderItem,
   toolbar,
@@ -70,6 +73,12 @@ export function ItemList<T extends { id: number }>({
       Sin resultados
     </Text>
   );
+  const failed = error != null && (
+    <Text variant="caption" className="pt-3 text-center">
+      No se pudo cargar la lista
+    </Text>
+  );
+  const footer = loading ? <Loader /> : failed || undefined;
 
   return (
     <AccordionProvider>
@@ -96,7 +105,7 @@ export function ItemList<T extends { id: number }>({
               {items.map((item) => (
                 <Fragment key={item.id}>{renderItem(item)}</Fragment>
               ))}
-              {loading ? <Loader /> : items.length === 0 && empty}
+              {footer ?? (items.length === 0 && empty)}
             </View>
           ) : (
             <Animated.FlatList
@@ -126,8 +135,8 @@ export function ItemList<T extends { id: number }>({
               showsVerticalScrollIndicator={false}
               onEndReached={onEndReached}
               onEndReachedThreshold={0.5}
-              ListFooterComponent={loading ? <Loader /> : undefined}
-              ListEmptyComponent={loading ? undefined : empty}
+              ListFooterComponent={footer}
+              ListEmptyComponent={footer ? undefined : empty}
             />
           )}
         </Surface>

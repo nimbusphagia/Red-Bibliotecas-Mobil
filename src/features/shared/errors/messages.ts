@@ -1,5 +1,9 @@
 import {
   DuplicateError,
+  InUseError,
+  InvalidReferenceError,
+  NotFoundError,
+  ProtectedError,
   ForbiddenError,
   InvalidCredentialsError,
   SetupClosedError,
@@ -24,14 +28,23 @@ export type FormErrors = {
   suggestedOmitWords?: string[];
 };
 
-const MESSAGES_ES: Record<string, string> = {
-  "The series author must be a writer or illustrator of the book":
-    "El autor de la serie debe ser escritor o ilustrador del libro",
-  "The copy is lost": "El ejemplar está perdido",
-  "The copy is discarded": "El ejemplar está descartado",
-  "The copy does not exist": "El ejemplar no existe",
-  "The title needs letters or digits": "El título debe tener letras o números",
+const ENTITY_ES: Record<string, string> = {
+  account: "La cuenta",
+  author: "El autor",
+  book: "El libro",
+  category: "La categoría",
+  collection: "La colección",
+  copy: "El ejemplar",
+  loan: "El préstamo",
+  publisher: "La editorial",
+  series: "La serie",
+  shelf: "La estantería",
+  "stock movement": "El movimiento",
+  subcategory: "La subcategoría",
+  visitor: "El visitante",
 };
+
+const entityEs = (entity: string) => ENTITY_ES[entity] ?? "El registro";
 
 const LEND_PROBLEM_ES: Record<LendProblemKind, string> = {
   not_found: "no existe",
@@ -91,7 +104,7 @@ export function toFormErrors(error: unknown): FormErrors {
   if (error instanceof ValidationError) {
     const fields: Record<string, string> = {};
     for (const { path, message } of error.issues) {
-      fields[path.replace(LINE_PREFIX, "")] ??= MESSAGES_ES[message] ?? message;
+      fields[path.replace(LINE_PREFIX, "")] ??= message;
     }
     return { fields };
   }
@@ -162,6 +175,27 @@ export function toFormErrors(error: unknown): FormErrors {
       fields: {
         visitorId: `Bloqueado: tiene ${error.overdue} ejemplares vencidos`,
       },
+    };
+  }
+  if (error instanceof NotFoundError) {
+    return { form: `${entityEs(error.entity)} ya no existe`, fields: {} };
+  }
+  if (error instanceof ProtectedError) {
+    return {
+      form: `${entityEs(error.entity)} es del sistema y no se puede modificar`,
+      fields: {},
+    };
+  }
+  if (error instanceof InUseError) {
+    return {
+      form: `${entityEs(error.entity)} está en uso y no se puede modificar`,
+      fields: {},
+    };
+  }
+  if (error instanceof InvalidReferenceError) {
+    return {
+      form: "Uno de los datos elegidos ya no existe. Recarga e inténtalo de nuevo.",
+      fields: {},
     };
   }
   if (error instanceof ForbiddenError) {

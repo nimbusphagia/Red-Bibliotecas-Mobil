@@ -143,6 +143,7 @@ export default function ShelfDetail({ id }: { id: string }) {
             inline
             items={list.items}
             loading={list.loading}
+            error={list.error}
             renderItem={(copy) => (
               <CopyRow
                 copy={copy}

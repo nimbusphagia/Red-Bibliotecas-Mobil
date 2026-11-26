@@ -92,7 +92,7 @@ function requireTitleCode(title: string, omitWords: string[]): string {
   const code = titleCode(title, omitWords);
   if (code === null) {
     throw new ValidationError([
-      { path: "title", message: "The title needs letters or digits" },
+      { path: "title", message: "El título debe tener letras o números" },
     ]);
   }
   return code;
@@ -128,7 +128,7 @@ async function assertConsistent(final: {
       throw new ValidationError([
         {
           path: "collectionId",
-          message: "The collection does not belong to the book's publisher",
+          message: "La colección no pertenece a la editorial del libro",
         },
       ]);
     }
@@ -144,7 +144,7 @@ async function assertConsistent(final: {
         {
           path: "seriesId",
           message:
-            "The series author must be a writer or illustrator of the book",
+            "El autor de la serie debe ser escritor o ilustrador del libro",
         },
       ]);
     }

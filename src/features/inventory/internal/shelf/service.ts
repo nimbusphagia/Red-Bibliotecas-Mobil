@@ -89,8 +89,8 @@ export const deleteShelf = makeRemove({
 });
 
 const NOT_MOVABLE: Partial<Record<CopyStatus, string>> = {
-  lost: "The copy is lost",
-  discarded: "The copy is discarded",
+  lost: "El ejemplar está perdido",
+  discarded: "El ejemplar está descartado",
 };
 
 export async function moveCopies(
@@ -108,7 +108,7 @@ export async function moveCopies(
     const issues: ValidationIssue[] = [];
     copyIds.forEach((id, i) => {
       const c = found.get(id);
-      const message = c ? NOT_MOVABLE[c.status] : "The copy does not exist";
+      const message = c ? NOT_MOVABLE[c.status] : "El ejemplar no existe";
       if (message) issues.push({ path: `copyIds.${i}`, message });
     });
     if (issues.length > 0) throw new ValidationError(issues);

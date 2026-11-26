@@ -35,7 +35,11 @@ const notes = z
   .pipe(z.string().max(500).nullable());
 
 const lineBase = {
-  quantity: z.number().int().min(1).max(MAX_COPIES_PER_BOOK),
+  quantity: z
+    .number()
+    .int()
+    .min(1, "Mínimo 1")
+    .max(MAX_COPIES_PER_BOOK, `Máximo ${MAX_COPIES_PER_BOOK}`),
   shelfId: idSchema.optional(), // overrides the movement's shelf
 };
 
@@ -46,7 +50,7 @@ const entryLineSchema = z
     ...lineBase,
   })
   .refine((l) => (l.bookId === undefined) !== (l.book === undefined), {
-    message: "Provide either bookId or book, not both",
+    message: "Indica un libro existente o uno nuevo, no ambos",
   })
   .transform(({ bookId, book, ...rest }) =>
     bookId !== undefined
@@ -65,7 +69,7 @@ const linesSchema = z
       );
       return new Set(ids).size === ids.length;
     },
-    { message: "The same book appears in more than one line" },
+    { message: "El mismo libro aparece en más de una línea" },
   );
 
 const movementShape = {
@@ -90,7 +94,7 @@ export const exitMovementSchema = z.object({
     .min(1)
     .max(MAX_EXIT_COPIES)
     .refine((ids) => new Set(ids).size === ids.length, {
-      message: "The same copy appears more than once",
+      message: "El mismo ejemplar aparece más de una vez",
     }),
   notes: notes.default(null),
 });
@@ -108,7 +112,7 @@ export type RecoverCopyInput = z.input<typeof recoverCopySchema>;
 export const MOVEMENT_SORT_KEYS = ["createdAt"] as const;
 export type MovementSort = (typeof MOVEMENT_SORT_KEYS)[number];
 
-const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Usa el formato AAAA-MM-DD");
 const { search: _search, ...listFields } = listShape(
   MOVEMENT_SORT_KEYS,
   "createdAt",

@@ -28,7 +28,7 @@ export const createAccountSchema = z.object({
 
 export const loginSchema = z.object({
   email: z.string().transform((s) => s.trim().toLowerCase()),
-  password: z.string().min(1),
+  password: z.string().min(1, "Ingresa tu contraseña"),
 });
 
 export const setActiveSchema = z.object({ active: z.boolean() });
@@ -36,7 +36,7 @@ export const changeRoleSchema = z.object({ role: z.enum(CREATABLE_ROLES) });
 export const resetPasswordSchema = z.object({ password });
 
 export const changeOwnPasswordSchema = z.object({
-  currentPassword: z.string().min(1),
+  currentPassword: z.string().min(1, "Ingresa tu contraseña actual"),
   newPassword: password,
 });
 
