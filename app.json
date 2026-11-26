@@ -16,7 +16,7 @@
         "backgroundColor": "#F7E7D3"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.NativeLMS"
+      "package": "com.nimbusphagia.biblioteca"
     },
     "web": {
       "bundler": "metro",
