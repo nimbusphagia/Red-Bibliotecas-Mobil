@@ -43,7 +43,7 @@ const plural = (n: number, one: string, many: string) =>
 export default function LabelForm({ copyId }: { copyId?: string }) {
   const router = useRouter();
   const session = useSession();
-  const { errors, submitting, run } = useFormSubmit();
+  const { errors, submitting, run, release } = useFormSubmit();
   const [copies, setCopies] = useState<CopyItem[]>([]);
   const loadMore = useRef<() => void>(undefined);
   const [result, setResult] = useState<{
@@ -82,6 +82,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
       const failedIds = new Set(value.failed.map((f) => f.copyId));
       setCopies(attempted.filter((c) => failedIds.has(c.id)));
       setResult({ value, attempted });
+      release();
     });
   };
 

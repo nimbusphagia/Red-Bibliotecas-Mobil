@@ -41,6 +41,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
   const [visitorItem, setVisitorItem] = useState<VisitorListItem>();
   const [status, setStatus] = useState<VisitorLoanStatus>();
   const [expiresBy, setExpiresBy] = useState<string>();
+  const [loadFailed, setLoadFailed] = useState(false);
   const [copies, setCopies] = useState<CopyItem[]>([]);
   const loadMore = useRef<() => void>(undefined);
   const [notes, setNotes] = useState("");
@@ -58,18 +59,23 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
     setVisitorItem(undefined);
     setStatus(undefined);
     setExpiresBy(undefined);
+    setLoadFailed(false);
     if (!visitor) return;
     let stale = false;
     Promise.all([
       getVisitorItem(visitor.id),
       getVisitorLoanStatus(visitor.id),
       getLoanExpiry(visitor.id),
-    ]).then(([v, s, e]) => {
-      if (stale) return;
-      setVisitorItem(v);
-      setStatus(s);
-      setExpiresBy(e);
-    });
+    ])
+      .then(([v, s, e]) => {
+        if (stale) return;
+        setVisitorItem(v);
+        setStatus(s);
+        setExpiresBy(e);
+      })
+      .catch(() => {
+        if (!stale) setLoadFailed(true);
+      });
     return () => {
       stale = true;
     };
@@ -114,7 +120,12 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
         onCancel={() => router.back()}
       />
       <ScreenBody form onEndReached={() => loadMore.current?.()}>
-        <FieldError>{errors.form}</FieldError>
+        <FieldError>
+          {errors.form ??
+            (loadFailed
+              ? "No se pudieron cargar los datos del visitante"
+              : undefined)}
+        </FieldError>
         <SplitColumns>
           <Panel
             title="Visitante"

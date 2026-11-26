@@ -22,5 +22,9 @@ export function useFormSubmit() {
     }
   }
 
-  return { errors, setErrors, submitting, run };
+  // Tras un envío correcto `submitting` sigue en true (la pantalla suele
+  // cerrarse); `release` lo libera cuando el formulario queda abierto.
+  const release = () => setSubmitting(false);
+
+  return { errors, setErrors, submitting, run, release };
 }

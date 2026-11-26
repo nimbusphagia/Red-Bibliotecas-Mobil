@@ -10,6 +10,7 @@ import {
   type Reference,
 } from "@/db/helpers";
 import { author, bookCollaborator, series } from "@/db/schema";
+import type { Executor } from "@/db/transaction";
 import { Page } from "@/features/shared/types/types";
 import { and, asc, count, eq, getTableColumns } from "drizzle-orm";
 import type {
@@ -93,16 +94,34 @@ export async function insertAuthor(values: NewAuthor): Promise<Author> {
   return row;
 }
 
-export async function updateAuthor(
+export function findAuthorByIdSync(ex: Executor, id: number): Author | null {
+  return ex.select().from(author).where(eq(author.id, id)).get() ?? null;
+}
+
+export function updateAuthorSync(
+  ex: Executor,
   id: number,
   patch: Partial<NewAuthor>,
-): Promise<Author | null> {
-  const [row] = await db
-    .update(author)
-    .set(patch)
-    .where(eq(author.id, id))
-    .returning();
-  return row ?? null;
+): Author | null {
+  return (
+    ex.update(author).set(patch).where(eq(author.id, id)).returning().get() ??
+    null
+  );
+}
+
+/** Libros en los que el autor figura como escritor. */
+export function findWrittenBookIdsSync(ex: Executor, id: number): number[] {
+  return ex
+    .selectDistinct({ id: bookCollaborator.bookId })
+    .from(bookCollaborator)
+    .where(
+      and(
+        eq(bookCollaborator.collaboratorId, id),
+        eq(bookCollaborator.role, "writer"),
+      ),
+    )
+    .all()
+    .map((r) => r.id);
 }
 
 export async function deleteAuthorIfUnused(id: number): Promise<boolean> {

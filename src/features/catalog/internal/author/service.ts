@@ -1,3 +1,4 @@
+import { inTransaction } from "@/db/transaction";
 import { searchKey } from "@/features/shared/format/text";
 import { Page } from "@/features/shared/types/types";
 import { parseOrThrow } from "@/features/shared/validation/validation";
@@ -22,6 +23,7 @@ import type {
 } from "./types";
 
 import { authorCode } from "../_shared/codes";
+import { assertLabelAvailableSync } from "../book/labels";
 const ENTITY = "author";
 
 export const authorKey = (firstName: string, lastName: string | null) =>
@@ -57,11 +59,31 @@ export const createAuthor = makeCreate({
   insert: repo.insertAuthor,
 });
 
+/**
+ * Si cambia el código del autor, cambia el tejuelo de sus libros: se comprueba
+ * en la misma transacción que no choque con el de otro libro.
+ */
+async function updateAuthorChecked(
+  id: number,
+  patch: Partial<NewAuthor>,
+): Promise<Author | null> {
+  return inTransaction((tx) => {
+    const before = repo.findAuthorByIdSync(tx, id);
+    const row = repo.updateAuthorSync(tx, id, patch);
+    if (row && before && row.code !== before.code) {
+      for (const bookId of repo.findWrittenBookIdsSync(tx, id)) {
+        assertLabelAvailableSync(tx, bookId);
+      }
+    }
+    return row;
+  });
+}
+
 export const updateAuthor = makeUpdate({
   entity: ENTITY,
   schema: updateAuthorSchema,
   find: repo.findAuthorById,
-  update: repo.updateAuthor,
+  update: updateAuthorChecked,
   isProtected,
   build: (existing, patch): Partial<NewAuthor> => {
     const firstName = patch.firstName ?? existing.firstName;
