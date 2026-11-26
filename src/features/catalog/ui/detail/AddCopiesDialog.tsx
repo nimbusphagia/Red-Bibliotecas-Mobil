@@ -44,7 +44,7 @@ export default function AddCopiesDialog({
 
   const confirm = () => {
     if (session.status !== "signed-in" || !valid) return;
-    run(async () => {
+    void run(async () => {
       await registerCopies(session.account.id, {
         shelfId: selectedShelf,
         lines: [{ bookId, quantity: amount }],

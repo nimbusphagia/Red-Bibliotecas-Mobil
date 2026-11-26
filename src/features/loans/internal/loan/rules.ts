@@ -2,7 +2,12 @@ import {
   LoanLimitError,
   VisitorBlockedError,
 } from "@/features/shared/errors/errors";
-import type { OpenCounts, VisitorLoanStatus } from "./types";
+import type {
+  LoanListItem,
+  LoanState,
+  OpenCounts,
+  VisitorLoanStatus,
+} from "./types";
 
 export const MAX_OPEN_COPIES = 5;
 const BLOCK_AT_OVERDUE = 3;
@@ -24,7 +29,6 @@ export function statusOf(counts: OpenCounts): VisitorLoanStatus {
     remaining: blocked ? 0 : Math.max(0, MAX_OPEN_COPIES - counts.open),
   };
 }
-import type { LoanListItem, LoanState } from "./types";
 
 export const loanStateOf = ({
   overdue,

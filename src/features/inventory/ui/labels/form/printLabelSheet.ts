@@ -13,7 +13,7 @@ export async function shareLabelSheet(labels: PrintLabel[]): Promise<void> {
 
   const file = new File(Paths.cache, name);
   file.create({ overwrite: true });
-  file.write(bytes);
+  await file.write(bytes);
 
   await Sharing.shareAsync(file.uri, {
     mimeType: "application/pdf",

@@ -151,7 +151,7 @@ export default function ShelfDetail({ id }: { id: string }) {
                 showBook
                 onChanged={() => {
                   list.reload();
-                  reload();
+                  void reload();
                 }}
               />
             )}
@@ -164,7 +164,7 @@ export default function ShelfDetail({ id }: { id: string }) {
           onClose={() => setEditing(false)}
           onSaved={() => {
             setEditing(false);
-            reload();
+            void reload();
           }}
         />
       )}

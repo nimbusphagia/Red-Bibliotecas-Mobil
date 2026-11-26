@@ -105,7 +105,7 @@ export function useOptions(load: (() => Promise<Option[]>) | null) {
       return;
     }
     let stale = false;
-    load().then((o) => {
+    void load().then((o) => {
       if (!stale) setOptions(o);
     });
     return () => {

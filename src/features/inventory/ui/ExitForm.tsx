@@ -47,7 +47,7 @@ export default function ExitForm() {
 
   const submit = () => {
     if (session.status !== "signed-in") return;
-    run(async () => {
+    void run(async () => {
       const { movement } = await exitCopies(session.account.id, {
         reason,
         copyIds: copies.map((c) => c.id),

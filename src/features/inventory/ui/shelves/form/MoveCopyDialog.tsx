@@ -35,7 +35,7 @@ export default function MoveCopyDialog({
 
   const confirm = () => {
     if (session.status !== "signed-in" || targetId === undefined) return;
-    run(async () => {
+    void run(async () => {
       await moveCopies(session.account.id, {
         shelfId: targetId,
         copyIds: [copy.id],

@@ -16,7 +16,7 @@ export default function BookForm({ id }: { id?: string }) {
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    getBookItem(routeIdSchema.parse(id)).then((b) => {
+    void getBookItem(routeIdSchema.parse(id)).then((b) => {
       if (!cancelled) setBook(b);
     });
     return () => {

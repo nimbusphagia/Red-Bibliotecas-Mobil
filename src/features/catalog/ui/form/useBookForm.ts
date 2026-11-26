@@ -90,7 +90,7 @@ export function useBookForm(book?: BookListItem) {
 
   function submit() {
     if (session.status !== "signed-in") return;
-    run(
+    void run(
       async () => {
         if (book) {
           await updateBook(book.id, toBookInput(values));

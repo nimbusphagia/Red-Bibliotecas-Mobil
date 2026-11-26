@@ -88,7 +88,7 @@ export default function EntryForm() {
     if (session.status !== "signed-in" || !reason) return;
     // Los errores de un intento anterior ya no valen.
     setLines((p) => p.map(({ error: _e, ...l }) => l as EntryLine));
-    run(
+    void run(
       async () => {
         const { movement } = await registerCopies(session.account.id, {
           reason,

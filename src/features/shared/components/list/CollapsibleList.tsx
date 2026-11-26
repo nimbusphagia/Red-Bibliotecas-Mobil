@@ -87,7 +87,7 @@ export function CollapsibleList<T extends { id: number }>({
     if (!open) return;
     let stale = false;
     setItems(undefined);
-    loadItems().then((rows) => {
+    void loadItems().then((rows) => {
       if (!stale) setItems(rows);
     });
     return () => {

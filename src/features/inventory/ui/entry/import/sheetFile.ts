@@ -77,7 +77,7 @@ export async function saveTemplate(): Promise<boolean> {
     return false;
   }
   const file = folder.createFile(TEMPLATE_NAME, TYPES[0]);
-  file.write(templateBytes(await entryTemplate()));
+  await file.write(templateBytes(await entryTemplate()));
   return true;
 }
 
@@ -85,7 +85,7 @@ export async function saveTemplate(): Promise<boolean> {
 export async function shareTemplate(): Promise<void> {
   const file = new File(Paths.cache, TEMPLATE_NAME);
   file.create({ overwrite: true });
-  file.write(templateBytes(await entryTemplate()));
+  await file.write(templateBytes(await entryTemplate()));
   await Sharing.shareAsync(file.uri, {
     mimeType: TYPES[0],
     dialogTitle: "Plantilla de entrada",

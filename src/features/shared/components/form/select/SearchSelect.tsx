@@ -43,7 +43,7 @@ export function SearchSelect({
 
   useEffect(() => {
     let stale = false;
-    fetchOptions(debounced).then((o) => {
+    void fetchOptions(debounced).then((o) => {
       if (stale) return;
       setOptions(o);
       if (debounced === "") setNone(o.length === 0);
@@ -75,6 +75,7 @@ export function SearchSelect({
     if (tick === lastTick.current) return;
     lastTick.current = tick;
     if (except !== id) close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reaccionar solo a un toque nuevo.
   }, [tick]);
   const pick = (option?: Option) => {
     onChange(option);

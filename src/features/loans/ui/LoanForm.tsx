@@ -55,7 +55,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
         .catch(() =>
           setErrors({ form: "No se pudo cargar el ejemplar", fields: {} }),
         );
-  }, [copyId]);
+  }, [copyId, setErrors]);
 
   useEffect(() => {
     setVisitorItem(undefined);
@@ -85,7 +85,7 @@ export default function LoanForm({ copyId }: { copyId?: string }) {
 
   const submit = () => {
     if (session.status !== "signed-in" || !visitor) return;
-    run(async () => {
+    void run(async () => {
       const { movement } = await lendCopies(session.account.id, {
         visitorId: visitor.id,
         copyIds: copies.map((c) => c.id),

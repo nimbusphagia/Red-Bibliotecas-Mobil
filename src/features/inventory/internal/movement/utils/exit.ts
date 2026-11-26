@@ -10,12 +10,7 @@ import {
 } from "../../copy/repository";
 import type { CopyLookup } from "../../copy/types";
 import { insertExitMovementSync, insertMovementLinesSync } from "../repository";
-import {
-  EXIT_STATUS,
-  type ExitResult,
-  type ExitStatus,
-  type NewExitMovement,
-} from "../types";
+import { EXIT_STATUS, type ExitResult, type NewExitMovement } from "../types";
 
 type ExitOptions = {
   allowOnLoan?: boolean;

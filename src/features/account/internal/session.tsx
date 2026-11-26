@@ -50,7 +50,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (!cancelled) setState(next);
     };
 
-    (async () => {
+    void (async () => {
       try {
         await runMigrations();
 

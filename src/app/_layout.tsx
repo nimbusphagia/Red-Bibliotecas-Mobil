@@ -19,7 +19,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "../../global.css";
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   return (
@@ -39,7 +39,7 @@ function RootNavigator() {
   });
 
   useEffect(() => {
-    if (loaded || error) SplashScreen.hideAsync();
+    if (loaded || error) void SplashScreen.hideAsync();
   }, [loaded, error]);
 
   if (!loaded && !error) return null;

@@ -32,7 +32,7 @@ export default function RegisterScreen() {
       setErrors({ fields: { confirm: "Las contraseñas no coinciden" } });
       return;
     }
-    run(async () => {
+    void run(async () => {
       await completeSetup({ name, email, password });
       finishSetup();
     });

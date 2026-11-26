@@ -60,7 +60,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
         .catch(() =>
           setErrors({ form: "No se pudo cargar el ejemplar", fields: {} }),
         );
-  }, [copyId]);
+  }, [copyId, setErrors]);
 
   const toggle = (c: CopyItem) =>
     setCopies((p) =>
@@ -71,7 +71,7 @@ export default function LabelForm({ copyId }: { copyId?: string }) {
 
   const submit = () => {
     if (session.status !== "signed-in") return;
-    run(async () => {
+    void run(async () => {
       const attempted = copies;
       const value = await markCopiesLabeled(session.account.id, {
         copyIds: attempted.map((c) => c.id),

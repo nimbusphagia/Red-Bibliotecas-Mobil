@@ -44,7 +44,7 @@ export function useInfiniteList<T>(
     setItems([]);
     setTotal(0);
     setError(null);
-    load(0);
+    void load(0);
   }, [load]);
   const loadRef = useRef(load);
   useEffect(() => {
@@ -53,7 +53,7 @@ export function useInfiniteList<T>(
 
   const reload = useCallback(() => {
     generation.current++;
-    loadRef.current(0);
+    void loadRef.current(0);
   }, []);
 
   const firstFocus = useRef(true);
@@ -69,7 +69,7 @@ export function useInfiniteList<T>(
 
   const loadMore = useCallback(() => {
     if (busy.current || error || loaded.current >= total) return;
-    load(loaded.current);
+    void load(loaded.current);
   }, [load, error, total]);
 
   return { items, total, loading, error, loadMore, reload };

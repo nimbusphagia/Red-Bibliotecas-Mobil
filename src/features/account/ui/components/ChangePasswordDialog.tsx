@@ -30,7 +30,7 @@ export default function ChangePasswordDialog({ onClose, onChanged }: Props) {
 
   const confirm = () => {
     if (session.status !== "signed-in" || !valid) return;
-    run(
+    void run(
       async () => {
         await changeOwnPassword(session.account.id, {
           currentPassword: current,

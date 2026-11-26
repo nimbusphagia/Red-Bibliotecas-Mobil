@@ -17,6 +17,7 @@ export function useDialogAutoFocus(onClaim: () => void, enabled = true) {
   const id = useId();
   useEffect(() => {
     if (!focus || !enabled || focus.first) return;
+    // eslint-disable-next-line react-hooks/immutability -- el contexto es un token mutable compartido a propósito.
     focus.first = id;
     // En Android, enfocar en el mismo frame del montaje (o justo después del
     // blur del campo anterior) enfoca pero no abre el teclado.
@@ -25,5 +26,6 @@ export function useDialogAutoFocus(onClaim: () => void, enabled = true) {
       clearTimeout(timer);
       if (focus.first === id) focus.first = undefined;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al montar: el turno se reclama una vez.
   }, []);
 }

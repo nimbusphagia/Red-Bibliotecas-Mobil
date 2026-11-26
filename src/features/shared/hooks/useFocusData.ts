@@ -19,7 +19,7 @@ export function useFocusData<T>(fetch: () => Promise<T>) {
 
   useFocusEffect(
     useCallback(() => {
-      reload();
+      void reload();
       return () => {
         generation.current++;
       };

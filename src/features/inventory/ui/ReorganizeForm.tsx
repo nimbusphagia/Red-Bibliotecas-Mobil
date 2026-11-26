@@ -39,7 +39,7 @@ export default function ReorganizeForm() {
     setTargetInfo(undefined);
     if (!target) return;
     let live = true;
-    Promise.all([getShelf(target.id), getShelfSummary(target.id)]).then(
+    void Promise.all([getShelf(target.id), getShelfSummary(target.id)]).then(
       ([shelf, summary]) =>
         live &&
         setTargetInfo({ description: shelf.description, total: summary.total }),
@@ -63,7 +63,7 @@ export default function ReorganizeForm() {
 
   const submit = () => {
     if (session.status !== "signed-in" || !target) return;
-    run(async () => {
+    void run(async () => {
       await moveCopies(session.account.id, {
         shelfId: target.id,
         copyIds: copies.map((c) => c.id),

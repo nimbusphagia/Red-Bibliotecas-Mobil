@@ -46,7 +46,7 @@ export default function MovementDetail({ id }: { id: string }) {
   const [recovering, setRecovering] = useState<MovementLine | null>(null);
 
   useEffect(() => {
-    getMovement(movementId).then(setMovement);
+    void getMovement(movementId).then(setMovement);
   }, [movementId]);
 
   const fetchPage = useCallback(
@@ -65,7 +65,7 @@ export default function MovementDetail({ id }: { id: string }) {
       setLoan(null);
       return;
     }
-    getLoan(loanId).then(setLoan);
+    void getLoan(loanId).then(setLoan);
   }, [loanId]);
 
   if (!movement) return <ActivityIndicator />;
