@@ -100,7 +100,8 @@ export default function ShelfDetail({ id }: { id: string }) {
         title={shelfLabel(shelf)}
         subtitle={shelf.description ?? undefined}
         lead={
-          !shelf.isDefault && (
+          !shelf.isDefault &&
+          actorId !== null && (
             <Button
               title="Editar"
               icon={PencilLine}

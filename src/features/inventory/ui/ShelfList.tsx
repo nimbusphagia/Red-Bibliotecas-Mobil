@@ -12,6 +12,7 @@ import { useInfiniteList } from "@/features/shared/hooks/useInfiniteList";
 import { useCallback, useState } from "react";
 import ShelfDialog from "./shelves/form/ShelfDialog";
 import ShelfCard from "./shelves/list/ShelfCard";
+import { useCanManageStock } from "./useCanManageStock";
 import { Link } from "expo-router";
 import { Plus, SendToBack } from "lucide-react-native";
 import { View } from "react-native";
@@ -26,7 +27,7 @@ export default function ShelfList() {
   const { search, setSearch, debouncedSearch } = useSearch();
   const [sort, setSort] = useSort<ShelfSort>({ by: "createdAt", dir: "desc" });
   const [adding, setAdding] = useState(false);
-
+  const canManage = useCanManageStock();
 
   const fetchPage = useCallback(
     (offset: number) =>
@@ -48,23 +49,25 @@ export default function ShelfList() {
         title="Estantería"
         subtitle="Organiza dónde se guarda cada ejemplar"
         lead={
-          <View className="flex-row items-center gap-2">
-            <Link href="/shelves/reorganize" asChild>
+          canManage && (
+            <View className="flex-row items-center gap-2">
+              <Link href="/shelves/reorganize" asChild>
+                <Button
+                  title="Organizar"
+                  icon={SendToBack}
+                  size="sm"
+                  weight="md"
+                />
+              </Link>
               <Button
-                title="Organizar"
-                icon={SendToBack}
+                title="Nuevo"
+                icon={Plus}
                 size="sm"
                 weight="md"
+                onPress={() => setAdding(true)}
               />
-            </Link>
-            <Button
-              title="Nuevo"
-              icon={Plus}
-              size="sm"
-              weight="md"
-              onPress={() => setAdding(true)}
-            />
-          </View>
+            </View>
+          )
         }
         search={{
           value: search,

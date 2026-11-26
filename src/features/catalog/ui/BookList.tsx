@@ -24,6 +24,7 @@ import FilterPanel, {
   type FilterDialog,
 } from "./list/searchFilters/FilterPanel";
 import QuickFilters from "./list/searchFilters/QuickFilters";
+import { useCanManageStock } from "@/features/inventory/ui/useCanManageStock";
 import { Link } from "expo-router";
 import { Plus, Stamp } from "lucide-react-native";
 
@@ -38,6 +39,7 @@ export default function BookList() {
   const [filters, setFilters] = useState<CatalogFilters>({});
   const [dialog, setDialog] = useState<FilterDialog>(null);
   const [sort, setSort] = useSort<BookSort>({ by: "title", dir: "asc" });
+  const canManage = useCanManageStock();
   const { isExpanded } = useLayoutMode();
 
   const fetchPage = useCallback(
@@ -67,9 +69,11 @@ export default function BookList() {
             <Link href="/catalog/label" asChild>
               <Button icon={Stamp} size="sm" title="Tejuelos" weight="md" />
             </Link>
-            <Link href="/catalog/form" asChild>
-              <Button icon={Plus} size="sm" title="Nuevo" weight="md" />
-            </Link>
+            {canManage && (
+              <Link href="/catalog/form" asChild>
+                <Button icon={Plus} size="sm" title="Nuevo" weight="md" />
+              </Link>
+            )}
           </View>
         }
         search={{

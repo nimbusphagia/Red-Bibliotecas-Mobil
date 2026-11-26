@@ -1,5 +1,6 @@
 import { db } from "@/db/client";
 import { inTransaction } from "@/db/transaction";
+import { requireAccount } from "@/features/account/internal/service";
 import { getBook } from "@/features/catalog/internal/book/service";
 import {
   NotFoundError,
@@ -69,7 +70,7 @@ export async function markCopiesLabeled(
   actorId: number,
   input: LabelCopiesInput,
 ): Promise<MarkLabeledResult> {
-  await requireStockRole(actorId, "label copies");
+  await requireAccount(actorId);
   const { copyIds } = parseOrThrow(labelCopiesSchema, input);
   return inTransaction((tx) => markLabeledSync(tx, copyIds, actorId));
 }

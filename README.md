@@ -71,7 +71,8 @@ Hay tres cuentas, una por rol: Administrador, Bibliotecario y Auxiliar. El
 administrador es el equipo del programa que realiza la configuración inicial, el
 bibliotecario es el encargado principal de cada biblioteca y el auxiliar son los
 ayudantes, que suelen rotar con el tiempo. Solo el administrador y el
-bibliotecario pueden registrar entradas y salidas de inventario.
+bibliotecario pueden catalogar libros, organizar la estantería y registrar
+entradas y salidas de inventario. El auxiliar presta, devuelve y etiqueta.
 
 Cada cuenta puede restablecer la contraseña de las cuentas por debajo de ella, y
 quien entra con la contraseña inicial debe elegir una nueva. Si se olvida la

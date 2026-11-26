@@ -24,6 +24,7 @@ import FilterPanel, {
   type MovementFilters,
 } from "./movements/list/FilterPanel";
 import MovementMonthRow from "./movements/list/MovementMonthRow";
+import { useCanManageStock } from "./useCanManageStock";
 
 type TypeFilter = "all" | MovementType;
 
@@ -40,6 +41,7 @@ const SORTS: SortOption<MovementSort>[] = [
 export default function MovementList() {
   const [filters, setFilters] = useState<MovementFilters>({});
   const [open, setOpen] = useState(false);
+  const canManage = useCanManageStock();
   const [sort, setSort] = useSort<MovementSort>({
     by: "createdAt",
     dir: "desc",
@@ -65,25 +67,27 @@ export default function MovementList() {
         title="Historial de movimientos"
         subtitle="Entradas y salidas de ejemplares"
         lead={
-          <View className="flex-row items-center gap-2">
-            <Link href="/stock/exit" asChild>
-              <Button
-                title="Salida"
-                variant="soft"
-                icon={PackageMinus}
-                size="sm"
-                weight="md"
-              />
-            </Link>
-            <Link href="/stock/entry" asChild>
-              <Button
-                title="Entrada"
-                icon={PackagePlus}
-                size="sm"
-                weight="md"
-              />
-            </Link>
-          </View>
+          canManage && (
+            <View className="flex-row items-center gap-2">
+              <Link href="/stock/exit" asChild>
+                <Button
+                  title="Salida"
+                  variant="soft"
+                  icon={PackageMinus}
+                  size="sm"
+                  weight="md"
+                />
+              </Link>
+              <Link href="/stock/entry" asChild>
+                <Button
+                  title="Entrada"
+                  icon={PackagePlus}
+                  size="sm"
+                  weight="md"
+                />
+              </Link>
+            </View>
+          )
         }
       />
       <ItemList
