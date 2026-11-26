@@ -18,6 +18,8 @@ import {
   RecoveryProblemKind,
   LoanLimitError,
   VisitorBlockedError,
+  CatalogImportError,
+  CatalogImportProblem,
 } from "./errors";
 
 const LINE_PREFIX = /^lines\.\d+\.(book\.)?/;
@@ -65,6 +67,14 @@ const RECOVERY_PROBLEM_ES: Record<RecoveryProblemKind, string> = {
   status_changed: "El ejemplar cambió de estado (¿está prestado?)",
   number_taken: "Otro ejemplar ya usa su número",
   label_taken: "Otro ejemplar ya usa su tejuelo",
+};
+
+const CATALOG_IMPORT_ES: Record<CatalogImportProblem, string> = {
+  invalid_file: "El archivo no es una exportación de catálogo válida",
+  other_version:
+    "El archivo es de otra versión de la app. Actualiza ambas tablets e inténtalo de nuevo.",
+  has_loans:
+    "Esta tablet ya tiene préstamos registrados; solo se puede importar en una tablet nueva",
 };
 
 const LINE_INDEX = /^lines\.(\d+)(\.|$)/;
@@ -173,6 +183,9 @@ export function toFormErrors(error: unknown): FormErrors {
         visitorId: `Bloqueado: tiene ${error.overdue} ejemplares vencidos`,
       },
     };
+  }
+  if (error instanceof CatalogImportError) {
+    return { form: CATALOG_IMPORT_ES[error.problem], fields: {} };
   }
   if (error instanceof NotFoundError) {
     return { form: `${entityEs(error.entity)} ya no existe`, fields: {} };

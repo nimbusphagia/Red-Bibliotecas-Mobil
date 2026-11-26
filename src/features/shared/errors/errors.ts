@@ -259,3 +259,24 @@ export class VisitorBlockedError extends AppError {
     this.name = "VisitorBlockedError";
   }
 }
+
+export type CatalogImportProblem =
+  "invalid_file" | "other_version" | "has_loans";
+
+const CATALOG_IMPORT_TEXT: Record<CatalogImportProblem, string> = {
+  invalid_file: "the file is not a valid catalog export",
+  other_version: "the file comes from another version of the app",
+  has_loans: "this device already has loans",
+};
+
+export class CatalogImportError extends AppError {
+  readonly code = "CATALOG_IMPORT";
+  constructor(
+    public readonly problem: CatalogImportProblem,
+    cause?: unknown,
+  ) {
+    super(`Cannot import catalog: ${CATALOG_IMPORT_TEXT[problem]}`);
+    this.name = "CatalogImportError";
+    this.cause = cause;
+  }
+}

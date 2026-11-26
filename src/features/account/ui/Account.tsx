@@ -8,6 +8,8 @@ import {
 } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
 import { ScreenBody } from "@/features/shared/layout/Screen";
+import CatalogPanel from "@/features/exchange/ui/CatalogPanel";
+import { canManageStock } from "@/features/inventory/internal/movement/utils/auth";
 import { seedDev } from "@/util/testSeed";
 import { KeyRound, LogOut } from "lucide-react-native";
 import { useState } from "react";
@@ -81,6 +83,7 @@ export default function Account() {
         />
         {notice && <Text variant="caption">{notice}</Text>}
         <LowerAccountsPanel actorId={account.id} />
+        {canManageStock(account.role) && <CatalogPanel actorId={account.id} />}
         {__DEV__ && (
           <Panel title="Desarrollo">
             <View className="w-60 gap-2">

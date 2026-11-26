@@ -32,3 +32,10 @@ export function uniqueViolationColumns(error: unknown): string[] {
 export function isForeignKeyViolation(error: unknown): boolean {
   return messages(error).some((m) => /FOREIGN KEY constraint failed/i.test(m));
 }
+
+/** Un fallo por los datos escritos (restricción o tipo), no del motor. */
+export function isDataViolation(error: unknown): boolean {
+  return messages(error).some((m) =>
+    /constraint failed|datatype mismatch/i.test(m),
+  );
+}
