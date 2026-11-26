@@ -1,5 +1,6 @@
 import { completeSetup } from "@/features/account/internal/service";
 import { useSession } from "@/features/account/internal/session";
+import RecoveryCodeScreen from "@/features/account/ui/components/RecoveryCodeScreen";
 import {
   FormScreen,
   TextField,
@@ -16,16 +17,13 @@ const background = require("@/assets/images/auth-background.jpg");
 
 export default function RegisterScreen() {
   const { finishSetup } = useSession();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [code, setCode] = useState<string | null>(null);
 
-  const emailRef = useRef<TextInputInstance>(null);
-  const passwordRef = useRef<TextInputInstance>(null);
   const confirmRef = useRef<TextInputInstance>(null);
 
-  const { errors, setErrors, submitting, run } = useFormSubmit();
+  const { errors, setErrors, submitting, run, release } = useFormSubmit();
 
   function submit() {
     if (password !== confirm) {
@@ -33,10 +31,12 @@ export default function RegisterScreen() {
       return;
     }
     void run(async () => {
-      await completeSetup({ name, email, password });
-      finishSetup();
+      setCode(await completeSetup({ password }));
+      release();
     });
   }
+
+  if (code) return <RecoveryCodeScreen code={code} onDone={finishSetup} />;
 
   if (submitting) {
     return <LoadingScreen message="Configurando el sistema…" />;
@@ -45,35 +45,10 @@ export default function RegisterScreen() {
   return (
     <FormScreen
       title="Bienvenido,"
-      subtitle="Para gestionar tu biblioteca, primero crea una cuenta de Administrador"
+      subtitle="Para gestionar tu biblioteca, primero crea la contraseña del Administrador"
       background={background}
     >
       <TextField
-        label="Nombre"
-        placeholder="Tu nombre completo"
-        value={name}
-        onChangeText={setName}
-        error={errors.fields.name}
-        autoCapitalize="words"
-        returnKeyType="next"
-        onSubmitEditing={() => emailRef.current?.focus()}
-      />
-      <TextField
-        ref={emailRef}
-        label="Correo electrónico"
-        placeholder="nombre@ejemplo.com"
-        keyboardType="email-address"
-        autoComplete="email"
-        value={email}
-        onChangeText={setEmail}
-        error={errors.fields.email}
-        autoCapitalize="none"
-        autoCorrect={false}
-        returnKeyType="next"
-        onSubmitEditing={() => passwordRef.current?.focus()}
-      />
-      <TextField
-        ref={passwordRef}
         label="Contraseña"
         placeholder="Crea una contraseña"
         secureTextEntry

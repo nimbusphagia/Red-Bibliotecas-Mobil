@@ -109,16 +109,13 @@ export function toFormErrors(error: unknown): FormErrors {
     return { fields };
   }
   if (error instanceof InvalidCredentialsError) {
-    return { form: "Correo o contraseña incorrectos", fields: {} };
+    return { form: "Contraseña incorrecta", fields: {} };
   }
   if (error instanceof SetupClosedError) {
     return { form: "La configuración inicial ya se completó", fields: {} };
   }
   if (error instanceof DuplicateError && error.entity === "shelf") {
     return { fields: { name: "Ya existe una estantería con ese nombre" } };
-  }
-  if (error instanceof DuplicateError && error.entity === "account") {
-    return { fields: { email: "Ya existe una cuenta con ese correo" } };
   }
   if (error instanceof DuplicateError) {
     return { form: "Ya existe un registro con ese nombre", fields: {} };

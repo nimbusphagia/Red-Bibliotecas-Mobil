@@ -9,7 +9,6 @@ import {
   MarkFailureReason,
   PrintSkipReason,
 } from "@/features/inventory/internal/copy/types";
-import type { Account } from "@/features/account/internal/types";
 import type { VisitorRole } from "@/features/loans/internal/visitor/types";
 import type { Reputation } from "@/features/loans/internal/visitor/reputation";
 import type { GRADE_LEVELS } from "@/db/schema";
@@ -29,12 +28,6 @@ export const COPY_STATUS_ES: Record<CopyStatus, string> = {
 export const ROLE_ES: Record<VisitorRole, string> = {
   student: "Estudiante",
   teacher: "Profesor",
-};
-
-export const ACCOUNT_ROLE_ES: Record<Account["role"], string> = {
-  owner: "Propietario",
-  admin: "Administrador",
-  staff: "Bibliotecario",
 };
 
 const LEVEL_ES: Record<(typeof GRADE_LEVELS)[number], string> = {

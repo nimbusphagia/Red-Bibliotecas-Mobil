@@ -7,13 +7,13 @@ import {
   Text,
 } from "@/features/shared/components";
 import { formatDateES } from "@/features/shared/format/dates";
-import { ACCOUNT_ROLE_ES } from "@/features/shared/format/translate";
 import { ScreenBody } from "@/features/shared/layout/Screen";
 import { seedDev } from "@/util/testSeed";
 import { KeyRound, LogOut } from "lucide-react-native";
 import { useState } from "react";
 import { View } from "react-native";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
+import LowerAccountsPanel from "./components/LowerAccountsPanel";
 
 export default function Account() {
   const session = useSession();
@@ -27,7 +27,7 @@ export default function Account() {
   const runSeed = async () => {
     try {
       setSeedMsg("Cargando…");
-      setSeedMsg(await seedDev(account.id));
+      setSeedMsg(await seedDev());
     } catch (e) {
       setSeedMsg(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
@@ -55,9 +55,7 @@ export default function Account() {
             {
               title: "Datos",
               rows: [
-                { label: "Nombre", content: account.name },
-                { label: "Correo", content: account.email },
-                { label: "Rol", content: ACCOUNT_ROLE_ES[account.role] },
+                { label: "Cuenta", content: account.name },
                 {
                   label: "Miembro desde",
                   content: formatDateES(account.createdAt),
@@ -82,6 +80,7 @@ export default function Account() {
           ]}
         />
         {notice && <Text variant="caption">{notice}</Text>}
+        <LowerAccountsPanel actorId={account.id} />
         {__DEV__ && (
           <Panel title="Desarrollo">
             <View className="w-60 gap-2">

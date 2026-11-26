@@ -49,14 +49,18 @@ function RootNavigator() {
   }
 
   const { status } = session;
+  const pending =
+    session.status === "signed-in" && session.account.mustChangePassword;
 
   return (
     <Stack screenOptions={STACK_OPTIONS}>
       <Stack.Screen name="index" />
-      <Stack.Protected guard={status === "setup" || status === "signed-out"}>
+      <Stack.Protected
+        guard={status === "setup" || status === "signed-out" || pending}
+      >
         <Stack.Screen name="(public)" />
       </Stack.Protected>
-      <Stack.Protected guard={status === "signed-in"}>
+      <Stack.Protected guard={status === "signed-in" && !pending}>
         <Stack.Screen name="(app)" />
       </Stack.Protected>
     </Stack>

@@ -1,7 +1,7 @@
-import { asc, sql, eq, count } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { account, loanMovement } from "@/db/schema";
-import type { Account, AccountPatch, NewAccount } from "./types";
+import type { Account, AccountPatch, AccountRole, NewAccount } from "./types";
 import type { Executor } from "@/db/transaction";
 
 export async function countAccounts(): Promise<number> {
@@ -14,23 +14,15 @@ export async function countLoans(): Promise<number> {
   return r.n;
 }
 
-export async function insertAccount(values: NewAccount): Promise<Account> {
-  const [row] = await db.insert(account).values(values).returning();
-  return row;
-}
-
 export async function findAccountById(id: number): Promise<Account | null> {
   const [row] = await db.select().from(account).where(eq(account.id, id));
   return row ?? null;
 }
 
-export async function findAccountByEmail(
-  email: string,
+export async function findAccountByRole(
+  role: AccountRole,
 ): Promise<Account | null> {
-  const [row] = await db
-    .select()
-    .from(account)
-    .where(sql`lower(${account.email}) = ${email.toLowerCase()}`);
+  const [row] = await db.select().from(account).where(eq(account.role, role));
   return row ?? null;
 }
 
@@ -47,10 +39,7 @@ export async function updateAccount(
 }
 
 export async function listAccounts(): Promise<Account[]> {
-  return db
-    .select()
-    .from(account)
-    .orderBy(asc(sql`lower(${account.name})`), asc(account.id));
+  return db.select().from(account);
 }
 
 export function insertAccountsSync(

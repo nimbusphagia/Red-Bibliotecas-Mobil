@@ -96,7 +96,7 @@ export class SetupClosedError extends AppError {
 export class InvalidCredentialsError extends AppError {
   readonly code = "INVALID_CREDENTIALS";
   constructor() {
-    super("Incorrect email or password");
+    super("Incorrect credentials");
     this.name = "InvalidCredentialsError";
   }
 }

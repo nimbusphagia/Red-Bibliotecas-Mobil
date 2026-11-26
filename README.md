@@ -67,11 +67,16 @@ de la colección y la cantidad de préstamos por mes.
 
 ### Cuentas
 
-Hay tres roles: propietario, administrador y personal. El propietario es el
-equipo del programa que realiza la configuración inicial, el administrador es el
-encargado principal de cada biblioteca y el personal son los ayudantes, que
-suelen rotar con el tiempo. Solo el propietario y el administrador pueden
-registrar entradas y salidas de inventario.
+Hay tres cuentas, una por rol: Administrador, Bibliotecario y Auxiliar. El
+administrador es el equipo del programa que realiza la configuración inicial, el
+bibliotecario es el encargado principal de cada biblioteca y el auxiliar son los
+ayudantes, que suelen rotar con el tiempo. Solo el administrador y el
+bibliotecario pueden registrar entradas y salidas de inventario.
+
+Cada cuenta puede restablecer la contraseña de las cuentas por debajo de ella, y
+quien entra con la contraseña inicial debe elegir una nueva. Si se olvida la
+contraseña del administrador, se recupera con el código que se muestra al
+terminar la configuración inicial.
 
 ## Aspectos técnicos
 

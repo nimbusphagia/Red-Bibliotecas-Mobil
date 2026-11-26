@@ -2,15 +2,15 @@ CREATE TABLE `account` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`username` text NOT NULL,
+	`name` text NOT NULL,
 	`password_hash` text NOT NULL,
-	`role` text DEFAULT 'staff' NOT NULL,
-	`active` integer DEFAULT true NOT NULL,
-	CONSTRAINT "ck_account_role" CHECK("account"."role" IN ('owner', 'admin', 'staff'))
+	`role` text NOT NULL,
+	`must_change_password` integer DEFAULT false NOT NULL,
+	`recovery_hash` text,
+	CONSTRAINT "ck_account_role" CHECK("account"."role" IN ('admin', 'librarian', 'staff'))
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uq_account_username_lower` ON `account` (lower("username"));--> statement-breakpoint
-CREATE UNIQUE INDEX `uq_account_single_owner` ON `account` (`role`) WHERE role = 'owner';--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_account_role` ON `account` (`role`);--> statement-breakpoint
 CREATE TABLE `author` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -18,6 +18,7 @@ CREATE TABLE `author` (
 	`first_name` text NOT NULL,
 	`last_name` text,
 	`name_key` text NOT NULL,
+	`code` text,
 	`is_protected` integer DEFAULT false NOT NULL
 );
 --> statement-breakpoint
@@ -36,6 +37,8 @@ CREATE TABLE `book` (
 	`publication_year` integer,
 	`page_count` integer,
 	`active` integer DEFAULT true NOT NULL,
+	`title_code` text,
+	`omit_words` text DEFAULT '[]' NOT NULL,
 	FOREIGN KEY (`publisher_id`) REFERENCES `publisher`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`series_id`) REFERENCES `series`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`category_id`) REFERENCES `category`(`id`) ON UPDATE no action ON DELETE no action,
@@ -93,56 +96,24 @@ CREATE TABLE `copy` (
 	`copy_number` integer NOT NULL,
 	`status` text DEFAULT 'available' NOT NULL,
 	`notes` text,
+	`labeled_text` text,
+	`labeled_at` integer,
+	`labeled_by_id` integer,
+	`damaged_at` integer,
+	`damaged_by_id` integer,
 	FOREIGN KEY (`book_id`) REFERENCES `book`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`shelf_id`) REFERENCES `shelf`(`id`) ON UPDATE no action ON DELETE no action,
-	CONSTRAINT "ck_copy_status" CHECK("copy"."status" IN ('available', 'on_loan', 'lost', 'discarded', 'damaged')),
+	FOREIGN KEY (`labeled_by_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`damaged_by_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE no action,
+	CONSTRAINT "ck_copy_status" CHECK("copy"."status" IN ('available', 'on_loan', 'lost', 'discarded')),
+	CONSTRAINT "ck_copy_damaged_pair" CHECK(("copy"."damaged_at" IS NULL) = ("copy"."damaged_by_id" IS NULL)),
 	CONSTRAINT "ck_copy_number_positive" CHECK("copy"."copy_number" > 0)
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `uq_copy_book_number` ON `copy` (`book_id`,`copy_number`) WHERE status NOT IN ('lost', 'discarded');--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_copy_labeled_text` ON `copy` (`labeled_text`) WHERE labeled_text IS NOT NULL AND status NOT IN ('lost', 'discarded');--> statement-breakpoint
 CREATE INDEX `idx_copy_book` ON `copy` (`book_id`);--> statement-breakpoint
 CREATE INDEX `idx_copy_shelf` ON `copy` (`shelf_id`);--> statement-breakpoint
-CREATE TABLE `label` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`copy_id` integer NOT NULL,
-	`category_code` text NOT NULL,
-	`author_code` text NOT NULL,
-	`subcategory_code` text NOT NULL,
-	`title_code` text NOT NULL,
-	`copy_number` integer NOT NULL,
-	`text` text NOT NULL,
-	`print_status` text DEFAULT 'pending_print' NOT NULL,
-	`printed_at` integer,
-	`revision` integer DEFAULT 1 NOT NULL,
-	`revoked_at` integer,
-	FOREIGN KEY (`copy_id`) REFERENCES `copy`(`id`) ON UPDATE no action ON DELETE no action,
-	CONSTRAINT "ck_label_print_status" CHECK("label"."print_status" IN ('pending_print', 'printed')),
-	CONSTRAINT "ck_label_copy_number_positive" CHECK("label"."copy_number" > 0),
-	CONSTRAINT "ck_label_revision_positive" CHECK("label"."revision" > 0)
-);
---> statement-breakpoint
-CREATE UNIQUE INDEX `uq_label_text_active` ON `label` (lower("text")) WHERE revoked_at IS NULL;--> statement-breakpoint
-CREATE UNIQUE INDEX `uq_label_copy` ON `label` (`copy_id`);--> statement-breakpoint
-CREATE TABLE `label_revision` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`label_id` integer NOT NULL,
-	`revision_number` integer NOT NULL,
-	`category_code` text NOT NULL,
-	`author_code` text NOT NULL,
-	`subcategory_code` text NOT NULL,
-	`title_code` text NOT NULL,
-	`copy_number` integer NOT NULL,
-	`text` text NOT NULL,
-	`change_reason` text,
-	FOREIGN KEY (`label_id`) REFERENCES `label`(`id`) ON UPDATE no action ON DELETE cascade,
-	CONSTRAINT "ck_label_revision_number_positive" CHECK("label_revision"."revision_number" > 0),
-	CONSTRAINT "ck_label_revision_copy_number_positive" CHECK("label_revision"."copy_number" > 0)
-);
---> statement-breakpoint
-CREATE UNIQUE INDEX `uq_label_revision_number` ON `label_revision` (`label_id`,`revision_number`);--> statement-breakpoint
 CREATE TABLE `loan_movement` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -166,7 +137,7 @@ CREATE TABLE `loan_movement_line` (
 	FOREIGN KEY (`movement_id`) REFERENCES `loan_movement`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`copy_id`) REFERENCES `copy`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`resolved_by_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE no action,
-	CONSTRAINT "ck_loan_line_outcome" CHECK("loan_movement_line"."outcome" IN ('returned', 'returned_damaged', 'lost')),
+	CONSTRAINT "ck_loan_line_outcome" CHECK("loan_movement_line"."outcome" IN ('returned', 'returned_damaged', 'discarded', 'lost')),
 	CONSTRAINT "ck_loan_line_resolved_pair" CHECK(("loan_movement_line"."resolved_at" IS NULL AND "loan_movement_line"."outcome" IS NULL) OR ("loan_movement_line"."resolved_at" IS NOT NULL AND "loan_movement_line"."outcome" IS NOT NULL))
 );
 --> statement-breakpoint
@@ -216,11 +187,12 @@ CREATE TABLE `shelf` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`name` text NOT NULL,
+	`name_key` text NOT NULL,
 	`description` text,
 	`is_default` integer DEFAULT false NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uq_shelf_name_lower` ON `shelf` (lower("name"));--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_shelf_name_key` ON `shelf` (`name_key`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uq_shelf_single_default` ON `shelf` (`is_default`) WHERE is_default = 1;--> statement-breakpoint
 CREATE TABLE `stock_movement` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -230,8 +202,7 @@ CREATE TABLE `stock_movement` (
 	`signed_by_id` integer NOT NULL,
 	`notes` text,
 	FOREIGN KEY (`signed_by_id`) REFERENCES `account`(`id`) ON UPDATE no action ON DELETE no action,
-	CONSTRAINT "ck_stock_movement_type" CHECK("stock_movement"."type" IN ('entry', 'exit')),
-	CONSTRAINT "ck_stock_movement_reason" CHECK("stock_movement"."reason" IN ('purchase', 'donation', 'loss', 'damage', 'discard', 'other'))
+	CONSTRAINT "ck_stock_movement_type_reason" CHECK(("stock_movement"."type" = 'entry' AND "stock_movement"."reason" IN ('purchase', 'donation', 'other', 'recovery')) OR ("stock_movement"."type" = 'exit' AND "stock_movement"."reason" IN ('loss', 'discard')))
 );
 --> statement-breakpoint
 CREATE TABLE `stock_movement_line` (
@@ -239,12 +210,18 @@ CREATE TABLE `stock_movement_line` (
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`movement_id` integer NOT NULL,
 	`copy_id` integer NOT NULL,
+	`loan_line_id` integer,
+	`recovered_line_id` integer,
 	FOREIGN KEY (`movement_id`) REFERENCES `stock_movement`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`copy_id`) REFERENCES `copy`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`copy_id`) REFERENCES `copy`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`loan_line_id`) REFERENCES `loan_movement_line`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`recovered_line_id`) REFERENCES `stock_movement_line`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE INDEX `idx_stock_movement_line_copy` ON `stock_movement_line` (`copy_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `uq_stock_movement_line` ON `stock_movement_line` (`movement_id`,`copy_id`);--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_stock_movement_line_loan_line` ON `stock_movement_line` (`loan_line_id`);--> statement-breakpoint
+CREATE UNIQUE INDEX `uq_stock_movement_line_recovered_line` ON `stock_movement_line` (`recovered_line_id`);--> statement-breakpoint
 CREATE TABLE `subcategory` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,

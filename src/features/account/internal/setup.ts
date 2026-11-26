@@ -1,10 +1,14 @@
+import type { AccountRole } from "./types";
+
 export const INITIAL_PASSWORD = "library_password_123";
 
-export const SEED_ACCOUNTS = [
-  { email: "admin@biblioteca.local", name: "Administrador", role: "admin" },
-  { email: "staff@biblioteca.local", name: "Personal", role: "staff" },
-] as const;
+export const ACCOUNT_NAMES: Record<AccountRole, string> = {
+  admin: "Administrador",
+  librarian: "Bibliotecario",
+  staff: "Auxiliar",
+};
 
-export const RESERVED_EMAILS: ReadonlySet<string> = new Set(
-  SEED_ACCOUNTS.map((a) => a.email),
-);
+const RANK: Record<AccountRole, number> = { admin: 2, librarian: 1, staff: 0 };
+
+export const outranks = (actor: AccountRole, target: AccountRole) =>
+  RANK[actor] > RANK[target];

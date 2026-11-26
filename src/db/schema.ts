@@ -12,8 +12,6 @@ import {
   type AnySQLiteColumn,
 } from "drizzle-orm/sqlite-core";
 
-const lower = (col: AnySQLiteColumn): SQL => sql`lower(${col})`;
-
 const oneOf = (col: AnySQLiteColumn, values: readonly string[]): SQL =>
   sql`${col} IN (${sql.raw(values.map((v) => `'${v}'`).join(", "))})`;
 
@@ -34,7 +32,7 @@ export const COLLABORATOR_ROLES = [
   "illustrator",
   "translator",
 ] as const;
-export const ACCOUNT_ROLES = ["owner", "admin", "staff"] as const;
+export const ACCOUNT_ROLES = ["admin", "librarian", "staff"] as const;
 export const COPY_STATUSES = [
   "available",
   "on_loan",
@@ -224,18 +222,17 @@ export const account = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     ...timestamps,
-    email: text("email").notNull(),
     name: text("name").notNull(),
     passwordHash: text("password_hash").notNull(),
-    role: text("role", { enum: ACCOUNT_ROLES }).notNull().default("staff"),
-    active: integer("active", { mode: "boolean" }).notNull().default(true),
+    role: text("role", { enum: ACCOUNT_ROLES }).notNull(),
+    mustChangePassword: integer("must_change_password", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    recoveryHash: text("recovery_hash"),
   },
   (t) => [
     check("ck_account_role", oneOf(t.role, ACCOUNT_ROLES)),
-    uniqueIndex("uq_account_email_lower").on(lower(t.email)),
-    uniqueIndex("uq_account_single_owner")
-      .on(t.role)
-      .where(sql`role = 'owner'`),
+    uniqueIndex("uq_account_role").on(t.role),
   ],
 );
 

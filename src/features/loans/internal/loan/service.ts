@@ -1,6 +1,6 @@
 import { db } from "@/db/client";
 import { inTransaction } from "@/db/transaction";
-import { requireActive } from "@/features/account/internal/service";
+import { requireAccount } from "@/features/account/internal/service";
 import {
   findCopiesByIdsSync,
   markCopiesDamagedSync,
@@ -109,7 +109,7 @@ export async function lendCopies(
   actorId: number,
   input: LendInput,
 ): Promise<LendResult> {
-  await requireActive(actorId);
+  await requireAccount(actorId);
   const { visitorId, copyIds, notes } = parseOrThrow(lendSchema, input);
 
   const visitor = await getVisitor(visitorId);
@@ -172,7 +172,7 @@ export async function returnCopies(
   actorId: number,
   input: ReturnInput,
 ): Promise<ReturnResult> {
-  await requireActive(actorId);
+  await requireAccount(actorId);
   const { items } = parseOrThrow(returnSchema, input);
   const copyIds = items.map((i) => i.copyId);
 

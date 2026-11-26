@@ -1,49 +1,48 @@
+import { ACCOUNT_ROLES } from "@/db/schema";
 import { useSession } from "@/features/account/internal/session";
+import { ACCOUNT_NAMES } from "@/features/account/internal/setup";
+import type { AccountRole } from "@/features/account/internal/types";
 import {
   FormScreen,
   TextField,
   Button,
   FieldError,
+  InlineFilter,
+  Text,
 } from "@/features/shared/components";
 
+import { router } from "expo-router";
 import { KeyRound } from "lucide-react-native";
-import { useRef, useState } from "react";
-import type { TextInputInstance } from "react-native";
+import { useState } from "react";
+import { View } from "react-native";
 import { useFormSubmit } from "@/features/shared/hooks/useFormSubmit";
 
 const background = require("@/assets/images/auth-background.jpg");
 
+const ROLES = ACCOUNT_ROLES.map((value) => ({
+  value,
+  label: ACCOUNT_NAMES[value],
+}));
+
 export default function LoginScreen() {
   const { signIn } = useSession();
-  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<AccountRole>("staff");
   const [password, setPassword] = useState("");
-
-  const passwordRef = useRef<TextInputInstance>(null);
 
   const { errors, submitting, run } = useFormSubmit();
   const submit = () =>
     run(
-      () => signIn(email, password),
+      () => signIn(role, password),
       () => setPassword(""),
     );
 
   return (
     <FormScreen title="Inicia sesión" background={background}>
+      <View className="gap-3">
+        <Text variant="item">Cuenta</Text>
+        <InlineFilter options={ROLES} value={role} onChange={setRole} />
+      </View>
       <TextField
-        label="Correo electrónico"
-        placeholder="nombre@ejemplo.com"
-        keyboardType="email-address"
-        autoComplete="email"
-        value={email}
-        onChangeText={setEmail}
-        error={errors.fields.email}
-        autoCapitalize="none"
-        autoCorrect={false}
-        returnKeyType="next"
-        onSubmitEditing={() => passwordRef.current?.focus()}
-      />
-      <TextField
-        ref={passwordRef}
         label="Contraseña"
         placeholder="Ingresa tu contraseña"
         secureTextEntry
@@ -54,17 +53,30 @@ export default function LoginScreen() {
         onSubmitEditing={submit}
       />
       <FieldError>{errors.form}</FieldError>
-      <Button
-        title="Iniciar sesión"
-        icon={KeyRound}
-        weight="md"
-        iconSize="lg"
-        accent="lg"
-        size="lg"
-        className="mt-2 self-end"
-        onPress={submit}
-        loading={submitting}
-      />
+      <View className="mt-2 flex-row items-center justify-between">
+        {role === "admin" ? (
+          <Button
+            title="¿Olvidaste la contraseña?"
+            variant="ghost"
+            size="sm"
+            onPress={() => router.push("/recover")}
+          />
+        ) : (
+          <Text variant="caption" className="flex-1">
+            Si la olvidaste, pide a una cuenta superior que la restablezca
+          </Text>
+        )}
+        <Button
+          title="Iniciar sesión"
+          icon={KeyRound}
+          weight="md"
+          iconSize="lg"
+          accent="lg"
+          size="lg"
+          onPress={submit}
+          loading={submitting}
+        />
+      </View>
     </FormScreen>
   );
 }

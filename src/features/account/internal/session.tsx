@@ -8,7 +8,7 @@ import {
 } from "react";
 import { runMigrations } from "@/db/migrate";
 import { getSessionAccount, isSetupOpen, login } from "./service";
-import type { PublicAccount } from "./types";
+import type { AccountRole, PublicAccount } from "./types";
 
 const STORAGE_KEY = "session.accountId";
 
@@ -20,9 +20,10 @@ type SessionState =
   | { status: "signed-in"; account: PublicAccount };
 
 type SessionActions = {
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (role: AccountRole, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   finishSetup: () => void;
+  setAccount: (account: PublicAccount) => void;
   retry: () => void;
 };
 
@@ -74,8 +75,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [attempt]);
 
   const actions: SessionActions = {
-    async signIn(email, password) {
-      const account = await login({ email, password });
+    async signIn(role, password) {
+      const account = await login({ role, password });
       await Storage.setItem(STORAGE_KEY, String(account.id));
       setState({ status: "signed-in", account });
     },
@@ -85,6 +86,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     },
     finishSetup() {
       setState({ status: "signed-out" });
+    },
+    setAccount(account) {
+      setState({ status: "signed-in", account });
     },
     retry() {
       setState({ status: "loading" });

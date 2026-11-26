@@ -1,5 +1,6 @@
 import { db } from "@/db/client";
 import {
+  account,
   author,
   book,
   copy,
@@ -9,12 +10,8 @@ import {
   stockMovementLine,
   visitor,
 } from "@/db/schema";
-import {
-  createAccount,
-  getSessionAccount,
-  listAccounts,
-  setAccountActive,
-} from "@/features/account/internal/service";
+import { setInitialPassword } from "@/features/account/internal/service";
+import type { AccountRole } from "@/features/account/internal/types";
 import { createAuthor } from "@/features/catalog/internal/author/service";
 import type { CollaboratorRole } from "@/features/catalog/internal/author/types";
 import {
@@ -398,18 +395,6 @@ const shelfOf = (cat: string | null, sub: string | null) =>
       ? undefined
       : SHELF_BY_CATEGORY[cat];
 
-// Cuentas extra, solo si quien corre el seed es el dueño
-type Staff = "admin" | "practicante";
-const ACCOUNTS: [
-  email: string,
-  name: string,
-  role: "admin" | "staff",
-  key: Staff,
-][] = [
-  ["lmendoza@biblioteca.local", "Laura Mendoza", "admin", "admin"],
-  ["practicante@biblioteca.local", "Practicante", "staff", "practicante"],
-];
-
 type Student = [
   name: string,
   level: "primary" | "secondary",
@@ -444,7 +429,7 @@ type Loan = {
   daysAgo: number;
   items: [title: string, copies: number][];
   returns?: Return[];
-  by?: Staff;
+  by?: AccountRole;
   notes?: string;
 };
 
@@ -487,7 +472,7 @@ const LOANS: Loan[] = [
     daysAgo: 180,
     items: [["Cien años de soledad", 1]],
     returns: [[176, "Cien años de soledad"]],
-    by: "practicante",
+    by: "staff",
   },
   {
     visitor: "Valeria Huamán",
@@ -514,7 +499,7 @@ const LOANS: Loan[] = [
     daysAgo: 200,
     items: [["Mafalda 2", 1]],
     returns: [[196, "Mafalda 2"]],
-    by: "practicante",
+    by: "staff",
   },
   {
     visitor: "Diego Quispe",
@@ -655,7 +640,7 @@ const LOANS: Loan[] = [
       [212, "Tradiciones peruanas"],
       [212, "Tradiciones peruanas"],
     ],
-    by: "practicante",
+    by: "staff",
   },
   {
     visitor: "Ana Torres",
@@ -774,31 +759,20 @@ async function backdateReturn(loanId: number, copyIds: number[], days: number) {
 const idsByName = (rows: { id: number; name: string }[]) =>
   new Map(rows.map((r) => [r.name, r.id]));
 
-export async function seedDev(actorId: number): Promise<string> {
+export async function seedDev(): Promise<string> {
   if ((await listBooks({ limit: 1 })).total > 0) {
     return "Ya hay libros: no se hizo nada";
   }
 
-  // Cuentas
-  const staff = new Map<Staff, number>();
-  if ((await getSessionAccount(actorId))?.role === "owner") {
-    const existing = await listAccounts(actorId);
-    for (const [email, name, role, key] of ACCOUNTS) {
-      const found = existing.find((a) => a.email === email);
-      const id =
-        found?.id ??
-        (
-          await createAccount(actorId, {
-            email,
-            name,
-            password: "123456",
-            role,
-          })
-        ).id;
-      staff.set(key, id);
+  // Cuentas: las que aún usan la contraseña inicial quedan con 123456
+  const accounts = new Map<AccountRole, number>();
+  for (const a of await db.select().from(account)) {
+    if (a.mustChangePassword) {
+      await setInitialPassword(a.id, { newPassword: "123456" });
     }
+    accounts.set(a.role, a.id);
   }
-  const signer = (key?: Staff) => (key && staff.get(key)) ?? actorId;
+  const signer = (role: AccountRole = "admin") => accounts.get(role)!;
 
   // Catálogo
   const authors = new Map<string, number>();
@@ -892,7 +866,7 @@ export async function seedDev(actorId: number): Promise<string> {
     reason: "purchase" | "donation" | "other",
     notes: string,
     lines: (ReturnType<typeof bookLine> | [title: string, n: number])[],
-    { label = true, by }: { label?: boolean; by?: Staff } = {},
+    { label = true, by }: { label?: boolean; by?: AccountRole } = {},
   ) => {
     let copyIds: number[] = [];
     on(at, async () => {
@@ -930,17 +904,17 @@ export async function seedDev(actorId: number): Promise<string> {
     copyIds: number[],
     notes: string,
   ) => {
-    const { movement } = await exitCopies(actorId, { reason, copyIds, notes });
+    const { movement } = await exitCopies(signer(), { reason, copyIds, notes });
     await backdateStock(movement.id, at);
   };
 
   const recover = async (at: number, copyId: number, notes: string) => {
-    const { movement } = await recoverCopy(actorId, { copyId, notes });
+    const { movement } = await recoverCopy(signer(), { copyId, notes });
     await backdateStock(movement.id, at);
   };
 
   const damage = async (at: number, copyId: number, damaged: boolean) => {
-    await setCopyDamaged(actorId, { copyId, damaged });
+    await setCopyDamaged(signer(), { copyId, damaged });
     if (damaged) await backdateDamage([copyId], at);
   };
 
@@ -961,7 +935,7 @@ export async function seedDev(actorId: number): Promise<string> {
       ["Harry Potter y la piedra filosofal", 1],
       ...SECOND.map(bookLine),
     ],
-    { by: "admin" },
+    { by: "librarian" },
   );
   entry(45, "other", "Reposición de un ejemplar", [["Mafalda 1", 1]]);
   entry(
@@ -973,7 +947,7 @@ export async function seedDev(actorId: number): Promise<string> {
       ["Rayuela", 1],
       bookLine(LATEST),
     ],
-    { label: false, by: "admin" },
+    { label: false, by: "librarian" },
   );
 
   // Deterioros y salidas manuales. Un deteriorado se aparta hasta repararlo.
@@ -1017,7 +991,7 @@ export async function seedDev(actorId: number): Promise<string> {
           notInArray(copy.status, [...RELEASED_STATUSES]),
         ),
       );
-    await moveCopies(actorId, {
+    await moveCopies(signer(), {
       shelfId: shelves.get("Literatura")!,
       copyIds: rows.map((r) => r.id),
     });
@@ -1135,8 +1109,6 @@ export async function seedDev(actorId: number): Promise<string> {
     .set({ active: false })
     .where(eq(book.id, bookIds.get("Los heraldos negros")!));
   await updateVisitor(visitors.get("Martín Salas")!, { active: false });
-  const intern = staff.get("practicante");
-  if (intern) await setAccountActive(actorId, intern, { active: false });
 
   const bookCount = BOOKS.length + SECOND.length + CATALOG_ONLY.length + 2;
   return `Seed listo: ${bookCount} libros, ${visitors.size} visitantes, ${LOANS.length} préstamos`;
